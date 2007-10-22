@@ -9,6 +9,7 @@ public class Test extends Module {
     
     Vector lines;
     int currentLine;
+    boolean firstPress = false;
     
     public Test(){
     }
@@ -42,9 +43,10 @@ public class Test extends Module {
     }
     
     public void mousePressed(int x, int y) {
+        
         lines.add(new Vertex(root, x, y));
         currentLine = lines.size() - 1;
-        root.println(currentLine);
+        firstPress = true;
     }
     
     public void mouseClicked(int x, int y) {
@@ -54,11 +56,15 @@ public class Test extends Module {
     }
     
     public void mouseDragged(int x, int y) {
-        //((Vertex)lines.get(currentLine)).drag(x, y);
+        if(firstPress){
+            ((Vertex)lines.get(currentLine)).drag(x, y);
+        }
     }
     
     public void mouseReleased(int x, int y) {
-        //((Vertex)lines.get(currentLine)).release(x, y);
+        if(firstPress){
+            ((Vertex)lines.get(currentLine)).release(x, y);
+        }
     }
     
 }
