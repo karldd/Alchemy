@@ -70,6 +70,7 @@
     <target name="-post-jar">
         
         <!-- Move the compiled Plugin classes -->
+        <move file="${build.classes.dir}/alchemy/Core.class" todir="${basedir}/plugins/core/alchemy"/>
         <move file="${build.classes.dir}/alchemy/Test.class" todir="${basedir}/plugins/test/alchemy"/>
         <move file="${build.classes.dir}/alchemy/Test2.class" todir="${basedir}/plugins/test2/alchemy"/>
         
