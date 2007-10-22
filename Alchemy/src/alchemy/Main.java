@@ -1,7 +1,6 @@
 package alchemy;
 
 import processing.core.*;
-import controlP5.*;
 
 import java.util.Vector;
 import java.awt.event.MouseEvent;
@@ -31,7 +30,6 @@ public class Main extends PApplet {
     
     private PluginManager pluginManager;
     Module[] modules;
-    ControlP5 controlP5;
     
     int numberOfPlugins;
     int currentModule;
@@ -45,10 +43,7 @@ public class Main extends PApplet {
         background(255);
         
         registerMouseEvent(this);
-        
-        controlP5 = new ControlP5(this);
-        
-        //font = loadFont("PRO5L___.ttf");
+
         loadPlugins();
         
         
@@ -112,48 +107,6 @@ public class Main extends PApplet {
             // Name, Value, X, Y, Width, Height
             //controlP5.addButton(modules[i].getName(), i, 100*i, 160, 80, 20).setId(i);
         }
-    }
-    
-    
-    void controlEvent(ControlEvent theEvent) {
-        /*
-        if(theEvent.isController()) {
-         
-            int id = theEvent.controller().id();
-            switch(id){
-                case 0:
-                    rect((int)random(width),(int)random(height),5,5);
-                    println("Button 0");
-                    break;
-                case 1:
-                    println("Button 1");
-                    break;
-            }
-         
-        } else
-         */
-        // TAB EVENTS
-        if (theEvent.isTab()) {
-            
-            int id = theEvent.tab().id();
-            println("Event Called " + id);
-            modules[id].setup(this);
-            currentModule = id;
-            
-            // theEvent.tab().name();
-            /*switch(id){
-                case 0:
-                    rect((int)random(width),(int)random(height),5,5);
-                    println("Tab 0");
-                    break;
-                case 1:
-                    println("Tab 1");
-                    break;
-            }
-             */
-        }
-        
-        
     }
     
     private void loadPlugins() {
