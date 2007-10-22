@@ -51,6 +51,7 @@ public class Main extends PApplet {
     }
     
     public void draw(){
+         line(10, 10, 100, 100);
     }
     
     public void mousePressed() {
