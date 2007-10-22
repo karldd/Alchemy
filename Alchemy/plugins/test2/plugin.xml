@@ -1,8 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="alchemy.test2" version="1.0.0"
-    class="alchemy.Test2">
-    <runtime>
-        <library id="test2" path="/" type="code"/>
-    </runtime>
+<plugin id="alchemy.test2" version="1.0.0">
+    	<requires> 
+        	<import plugin-id="alchemy.core"/> 
+    	</requires> 
+
+	<runtime>
+        	<library id="test2" path="/" type="code">
+		<export prefix="*" /> 
+		</library>
+    	</runtime>
+	<extension plugin-id="alchemy.core" point-id="Module" id="test2Module"> 
+        <parameter id="class" value="alchemy.Test2"/> 
+        <parameter id="name" value="Test2"/> 
+    </extension>
 </plugin>

@@ -17,11 +17,11 @@ abstract class Module {
         return moduleName;
     }
     
-    public void setIndex(int i){
+    public void setId(int i){
         id = i;
     }
     
-    int getIndex(){
+    int getId(){
         return id;
     }
     

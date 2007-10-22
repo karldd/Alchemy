@@ -4,6 +4,7 @@ import processing.core.*;
 
 import java.util.Vector;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -43,7 +44,7 @@ public class Main extends PApplet {
         background(255);
         
         registerMouseEvent(this);
-
+        
         loadPlugins();
         
         
@@ -80,29 +81,12 @@ public class Main extends PApplet {
     }
     
     public void loadTabs(){
+        currentModule = 0;
+        println(modules.length);
         ui = new AlcUI(this);
         for(int i = 0; i < modules.length; i++) {
-            
-            println(modules[i].getName());
+            //println(modules[i].getName());
             ui.addButton(modules[i].getName(), 10+120*i, 10, "b.gif");
-            
-            /*
-            if(i == 0){
-                controlP5.tab("default").activateEvent(true);
-                controlP5.tab("default").setId(i);
-                controlP5.tab("default").setLabel(modules[i].getName());
-                //controlP5.tab("default").setMoveable(true);
-                //controlP5.tab("default").setPosition(100, 100);
-                //controlP5.tab("default").getTab().setPosition(100, 100);
-                //println(controlP5.tab("default").getTab());
-                currentModule = 0;
-                
-            } else {
-                controlP5.tab(modules[i].getName()).activateEvent(true);
-                controlP5.tab(modules[i].getName()).setId(i);
-                controlP5.tab(modules[i].getName()).setPosition(100, 100);
-            }
-             */
             
             // Name, Value, X, Y, Width, Height
             //controlP5.addButton(modules[i].getName(), i, 100*i, 160, 80, 20).setId(i);
@@ -168,8 +152,9 @@ public class Main extends PApplet {
                 
                 //modules[i] = (Module) pluginManager.getPlugin(p.getId());
                 modules[i] =  (Module)pluginCls.newInstance();
+                
                 //println(modules[i].getName());
-                modules[i].setIndex(i);
+                modules[i].setId(i);
                 i++;
                 
                 //textFont(font);
@@ -212,5 +197,19 @@ public class Main extends PApplet {
     }
     
     
+    public void actionPerformed(ActionEvent e) {
+        
+        for(int i = 0; i < modules.length; i++) {
+            if(e.getActionCommand() == modules[i].getName()) {
+                if(i != currentModule){
+                    modules[i].setup(this);
+                    currentModule = i;
+                    println(e.getActionCommand());
+                    break;
+                }
+            }
+        }
+    }
+
     
 }
