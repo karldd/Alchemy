@@ -1,19 +1,50 @@
 package alchemy;
+
 import processing.core.PApplet;
 
-public interface Module {
+import java.awt.event.MouseEvent;
+
+abstract class Module {
     
-    String category();
+    PApplet root;
+    String moduleName;
+    int id;
     
-    void setIndex(int i);
+    public Module(){
+    }
     
-    int getIndex();
+    public String getName(){
+        return moduleName;
+    }
     
-    void setup(PApplet p);
+    public void setIndex(int i){
+        id = i;
+    }
     
-    void mousePressed();
+    int getIndex(){
+        return id;
+    }
     
-    void mouseDragged();
+    public void setup(PApplet p){
+    }
     
-    void mouseReleased();
+    public void draw(){
+    }
+    
+    public void mousePressed(int x, int y) {
+    }
+    
+    public void mouseClicked(int x, int y) {
+    }
+    
+    public void mouseMoved(int x, int y) {
+    }
+    
+    public void mouseDragged(int x, int y) {
+    }
+    
+    public void mouseReleased(int x, int y) {
+    }
+    
+    
 }

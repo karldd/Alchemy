@@ -1,33 +1,35 @@
 package alchemy;
 
-import alchemy.Module;
 import org.java.plugin.Plugin;
 
 import processing.core.PApplet;
 
-public class Test2 extends Plugin implements Module {
+public class Test2 extends Module {
     
-    int id;
-    PApplet parent;
-    
-    public String category() {
-        return "TEST TWO";
+    public Test2(){
     }
     
-    public void setIndex(int i){
-        id = i;
+    public String getName() {
+        moduleName = "TEST TWO";
+        return moduleName;
     }
     
-    public int getIndex(){
-        return id;
+    public void setup(PApplet r){
+        root = r;
+        root.println("Module " + id + " Loaded");
     }
-    
-    public void setup(PApplet p){
-        parent = p;
-        parent.println("Module " + id + " Loaded");
+        
+    public void draw(){
+        
     }
     
     public void mousePressed() {
+    }
+    
+    public void mouseClicked() {
+    }
+    
+    public void mouseMoved() {
     }
     
     public void mouseDragged() {
@@ -35,14 +37,4 @@ public class Test2 extends Plugin implements Module {
     
     public void mouseReleased() {
     }
-    
-    
-    
-    
-    protected void doStart() throws Exception {
-    }
-    
-    protected void doStop() throws Exception {
-    }
-    
 }

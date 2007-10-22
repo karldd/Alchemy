@@ -1,58 +1,64 @@
 package alchemy;
 
-import alchemy.Module;
-import org.java.plugin.Plugin;
-
 import processing.core.PApplet;
 
+import org.java.plugin.Plugin;
 import java.util.Vector;
 
-public class Test extends Plugin implements Module {
+public class Test extends Module {
     
-    int id;
-    PApplet parent;
     Vector lines;
+    int currentLine;
     
-    public String category() {
-        return "TEST ONE";
+    public Test(){
     }
     
-    public void setIndex(int i){
-        id = i;
+    public String getName() {
+        moduleName = "TEST ONE";
+        return moduleName;
     }
     
-    public int getIndex(){
-        return id;
-    }
-    
-    public void setup(PApplet p){
-        parent = p;
-        parent.println("Module " + id + " Loaded");
+    public void setup(PApplet r){
+        root = r;
+        root.println("Module " + id + " Loaded");
         
         lines = new Vector();
+        lines.ensureCapacity(100);
         
-        parent.noFill();
-        parent.stroke(0);
-        parent.smooth();
-        parent.cursor(parent.CROSS);
-        parent.noLoop();
+        root.noFill();
+        root.stroke(0);
+        root.smooth();
+        //root.cursor(root.CROSS);
+        root.noLoop();
     }
     
-    public void mousePressed() {
-        //lines.add(new Line(this));
+    public void draw(){
+        
+        // Draw the lines
+        for(int j = 0; j < lines.size(); j++) {
+            ((Vertex)lines.get(j)).draw();
+        }
+        
     }
     
-    public void mouseDragged() {
+    public void mousePressed(int x, int y) {
+        lines.add(new Vertex(root, x, y));
+        currentLine = lines.size() - 1;
+        root.println(currentLine);
     }
     
-    public void mouseReleased() {
+    public void mouseClicked(int x, int y) {
     }
     
-    
-    protected void doStart() throws Exception {
+    public void mouseMoved(int x, int y) {
     }
     
-    protected void doStop() throws Exception {
+    public void mouseDragged(int x, int y) {
+        //((Vertex)lines.get(currentLine)).drag(x, y);
+    }
+    
+    public void mouseReleased(int x, int y) {
+        //((Vertex)lines.get(currentLine)).release(x, y);
     }
     
 }
