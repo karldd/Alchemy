@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="alchemy.test2" version="1.0.0"
+    class="alchemy.Test2">
+    <runtime>
+        <library id="test2" path="/" type="code"/>
+    </runtime>
+</plugin>
