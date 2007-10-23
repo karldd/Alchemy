@@ -10,5 +10,7 @@
     <extension-point id="Module"> 
         <parameter-def id="class"/> 
         <parameter-def id="name"/> 
+        <parameter-def id="description"/> 
+        <parameter-def id="icon"/> 
     </extension-point>
 </plugin>

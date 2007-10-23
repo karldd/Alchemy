@@ -1,6 +1,7 @@
 package alchemy;
 
 import processing.core.*;
+//import seltar.unzipit.*;
 
 import java.util.Vector;
 import java.awt.event.MouseEvent;
@@ -11,6 +12,9 @@ import java.io.FilenameFilter;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
@@ -18,7 +22,7 @@ import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
-
+import org.java.plugin.PluginClassLoader;
 
 public class Main extends PApplet {
     
@@ -38,6 +42,7 @@ public class Main extends PApplet {
     AlcUI ui;
     
     boolean saveOneFrame = false;
+    //PImage test;
     
     public void setup(){
         size(800, 600);
@@ -56,6 +61,10 @@ public class Main extends PApplet {
             //println(modules.length);
         }
         
+        //UnZipIt zip = new UnZipIt("/Users/karldd/Alchemy/Code/svn/Alchemy/data/b.zip", this);
+        //test = zip.loadImage("b.gif");
+        
+        //test = loadImage("file:/Users/karldd/Alchemy/Code/svn/Alchemy/plugins/alchemy.test-1.0.0.zip!/data/b.gif");
         
         
         //ui.addButton("mbutton", 100, 190, "b.gif");
@@ -69,6 +78,8 @@ public class Main extends PApplet {
         }
         background(255);
         
+        //image(test, 300, 300);
+        
         
         modules[currentModule].draw();
         //line(10, 10, 100, 100);
@@ -81,12 +92,11 @@ public class Main extends PApplet {
     }
     
     public void loadTabs(){
-        currentModule = 0;
-        println(modules.length);
+        setModule(0);
         ui = new AlcUI(this);
         for(int i = 0; i < modules.length; i++) {
             //println(modules[i].getName());
-            ui.addButton(modules[i].getName(), 10+120*i, 10, "b.gif");
+            ui.addButton(modules[i].getName(), 10+120*i, 10, modules[i].getIconName(), modules[i].getPluginPath());
             
             // Name, Value, X, Y, Width, Height
             //controlP5.addButton(modules[i].getName(), i, 100*i, 160, 80, 20).setId(i);
@@ -99,6 +109,7 @@ public class Main extends PApplet {
         
         File pluginsDir = new File("plugins");
         
+        
         File[] plugins = pluginsDir.listFiles(new FilenameFilter() {
             
             public boolean accept(File dir, String name) {
@@ -106,6 +117,8 @@ public class Main extends PApplet {
             }
             
         });
+        
+        
         
         try {
             
@@ -117,6 +130,7 @@ public class Main extends PApplet {
             
             for (int i = 0; i < plugins.length; i++) {
                 locations[i] = StandardPluginLocation.create(plugins[i]);
+                //println(plugins[i].getAbsolutePath());
             }
             
             // Registers plug-ins and their locations with this plug-in manager.
@@ -132,10 +146,10 @@ public class Main extends PApplet {
         
         try {
             
-            
             PluginDescriptor core = pluginManager.getRegistry().getPluginDescriptor("alchemy.core");
             
             ExtensionPoint point = pluginManager.getRegistry().getExtensionPoint(core.getId(), "Module");
+            
             int i = 0;
             
             for (Iterator it = point.getConnectedExtensions().iterator(); it.hasNext();) {
@@ -145,15 +159,34 @@ public class Main extends PApplet {
                 PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
                 
                 //println(descr.getId());
+                //println(iconParam + " " + descrParam);
                 pluginManager.activatePlugin(descr.getId());
                 
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
                 
-                //modules[i] = (Module) pluginManager.getPlugin(p.getId());
                 modules[i] =  (Module)pluginCls.newInstance();
                 
-                //println(modules[i].getName());
+                // GET THE FILE PATH & ICON NAME
+                // Return the path of the XML file as a string
+                String path = ext.getDeclaringPluginDescriptor().getLocation().getPath();
+                // Remove the XML file name after the "!" mark and make a URI
+                URI pathUrl = new URI(path.substring(0, path.lastIndexOf("!")));
+                // Convert it into an abstract file name
+                File pathFile = new File(pathUrl);
+                
+                if(pathFile.exists()){
+                    
+                    modules[i].setPluginPath(pathFile);
+                    println("Loaded " + pathFile.getPath());
+                }
+                
+                // Set the icon name and the decription name from the XML
+                String descriptionParam = ext.getParameter("description").valueAsString();
+                String iconParam = ext.getParameter("icon").valueAsString();
+                
+                modules[i].setIconName(iconParam);
+                modules[i].setDescriptionName(descriptionParam);
                 modules[i].setId(i);
                 i++;
                 
@@ -165,6 +198,16 @@ public class Main extends PApplet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public void setModule(int i){
+        if(modules[i].getLoaded()){
+            modules[i].refocus();
+        } else{
+            modules[i].setLoaded(true);
+            modules[i].setup(this);
+        }
+        currentModule = i;
     }
     
     public void mouseEvent(MouseEvent event) {
@@ -196,20 +239,18 @@ public class Main extends PApplet {
         }
     }
     
-    
     public void actionPerformed(ActionEvent e) {
         
         for(int i = 0; i < modules.length; i++) {
             if(e.getActionCommand() == modules[i].getName()) {
                 if(i != currentModule){
-                    modules[i].setup(this);
-                    currentModule = i;
-                    println(e.getActionCommand());
+                    setModule(i);
+                    //println(e.getActionCommand());
                     break;
                 }
             }
         }
     }
-
+    
     
 }

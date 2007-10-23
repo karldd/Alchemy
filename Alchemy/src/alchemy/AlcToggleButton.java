@@ -9,16 +9,9 @@ import java.lang.reflect.Method;
 
 public class AlcToggleButton extends AlcObject{
     
-    PImage current;
-    PImage[] images = new PImage[6];
-    String[] fileEnd = {"", "-over", "-down", "-on", "-onover", "-ondown"};
-    boolean[] loaded = {false, false, false, false, false, false};
-    
-    boolean inside = false;
-    boolean pressed = false;
     boolean on;
-        
-    public AlcToggleButton(PApplet r, AlcUI ui, String n, int x, int y, String fileName, Boolean o) {
+    
+    public AlcToggleButton(PApplet r, AlcUI ui, String n, int x, int y, Boolean o, String file) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
@@ -26,27 +19,38 @@ public class AlcToggleButton extends AlcObject{
         on = o;
         ox = x;
         oy = y;
-        
-        
         a = new AlcAction(this, name);
-        
-        // LOOP TO LOAD IMAGES FROM ARRAY
-        for(int i = 0; i < images.length; i++) {
-            // Apped the button state to the filename
-            String fn = editName(fileName, fileEnd[i]);
-            // File Object
-            File f = new File(root.dataPath(fn));
-            if(f.exists()){
-                images[i] = root.loadImage(fn);
-                loaded[i] = true;
-                if(i == 0){
-                    width = images[0].width;
-                    height = images[0].height;
-                }
-            }
-            
-        }
-        // Set the default button state
+        fileName = file;
+        setup();
+    }
+    
+    public AlcToggleButton(PApplet r, AlcUI ui, String n, int x, int y, Boolean o, String file, File path) {
+        root = r;
+        parent = ui;
+        id = parent.buttons.size();
+        name = n;
+        on = o;
+        ox = x;
+        oy = y;
+        a = new AlcAction(this, name);
+        fileName = file;
+        filePath = path;
+        setup();
+    }
+    
+    public void setup(){
+        images = new PImage[6];
+        fileEnd = new String[6];
+        loaded = new boolean[6];
+        fileEnd[0] = "";
+        fileEnd[1] = "-over";
+        fileEnd[2] = "-down";
+        fileEnd[3] = "-on";
+        fileEnd[4] = "-onover";
+        fileEnd[5] = "-ondown";
+        inside = false;
+        pressed = false;
+        loadImages();
         if(on){
             set(3);
         } else {
@@ -58,12 +62,6 @@ public class AlcToggleButton extends AlcObject{
         if(current != null){
             root.image(current, ox, oy);
         }
-    }
-    
-    // FUNCTION TO EDIT THE NAME OF THE ORIGINAL BUTTON FILE
-    public String editName(String f, String e){
-        int dot = f.lastIndexOf(".");
-        return f.substring(0, dot) + e + f.substring(dot);
     }
     
     public void set(int a){

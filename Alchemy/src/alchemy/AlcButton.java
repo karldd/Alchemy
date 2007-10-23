@@ -2,6 +2,7 @@ package alchemy;
 
 import processing.core.PApplet;
 import processing.core.PImage;
+//import seltar.unzipit.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -9,43 +10,42 @@ import java.lang.reflect.Method;
 
 public class AlcButton extends AlcObject{
     
-    PImage current;
-    PImage[] images = new PImage[3];
-    String[] fileEnd = {"", "-over", "-down"};
-    boolean[] loaded = {false, false, false};
-    
-    boolean inside = false;
-    boolean pressed = false;
-    
-    
-    public AlcButton(PApplet r, AlcUI ui, String n, int x, int y, String fileName) {
+    public AlcButton(PApplet r, AlcUI ui, String n, int x, int y, String file) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
         name = n;
         ox = x;
         oy = y;
-        
-        
         a = new AlcAction(this, name);
-        
-        // LOOP TO LOAD IMAGES FROM ARRAY
-        for(int i = 0; i < images.length; i++) {
-            // Apped the button state to the filename
-            String fn = editName(fileName, fileEnd[i]);
-            // File Object
-            File f = new File(root.dataPath(fn));
-            if(f.exists()){
-                images[i] = root.loadImage(fn);
-                loaded[i] = true;
-                if(i == 0){
-                    width = images[0].width;
-                    height = images[0].height;
-                    set(0);
-                }
-            }
-            
-        }
+        fileName = file;
+        setup();
+    }
+    
+    public AlcButton(PApplet r, AlcUI ui, String n, int x, int y, String file, File path) {
+        root = r;
+        parent = ui;
+        id = parent.buttons.size();
+        name = n;
+        ox = x;
+        oy = y;
+        a = new AlcAction(this, name);
+        fileName = file;
+        filePath = path;
+        setup();
+    }
+    
+    public void setup(){
+        images = new PImage[3];
+        fileEnd = new String[3];
+        loaded = new boolean[3];
+        fileEnd[0] = "";
+        fileEnd[1] = "-over";
+        fileEnd[2] = "-down";
+        inside = false;
+        pressed = false;
+        loadImages();
+        set(0);
     }
     
     public void draw(){
@@ -54,7 +54,7 @@ public class AlcButton extends AlcObject{
             root.image(current, ox, oy);
         }
     }
-      
+    
     public void set(int a){
         if(loaded[a]) {
             current = images[a];
