@@ -11,7 +11,7 @@ public class Vertex{
     int space = 5;
     PApplet root; // The root PApplet that we will render ourselves onto
     
-    Vector line;
+    Vector<Object> line;
     int inc = 0;
     
     boolean endLine = false;
@@ -19,7 +19,7 @@ public class Vertex{
     
     public Vertex(PApplet r, int x, int y){
         root = r;
-        line = new Vector();
+        line = new Vector<Object>();
         line.ensureCapacity(100);
         line.add(new Point(x, y));
         //root.println(x + " " + y);

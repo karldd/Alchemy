@@ -7,7 +7,7 @@ import java.util.Vector;
 
 public class Test extends Module {
     
-    Vector lines;
+    Vector<Object> lines;
     int currentLine;
     boolean firstPress = false;
     
@@ -23,7 +23,7 @@ public class Test extends Module {
         root = r;
         root.println("Module " + id + " Loaded");
         
-        lines = new Vector();
+        lines = new Vector<Object>();
         lines.ensureCapacity(100);
         
         root.noFill();
@@ -40,6 +40,11 @@ public class Test extends Module {
             ((Vertex)lines.get(j)).draw();
         }
         
+    }
+    
+    public void refocus(){
+        firstPress = false;
+        root.redraw();
     }
     
     public void mousePressed(int x, int y) {

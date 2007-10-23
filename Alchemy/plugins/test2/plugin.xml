@@ -7,11 +7,14 @@
 
 	<runtime>
         	<library id="test2" path="/" type="code">
-		<export prefix="*" /> 
+			<export prefix="*" /> 
 		</library>
+                <library type="resources" path="data/" id="data" />
     	</runtime>
 	<extension plugin-id="alchemy.core" point-id="Module" id="test2Module"> 
         <parameter id="class" value="alchemy.Test2"/> 
         <parameter id="name" value="Test2"/> 
+	<parameter id="description" value="Test2 Drawing App." />
+	<parameter id="icon" value="b.gif" />
     </extension>
 </plugin>

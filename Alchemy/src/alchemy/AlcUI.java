@@ -3,20 +3,21 @@ package alchemy;
 import processing.core.PApplet;
 import java.awt.event.MouseEvent;
 
+import java.io.File;
 import java.util.Vector;
 
 public class AlcUI {
     
     public PApplet root;
-    public Vector buttons, toggleButtons, sliders;
+    public Vector<Object> buttons, toggleButtons, sliders;
     
     public AlcUI(PApplet r) {
         root = r;
         root.registerDraw(this);
         root.registerMouseEvent(this);
-        buttons = new Vector();
-        toggleButtons = new Vector();
-        sliders = new Vector();
+        buttons = new Vector<Object>();
+        toggleButtons = new Vector<Object>();
+        sliders = new Vector<Object>();
     }
     
     public void draw(){
@@ -31,9 +32,12 @@ public class AlcUI {
         }
     }
     
-    
     public void addButton(String name, int x, int y, String icon){
         buttons.add(new AlcButton(root, this, name, x, y, icon));
+    }
+    
+    public void addButton(String name, int x, int y, String icon, File filePath){
+        buttons.add(new AlcButton(root, this, name, x, y, icon, filePath));
     }
     
     public void removeButton(String name){
@@ -46,8 +50,12 @@ public class AlcUI {
         }
     }
     
-    public void addToggleButton(String name, int x, int y, String icon, Boolean on){
-        toggleButtons.add(new AlcToggleButton(root, this, name, x, y, icon, on));
+    public void addToggleButton(String name, int x, int y, Boolean on, String icon){
+        toggleButtons.add(new AlcToggleButton(root, this, name, x, y, on, icon));
+    }
+    
+    public void addToggleButton(String name, int x, int y, Boolean on, String icon, File filePath){
+        toggleButtons.add(new AlcToggleButton(root, this, name, x, y, on, icon, filePath));
     }
     
     public void removeToogleButton(String name){
