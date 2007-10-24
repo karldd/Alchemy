@@ -2,7 +2,7 @@ package alchemy;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-//import seltar.unzipit.*;
+import processing.core.PFont;
 
 import java.io.File;
 
@@ -14,6 +14,7 @@ abstract class AlcObject {
     AlcUI parent;
     AlcAction a;
     String name, fileName, actionCommand;
+    PFont tabFont;
     File filePath;
     UnZipIt zip;
     
@@ -52,7 +53,6 @@ abstract class AlcObject {
             for(int i = 0; i < images.length; i++) {
                 // Append the button state to the filename
                 String fn = editName(fileName, fileEnd[i]);
-                
                 if(zip.fileExists("data/"+fn)) {
                     images[i] = zip.loadImage("data/"+fn);
                     loaded[i] = true;
@@ -69,9 +69,22 @@ abstract class AlcObject {
         }
     }
     
+    
+    public void set(int i){
+        if(loaded[i]) {
+            current = images[i];
+        }
+        root.redraw();
+    }
+    
 // FUNCTION TO EDIT THE NAME OF THE ORIGINAL BUTTON FILE
     public String editName(String f, String e){
         int dot = f.lastIndexOf(".");
-        return f.substring(0, dot) + e + f.substring(dot);
+        if(dot == -1){
+            // No file extension
+            return f + e;
+        } else{
+            return f.substring(0, dot) + e + f.substring(dot);
+        }
     }
 }

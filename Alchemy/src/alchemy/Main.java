@@ -1,7 +1,6 @@
 package alchemy;
 
 import processing.core.*;
-//import seltar.unzipit.*;
 
 import java.util.Vector;
 import java.awt.event.MouseEvent;
@@ -42,7 +41,6 @@ public class Main extends PApplet {
     AlcUI ui;
     
     boolean saveOneFrame = false;
-    //PImage test;
     
     public void setup(){
         size(800, 600);
@@ -52,23 +50,13 @@ public class Main extends PApplet {
         
         loadPlugins();
         
-        
         if(numberOfPlugins > 0){
             addPlugins();
             //
             loadTabs();
-            //println(numberOfPlugins);
-            //println(modules.length);
         }
         
-        //UnZipIt zip = new UnZipIt("/Users/karldd/Alchemy/Code/svn/Alchemy/data/b.zip", this);
-        //test = zip.loadImage("b.gif");
-        
-        //test = loadImage("file:/Users/karldd/Alchemy/Code/svn/Alchemy/plugins/alchemy.test-1.0.0.zip!/data/b.gif");
-        
-        
-        //ui.addButton("mbutton", 100, 190, "b.gif");
-        //ui.addToggleButton("lbutton", 250, 75, "b.gif", false);
+        noLoop();
         
     }
     
@@ -78,12 +66,7 @@ public class Main extends PApplet {
         }
         background(255);
         
-        //image(test, 300, 300);
-        
-        
         modules[currentModule].draw();
-        //line(10, 10, 100, 100);
-        
         
         if(saveOneFrame) {
             endRecord();
@@ -94,13 +77,19 @@ public class Main extends PApplet {
     public void loadTabs(){
         setModule(0);
         ui = new AlcUI(this);
+        
         for(int i = 0; i < modules.length; i++) {
-            //println(modules[i].getName());
-            ui.addButton(modules[i].getName(), 10+120*i, 10, modules[i].getIconName(), modules[i].getPluginPath());
             
-            // Name, Value, X, Y, Width, Height
-            //controlP5.addButton(modules[i].getName(), i, 100*i, 160, 80, 20).setId(i);
+            // Name, X, Y, File, ZipPath
+            //ui.addButton(modules[i].getName(), 10+120*i, 10, modules[i].getIconName(), modules[i].getPluginPath());
+            ui.addTab(modules[i].getName(), 10+120*i, 10, modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
+            
+            // Tab Label
+            
+            
         }
+        //println(modules[1].getPluginPath().getPath());
+        //ui.addSlider("ok", 100, 400, 50, "slider.gif", modules[1].getPluginPath());
     }
     
     private void loadPlugins() {
@@ -117,8 +106,6 @@ public class Main extends PApplet {
             }
             
         });
-        
-        
         
         try {
             
@@ -210,6 +197,26 @@ public class Main extends PApplet {
         currentModule = i;
     }
     
+    public void toogleTabs(int why){
+        if(why < 20){
+            if(!ui.getVisible()){
+                ui.setVisible(true);
+            }
+        } else if(why > 100){
+            if(ui.getVisible()){
+                ui.setVisible(false);
+            }
+        }
+    }
+    
+    public void keyPressed(){
+        // Disable the default Processing quit key - ESC
+        if(keyCode == ESC || key == ESC){
+            key = 0;
+            keyCode = 0;
+        }
+    }
+    
     public void mouseEvent(MouseEvent event) {
         int x = event.getX();
         int y = event.getY();
@@ -224,6 +231,7 @@ public class Main extends PApplet {
                 break;
             case MouseEvent.MOUSE_MOVED:
                 //println("Mouse Moved - X:" + x + " Y: " + y);
+                toogleTabs(y);
                 modules[currentModule].mouseMoved(x, y);
                 break;
             case MouseEvent.MOUSE_DRAGGED:
@@ -235,7 +243,6 @@ public class Main extends PApplet {
                 //println("Mouse Released - X:" + x + " Y: " + y);
                 modules[currentModule].mouseReleased(x, y);
                 break;
-                
         }
     }
     

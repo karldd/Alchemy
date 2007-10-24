@@ -15,6 +15,6 @@
         <parameter id="class" value="alchemy.Test2"/> 
         <parameter id="name" value="Test2"/> 
 	<parameter id="description" value="Test2 Drawing App." />
-	<parameter id="icon" value="b.gif" />
+	<parameter id="icon" value="tab.gif" />
     </extension>
 </plugin>
