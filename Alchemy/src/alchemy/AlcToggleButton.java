@@ -64,13 +64,6 @@ public class AlcToggleButton extends AlcObject{
         }
     }
     
-    public void set(int a){
-        if(loaded[a]) {
-            current = images[a];
-        }
-        root.redraw();
-    }
-    
     public boolean getState(){
         return on;
     }

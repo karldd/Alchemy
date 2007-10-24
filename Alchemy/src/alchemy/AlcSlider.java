@@ -9,19 +9,11 @@ import java.lang.reflect.Method;
 
 public class AlcSlider extends AlcObject{
     
-    PImage current;
-    PImage[] images = new PImage[4];
-    String[] fileEnd = {"", "-over", "-down", "-bg"};
-    boolean[] loaded = {false, false, false, false};
-    
-    boolean inside = false;
-    boolean insideBg = false;
-    boolean pressed = false;
-    
+    boolean insideBg;
     int sx, halfWidth, bgWidth, bgHeight, halfBgWidth, clickGap, leftLimit, rightLimit, value;
     float grain;
     
-    public AlcSlider(PApplet r, AlcUI ui, String n, int x, int y, String fileName, int v) {
+    public AlcSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
@@ -29,28 +21,41 @@ public class AlcSlider extends AlcObject{
         ox = x;
         oy = y;
         value = root.constrain(v, 0, 100);
-        
         a = new AlcAction(this, name);
+        fileName = file;
+        setup();
+    }
+    
+    public AlcSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file, File path) {
+        root = r;
+        parent = ui;
+        id = parent.buttons.size();
+        name = n;
+        ox = x;
+        oy = y;
+        value = root.constrain(v, 0, 100);
+        a = new AlcAction(this, name);
+        fileName = file;
+        filePath = path;
+        setup();
+    }
+    
+    public void setup(){
+        images = new PImage[4];
+        fileEnd = new String[4];
+        loaded = new boolean[4];
+        fileEnd[0] = "";
+        fileEnd[1] = "-over";
+        fileEnd[2] = "-down";
+        fileEnd[3] = "-bg";
+        inside = false;
+        pressed = false;
+        insideBg = false;
+        loadImages();
         
-        // LOOP TO LOAD IMAGES FROM ARRAY
-        for(int i = 0; i < images.length; i++) {
-            // Apped the button state to the filename
-            String fn = editName(fileName, fileEnd[i]);
-            // File Object
-            File f = new File(root.dataPath(fn));
-            if(f.exists()){
-                images[i] = root.loadImage(fn);
-                loaded[i] = true;
-                if(i == 0){
-                    width = images[0].width;
-                    height = images[0].height;
-                    set(0);
-                } else if(i == 3){
-                    bgWidth = images[3].width;
-                    bgHeight = images[3].height;
-                }
-            }
-            
+        if(loaded[3]){
+            bgWidth = images[3].width;
+            bgHeight = images[3].height;
         }
         
         // Right Shift
@@ -65,22 +70,18 @@ public class AlcSlider extends AlcObject{
         //sx = (halfBgWidth - halfWidth) + ox;
         float bigGrain = (rightLimit - leftLimit) / 100.F;
         sx = (int)(ox + bigGrain * value);
+        set(0);
     }
     
     public void draw(){
+        // Draw the Slider Background
         if(loaded[3]){
             root.image(images[3], ox, oy);
         }
+        // Draw the Slider
         if(current != null){
             root.image(current, sx, oy);
         }
-    }
-    
-    public void set(int a){
-        if(loaded[a]) {
-            current = images[a];
-        }
-        root.redraw();
     }
     
     public void setValue(){
