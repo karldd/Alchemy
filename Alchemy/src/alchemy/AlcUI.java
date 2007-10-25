@@ -33,6 +33,10 @@ public class AlcUI {
             for(int i = 0; i < sliders.size(); i++) {
                 ((AlcSlider)sliders.get(i)).draw();
             }
+            
+            if(tabs.size() > 0){
+                tabBg();
+            }
             for(int i = 0; i < tabs.size(); i++) {
                 ((AlcTab)tabs.get(i)).draw();
             }
@@ -122,12 +126,21 @@ public class AlcUI {
         }
     }
     
-    public void addTab(String name, int x, int y, String text, String icon){
-        tabs.add(new AlcTab(root, this, name, x, y, text, icon));
+    public void addTab(String name, int x, int y, boolean on, String text, String icon){
+        tabs.add(new AlcTab(root, this, name, x, y, on, text, icon));
     }
     
-    public void addTab(String name, int x, int y, String text, String icon, File filePath){
-        tabs.add(new AlcTab(root, this, name, x, y, text, icon, filePath));
+    public void addTab(String name, int x, int y, boolean on, String text, String icon, File filePath){
+        tabs.add(new AlcTab(root, this, name, x, y, on, text, icon, filePath));
+    }
+    
+    public void tabBg(){
+        // Tab Bg
+        root.noStroke();
+        root.fill(225);
+        root.rect(0, 0, root.width, 39);
+        root.fill(245);
+        root.rect(0, 39, root.width, 30);
     }
     
     

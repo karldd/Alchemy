@@ -52,7 +52,7 @@ public class Main extends PApplet {
         
         if(numberOfPlugins > 0){
             addPlugins();
-            //
+            currentModule = 0;
             loadTabs();
         }
         
@@ -79,10 +79,14 @@ public class Main extends PApplet {
         ui = new AlcUI(this);
         
         for(int i = 0; i < modules.length; i++) {
+            boolean current = false;
+            if(i == currentModule){
+                current = true;
+            }
             
             // Name, X, Y, File, ZipPath
             //ui.addButton(modules[i].getName(), 10+120*i, 10, modules[i].getIconName(), modules[i].getPluginPath());
-            ui.addTab(modules[i].getName(), 10+120*i, 10, modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
+            ui.addTab(modules[i].getName(), 5+120*i, 5, current, modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
             
             // Tab Label
             
@@ -145,7 +149,7 @@ public class Main extends PApplet {
                 
                 PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
                 
-                //println(descr.getId());
+                println(descr.getId());
                 //println(iconParam + " " + descrParam);
                 pluginManager.activatePlugin(descr.getId());
                 
@@ -247,12 +251,12 @@ public class Main extends PApplet {
     }
     
     public void actionPerformed(ActionEvent e) {
-        
+        println(e.getActionCommand());
         for(int i = 0; i < modules.length; i++) {
             if(e.getActionCommand() == modules[i].getName()) {
                 if(i != currentModule){
                     setModule(i);
-                    //println(e.getActionCommand());
+                    
                     break;
                 }
             }
