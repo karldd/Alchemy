@@ -12,13 +12,15 @@ import java.lang.reflect.Method;
 public class AlcTab extends AlcObject{
     
     String text;
-    int tx, ty, pad;
+    int tx, ty, pad, fontSize, textWidth, fullWidth, fullHeight;
+    boolean on;
     
-    public AlcTab(PApplet r, AlcUI ui, String n, int x, int y, String t, String file) {
+    public AlcTab(PApplet r, AlcUI ui, String n, int x, int y, boolean o, String t, String file) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
         name = n;
+        on = o;
         ox = x;
         oy = y;
         a = new AlcAction(this, name);
@@ -27,11 +29,12 @@ public class AlcTab extends AlcObject{
         setup();
     }
     
-    public AlcTab(PApplet r, AlcUI ui, String n, int x, int y, String t, String file, File path) {
+    public AlcTab(PApplet r, AlcUI ui, String n, int x, int y, boolean o, String t, String file, File path) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
         name = n;
+        on = o;
         ox = x;
         oy = y;
         a = new AlcAction(this, name);
@@ -42,7 +45,6 @@ public class AlcTab extends AlcObject{
     }
     
     public void setup(){
-        tabFont = root.loadFont("TheSans-Plain-12.vlw");
         images = new PImage[3];
         fileEnd = new String[3];
         loaded = new boolean[3];
@@ -53,32 +55,50 @@ public class AlcTab extends AlcObject{
         pressed = false;
         loadImages();
         pad = 5;
-        tx = ox + width + pad;
-        ty = oy + height/2 + 6;
+        fontSize = 12;
+        root.hint(root.ENABLE_NATIVE_FONTS);
+        tabFont = root.createFont("Helvetica", fontSize, true);
+        tx = ox + pad*2 + width;
+        ty = oy + pad*2 + height/2;
+        textWidth = name.length() * (int)(fontSize/1.5);
+        fullWidth = ox + width + textWidth;
+        fullHeight = oy + height + pad*2;
         set(0);
     }
     
     public void draw(){
         
-        // Bg
+        // Tab
+        if(on){
+            root.fill(245);
+        } else {
+            root.fill(235);
+        }
         root.noStroke();
-        root.fill(25);
         root.beginShape();
-        root.vertex(ox-pad, oy+height+pad);
-        root.vertex(ox-pad, oy-pad);
-        root.vertex(ox+width+pad, oy-pad);
-        root.vertex(ox+width+pad, oy+height+pad);
+        root.vertex(ox, fullHeight);
+        root.vertex(ox, oy);
+        root.vertex(fullWidth, oy);
+        root.vertex(fullWidth, fullHeight);
         root.endShape(root.CLOSE);
         
         // Icon
         if(current != null){
-            root.image(current, ox, oy);
+            root.image(current, ox+pad, oy+pad);
         }
         
         // Label
         root.fill(0);
-        root.textFont(tabFont, 12);
+        root.textFont(tabFont);
         root.text(text, tx, ty);
+    }
+    
+    public boolean getState(){
+        return on;
+    }
+    
+    public void setState(boolean o){
+        on = o;
     }
     
     public void rollOverCheck(int x, int y){

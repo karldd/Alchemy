@@ -10,7 +10,7 @@ public class Test2 extends Module {
     }
     
     public String getName() {
-        moduleName = "TEST TWO";
+        moduleName = "Test Two";
         return moduleName;
     }
     

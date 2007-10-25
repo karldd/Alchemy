@@ -15,7 +15,7 @@ public class Test extends Module {
     }
     
     public String getName() {
-        moduleName = "TEST ONE";
+        moduleName = "Test One";
         return moduleName;
     }
     
