@@ -2,19 +2,17 @@ package alchemy;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-import processing.core.PFont;
 
 import java.io.File;
 
-abstract class AlcObject {
+abstract class AlcUiObject {
     
     int ox, oy, width, height, id;
     
     PApplet root;
     AlcUI parent;
-    AlcAction a;
+    AlcUiAction a;
     String name, fileName, actionCommand;
-    PFont tabFont;
     File filePath;
     UnZipIt zip;
     
@@ -26,7 +24,7 @@ abstract class AlcObject {
     boolean pressed, inside;
     
     
-    public AlcObject() {
+    public AlcUiObject() {
     }
     
     // LOAD IMAGES

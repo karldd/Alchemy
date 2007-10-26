@@ -4,14 +4,9 @@ import org.java.plugin.Plugin;
 
 import processing.core.PApplet;
 
-public class Test2 extends Module {
+public class Test2 extends AlcModule {
     
     public Test2(){
-    }
-    
-    public String getName() {
-        moduleName = "Test Two";
-        return moduleName;
     }
     
     public void setup(PApplet r){

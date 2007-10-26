@@ -13,8 +13,8 @@
     	</runtime>
 	<extension plugin-id="alchemy.core" point-id="Module" id="test2Module"> 
         <parameter id="class" value="alchemy.Test2"/> 
-        <parameter id="name" value="Test2"/> 
-	<parameter id="description" value="Test2 Drawing App." />
+        <parameter id="name" value="Test Yes Yes Yes Two"/> 
+	<parameter id="description" value="Test 2 Drawing App." />
 	<parameter id="icon" value="tab.gif" />
     </extension>
 </plugin>

@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import org.java.plugin.Plugin;
 import java.util.Vector;
 
-public class Test extends Module {
+public class Test extends AlcModule {
     
     Vector<Object> lines;
     int currentLine;
@@ -13,12 +13,7 @@ public class Test extends Module {
     
     public Test(){
     }
-    
-    public String getName() {
-        moduleName = "Test One";
-        return moduleName;
-    }
-    
+     
     public void setup(PApplet r){
         root = r;
         root.println("Module " + id + " Loaded");

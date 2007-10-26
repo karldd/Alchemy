@@ -2,78 +2,98 @@ package alchemy;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-//import seltar.unzipit.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
 
 
-public class AlcButton extends AlcObject{
+public class AlcUiToggleButton extends AlcUiObject{
     
-    public AlcButton(PApplet r, AlcUI ui, String n, int x, int y, String file) {
+    boolean on;
+    
+    public AlcUiToggleButton(PApplet r, AlcUI ui, String n, int x, int y, Boolean o, String file) {
         root = r;
         parent = ui;
-        id = parent.buttons.size();
+        id = parent.toggleButtons.size();
         name = n;
+        on = o;
         ox = x;
         oy = y;
-        a = new AlcAction(this, name);
+        a = new AlcUiAction(this, id, name);
         fileName = file;
         setup();
     }
     
-    public AlcButton(PApplet r, AlcUI ui, String n, int x, int y, String file, File path) {
+    public AlcUiToggleButton(PApplet r, AlcUI ui, String n, int x, int y, Boolean o, String file, File path) {
         root = r;
         parent = ui;
-        id = parent.buttons.size();
+        id = parent.toggleButtons.size();
         name = n;
+        on = o;
         ox = x;
         oy = y;
-        a = new AlcAction(this, name);
+        a = new AlcUiAction(this, id, name);
         fileName = file;
         filePath = path;
         setup();
     }
     
     public void setup(){
-        images = new PImage[3];
-        fileEnd = new String[3];
-        loaded = new boolean[3];
+        images = new PImage[6];
+        fileEnd = new String[6];
+        loaded = new boolean[6];
         fileEnd[0] = "";
         fileEnd[1] = "-over";
         fileEnd[2] = "-down";
+        fileEnd[3] = "-on";
+        fileEnd[4] = "-onover";
+        fileEnd[5] = "-ondown";
         inside = false;
         pressed = false;
         loadImages();
-        set(0);
+        if(on){
+            set(3);
+        } else {
+            set(0);
+        }
     }
     
     public void draw(){
-        // UP state Button
         if(current != null){
             root.image(current, ox, oy);
         }
+    }
+    
+    public boolean getState(){
+        return on;
     }
     
     public void rollOverCheck(int x, int y){
         if (x >= ox && x <= ox+width && y >= oy && y <= oy+height) {
             // CALLED ONCE WHEN ENTERING THE BUTTON
             if(!inside){
-                // OVER
-                set(1);
+                // CHECK IF AN OVER BUTTON EXISTS
+                if(on){
+                    // ONOVER
+                    set(4);
+                } else{
+                    // OVER
+                    set(1);
+                }
                 //root.println("Inside");
             }
             inside = true;
         } else {
             // CALLED ONCE WHEN EXITING THE BUTTON
             if(inside){
-                // CHECK IF AN OVER BUTTON EXISTS
-                if(current != images[0]){
+                if(on){
+                    // ON
+                    set(3);
+                } else{
                     // UP
                     set(0);
-                    //root.println("Outside");
                 }
-                
+                //root.println("Outside");
             }
             inside = false;
         }
@@ -81,8 +101,16 @@ public class AlcButton extends AlcObject{
     
     public void pressedCheck(){
         if(inside){
-            // DOWN
-            set(2);
+            
+            if(on){
+                on = false;
+                // DOWN
+                set(2);
+            } else{
+                on = true;
+                // ONDOWN
+                set(5);
+            }
             a.sendEvent(root);
             pressed = true;
         }
@@ -91,12 +119,12 @@ public class AlcButton extends AlcObject{
     public void releasedCheck(){
         if(pressed) {
             if(inside){
-                if(loaded[1]){
+                if(on){
+                    // ONOVER
+                    set(4);
+                } else{
                     // OVER
                     set(1);
-                } else {
-                    // UP
-                    set(0);
                 }
             }
             pressed = false;

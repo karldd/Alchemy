@@ -2,19 +2,21 @@ package alchemy;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.Method;
 
-public class AlcAction {
+public class AlcUiAction {
     
     String command;
-    AlcObject source;
+    AlcUiObject source;
     Method actionEventMethod;
+    int id;
     
-    public AlcAction(AlcObject s, String n) {
+    public AlcUiAction(AlcUiObject s, int i, String n) {
         source = s;
+        id = i;
         command = n;
     }
     
     public void sendEvent(Object root) {
-        ActionEvent guiEvent = new ActionEvent(source, ActionEvent.ACTION_PERFORMED, command);
+        ActionEvent guiEvent = new ActionEvent(source, id, command);
         try {
             actionEventMethod = root.getClass().getMethod("actionPerformed", new Class[] {
                 guiEvent.getClass()

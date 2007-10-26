@@ -7,34 +7,34 @@ import java.io.File;
 import java.lang.reflect.Method;
 
 
-public class AlcSlider extends AlcObject{
+public class AlcUiSlider extends AlcUiObject{
     
     boolean insideBg;
     int sx, halfWidth, bgWidth, bgHeight, halfBgWidth, clickGap, leftLimit, rightLimit, value;
     float grain;
     
-    public AlcSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file) {
+    public AlcUiSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file) {
         root = r;
         parent = ui;
-        id = parent.buttons.size();
+        id = parent.sliders.size();
         name = n;
         ox = x;
         oy = y;
         value = root.constrain(v, 0, 100);
-        a = new AlcAction(this, name);
+        a = new AlcUiAction(this, id, name);
         fileName = file;
         setup();
     }
     
-    public AlcSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file, File path) {
+    public AlcUiSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file, File path) {
         root = r;
         parent = ui;
-        id = parent.buttons.size();
+        id = parent.sliders.size();
         name = n;
         ox = x;
         oy = y;
         value = root.constrain(v, 0, 100);
-        a = new AlcAction(this, name);
+        a = new AlcUiAction(this, id, name);
         fileName = file;
         filePath = path;
         setup();

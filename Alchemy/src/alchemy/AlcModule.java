@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
-abstract class Module {
+abstract class AlcModule {
     
     PApplet root;
     String moduleName, iconName, descriptionName;
@@ -13,7 +13,7 @@ abstract class Module {
     boolean loaded = false;
     File pluginPath;
     
-    public Module(){
+    public AlcModule(){
     }
     
     
@@ -29,16 +29,21 @@ abstract class Module {
     
     
     // MODULE DATA
+    
     public String getName(){
         return moduleName;
     }
     
-    public void setId(int i){
-        id = i;
+    public void setName(String m){
+        moduleName = m;
     }
     
     public int getId(){
         return id;
+    }
+    
+    public void setId(int i){
+        id = i;
     }
     
     public boolean getLoaded(){
