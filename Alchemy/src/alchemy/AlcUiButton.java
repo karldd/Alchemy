@@ -2,43 +2,33 @@ package alchemy;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-import processing.core.PFont;
-//import seltar.unzipit.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
 
 
-public class AlcTab extends AlcObject{
+public class AlcUiButton extends AlcUiObject{
     
-    String text;
-    int tx, ty, pad, fontSize, textWidth, fullWidth, fullHeight;
-    boolean on;
-    
-    public AlcTab(PApplet r, AlcUI ui, String n, int x, int y, boolean o, String t, String file) {
+    public AlcUiButton(PApplet r, AlcUI ui, String n, int x, int y, String file) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
         name = n;
-        on = o;
         ox = x;
         oy = y;
-        a = new AlcAction(this, name);
-        text = t;
+        a = new AlcUiAction(this, id, name);
         fileName = file;
         setup();
     }
     
-    public AlcTab(PApplet r, AlcUI ui, String n, int x, int y, boolean o, String t, String file, File path) {
+    public AlcUiButton(PApplet r, AlcUI ui, String n, int x, int y, String file, File path) {
         root = r;
         parent = ui;
         id = parent.buttons.size();
         name = n;
-        on = o;
         ox = x;
         oy = y;
-        a = new AlcAction(this, name);
-        text = t;
+        a = new AlcUiAction(this, id, name);
         fileName = file;
         filePath = path;
         setup();
@@ -54,51 +44,14 @@ public class AlcTab extends AlcObject{
         inside = false;
         pressed = false;
         loadImages();
-        pad = 5;
-        fontSize = 12;
-        root.hint(root.ENABLE_NATIVE_FONTS);
-        tabFont = root.createFont("Helvetica", fontSize, true);
-        tx = ox + pad*2 + width;
-        ty = oy + pad*2 + height/2;
-        textWidth = name.length() * (int)(fontSize/1.5);
-        fullWidth = ox + width + textWidth;
-        fullHeight = oy + height + pad*2;
         set(0);
     }
     
     public void draw(){
-        
-        // Tab
-        if(on){
-            root.fill(245);
-        } else {
-            root.fill(235);
-        }
-        root.noStroke();
-        root.beginShape();
-        root.vertex(ox, fullHeight);
-        root.vertex(ox, oy);
-        root.vertex(fullWidth, oy);
-        root.vertex(fullWidth, fullHeight);
-        root.endShape(root.CLOSE);
-        
-        // Icon
+        // UP state Button
         if(current != null){
-            root.image(current, ox+pad, oy+pad);
+            root.image(current, ox, oy);
         }
-        
-        // Label
-        root.fill(0);
-        root.textFont(tabFont);
-        root.text(text, tx, ty);
-    }
-    
-    public boolean getState(){
-        return on;
-    }
-    
-    public void setState(boolean o){
-        on = o;
     }
     
     public void rollOverCheck(int x, int y){

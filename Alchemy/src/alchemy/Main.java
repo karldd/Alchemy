@@ -33,7 +33,7 @@ public class Main extends PApplet {
     }
     
     private PluginManager pluginManager;
-    Module[] modules;
+    AlcModule[] modules;
     
     int numberOfPlugins;
     int currentModule;
@@ -77,6 +77,7 @@ public class Main extends PApplet {
     public void loadTabs(){
         setModule(0);
         ui = new AlcUI(this);
+        int tabsWidth = 0;
         
         for(int i = 0; i < modules.length; i++) {
             boolean current = false;
@@ -86,7 +87,11 @@ public class Main extends PApplet {
             
             // Name, X, Y, File, ZipPath
             //ui.addButton(modules[i].getName(), 10+120*i, 10, modules[i].getIconName(), modules[i].getPluginPath());
-            ui.addTab(modules[i].getName(), 5+120*i, 5, current, modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
+            
+            ui.addTab(modules[i].getName(), tabsWidth + 5, 5, current, modules[i].getId(), modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
+            
+            tabsWidth += ui.getTabWidth(i);
+            
             
             // Tab Label
             
@@ -117,7 +122,7 @@ public class Main extends PApplet {
             
             // Number of plugins minus one for the core plugin
             numberOfPlugins = plugins.length-1;
-            modules = new Module[numberOfPlugins];
+            modules = new AlcModule[numberOfPlugins];
             
             for (int i = 0; i < plugins.length; i++) {
                 locations[i] = StandardPluginLocation.create(plugins[i]);
@@ -149,18 +154,18 @@ public class Main extends PApplet {
                 
                 PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
                 
-                println(descr.getId());
-                //println(iconParam + " " + descrParam);
+                println("ok = "+descr.getUniqueId());
+                
                 pluginManager.activatePlugin(descr.getId());
                 
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
                 
-                modules[i] =  (Module)pluginCls.newInstance();
+                modules[i] =  (AlcModule)pluginCls.newInstance();
                 
                 // GET THE FILE PATH & ICON NAME
                 // Return the path of the XML file as a string
-                String path = ext.getDeclaringPluginDescriptor().getLocation().getPath();
+                String path = descr.getLocation().getPath();
                 // Remove the XML file name after the "!" mark and make a URI
                 URI pathUrl = new URI(path.substring(0, path.lastIndexOf("!")));
                 // Convert it into an abstract file name
@@ -175,7 +180,16 @@ public class Main extends PApplet {
                 // Set the icon name and the decription name from the XML
                 String descriptionParam = ext.getParameter("description").valueAsString();
                 String iconParam = ext.getParameter("icon").valueAsString();
+                String nameParam = ext.getParameter("name").valueAsString();
                 
+                /*
+                // Get the ID
+                String name = descr.getId();
+                name = name.substring(name.lastIndexOf(".")+1);
+                println(name);
+                 */
+                
+                modules[i].setName(nameParam);
                 modules[i].setIconName(iconParam);
                 modules[i].setDescriptionName(descriptionParam);
                 modules[i].setId(i);
@@ -192,13 +206,16 @@ public class Main extends PApplet {
     }
     
     public void setModule(int i){
-        if(modules[i].getLoaded()){
-            modules[i].refocus();
-        } else{
-            modules[i].setLoaded(true);
-            modules[i].setup(this);
+        if(currentModule != i){
+            if(modules[i].getLoaded()){
+                modules[i].refocus();
+            } else{
+                modules[i].setLoaded(true);
+                modules[i].setup(this);
+            }
+            ui.changeTab(i);
+            currentModule = i;
         }
-        currentModule = i;
     }
     
     public void toogleTabs(int why){
@@ -251,16 +268,33 @@ public class Main extends PApplet {
     }
     
     public void actionPerformed(ActionEvent e) {
-        println(e.getActionCommand());
+        setModule(e.getID());
+        
+        //println(e.getSource());
+        
+        // Determine what kind UI Object called the event
+        String object = e.getSource().toString();
+        int dot = object.lastIndexOf(".");
+        int at = object.lastIndexOf("@");
+        object = object.substring(dot+1, at);
+
+        // STRING SWITCH????
+        
+       // println(object);
+        
+        /*
+        //println(e.getActionCommand());
+         
         for(int i = 0; i < modules.length; i++) {
             if(e.getActionCommand() == modules[i].getName()) {
                 if(i != currentModule){
                     setModule(i);
-                    
+         
                     break;
                 }
             }
         }
+         */
     }
     
     

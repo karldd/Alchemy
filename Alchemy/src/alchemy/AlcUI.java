@@ -25,35 +25,35 @@ public class AlcUI {
     public void draw(){
         if(visible){
             for(int i = 0; i < buttons.size(); i++) {
-                ((AlcButton)buttons.get(i)).draw();
+                ((AlcUiButton)buttons.get(i)).draw();
             }
             for(int i = 0; i < toggleButtons.size(); i++) {
-                ((AlcToggleButton)toggleButtons.get(i)).draw();
+                ((AlcUiToggleButton)toggleButtons.get(i)).draw();
             }
             for(int i = 0; i < sliders.size(); i++) {
-                ((AlcSlider)sliders.get(i)).draw();
+                ((AlcUiSlider)sliders.get(i)).draw();
             }
             
             if(tabs.size() > 0){
                 tabBg();
             }
             for(int i = 0; i < tabs.size(); i++) {
-                ((AlcTab)tabs.get(i)).draw();
+                ((AlcUiTab)tabs.get(i)).draw();
             }
         }
     }
     
     public void addButton(String name, int x, int y, String icon){
-        buttons.add(new AlcButton(root, this, name, x, y, icon));
+        buttons.add(new AlcUiButton(root, this, name, x, y, icon));
     }
     
     public void addButton(String name, int x, int y, String icon, File filePath){
-        buttons.add(new AlcButton(root, this, name, x, y, icon, filePath));
+        buttons.add(new AlcUiButton(root, this, name, x, y, icon, filePath));
     }
     
     public void removeButton(String name){
         for(int i = 0; i < buttons.size(); i++) {
-            if(((AlcButton) buttons.get(i)).name == name){
+            if(((AlcUiButton) buttons.get(i)).name == name){
                 buttons.remove(i);
                 root.redraw();
                 break;
@@ -62,16 +62,16 @@ public class AlcUI {
     }
     
     public void addToggleButton(String name, int x, int y, Boolean on, String icon){
-        toggleButtons.add(new AlcToggleButton(root, this, name, x, y, on, icon));
+        toggleButtons.add(new AlcUiToggleButton(root, this, name, x, y, on, icon));
     }
     
     public void addToggleButton(String name, int x, int y, Boolean on, String icon, File filePath){
-        toggleButtons.add(new AlcToggleButton(root, this, name, x, y, on, icon, filePath));
+        toggleButtons.add(new AlcUiToggleButton(root, this, name, x, y, on, icon, filePath));
     }
     
     public void removeToogleButton(String name){
         for(int i = 0; i < toggleButtons.size(); i++) {
-            if(((AlcToggleButton) toggleButtons.get(i)).name == name){
+            if(((AlcUiToggleButton) toggleButtons.get(i)).name == name){
                 toggleButtons.remove(i);
                 root.redraw();
                 break;
@@ -84,8 +84,8 @@ public class AlcUI {
         boolean called = false;
         
         for(int i = 0; i < toggleButtons.size(); i++) {
-            if(((AlcToggleButton) toggleButtons.get(i)).name == name){
-                state = ((AlcToggleButton)toggleButtons.get(i)).getState();
+            if(((AlcUiToggleButton) toggleButtons.get(i)).name == name){
+                state = ((AlcUiToggleButton)toggleButtons.get(i)).getState();
                 called = true;
                 break;
             }
@@ -95,20 +95,20 @@ public class AlcUI {
     }
     
     public void addSlider(String name, int x, int y, int value, String icon){
-        sliders.add(new AlcSlider(root, this, name, x, y, value, icon));
+        sliders.add(new AlcUiSlider(root, this, name, x, y, value, icon));
     }
     
     public void addSlider(String name, int x, int y, int value, String icon, File filePath){
-        sliders.add(new AlcSlider(root, this, name, x, y, value, icon, filePath));
+        sliders.add(new AlcUiSlider(root, this, name, x, y, value, icon, filePath));
     }
     
     public int getSliderValue(String name){
         int value = 0;
         boolean called = false;
         for(int i = 0; i < sliders.size(); i++) {
-            if(((AlcSlider) sliders.get(i)).name == name){
+            if(((AlcUiSlider) sliders.get(i)).name == name){
                 called = true;
-                value = ((AlcSlider) sliders.get(i)).value;
+                value = ((AlcUiSlider) sliders.get(i)).value;
                 break;
             }
         }
@@ -118,7 +118,7 @@ public class AlcUI {
     
     public void removeSlider(String name){
         for(int i = 0; i < sliders.size(); i++) {
-            if(((AlcSlider) sliders.get(i)).name == name){
+            if(((AlcUiSlider) sliders.get(i)).name == name){
                 sliders.remove(i);
                 root.redraw();
                 break;
@@ -126,18 +126,33 @@ public class AlcUI {
         }
     }
     
-    public void addTab(String name, int x, int y, boolean on, String text, String icon){
-        tabs.add(new AlcTab(root, this, name, x, y, on, text, icon));
+    public void addTab(String name, int x, int y, boolean on, int id, String text, String icon){
+        tabs.add(new AlcUiTab(root, this, name, x, y, on, id, text, icon));
     }
     
-    public void addTab(String name, int x, int y, boolean on, String text, String icon, File filePath){
-        tabs.add(new AlcTab(root, this, name, x, y, on, text, icon, filePath));
+    public void addTab(String name, int x, int y, boolean on, int id, String text, String icon, File filePath){
+        tabs.add(new AlcUiTab(root, this, name, x, y, on, id, text, icon, filePath));
+    }
+    
+    public void changeTab(int t){
+        for(int i = 0; i < tabs.size(); i++) {
+            if(i == t){
+                ((AlcUiTab)tabs.get(i)).setState(true);
+            } else {
+                ((AlcUiTab)tabs.get(i)).setState(false);
+            }
+        }
+        root.redraw();
+    }
+    
+    public int getTabWidth(int i){
+        return ((AlcUiTab)tabs.get(i)).getWidth();
     }
     
     public void tabBg(){
         // Tab Bg
         root.noStroke();
-        root.fill(225);
+        root.fill(215);
         root.rect(0, 0, root.width, 39);
         root.fill(245);
         root.rect(0, 39, root.width, 30);
@@ -146,61 +161,61 @@ public class AlcUI {
     
     public void rollOverCheckObjects(int x, int y){
         for(int i = 0; i < buttons.size(); i++) {
-            ((AlcButton)buttons.get(i)).rollOverCheck(x, y);
+            ((AlcUiButton)buttons.get(i)).rollOverCheck(x, y);
         }
         for(int i = 0; i < toggleButtons.size(); i++) {
-            ((AlcToggleButton)toggleButtons.get(i)).rollOverCheck(x, y);
+            ((AlcUiToggleButton)toggleButtons.get(i)).rollOverCheck(x, y);
         }
         for(int i = 0; i < sliders.size(); i++) {
-            ((AlcSlider)sliders.get(i)).rollOverCheck(x, y);
+            ((AlcUiSlider)sliders.get(i)).rollOverCheck(x, y);
         }
         for(int i = 0; i < tabs.size(); i++) {
-            ((AlcTab)tabs.get(i)).rollOverCheck(x, y);
+            ((AlcUiTab)tabs.get(i)).rollOverCheck(x, y);
         }
     }
     
     public void pressedCheckObjects(int x, int y){
         for(int i = 0; i < buttons.size(); i++) {
-            ((AlcButton)buttons.get(i)).pressedCheck();
+            ((AlcUiButton)buttons.get(i)).pressedCheck();
         }
         for(int i = 0; i < toggleButtons.size(); i++) {
-            ((AlcToggleButton)toggleButtons.get(i)).pressedCheck();
+            ((AlcUiToggleButton)toggleButtons.get(i)).pressedCheck();
         }
         for(int i = 0; i < sliders.size(); i++) {
-            ((AlcSlider)sliders.get(i)).pressedCheck(x, y);
+            ((AlcUiSlider)sliders.get(i)).pressedCheck(x, y);
         }
         for(int i = 0; i < tabs.size(); i++) {
-            ((AlcTab)tabs.get(i)).pressedCheck();
+            ((AlcUiTab)tabs.get(i)).pressedCheck();
         }
     }
     
     public void draggedCheckObjects(int x, int y){
         for(int i = 0; i < buttons.size(); i++) {
-            ((AlcButton)buttons.get(i)).rollOverCheck(x, y);
+            ((AlcUiButton)buttons.get(i)).rollOverCheck(x, y);
         }
         for(int i = 0; i < toggleButtons.size(); i++) {
-            ((AlcToggleButton)toggleButtons.get(i)).rollOverCheck(x, y);
+            ((AlcUiToggleButton)toggleButtons.get(i)).rollOverCheck(x, y);
         }
         for(int i = 0; i < sliders.size(); i++) {
-            ((AlcSlider)sliders.get(i)).draggedCheck(x, y);
+            ((AlcUiSlider)sliders.get(i)).draggedCheck(x, y);
         }
         for(int i = 0; i < tabs.size(); i++) {
-            ((AlcTab)tabs.get(i)).rollOverCheck(x, y);
+            ((AlcUiTab)tabs.get(i)).rollOverCheck(x, y);
         }
     }
     
     public void releasedCheckObjects(){
         for(int i = 0; i < buttons.size(); i++) {
-            ((AlcButton)buttons.get(i)).releasedCheck();
+            ((AlcUiButton)buttons.get(i)).releasedCheck();
         }
         for(int i = 0; i < toggleButtons.size(); i++) {
-            ((AlcToggleButton)toggleButtons.get(i)).releasedCheck();
+            ((AlcUiToggleButton)toggleButtons.get(i)).releasedCheck();
         }
         for(int i = 0; i < sliders.size(); i++) {
-            ((AlcSlider)sliders.get(i)).releasedCheck();
+            ((AlcUiSlider)sliders.get(i)).releasedCheck();
         }
         for(int i = 0; i < tabs.size(); i++) {
-            ((AlcTab)tabs.get(i)).releasedCheck();
+            ((AlcUiTab)tabs.get(i)).releasedCheck();
         }
     }
     
