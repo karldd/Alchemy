@@ -3,6 +3,7 @@ package alchemy;
 import processing.core.PApplet;
 
 import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 abstract class AlcModule {
@@ -81,20 +82,39 @@ abstract class AlcModule {
     
     
     // MOUSE EVENTS
-    public void mousePressed(int x, int y) {
+    // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/MouseEvent.html
+    public void mousePressed(MouseEvent e) {
+        //int x = e.getX();
+        //int y = e.getY();
+        //Point p = e.getPoint();
     }
     
-    public void mouseClicked(int x, int y) {
+    public void mouseClicked(MouseEvent e) {
     }
     
-    public void mouseMoved(int x, int y) {
+    public void mouseMoved(MouseEvent e) {
     }
     
-    public void mouseDragged(int x, int y) {
+    public void mouseDragged(MouseEvent e) {
     }
     
-    public void mouseReleased(int x, int y) {
+    public void mouseReleased(MouseEvent e) {
     }
     
+    
+    
+    // KEY EVENTS
+    // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/KeyEvent.html
+    public void keyPressed(KeyEvent e) {
+        //char keyChar = e.getKeyChar();
+        //int keyCode = e.getKeyCode();
+        //String keyText = e.getKeyText(keyCode);
+    }
+    
+    public void keyReleased(KeyEvent e) {
+    }
+    
+    public void keyTyped(KeyEvent e) {
+    }
     
 }

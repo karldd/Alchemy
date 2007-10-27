@@ -2,8 +2,8 @@
 <!-- You may freely edit this file. See commented blocks below for -->
 <!-- some examples of how to customize the build. -->
 <!-- (If you delete it and reopen the project it will be recreated.) -->
-<project name="Alchemy_2" default="default" basedir=".">
-    <description>Builds, tests, and runs the project Alchemy_2.</description>
+<project name="Alchemy" default="default" basedir=".">
+    <description>Builds, tests, and runs the project Alchemy.</description>
     <import file="nbproject/build-impl.xml"/>
     <!--
 
@@ -54,7 +54,7 @@
 
     An example of overriding the target for project execution could look like this:
 
-        <target name="run" depends="Alchemy_2-impl.jar">
+        <target name="run" depends="Alchemy-impl.jar">
             <exec dir="bin" executable="launcher.exe">
                 <arg file="${dist.jar}"/>
             </exec>
@@ -71,8 +71,8 @@
         
         <!-- Move the compiled Plugin classes -->
         <move file="${build.classes.dir}/alchemy/Core.class" todir="${basedir}/plugins/core/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/Test.class" todir="${basedir}/plugins/test/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/Test2.class" todir="${basedir}/plugins/test2/alchemy"/>
+        <move file="${build.classes.dir}/alchemy/Symmskribbl.class" todir="${basedir}/plugins/symmskribbl/alchemy"/>
+        <move file="${build.classes.dir}/alchemy/Sketch.class" todir="${basedir}/plugins/sketch/alchemy"/>
         
         <!-- Copy the Data folder to the Dist directory -->
         <copy todir="${dist.dir}/data">

@@ -5,13 +5,13 @@ import processing.core.PApplet;
 import org.java.plugin.Plugin;
 import java.util.Vector;
 
-public class Test extends AlcModule {
+public class Sketch extends AlcModule {
     
     Vector<Object> lines;
     int currentLine;
     boolean firstPress = false;
     
-    public Test(){
+    public Sketch(){
     }
     
     public void setup(PApplet r){

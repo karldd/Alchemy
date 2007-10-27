@@ -5,6 +5,7 @@ import processing.core.*;
 import java.util.Vector;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -48,12 +49,14 @@ public class AlcMain extends PApplet {
         background(255);
         
         registerMouseEvent(this);
+        registerKeyEvent(this);
         
         loadPlugins();
         
         if(numberOfPlugins > 0){
             addPlugins();
-            currentModule = 1;
+            // Set the start module
+            currentModule = 0;
             loadTabs();
         }
         
@@ -225,7 +228,7 @@ public class AlcMain extends PApplet {
         }
     }
     
-    public void toogleTabs(int why){
+    public void toggleTabs(int why){
         if(why < 20){
             if(!ui.getVisible()){
                 ui.setVisible(true);
@@ -246,30 +249,38 @@ public class AlcMain extends PApplet {
     }
     
     public void mouseEvent(MouseEvent event) {
-        int x = event.getX();
-        int y = event.getY();
         switch (event.getID()) {
             case MouseEvent.MOUSE_PRESSED:
-                //println("Mouse Pressed - X:" + x + " Y: " + y);
-                modules[currentModule].mousePressed(x, y);
+                modules[currentModule].mousePressed(event);
                 break;
             case MouseEvent.MOUSE_CLICKED:
-                //println("Mouse Clicked - X:" + x + " Y: " + y);
-                modules[currentModule].mouseClicked(x, y);
+                modules[currentModule].mouseClicked(event);
                 break;
             case MouseEvent.MOUSE_MOVED:
-                //println("Mouse Moved - X:" + x + " Y: " + y);
-                toogleTabs(y);
-                modules[currentModule].mouseMoved(x, y);
+                int y = event.getY();
+                toggleTabs(y);
+                modules[currentModule].mouseMoved(event);
                 break;
             case MouseEvent.MOUSE_DRAGGED:
-                //println("Mouse Dragged - X:" + x + " Y: " + y);
-                modules[currentModule].mouseDragged(x, y);
+                modules[currentModule].mouseDragged(event);
                 
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                //println("Mouse Released - X:" + x + " Y: " + y);
-                modules[currentModule].mouseReleased(x, y);
+                modules[currentModule].mouseReleased(event);
+                break;
+        }
+    }
+    
+    public void keyEvent(KeyEvent event) {
+        switch(event.getID()){
+            case KeyEvent.KEY_PRESSED:
+                modules[currentModule].keyPressed(event);
+                break;
+            case KeyEvent.KEY_RELEASED:
+                modules[currentModule].keyReleased(event);
+                break;
+            case KeyEvent.KEY_TYPED:
+                modules[currentModule].keyTyped(event);
                 break;
         }
     }
