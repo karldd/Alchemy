@@ -23,13 +23,13 @@ import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
 import org.java.plugin.PluginClassLoader;
 
-public class Main extends PApplet {
+public class AlcMain extends PApplet {
     
-    public Main() {
+    public AlcMain() {
     }
     
     public static void main(String[] args) {
-        PApplet.main( new String[]{"alchemy.Main"} );
+        PApplet.main( new String[]{"alchemy.AlcMain"} );
     }
     
     private PluginManager pluginManager;
@@ -38,9 +38,10 @@ public class Main extends PApplet {
     int numberOfPlugins;
     int currentModule;
     //PFont font;
-    AlcUI ui;
+    AlcUI ui, ui2;
     
     boolean saveOneFrame = false;
+    boolean firstLoad = true;
     
     public void setup(){
         size(800, 600);
@@ -52,7 +53,7 @@ public class Main extends PApplet {
         
         if(numberOfPlugins > 0){
             addPlugins();
-            currentModule = 0;
+            currentModule = 1;
             loadTabs();
         }
         
@@ -75,8 +76,9 @@ public class Main extends PApplet {
     }
     
     public void loadTabs(){
-        setModule(0);
+        
         ui = new AlcUI(this);
+        //ui2 = new AlcUI(this);
         int tabsWidth = 0;
         
         for(int i = 0; i < modules.length; i++) {
@@ -85,20 +87,21 @@ public class Main extends PApplet {
                 current = true;
             }
             
-            // Name, X, Y, File, ZipPath
-            //ui.addButton(modules[i].getName(), 10+120*i, 10, modules[i].getIconName(), modules[i].getPluginPath());
-            
+            // Add Tabs
             ui.addTab(modules[i].getName(), tabsWidth + 5, 5, current, modules[i].getId(), modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
             
             tabsWidth += ui.getTabWidth(i);
             
-            
-            // Tab Label
-            
-            
         }
+        
+        setModule(currentModule);
+        /*
+        ui2.setVisible(true);
+        ui2.addToggleButton("Test", 200, 210, true, "b.gif");
+         
         //println(modules[1].getPluginPath().getPath());
-        //ui.addSlider("ok", 100, 400, 50, "slider.gif", modules[1].getPluginPath());
+        ui2.addSlider("ok", 100, 400, 50, "slider.gif");
+         */
     }
     
     private void loadPlugins() {
@@ -154,8 +157,6 @@ public class Main extends PApplet {
                 
                 PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
                 
-                println("ok = "+descr.getUniqueId());
-                
                 pluginManager.activatePlugin(descr.getId());
                 
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
@@ -167,9 +168,9 @@ public class Main extends PApplet {
                 // Return the path of the XML file as a string
                 String path = descr.getLocation().getPath();
                 // Remove the XML file name after the "!" mark and make a URI
-                URI pathUrl = new URI(path.substring(0, path.lastIndexOf("!")));
+                URI pathUri = new URI(path.substring(0, path.lastIndexOf("!")));
                 // Convert it into an abstract file name
-                File pathFile = new File(pathUrl);
+                File pathFile = new File(pathUri);
                 
                 if(pathFile.exists()){
                     
@@ -206,15 +207,21 @@ public class Main extends PApplet {
     }
     
     public void setModule(int i){
-        if(currentModule != i){
-            if(modules[i].getLoaded()){
-                modules[i].refocus();
-            } else{
-                modules[i].setLoaded(true);
-                modules[i].setup(this);
+        if(firstLoad){
+            modules[i].setLoaded(true);
+            modules[i].setup(this);
+            firstLoad = false;
+        } else{
+            if(currentModule != i){
+                if(modules[i].getLoaded()){
+                    modules[i].refocus();
+                } else{
+                    modules[i].setLoaded(true);
+                    modules[i].setup(this);
+                }
+                ui.changeTab(i);
+                currentModule = i;
             }
-            ui.changeTab(i);
-            currentModule = i;
         }
     }
     
@@ -268,7 +275,6 @@ public class Main extends PApplet {
     }
     
     public void actionPerformed(ActionEvent e) {
-        setModule(e.getID());
         
         //println(e.getSource());
         
@@ -277,24 +283,27 @@ public class Main extends PApplet {
         int dot = object.lastIndexOf(".");
         int at = object.lastIndexOf("@");
         object = object.substring(dot+1, at);
-
-        // STRING SWITCH????
+        //println(object);
         
-       // println(object);
-        
-        /*
-        //println(e.getActionCommand());
-         
-        for(int i = 0; i < modules.length; i++) {
-            if(e.getActionCommand() == modules[i].getName()) {
-                if(i != currentModule){
-                    setModule(i);
-         
-                    break;
-                }
-            }
+        // TAB
+        if(object.equals("AlcUiTab")){
+            //println("Tab");
+            setModule(e.getID());
+            
+            // BUTTON
+        } else if(object.equals("AlcUiButton")){
+            //println("Button");
+            
+            // TOGGLE BUTTON
+        } else if(object.equals("AlcUiToggleButton")){
+            //println("Toggle Button");
+            
+            
+            // SLIDER
+        } else if(object.equals("AlcUiSlider")){
+            //println("Slider");
         }
-         */
+        
     }
     
     

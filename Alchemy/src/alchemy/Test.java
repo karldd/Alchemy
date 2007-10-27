@@ -13,7 +13,7 @@ public class Test extends AlcModule {
     
     public Test(){
     }
-     
+    
     public void setup(PApplet r){
         root = r;
         root.println("Module " + id + " Loaded");
@@ -29,10 +29,11 @@ public class Test extends AlcModule {
     }
     
     public void draw(){
-        
+        root.noFill();
+        root.stroke(0);
         // Draw the lines
         for(int j = 0; j < lines.size(); j++) {
-            ((Vertex)lines.get(j)).draw();
+            ((AlcVertex)lines.get(j)).draw();
         }
         
     }
@@ -44,7 +45,7 @@ public class Test extends AlcModule {
     
     public void mousePressed(int x, int y) {
         
-        lines.add(new Vertex(root, x, y));
+        lines.add(new AlcVertex(root, x, y));
         currentLine = lines.size() - 1;
         firstPress = true;
     }
@@ -57,13 +58,13 @@ public class Test extends AlcModule {
     
     public void mouseDragged(int x, int y) {
         if(firstPress){
-            ((Vertex)lines.get(currentLine)).drag(x, y);
+            ((AlcVertex)lines.get(currentLine)).drag(x, y);
         }
     }
     
     public void mouseReleased(int x, int y) {
         if(firstPress){
-            ((Vertex)lines.get(currentLine)).release(x, y);
+            ((AlcVertex)lines.get(currentLine)).release(x, y);
         }
     }
     

@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import java.awt.Point;
 import java.util.Vector;
 
-public class Vertex{
+public class AlcVertex{
     
     // Minimum space between points
     int space = 5;
@@ -17,7 +17,7 @@ public class Vertex{
     boolean endLine = false;
     Point end = new Point();
     
-    public Vertex(PApplet r, int x, int y){
+    public AlcVertex(PApplet r, int x, int y){
         root = r;
         line = new Vector<Object>();
         line.ensureCapacity(100);
@@ -26,9 +26,7 @@ public class Vertex{
     }
     
     public void draw(){
-        root.noFill();
-        root.stroke(0);
-        
+
         root.beginShape();
         
         Point pt1 = (Point)line.get(0);
@@ -83,6 +81,6 @@ public class Vertex{
     }
     
     public void remove(){
-        root.unregisterDraw(this);
+        //root.unregisterDraw(this);
     }
 }
