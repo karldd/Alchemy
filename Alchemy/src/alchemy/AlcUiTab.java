@@ -61,7 +61,6 @@ public class AlcUiTab extends AlcUiObject{
         tabFont = root.createFont("Helvetica", fontSize, true);
         root.textFont(tabFont);
         textWidth = root.textWidth(name);
-        root.println(textWidth);
         tx = ox + pad*2 + width;
         ty = oy + pad*2 + height/2;
         ix = ox + pad;

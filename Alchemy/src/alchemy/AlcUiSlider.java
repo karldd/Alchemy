@@ -166,6 +166,7 @@ public class AlcUiSlider extends AlcUiObject{
                     // UP
                     set(0);
                 }
+                a.sendEvent(root);
             }
             pressed = false;
         }
