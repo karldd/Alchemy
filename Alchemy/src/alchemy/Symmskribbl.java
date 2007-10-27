@@ -27,16 +27,14 @@ public class Symmskribbl extends AlcModule {
         mirrorLines = new Vector<Object>();
         mirrorLines.ensureCapacity(100);
         
-        root.noFill();
-        root.stroke(0);
-        root.smooth();
-        //root.cursor(root.CROSS);
+        root.cursor(root.CROSS);
         root.noLoop();
     }
     
     public void draw(){
         root.noFill();
         root.stroke(0);
+        root.smooth();
         // Draw the lines
         for(int i = 0; i < lines.size(); i++) {
             ((AlcVertex)lines.get(i)).draw();
