@@ -30,3 +30,43 @@ public class AlcUiAction {
     }
     
 }
+
+/*
+ Adding Your Own Library Events
+
+So that your library can notify the host applet that something 
+interesting has happened, this is how you implement an event 
+method in the style of serialEvent, serverEvent, etc.
+
+
+public class FancyLibrary {
+  Method fancyEventMethod;
+
+  public YourLibrary(PApplet parent) {
+    // your library init code here...
+
+    // check to see if the host applet implements
+    // public void fancyEvent(FancyLibrary f)
+    try {
+      fancyEventMethod =
+        parent.getClass().getMethod("fancyEvent",
+                                    new Class[] { FancyLibrary.class });
+    } catch (Exception e) {
+      // no such method, or an error.. which is fine, just ignore
+    }
+  }
+
+  // then later, to fire that event
+  public void makeEvent() {
+    if (fancyEventMethod != null) {
+    try {
+      fancyEventMethod.invoke(parent, new Object[] { this });
+    } catch (Exception e) {
+      System.err.println("Disabling fancyEvent() for " + name +
+                         " because of an error.");
+      e.printStackTrace();
+      fancyEventMethod = null;
+    }
+  }
+}
+ */

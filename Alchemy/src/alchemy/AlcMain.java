@@ -45,13 +45,18 @@ public class AlcMain extends PApplet {
     boolean firstLoad = true;
     
     public void setup(){
-        size(800, 600);
-        background(255);
+        //size(640, 480);
+        size(screen.width, screen.height);
+        
+        //frame.setResizable(true);
+        //frame.setTitle("Alchemy");
         
         registerMouseEvent(this);
         registerKeyEvent(this);
         
         loadPlugins();
+        
+        background(255);
         
         if(numberOfPlugins > 0){
             addPlugins();
@@ -68,7 +73,9 @@ public class AlcMain extends PApplet {
         if(saveOneFrame) {
             beginRecord(PDF, "frame-####.pdf");
         }
+        
         background(255);
+        //rect(width-40, height-40, 40, 40);
         
         modules[currentModule].draw();
         
@@ -263,10 +270,11 @@ public class AlcMain extends PApplet {
                 break;
             case MouseEvent.MOUSE_DRAGGED:
                 modules[currentModule].mouseDragged(event);
-                
+                //resizeWindow();
                 break;
             case MouseEvent.MOUSE_RELEASED:
                 modules[currentModule].mouseReleased(event);
+                //resizing = false;
                 break;
         }
     }
@@ -316,6 +324,5 @@ public class AlcMain extends PApplet {
         }
         
     }
-    
     
 }
