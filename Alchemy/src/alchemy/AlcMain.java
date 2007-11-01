@@ -6,6 +6,8 @@ import java.util.Vector;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentAdapter;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -39,16 +41,28 @@ public class AlcMain extends PApplet {
     int numberOfPlugins;
     int currentModule;
     //PFont font;
-    AlcUI ui, ui2;
+    AlcUi ui, ui2;
     
     boolean saveOneFrame = false;
     boolean firstLoad = true;
     
     public void setup(){
-        //size(640, 480);
-        size(screen.width, screen.height);
+        size(640, 480);
+        //size(screen.width, screen.height);
         
-        //frame.setResizable(true);
+        /* RESIZEABLE FRAME
+        frame.setResizable(true);
+        frame.addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent e) {
+                if(e.getSource()==frame) {
+                    println("Redraw");
+                    redraw();
+                }
+            }
+        }
+        );
+         */
+        
         //frame.setTitle("Alchemy");
         
         registerMouseEvent(this);
@@ -64,6 +78,8 @@ public class AlcMain extends PApplet {
             currentModule = 0;
             loadTabs();
         }
+        
+        
         
         noLoop();
         
@@ -87,8 +103,8 @@ public class AlcMain extends PApplet {
     
     public void loadTabs(){
         
-        ui = new AlcUI(this);
-        //ui2 = new AlcUI(this);
+        ui = new AlcUi(this);
+        //ui2 = new AlcUi(this);
         int tabsWidth = 0;
         
         for(int i = 0; i < modules.length; i++) {
@@ -230,14 +246,24 @@ public class AlcMain extends PApplet {
                     modules[i].setup(this);
                 }
                 ui.changeTab(i);
+                
+                // Toggle visibility of Module UI
+                for(int j = 0; j < modules.length; j++) {
+                    if (j == i){
+                        modules[j].setUiVisible(true);
+                    }else {
+                        modules[j].setUiVisible(false);
+                    }
+                }
                 currentModule = i;
             }
         }
     }
     
-    public void toggleTabs(int why){
+    public void toggleToolbar(int why){
         if(why < 20){
             if(!ui.getVisible()){
+                cursor(ARROW);
                 ui.setVisible(true);
             }
         } else if(why > 100){
@@ -265,7 +291,7 @@ public class AlcMain extends PApplet {
                 break;
             case MouseEvent.MOUSE_MOVED:
                 int y = event.getY();
-                toggleTabs(y);
+                toggleToolbar(y);
                 modules[currentModule].mouseMoved(event);
                 break;
             case MouseEvent.MOUSE_DRAGGED:
@@ -295,7 +321,7 @@ public class AlcMain extends PApplet {
     
     public void actionPerformed(ActionEvent e) {
         
-        //println(e.getSource());
+        println("Root " + e.getSource());
         
         // Determine what kind UI Object called the event
         String object = e.getSource().toString();

@@ -9,9 +9,10 @@ import java.lang.reflect.Method;
 
 public class AlcUiButton extends AlcUiObject{
     
-    public AlcUiButton(PApplet r, AlcUI ui, String n, int x, int y, String file) {
+    public AlcUiButton(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, String file) {
         root = r;
         parent = ui;
+        caller = c;
         id = parent.buttons.size();
         name = n;
         ox = x;
@@ -21,9 +22,10 @@ public class AlcUiButton extends AlcUiObject{
         setup();
     }
     
-    public AlcUiButton(PApplet r, AlcUI ui, String n, int x, int y, String file, File path) {
+    public AlcUiButton(PApplet r, AlcUi ui,  AlcModule c, String n, int x, int y, String file, File path) {
         root = r;
         parent = ui;
+        caller = c;
         id = parent.buttons.size();
         name = n;
         ox = x;
@@ -82,7 +84,7 @@ public class AlcUiButton extends AlcUiObject{
         if(inside){
             // DOWN
             set(2);
-            a.sendEvent(root);
+            a.sendEvent(caller);
             pressed = true;
         }
     }

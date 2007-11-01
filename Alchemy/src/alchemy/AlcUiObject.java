@@ -10,7 +10,8 @@ abstract class AlcUiObject {
     int ox, oy, width, height, id;
     
     PApplet root;
-    AlcUI parent;
+    AlcUi parent;
+    AlcModule caller;
     AlcUiAction a;
     String name, fileName, actionCommand;
     File filePath;

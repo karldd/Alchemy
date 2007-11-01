@@ -5,6 +5,7 @@ import processing.core.PApplet;
 import org.java.plugin.Plugin;
 import java.util.Vector;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
 public class Symmskribbl extends AlcModule {
@@ -26,6 +27,10 @@ public class Symmskribbl extends AlcModule {
         
         mirrorLines = new Vector<Object>();
         mirrorLines.ensureCapacity(100);
+        
+        ui = new AlcUi(root);
+        ui.setVisible(true);
+        ui.addButton(this, "Test", 200, 210, "b.gif", pluginPath);
         
         root.cursor(root.CROSS);
         root.noLoop();
@@ -95,7 +100,7 @@ public class Symmskribbl extends AlcModule {
             ((AlcVertex)lines.get(currentLine)).release(x, y);
             ((AlcVertex)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
         }
-         cleared = false;
+        cleared = false;
     }
     
     // KEY EVENTS
@@ -109,6 +114,10 @@ public class Symmskribbl extends AlcModule {
                 clear();
                 break;
         }
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        root.println("Sym Skribble" + e.getSource());
     }
     
 }

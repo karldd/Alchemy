@@ -13,6 +13,7 @@ abstract class AlcModule {
     int id;
     boolean loaded = false;
     File pluginPath;
+    AlcUi ui;
     
     public AlcModule(){
     }
@@ -77,6 +78,13 @@ abstract class AlcModule {
     
     public void setDescriptionName(String n){
         descriptionName = n;
+    }
+    
+    // OBJECTS
+    public void setUiVisible(boolean b){
+        if(ui != null){
+            ui.setVisible(b);
+        }
     }
     
     

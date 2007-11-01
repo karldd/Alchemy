@@ -15,13 +15,14 @@ public class AlcUiAction {
         command = n;
     }
     
-    public void sendEvent(Object root) {
+    public void sendEvent(Object caller) {
         ActionEvent guiEvent = new ActionEvent(source, id, command);
+        
         try {
-            actionEventMethod = root.getClass().getMethod("actionPerformed", new Class[] {
+            actionEventMethod = caller.getClass().getMethod("actionPerformed", new Class[] {
                 guiEvent.getClass()
             });
-            actionEventMethod.invoke(root, new Object[] {
+            actionEventMethod.invoke(caller, new Object[] {
                 guiEvent
             });
         } catch(Exception e) {

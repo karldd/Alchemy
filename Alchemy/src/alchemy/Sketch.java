@@ -5,6 +5,7 @@ import processing.core.PApplet;
 import org.java.plugin.Plugin;
 import java.util.Vector;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 
 public class Sketch extends AlcModule {
     
@@ -21,7 +22,11 @@ public class Sketch extends AlcModule {
         
         lines = new Vector<Object>();
         lines.ensureCapacity(100);
-
+        
+        ui = new AlcUi(root);
+        ui.setVisible(true);
+        ui.addButton(this, "Test", 200, 210, "b.gif", pluginPath);
+        
         root.cursor(root.CROSS);
         root.noLoop();
     }
@@ -63,12 +68,16 @@ public class Sketch extends AlcModule {
     }
     
     public void mouseReleased(MouseEvent e) {
-                int x = e.getX();
+        int x = e.getX();
         int y = e.getY();
         
         if(firstPress){
             ((AlcVertex)lines.get(currentLine)).release(x, y);
         }
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        root.println("Sketch " + e.getSource());
     }
     
 }

@@ -11,9 +11,10 @@ public class AlcUiToggleButton extends AlcUiObject{
     
     boolean on;
     
-    public AlcUiToggleButton(PApplet r, AlcUI ui, String n, int x, int y, Boolean o, String file) {
+    public AlcUiToggleButton(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, Boolean o, String file) {
         root = r;
         parent = ui;
+        caller = c;
         id = parent.toggleButtons.size();
         name = n;
         on = o;
@@ -24,9 +25,10 @@ public class AlcUiToggleButton extends AlcUiObject{
         setup();
     }
     
-    public AlcUiToggleButton(PApplet r, AlcUI ui, String n, int x, int y, Boolean o, String file, File path) {
+    public AlcUiToggleButton(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, Boolean o, String file, File path) {
         root = r;
         parent = ui;
+        caller = c;
         id = parent.toggleButtons.size();
         name = n;
         on = o;
@@ -111,7 +113,7 @@ public class AlcUiToggleButton extends AlcUiObject{
                 // ONDOWN
                 set(5);
             }
-            a.sendEvent(root);
+            a.sendEvent(caller);
             pressed = true;
         }
     }
