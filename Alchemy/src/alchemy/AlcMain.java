@@ -40,7 +40,6 @@ public class AlcMain extends PApplet {
     
     int numberOfPlugins;
     int currentModule;
-    //PFont font;
     AlcUi ui, ui2;
     
     boolean saveOneFrame = false;
