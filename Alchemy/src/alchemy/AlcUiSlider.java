@@ -13,9 +13,10 @@ public class AlcUiSlider extends AlcUiObject{
     int sx, halfWidth, bgWidth, bgHeight, halfBgWidth, clickGap, leftLimit, rightLimit, value;
     float grain;
     
-    public AlcUiSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file) {
+    public AlcUiSlider(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, int v, String file) {
         root = r;
         parent = ui;
+        caller = c;
         id = parent.sliders.size();
         name = n;
         ox = x;
@@ -26,9 +27,10 @@ public class AlcUiSlider extends AlcUiObject{
         setup();
     }
     
-    public AlcUiSlider(PApplet r, AlcUI ui, String n, int x, int y, int v, String file, File path) {
+    public AlcUiSlider(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, int v, String file, File path) {
         root = r;
         parent = ui;
+        caller = c;
         id = parent.sliders.size();
         name = n;
         ox = x;
@@ -120,7 +122,7 @@ public class AlcUiSlider extends AlcUiObject{
             if(inside){
                 // DOWN
                 set(2);
-                //a.sendEvent(root);
+                //a.sendEvent(caller);
                 
                 clickGap = x - sx;
                 
@@ -166,7 +168,7 @@ public class AlcUiSlider extends AlcUiObject{
                     // UP
                     set(0);
                 }
-                a.sendEvent(root);
+                a.sendEvent(caller);
             }
             pressed = false;
         }

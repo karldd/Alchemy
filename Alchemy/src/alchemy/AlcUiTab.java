@@ -16,7 +16,7 @@ public class AlcUiTab extends AlcUiObject{
     float textWidth;
     boolean on;
     
-    public AlcUiTab(PApplet r, AlcUI ui, String n, int x, int y, boolean o, int i, String txt, String file) {
+    public AlcUiTab(PApplet r, AlcUi ui, String n, int x, int y, boolean o, int i, String txt, String file) {
         root = r;
         parent = ui;
         id = i;
@@ -30,7 +30,7 @@ public class AlcUiTab extends AlcUiObject{
         setup();
     }
     
-    public AlcUiTab(PApplet r, AlcUI ui, String n, int x, int y, boolean o, int i, String txt, String file, File path) {
+    public AlcUiTab(PApplet r, AlcUi ui, String n, int x, int y, boolean o, int i, String txt, String file, File path) {
         root = r;
         parent = ui;
         name = n;
