@@ -44,12 +44,13 @@ public class AlcMain extends PApplet {
     
     boolean saveOneFrame = false;
     boolean firstLoad = true;
+    boolean inToolBar = false;
     
     public void setup(){
         size(640, 480);
         //size(screen.width, screen.height);
         
-        /* RESIZEABLE FRAME
+        /* RESIZEABLE FRAME - BUGGY
         frame.setResizable(true);
         frame.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
@@ -77,8 +78,6 @@ public class AlcMain extends PApplet {
             currentModule = 0;
             loadTabs();
         }
-        
-        
         
         noLoop();
         
@@ -235,16 +234,19 @@ public class AlcMain extends PApplet {
         if(firstLoad){
             modules[i].setLoaded(true);
             modules[i].setup(this);
+            modules[i].resetCursor();
             firstLoad = false;
         } else{
             if(currentModule != i){
                 if(modules[i].getLoaded()){
                     modules[i].refocus();
+                    modules[i].resetSmooth();
+                    modules[i].resetLoop();
                 } else{
                     modules[i].setLoaded(true);
                     modules[i].setup(this);
                 }
-                ui.changeTab(i);
+                ui.changeTab(i, modules[i].hasUi());
                 
                 // Toggle visibility of Module UI
                 for(int j = 0; j < modules.length; j++) {
@@ -260,14 +262,19 @@ public class AlcMain extends PApplet {
     }
     
     public void toggleToolbar(int why){
-        if(why < 20){
+        if(why < 5){
             if(!ui.getVisible()){
                 cursor(ARROW);
                 ui.setVisible(true);
+                modules[currentModule].setUiVisible(true);
+                inToolBar = true;
             }
-        } else if(why > 100){
+        } else if(why > 85){
             if(ui.getVisible()){
+                modules[currentModule].resetCursor();
+                modules[currentModule].setUiVisible(false);
                 ui.setVisible(false);
+                inToolBar = false;
             }
         }
     }
@@ -283,22 +290,32 @@ public class AlcMain extends PApplet {
     public void mouseEvent(MouseEvent event) {
         switch (event.getID()) {
             case MouseEvent.MOUSE_PRESSED:
-                modules[currentModule].mousePressed(event);
+                if(!inToolBar){
+                    modules[currentModule].mousePressed(event);
+                }
                 break;
             case MouseEvent.MOUSE_CLICKED:
-                modules[currentModule].mouseClicked(event);
+                if(!inToolBar){
+                    modules[currentModule].mouseClicked(event);
+                }
                 break;
             case MouseEvent.MOUSE_MOVED:
                 int y = event.getY();
                 toggleToolbar(y);
-                modules[currentModule].mouseMoved(event);
+                if(!inToolBar){
+                    modules[currentModule].mouseMoved(event);
+                }
                 break;
             case MouseEvent.MOUSE_DRAGGED:
-                modules[currentModule].mouseDragged(event);
+                if(!inToolBar){
+                    modules[currentModule].mouseDragged(event);
+                }
                 //resizeWindow();
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                modules[currentModule].mouseReleased(event);
+                if(!inToolBar){
+                    modules[currentModule].mouseReleased(event);
+                }
                 //resizing = false;
                 break;
         }
@@ -318,36 +335,8 @@ public class AlcMain extends PApplet {
         }
     }
     
-    public void actionPerformed(ActionEvent e) {
-        
-        println("Root " + e.getSource());
-        
-        // Determine what kind UI Object called the event
-        String object = e.getSource().toString();
-        int dot = object.lastIndexOf(".");
-        int at = object.lastIndexOf("@");
-        object = object.substring(dot+1, at);
-        //println(object);
-        
-        // TAB
-        if(object.equals("AlcUiTab")){
-            //println("Tab");
-            setModule(e.getID());
-            
-            // BUTTON
-        } else if(object.equals("AlcUiButton")){
-            //println("Button");
-            
-            // TOGGLE BUTTON
-        } else if(object.equals("AlcUiToggleButton")){
-            //println("Toggle Button");
-            
-            
-            // SLIDER
-        } else if(object.equals("AlcUiSlider")){
-            //println("Slider");
-        }
-        
+    public void tabEvent(ActionEvent e){
+        setModule(e.getID());
     }
     
 }

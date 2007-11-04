@@ -10,8 +10,9 @@ abstract class AlcModule {
     
     PApplet root;
     String moduleName, iconName, descriptionName;
-    int id;
+    int id, cursor;
     boolean loaded = false;
+    boolean smooth, loop;
     File pluginPath;
     AlcUi ui;
     
@@ -31,7 +32,6 @@ abstract class AlcModule {
     
     
     // MODULE DATA
-    
     public String getName(){
         return moduleName;
     }
@@ -80,10 +80,73 @@ abstract class AlcModule {
         descriptionName = n;
     }
     
+    
+    // GLOBAL HARMONY
+    public void setCursor(int c){
+        root.cursor(c);
+    }
+    
+    public int getCursor(){
+        return cursor;
+    }
+    
+    public void resetCursor(){
+        root.cursor(cursor);
+    }
+    
+    public void setSmooth(boolean b){
+        if(b){
+            root.smooth();
+        } else {
+            root.noSmooth();
+        }
+    }
+    
+    public boolean getSmooth(){
+        return smooth;
+    }
+    
+    public void resetSmooth(){
+        if(smooth){
+            root.smooth();
+        } else {
+            root.noSmooth();
+        }
+    }
+    
+    public void setLoop(boolean b){
+        if(b){
+            root.loop();
+        } else {
+            root.noLoop();
+        }
+    }
+    
+    public boolean getLoop(){
+        return loop;
+    }
+    
+    public void resetLoop(){
+        if(loop){
+            root.loop();
+        } else {
+            root.noLoop();
+        }
+    }
+    
+    
     // OBJECTS
     public void setUiVisible(boolean b){
         if(ui != null){
             ui.setVisible(b);
+        }
+    }
+    
+    public boolean hasUi(){
+        if(ui == null){
+            return false;
+        } else{
+            return true;
         }
     }
     

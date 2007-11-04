@@ -12,9 +12,9 @@ public class AlcUiTab extends AlcUiObject{
     
     PFont tabFont;
     String text;
-    int tx, ty, pad, fontSize, fullWidth, fullHeight, ix, iy;
+    int tx, ty, pad, fontSize, fullWidth, fullHeight, ix, iy, c1, c2, c3, c4;
     float textWidth;
-    boolean on;
+    boolean on, drawToolBarBg;
     
     public AlcUiTab(PApplet r, AlcUi ui, String n, int x, int y, boolean o, int i, String txt, String file) {
         root = r;
@@ -24,7 +24,7 @@ public class AlcUiTab extends AlcUiObject{
         on = o;
         ox = x;
         oy = y;
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "tabEvent");
         text = txt;
         fileName = file;
         setup();
@@ -38,7 +38,7 @@ public class AlcUiTab extends AlcUiObject{
         on = o;
         ox = x;
         oy = y;
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "tabEvent");
         text = txt;
         fileName = file;
         filePath = path;
@@ -67,10 +67,20 @@ public class AlcUiTab extends AlcUiObject{
         iy = oy + pad;
         fullWidth = ox + width + (int)textWidth + pad*3;
         fullHeight = oy + height + pad*2;
+        c1 = oy+2;
+        c2 = ox+2;
+        c3 = fullWidth-2;
+        c4 = oy+2;
         set(0);
     }
     
     public void draw(){
+        // Draw Bg for the toolbar if the module has some ui elements
+        if(drawToolBarBg){
+            root.noStroke();
+            root.fill(245);
+            root.rect(0, 39, root.width, 44);
+        }
         
         // Tab
         if(on){
@@ -83,8 +93,10 @@ public class AlcUiTab extends AlcUiObject{
         root.noStroke();
         root.beginShape();
         root.vertex(ox, fullHeight);
-        root.vertex(ox, oy);
-        root.vertex(fullWidth, oy);
+        root.vertex(ox, c1);
+        root.vertex(c2, oy);
+        root.vertex(c3, oy);
+        root.vertex(fullWidth, c4);
         root.vertex(fullWidth, fullHeight);
         root.endShape(root.CLOSE);
         
@@ -109,6 +121,10 @@ public class AlcUiTab extends AlcUiObject{
     
     public int getWidth(){
         return fullWidth;
+    }
+    
+    public void setToolBarBg(boolean hasUi){
+        drawToolBarBg = hasUi;
     }
     
     public void rollOverCheck(int x, int y){

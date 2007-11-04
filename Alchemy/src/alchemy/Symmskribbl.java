@@ -30,16 +30,20 @@ public class Symmskribbl extends AlcModule {
         
         ui = new AlcUi(root);
         ui.setVisible(true);
-        ui.addButton(this, "Test", 200, 210, "b.gif", pluginPath);
+        ui.addButton(this, "Increase Stroke", 10, 50, "stokeUp.png", pluginPath);
         
-        root.cursor(root.CROSS);
-        root.noLoop();
+        cursor = root.CROSS;
+        smooth = true;
+        setSmooth(smooth);
+        
+        loop = false;
+        setLoop(loop);
     }
     
     public void draw(){
         root.noFill();
         root.stroke(0);
-        root.smooth();
+        resetSmooth();
         // Draw the lines
         for(int i = 0; i < lines.size(); i++) {
             ((AlcVertex)lines.get(i)).draw();
@@ -116,8 +120,8 @@ public class Symmskribbl extends AlcModule {
         }
     }
     
-    public void actionPerformed(ActionEvent e) {
-        root.println("Sym Skribble" + e.getSource());
+    public void buttonEvent(ActionEvent e) {
+        //root.println("Sym Skribble" + e.getSource());
     }
     
 }

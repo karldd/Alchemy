@@ -22,7 +22,7 @@ public class AlcUiSlider extends AlcUiObject{
         ox = x;
         oy = y;
         value = root.constrain(v, 0, 100);
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "sliderEvent");
         fileName = file;
         setup();
     }
@@ -36,7 +36,7 @@ public class AlcUiSlider extends AlcUiObject{
         ox = x;
         oy = y;
         value = root.constrain(v, 0, 100);
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "sliderEvent");
         fileName = file;
         filePath = path;
         setup();

@@ -17,7 +17,7 @@ public class AlcUiButton extends AlcUiObject{
         name = n;
         ox = x;
         oy = y;
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "buttonEvent");
         fileName = file;
         setup();
     }
@@ -30,7 +30,7 @@ public class AlcUiButton extends AlcUiObject{
         name = n;
         ox = x;
         oy = y;
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "buttonEvent");
         fileName = file;
         filePath = path;
         setup();
