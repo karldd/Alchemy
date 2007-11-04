@@ -49,6 +49,7 @@ abstract class AlcUiObject {
         } else{
             // Open the zip file
             zip = new UnZipIt(filePath.getPath(), root);
+            //root.println(filePath.getPath());
             for(int i = 0; i < images.length; i++) {
                 // Append the button state to the filename
                 String fn = editName(fileName, fileEnd[i]);

@@ -134,11 +134,14 @@ public class AlcUi {
         tabs.add(new AlcUiTab(root, this, name, x, y, on, id, text, icon, filePath));
     }
     
-    public void changeTab(int t){
+    public void changeTab(int t, boolean h){
         for(int i = 0; i < tabs.size(); i++) {
             if(i == t){
+                ((AlcUiTab)tabs.get(i)).setToolBarBg(h);
                 ((AlcUiTab)tabs.get(i)).setState(true);
+                
             } else {
+                ((AlcUiTab)tabs.get(i)).setToolBarBg(false);
                 ((AlcUiTab)tabs.get(i)).setState(false);
             }
         }
@@ -150,12 +153,12 @@ public class AlcUi {
     }
     
     public void tabBg(){
+        
         // Tab Bg
         root.noStroke();
         root.fill(215);
         root.rect(0, 0, root.width, 39);
-        root.fill(245);
-        root.rect(0, 39, root.width, 30);
+         
     }
     
     

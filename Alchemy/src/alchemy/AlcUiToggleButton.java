@@ -20,7 +20,7 @@ public class AlcUiToggleButton extends AlcUiObject{
         on = o;
         ox = x;
         oy = y;
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "toggleButtonEvent");
         fileName = file;
         setup();
     }
@@ -34,7 +34,7 @@ public class AlcUiToggleButton extends AlcUiObject{
         on = o;
         ox = x;
         oy = y;
-        a = new AlcUiAction(this, id, name);
+        a = new AlcUiAction(this, id, name, "toggleButtonEvent");
         fileName = file;
         filePath = path;
         setup();

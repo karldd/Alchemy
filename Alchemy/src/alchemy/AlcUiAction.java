@@ -4,29 +4,30 @@ import java.lang.reflect.Method;
 
 public class AlcUiAction {
     
-    String command;
+    String command, object;
     AlcUiObject source;
     Method actionEventMethod;
     int id;
     
-    public AlcUiAction(AlcUiObject s, int i, String n) {
+    public AlcUiAction(AlcUiObject s, int i, String n, String o) {
         source = s;
         id = i;
         command = n;
+        object = o;
     }
     
     public void sendEvent(Object caller) {
         ActionEvent guiEvent = new ActionEvent(source, id, command);
         
         try {
-            actionEventMethod = caller.getClass().getMethod("actionPerformed", new Class[] {
+            actionEventMethod = caller.getClass().getMethod(object, new Class[] {
                 guiEvent.getClass()
             });
             actionEventMethod.invoke(caller, new Object[] {
                 guiEvent
             });
         } catch(Exception e) {
-            System.out.println("No method named actionPerformed was found in root.");
+            System.out.println("No method named " + object+ " was found in " + caller);
         }
     }
     

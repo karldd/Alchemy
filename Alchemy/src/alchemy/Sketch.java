@@ -23,19 +23,24 @@ public class Sketch extends AlcModule {
         lines = new Vector<Object>();
         lines.ensureCapacity(100);
         
+        /*
         ui = new AlcUi(root);
         ui.setVisible(true);
         ui.addButton(this, "Test", 200, 210, "b.gif", pluginPath);
+        */
+         
+        cursor = root.CROSS;
+        smooth = true;
+        setSmooth(smooth);
         
-        root.cursor(root.CROSS);
-        root.noLoop();
+        loop = false;
+        setLoop(loop);
     }
     
     public void draw(){
-        
         root.noFill();
         root.stroke(0);
-        root.smooth();
+        resetSmooth();
         // Draw the lines
         for(int j = 0; j < lines.size(); j++) {
             ((AlcVertex)lines.get(j)).draw();
@@ -76,7 +81,7 @@ public class Sketch extends AlcModule {
         }
     }
     
-    public void actionPerformed(ActionEvent e) {
+    public void buttonEvent(ActionEvent e) {
         root.println("Sketch " + e.getSource());
     }
     

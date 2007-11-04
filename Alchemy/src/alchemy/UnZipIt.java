@@ -192,15 +192,26 @@ public class UnZipIt {
         // returns a PImage object of the requested files Byte array
         byte[] ret = loadBytes(fname);
         if(ret != null){
+            PImage pimage;
             Image img = Toolkit.getDefaultToolkit().createImage(ret);
-            MediaTracker t = new MediaTracker(parent);
-            t.addImage(img, 0);
-            try {
-                t.waitForAll();
-            } catch (Exception e) {
-                System.out.println(e);
+            pimage = parent.loadImageSync(img);
+            
+            // get the file extension
+            int i = fname.lastIndexOf('.');
+            String s1 = fname.substring(i + 1);
+            
+            if(s1.equals("gif") || s1.equals("png")) {
+                // load the alpha values
+                if(pimage.pixels != null){
+                    for(int j = 0; j < pimage.pixels.length; j++) {
+                        if((pimage.pixels[i] & 0xff000000) == 0xff000000)
+                            continue;
+                        pimage.format = 2;
+                        break;
+                    }
+                }
             }
-            return new PImage(img);
+            return pimage;
         }
         return null;
     }
