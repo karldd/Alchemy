@@ -15,6 +15,6 @@
         <parameter id="class" value="alchemy.Sketch"/> 
         <parameter id="name" value="Sketch"/> 
 	<parameter id="description" value="Basic sketching" />
-	<parameter id="icon" value="tab.gif" />
+	<parameter id="icon" value="icon.png" />
     </extension>
 </plugin>
