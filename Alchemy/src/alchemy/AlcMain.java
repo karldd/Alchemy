@@ -114,7 +114,7 @@ public class AlcMain extends PApplet {
             // Add Tabs
             ui.addTab(modules[i].getName(), tabsWidth + 5, 5, current, modules[i].getId(), modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
             
-            tabsWidth += ui.getTabWidth(i);
+            tabsWidth = ui.getTabWidth(i);
             
         }
         

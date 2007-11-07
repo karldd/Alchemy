@@ -154,7 +154,7 @@ public class AlcUi {
     
     public void tabBg(){
         
-        // Tab Bg
+        // Background behind Tabs
         root.noStroke();
         root.fill(215);
         root.rect(0, 0, root.width, 39);

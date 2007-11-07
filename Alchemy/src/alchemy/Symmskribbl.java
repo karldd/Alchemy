@@ -46,10 +46,10 @@ public class Symmskribbl extends AlcModule {
         resetSmooth();
         // Draw the lines
         for(int i = 0; i < lines.size(); i++) {
-            ((AlcVertex)lines.get(i)).draw();
+            ((AlcSketchPath)lines.get(i)).draw();
         }
         for(int j = 0; j < mirrorLines.size(); j++) {
-            ((AlcVertex)mirrorLines.get(j)).draw();
+            ((AlcSketchPath)mirrorLines.get(j)).draw();
         }
         
     }
@@ -77,10 +77,10 @@ public class Symmskribbl extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
-        lines.add(new AlcVertex(root, x, y));
+        lines.add(new AlcSketchPath(root, x, y));
         currentLine = lines.size() - 1;
         
-        mirrorLines.add(new AlcVertex(root, mirror(x), y));
+        mirrorLines.add(new AlcSketchPath(root, mirror(x), y));
         currentMirrorLine = mirrorLines.size() - 1;
         
         firstPress = true;
@@ -91,8 +91,8 @@ public class Symmskribbl extends AlcModule {
         int y = e.getY();
         
         if(firstPress && !cleared){
-            ((AlcVertex)lines.get(currentLine)).drag(x, y);
-            ((AlcVertex)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
+            ((AlcSketchPath)lines.get(currentLine)).drag(x, y);
+            ((AlcSketchPath)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
         }
     }
     
@@ -101,8 +101,8 @@ public class Symmskribbl extends AlcModule {
         int y = e.getY();
         
         if(firstPress && !cleared){
-            ((AlcVertex)lines.get(currentLine)).release(x, y);
-            ((AlcVertex)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
+            ((AlcSketchPath)lines.get(currentLine)).release(x, y);
+            ((AlcSketchPath)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
         }
         cleared = false;
     }
