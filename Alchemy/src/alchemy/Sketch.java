@@ -43,7 +43,7 @@ public class Sketch extends AlcModule {
         resetSmooth();
         // Draw the lines
         for(int j = 0; j < lines.size(); j++) {
-            ((AlcVertex)lines.get(j)).draw();
+            ((AlcSketchPath)lines.get(j)).draw();
         }
         
     }
@@ -57,7 +57,7 @@ public class Sketch extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
-        lines.add(new AlcVertex(root, x, y));
+        lines.add(new AlcSketchPath(root, x, y));
         currentLine = lines.size() - 1;
         firstPress = true;
     }
@@ -68,7 +68,7 @@ public class Sketch extends AlcModule {
         int y = e.getY();
         
         if(firstPress){
-            ((AlcVertex)lines.get(currentLine)).drag(x, y);
+            ((AlcSketchPath)lines.get(currentLine)).drag(x, y);
         }
     }
     
@@ -77,7 +77,7 @@ public class Sketch extends AlcModule {
         int y = e.getY();
         
         if(firstPress){
-            ((AlcVertex)lines.get(currentLine)).release(x, y);
+            ((AlcSketchPath)lines.get(currentLine)).release(x, y);
         }
     }
     

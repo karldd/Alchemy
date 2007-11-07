@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import java.awt.Point;
 import java.util.Vector;
 
-public class AlcVertex{
+public class AlcSketchPath{
     
     // Minimum space between points
     int space = 5;
@@ -17,7 +17,7 @@ public class AlcVertex{
     boolean endLine = false;
     Point end = new Point();
     
-    public AlcVertex(PApplet r, int x, int y){
+    public AlcSketchPath(PApplet r, int x, int y){
         root = r;
         line = new Vector<Object>();
         line.ensureCapacity(100);
