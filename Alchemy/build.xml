@@ -65,15 +65,16 @@
     properties which you can use, check the target you are overriding in the
     nbproject/build-impl.xml file. 
 
-    -->
-    
+    -->    
+           
     <target name="-post-jar">
         
         <!-- Move the compiled Plugin classes -->
         <move file="${build.classes.dir}/alchemy/Core.class" todir="${basedir}/plugins/core/alchemy"/>
         <move file="${build.classes.dir}/alchemy/Symmskribbl.class" todir="${basedir}/plugins/symmskribbl/alchemy"/>
         <move file="${build.classes.dir}/alchemy/Sketch.class" todir="${basedir}/plugins/sketch/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/ShapeGenerator.class" todir="${basedir}/plugins/shape/alchemy"/>
+        <move file="${build.classes.dir}/alchemy/ShapeGenerator.class" todir="${basedir}/plugins/shapeGenerator/alchemy"/>
+        <move file="${build.classes.dir}/alchemy/BlindShapes.class" todir="${basedir}/plugins/blindShapes/alchemy"/>
         
         <!-- Copy the Data folder to the Dist directory -->
         <copy todir="${dist.dir}/data">
