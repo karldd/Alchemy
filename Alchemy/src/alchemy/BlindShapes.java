@@ -8,33 +8,32 @@ import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-public class Symmskribbl extends AlcModule {
+public class BlindShapes extends AlcModule {
     
     // GENERAL
     boolean firstPress = false;
     boolean cleared = false;
     
     // LINE
-    Vector<Object> lines, mirrorLines;
-    int currentLine, currentMirrorLine;
+    Vector<Object> shapes;
+    int currentLine;
     
-    public Symmskribbl(){
+    public BlindShapes(){
     }
     
     public void setup(PApplet r){
         root = r;
         root.println("Module " + id + " Loaded");
         
-        lines = new Vector<Object>();
-        lines.ensureCapacity(100);
+        shapes = new Vector<Object>();
+        shapes.ensureCapacity(100);
         
-        mirrorLines = new Vector<Object>();
-        mirrorLines.ensureCapacity(100);
-        
+        /*
         ui = new AlcUi(root);
         ui.setVisible(true);
         ui.addButton(this, "Increase Stroke", 10, 50, "stokeUp.png", pluginPath);
-        
+        */
+         
         cursor = root.CROSS;
         smooth = true;
         setSmooth(smooth);
@@ -44,15 +43,12 @@ public class Symmskribbl extends AlcModule {
     }
     
     public void draw(){
-        root.noFill();
-        root.stroke(0);
+        root.fill(0, 0, 0, 25);
+        root.noStroke();
         resetSmooth();
-        // Draw the lines
-        for(int i = 0; i < lines.size(); i++) {
-            ((AlcSketchPath)lines.get(i)).draw();
-        }
-        for(int j = 0; j < mirrorLines.size(); j++) {
-            ((AlcSketchPath)mirrorLines.get(j)).draw();
+        // Draw the shapes
+        for(int i = 0; i < shapes.size(); i++) {
+            ((AlcSketchPath)shapes.get(i)).draw();
         }
         
     }
@@ -69,8 +65,7 @@ public class Symmskribbl extends AlcModule {
     }
     
     public void clear(){
-        lines.removeAllElements();
-        mirrorLines.removeAllElements();
+        shapes.removeAllElements();
         if(root.mousePressed) cleared = true;
         root.redraw();
     }
@@ -80,11 +75,8 @@ public class Symmskribbl extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
-        lines.add(new AlcSketchPath(root, x, y));
-        currentLine = lines.size() - 1;
-        
-        mirrorLines.add(new AlcSketchPath(root, mirror(x), y));
-        currentMirrorLine = mirrorLines.size() - 1;
+        shapes.add(new AlcSketchPath(root, x, y));
+        currentLine = shapes.size() - 1;
         
         firstPress = true;
     }
@@ -94,8 +86,7 @@ public class Symmskribbl extends AlcModule {
         int y = e.getY();
         
         if(firstPress && !cleared){
-            ((AlcSketchPath)lines.get(currentLine)).drag(x, y);
-            ((AlcSketchPath)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
+            ((AlcSketchPath)shapes.get(currentLine)).drag(x, y, false);
         }
     }
     
@@ -104,8 +95,7 @@ public class Symmskribbl extends AlcModule {
         int y = e.getY();
         
         if(firstPress && !cleared){
-            ((AlcSketchPath)lines.get(currentLine)).release(x, y);
-            ((AlcSketchPath)mirrorLines.get(currentMirrorLine)).drag(mirror(x), y);
+            ((AlcSketchPath)shapes.get(currentLine)).release(x, y, true);
         }
         cleared = false;
     }

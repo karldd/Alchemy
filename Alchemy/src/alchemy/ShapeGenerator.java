@@ -18,22 +18,25 @@ import java.awt.GraphicsEnvironment;
 
 public class ShapeGenerator extends AlcModule {
     
+    // GENERAL
     boolean firstPress = false;
     boolean cleared = false;
-    Font f;
+    
+    // SHAPE GENERATION
     Font fonts[];
     FontRenderContext fontRenderContext;
     Area union;
-    
     int inc, scale, doubleScale, randX, randY, halfWidth, halfHeight, quarterWidth, quarterHeight;
     PFont myFont;
-    
     float noiseScale = 0.0F;
-    
     // All ASCII characters, sorted according to their visual density
     String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
+    
+    // USER DRAWN SHAPE
+    Vector<Object> shapes;
+    int currentShape;
     
     public ShapeGenerator(){
     }
@@ -49,6 +52,9 @@ public class ShapeGenerator extends AlcModule {
         loop = false;
         setLoop(loop);
         
+        shapes = new Vector<Object>();
+        shapes.ensureCapacity(100);
+        
         halfWidth = root.width/2;
         halfHeight = root.height/2;
         quarterWidth = root.width/4;
@@ -57,7 +63,6 @@ public class ShapeGenerator extends AlcModule {
         myFont = root.createFont("Helvetica", 12, true);
         
         loadFonts();
-        
         randomShape();
         
     }
@@ -69,6 +74,14 @@ public class ShapeGenerator extends AlcModule {
         
         processPathIterator(union);
         
+        root.fill(0);
+        root.noStroke();
+        
+        // Draw the lines
+        for(int i = 0; i < shapes.size(); i++) {
+            ((AlcSketchPath)shapes.get(i)).draw();
+        }
+        
     }
     
     public void refocus(){
@@ -77,15 +90,15 @@ public class ShapeGenerator extends AlcModule {
     }
     
     public void loadFonts(){
-        root.println("Start");
+        //root.println("Start");
         GraphicsEnvironment graphicsenvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         fonts = graphicsenvironment.getAllFonts();
         root.hint(root.ENABLE_NATIVE_FONTS);
-        root.println("End");
+        //root.println("End");
     }
     
     public Font randomFont(){
-        return new Font(fonts[(int)root.random(0, fonts.length)].getName(), Font.PLAIN, 150);
+        return new Font(fonts[(int)root.random(0, fonts.length)].getName(), Font.PLAIN, (int)root.random(100, 200));
     }
     
     public void randomShape(){
@@ -93,32 +106,32 @@ public class ShapeGenerator extends AlcModule {
         randY = quarterHeight + (int)root.random(halfHeight);
         
         inc = 0;
-        scale = (int)root.random(1, 7);
+        scale = (int)root.random(2, 8);
         //root.println(scale);
         doubleScale = scale * 2;
         
         //f = new Font("Helvetica", Font.PLAIN, 150);
-        f = randomFont();
+        Font f = randomFont();
         root.println(f.toString());
         AffineTransform affineTransform = f.getTransform();
         fontRenderContext = new FontRenderContext(affineTransform, false, false);
         
-        union = makeShape();
+        union = makeShape(f);
         
-        int iterations = (int)root.random(10, 20);
-        root.println(iterations);
+        int iterations = (int)root.random(5, 15);
+        root.println("Iterations: "+iterations+ " Scale: "+scale);
         for(int i = 0; i < iterations; i++) {
-            Area a = makeShape();
+            Area a = makeShape(f);
             union.add(a);
         }
         
     }
     
-    public Area makeShape(){
+    public Area makeShape(Font font){
         // Make a string from one random char from the letters string
         String randomLetter = Character.toString(letters.charAt((int)root.random(letters.length())));
         
-        GlyphVector gv = f.createGlyphVector(fontRenderContext, randomLetter);
+        GlyphVector gv = font.createGlyphVector(fontRenderContext, randomLetter);
         Shape shp = gv.getOutline();
         //Shape shp = gv.getOutline(root.random(150), root.random(150));
         PathIterator count = shp.getPathIterator(null);
@@ -147,6 +160,8 @@ public class ShapeGenerator extends AlcModule {
         float[] cutPts = new float[6];
         int cutType;
         int segCount = 0;
+        int pointCount = 0;
+        boolean close = true;
         
         while (!cut.isDone()) {
             cutType = cut.currentSegment(cutPts);
@@ -156,30 +171,40 @@ public class ShapeGenerator extends AlcModule {
                 segCount++;
             }
             
-            // If this is the first segment
+            // Only add the first segment
             if(segCount == 1){
-                
-                switch (cutType) {
-                    case PathIterator.SEG_MOVETO:
-                        newShape.moveTo(cutPts[0], cutPts[1]);
-                        break;
-                    case PathIterator.SEG_LINETO:
-                        newShape.lineTo(mess(cutPts[0]), mess(cutPts[1]));
-                        break;
-                    case PathIterator.SEG_QUADTO:
-                        newShape.quadTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]));
-                        break;
-                    case PathIterator.SEG_CUBICTO:
-                        newShape.curveTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3], cutPts[4], cutPts[5]);
-                        break;
-                    case PathIterator.SEG_CLOSE:
+                if(pointCount < 20){
+                    switch (cutType) {
+                        case PathIterator.SEG_MOVETO:
+                            newShape.moveTo(cutPts[0], cutPts[1]);
+                            break;
+                        case PathIterator.SEG_LINETO:
+                            newShape.lineTo(mess(cutPts[0]), mess(cutPts[1]));
+                            //newShape.lineTo(cutPts[0], cutPts[1]);
+                            break;
+                        case PathIterator.SEG_QUADTO:
+                            newShape.quadTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]));
+                            //newShape.quadTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3]);
+                            break;
+                        case PathIterator.SEG_CUBICTO:
+                            newShape.curveTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3], cutPts[4], cutPts[5]);
+                            break;
+                        case PathIterator.SEG_CLOSE:
+                            newShape.closePath();
+                            break;
+                    }
+                } else{
+                    if(close){
                         newShape.closePath();
-                        break;
+                        close = false;
+                    }
                 }
+                pointCount++;
             }
             cut.next();
+            
         }
-        AffineTransform newTr = AffineTransform.getTranslateInstance(root.random(100), root.random(100));
+        AffineTransform newTr = AffineTransform.getTranslateInstance(root.random(200), root.random(200));
         //newTr.translate(root.random(200), root.random(200));
         newTr.rotate(root.random(7));
         Area newA = new Area(newShape);
@@ -192,6 +217,7 @@ public class ShapeGenerator extends AlcModule {
          */
     }
     
+    // Draw the final unioned shape
     void processPathIterator(Area a) {
         PathIterator iter = a.getPathIterator(null);
         float[] pts = new float[6];
@@ -246,7 +272,7 @@ public class ShapeGenerator extends AlcModule {
     }
     
     public float mess(float f){
-        noiseScale += 0.003F;
+        noiseScale += 0.002F;
         float n =  (root.noise(noiseScale) * doubleScale) - scale;
         //root.println(n);
         return n * f;
@@ -261,6 +287,7 @@ public class ShapeGenerator extends AlcModule {
     }
     
     public void clear(){
+        shapes.removeAllElements();
         if(root.mousePressed) cleared = true;
         root.redraw();
     }
@@ -270,6 +297,9 @@ public class ShapeGenerator extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
+        shapes.add(new AlcSketchPath(root, x, y));
+        currentShape = shapes.size() - 1;
+        
         firstPress = true;
     }
     
@@ -278,6 +308,7 @@ public class ShapeGenerator extends AlcModule {
         int y = e.getY();
         
         if(firstPress && !cleared){
+            ((AlcSketchPath)shapes.get(currentShape)).drag(x, y);
         }
     }
     
@@ -286,6 +317,7 @@ public class ShapeGenerator extends AlcModule {
         int y = e.getY();
         
         if(firstPress && !cleared){
+            ((AlcSketchPath)shapes.get(currentShape)).release(x, y);
         }
         cleared = false;
     }

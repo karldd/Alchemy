@@ -26,7 +26,7 @@ public class AlcSketchPath{
     }
     
     public void draw(){
-
+        
         root.beginShape();
         
         Point pt1 = (Point)line.get(0);
@@ -45,6 +45,10 @@ public class AlcSketchPath{
     }
     
     public void drag(int x, int y) {
+        drag(x, y, true);
+    }
+    
+    public void drag(int x, int y, boolean b) {
         // Get the last point added
         Point pt = (Point)line.get(line.size()-1);
         
@@ -68,16 +72,20 @@ public class AlcSketchPath{
                 endLine = true;
             }
         }
-        root.redraw();
+        if(b) root.redraw();
     }
     
     public void release(int x, int y) {
+        release(x, y, true);
+    }
+    
+    public void release(int x, int y, boolean b) {
         if(endLine){
             line.add(new Point(x, y));
             //end.x = x;
             //end.y = y;
-            root.redraw();
         }
+        if(b) root.redraw();
     }
     
     public void remove(){

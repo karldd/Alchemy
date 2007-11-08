@@ -9,9 +9,12 @@ import java.awt.event.ActionEvent;
 
 public class Sketch extends AlcModule {
     
+    // GENERAL
+    boolean firstPress = false;
+    
+    // LINE
     Vector<Object> lines;
     int currentLine;
-    boolean firstPress = false;
     
     public Sketch(){
     }
