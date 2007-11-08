@@ -1,6 +1,7 @@
 package alchemy;
 
 import processing.core.*;
+import processing.pdf.*;
 
 import java.util.Vector;
 import java.awt.event.MouseEvent;
@@ -8,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentAdapter;
+
+import java.awt.Toolkit;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -37,14 +40,15 @@ public class AlcMain extends PApplet {
     
     private PluginManager pluginManager;
     AlcModule[] modules;
-    
     int numberOfPlugins;
     int currentModule;
-    AlcUi ui, ui2;
+    
+    AlcUi ui;
     
     boolean saveOneFrame = false;
     boolean firstLoad = true;
     boolean inToolBar = false;
+    boolean modifierKey = false;
     
     public void setup(){
         size(640, 480);
@@ -65,6 +69,9 @@ public class AlcMain extends PApplet {
         
         //frame.setTitle("Alchemy");
         
+        
+        
+        
         registerMouseEvent(this);
         registerKeyEvent(this);
         
@@ -79,13 +86,17 @@ public class AlcMain extends PApplet {
             loadTabs();
         }
         
+        
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        System.out.println("Menu shortcut key mask = " + tk.getMenuShortcutKeyMask());
+        
         noLoop();
         
     }
     
     public void draw(){
         if(saveOneFrame) {
-            beginRecord(PDF, "frame-####.pdf");
+            beginRecord(PDF, "Alchemy-####.pdf");
         }
         
         background(255);
@@ -102,7 +113,6 @@ public class AlcMain extends PApplet {
     public void loadTabs(){
         
         ui = new AlcUi(this);
-        //ui2 = new AlcUi(this);
         int tabsWidth = 0;
         
         for(int i = 0; i < modules.length; i++) {
@@ -119,13 +129,6 @@ public class AlcMain extends PApplet {
         }
         
         setModule(currentModule);
-        /*
-        ui2.setVisible(true);
-        ui2.addToggleButton("Test", 200, 210, true, "b.gif");
-         
-        //println(modules[1].getPluginPath().getPath());
-        ui2.addSlider("ok", 100, 400, 50, "slider.gif");
-         */
     }
     
     private void loadPlugins() {
@@ -322,12 +325,29 @@ public class AlcMain extends PApplet {
     }
     
     public void keyEvent(KeyEvent event) {
+        
+        int keyCode = event.getKeyCode();
+        String keyText = event.getKeyText(keyCode);
+        
+        
         switch(event.getID()){
             case KeyEvent.KEY_PRESSED:
                 modules[currentModule].keyPressed(event);
+                toggleModifierKey(keyText, true);
+                println(event.isControlDown());
+                //println(keyCode);
                 break;
             case KeyEvent.KEY_RELEASED:
                 modules[currentModule].keyReleased(event);
+                toggleModifierKey(keyText, false);
+                //println(event.getModifiersExText(keyCode));
+                // Modifier + E = Save a PDF file
+                if(modifierKey && keyCode == 69){
+                    saveOneFrame = true;
+                    println("PDF Export");
+                    redraw();
+                }
+                
                 break;
             case KeyEvent.KEY_TYPED:
                 modules[currentModule].keyTyped(event);
@@ -337,6 +357,14 @@ public class AlcMain extends PApplet {
     
     public void tabEvent(ActionEvent e){
         setModule(e.getID());
+    }
+    
+    public void toggleModifierKey(String kt, boolean b){
+        if(kt.equals("Command") || kt.equals("Ctrl")){
+            modifierKey = b;
+            //println("Modifier Key set to " + b);
+        }
+        
     }
     
 }
