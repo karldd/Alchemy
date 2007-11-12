@@ -11,6 +11,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentAdapter;
 
 import java.awt.Toolkit;
+import javax.swing.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -34,9 +35,64 @@ public class AlcMain extends PApplet {
     public AlcMain() {
     }
     
+    // platform IDs
+    static final int WINDOWS = 1;
+    static final int MACOSX  = 3;
+    static final int LINUX   = 4;
+    static final int OTHER   = 0;
+    
     public static void main(String[] args) {
         PApplet.main( new String[]{"alchemy.AlcMain"} );
     }
+    
+    /**
+     * Full name of the Java version (i.e. 1.5.0_11).
+     */
+    public static final String javaVersionName = System.getProperty("java.version");
+    
+    /**
+     * Version of Java that's in use, whether 1.1 or 1.3 or whatever,
+     * stored as a float.
+     */
+    public static final float javaVersion = new Float(javaVersionName.substring(0, 3)).floatValue();
+    
+    /**
+     * Current platform in use.
+     * <P>
+     * Equivalent to System.getProperty("os.name"), just used internally.
+     */
+    static public String platformName =
+            System.getProperty("os.name");
+    
+    /**
+     * Current platform in use, one of the
+     * PConstants WINDOWS, MACOSX, LINUX or OTHER.
+     */
+    static public int platform;
+    
+    static {
+        if (platformName.indexOf("Mac") != -1) {
+            platform = MACOSX;
+            
+        } else if (platformName.indexOf("Windows") != -1) {
+            platform = WINDOWS;
+            
+        } else if (platformName.equals("Linux")) {  // true for the ibm vm
+            platform = LINUX;
+            
+        } else {
+            platform = OTHER;
+        }
+    }
+    
+    /**
+     * Modifier flags for the shortcut key used to trigger menus.
+     * (Cmd on Mac OS X, Ctrl on Linux and Windows)
+     */
+    static public final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    
+    
+    
     
     private PluginManager pluginManager;
     AlcModule[] modules;
@@ -46,9 +102,10 @@ public class AlcMain extends PApplet {
     AlcUi ui;
     
     boolean saveOneFrame = false;
+    String pdfURL;
+    
     boolean firstLoad = true;
     boolean inToolBar = false;
-    boolean modifierKey = false;
     
     public void setup(){
         size(640, 480);
@@ -69,7 +126,12 @@ public class AlcMain extends PApplet {
         
         //frame.setTitle("Alchemy");
         
-        
+        // set system look and feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         
         registerMouseEvent(this);
@@ -96,7 +158,8 @@ public class AlcMain extends PApplet {
     
     public void draw(){
         if(saveOneFrame) {
-            beginRecord(PDF, "Alchemy-####.pdf");
+            //beginRecord(PDF, "Alchemy-####.pdf");
+            beginRecord(PDF, pdfURL);
         }
         
         background(255);
@@ -327,24 +390,22 @@ public class AlcMain extends PApplet {
     public void keyEvent(KeyEvent event) {
         
         int keyCode = event.getKeyCode();
-        String keyText = event.getKeyText(keyCode);
-        
+        //String keyText = event.getKeyText(keyCode);
         
         switch(event.getID()){
             case KeyEvent.KEY_PRESSED:
                 modules[currentModule].keyPressed(event);
-                toggleModifierKey(keyText, true);
-                println(event.isControlDown());
                 //println(keyCode);
                 break;
             case KeyEvent.KEY_RELEASED:
                 modules[currentModule].keyReleased(event);
-                toggleModifierKey(keyText, false);
                 //println(event.getModifiersExText(keyCode));
+                
                 // Modifier + E = Save a PDF file
-                if(modifierKey && keyCode == 69){
-                    saveOneFrame = true;
-                    println("PDF Export");
+                if(event.getModifiers() == MENU_SHORTCUT && keyCode == 69){
+                    openFileDialog();
+                    //saveOneFrame = true;
+                    //println("PDF Export");
                     redraw();
                 }
                 
@@ -359,12 +420,25 @@ public class AlcMain extends PApplet {
         setModule(e.getID());
     }
     
-    public void toggleModifierKey(String kt, boolean b){
-        if(kt.equals("Command") || kt.equals("Ctrl")){
-            modifierKey = b;
-            //println("Modifier Key set to " + b);
-        }
+    public void openFileDialog(){
+        // create a file chooser
+        final JFileChooser fc = new JFileChooser();
         
+        // in response to a button click:
+        int returnVal = fc.showSaveDialog(this);
+        
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            
+            pdfURL = file.getPath();
+            
+            saveOneFrame = true;
+            redraw();
+            println(pdfURL);
+            
+        } else {
+            println("Open command cancelled by user.");
+        }
     }
     
 }

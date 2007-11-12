@@ -12,21 +12,31 @@ public class AlcSketchPath{
     PApplet root; // The root PApplet that we will render ourselves onto
     
     Vector<Object> line;
+    int colour;
     int inc = 0;
     
     boolean endLine = false;
     Point end = new Point();
     
     public AlcSketchPath(PApplet r, int x, int y){
+        init(r, x, y, 0x000000);
+    }
+    
+    public AlcSketchPath(PApplet r, int x, int y, int c){
+        init(r, x, y, c);
+    }
+    
+    public void init(PApplet r, int x, int y, int c){
         root = r;
         line = new Vector<Object>();
         line.ensureCapacity(100);
         line.add(new Point(x, y));
-        //root.println(x + " " + y);
+        colour = c;
     }
     
     public void draw(){
         
+        //root.fill(colour);
         root.beginShape();
         
         Point pt1 = (Point)line.get(0);
@@ -88,7 +98,17 @@ public class AlcSketchPath{
         if(b) root.redraw();
     }
     
+    public int getColour(){
+        return colour;
+    }
+    
+    public void setColour(int c){
+        colour = c;
+    }
+    
     public void remove(){
         //root.unregisterDraw(this);
     }
+    
+    
 }
