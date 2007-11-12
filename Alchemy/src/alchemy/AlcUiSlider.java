@@ -168,8 +168,8 @@ public class AlcUiSlider extends AlcUiObject{
                     // UP
                     set(0);
                 }
-                a.sendEvent(caller);
             }
+            a.sendEvent(caller);
             pressed = false;
         }
     }

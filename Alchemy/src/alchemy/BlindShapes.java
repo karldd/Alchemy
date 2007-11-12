@@ -28,12 +28,12 @@ public class BlindShapes extends AlcModule {
         shapes = new Vector<Object>();
         shapes.ensureCapacity(100);
         
-        /*
+        
         ui = new AlcUi(root);
         ui.setVisible(true);
-        ui.addButton(this, "Increase Stroke", 10, 50, "stokeUp.png", pluginPath);
-        */
-         
+        ui.addSlider(this, "ShapeColour", 10, 50, 25, "slider.gif", pluginPath);
+        
+        
         cursor = root.CROSS;
         smooth = true;
         setSmooth(smooth);
@@ -115,6 +115,11 @@ public class BlindShapes extends AlcModule {
     
     public void buttonEvent(ActionEvent e) {
         //root.println("Sym Skribble" + e.getSource());
+    }
+    
+    public void sliderEvent(ActionEvent e) {
+        root.println("Slider Event " + e.getSource());
+        ui.getSliderValue("ShapeColour");
     }
     
 }
