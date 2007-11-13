@@ -14,20 +14,14 @@ public class AlcUiSlider extends AlcUiObject{
     float grain;
     
     public AlcUiSlider(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, int v, String file) {
-        root = r;
-        parent = ui;
-        caller = c;
-        id = parent.sliders.size();
-        name = n;
-        ox = x;
-        oy = y;
-        value = root.constrain(v, 0, 100);
-        a = new AlcUiAction(this, id, name, "sliderEvent");
-        fileName = file;
-        setup();
+        init(r, ui, c, n, x, y, v, file, null);
     }
     
     public AlcUiSlider(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, int v, String file, File path) {
+        init(r, ui, c, n, x, y, v, file, path);
+    }
+    
+    public void init(PApplet r, AlcUi ui, AlcModule c, String n, int x, int y, int v, String file, File path){
         root = r;
         parent = ui;
         caller = c;

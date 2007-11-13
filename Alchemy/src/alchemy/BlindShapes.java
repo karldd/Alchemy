@@ -13,6 +13,7 @@ public class BlindShapes extends AlcModule {
     // GENERAL
     boolean firstPress = false;
     boolean cleared = false;
+    int shapeColour;
     
     // LINE
     Vector<Object> shapes;
@@ -31,8 +32,7 @@ public class BlindShapes extends AlcModule {
         
         ui = new AlcUi(root);
         ui.setVisible(true);
-        ui.addSlider(this, "ShapeColour", 10, 50, 25, "slider.gif", pluginPath);
-        
+        ui.addSlider(this, "Shape Colour", 10, 50, 25, "slider.gif", pluginPath);
         
         cursor = root.CROSS;
         smooth = true;
@@ -43,11 +43,12 @@ public class BlindShapes extends AlcModule {
     }
     
     public void draw(){
-        root.fill(0, 0, 0, 25);
+        
         root.noStroke();
         resetSmooth();
         // Draw the shapes
         for(int i = 0; i < shapes.size(); i++) {
+            root.fill(((AlcSketchPath)shapes.get(i)).getColour());
             ((AlcSketchPath)shapes.get(i)).draw();
         }
         
@@ -75,7 +76,7 @@ public class BlindShapes extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
-        shapes.add(new AlcSketchPath(root, x, y));
+        shapes.add(new AlcSketchPath(root, x, y, shapeColour));
         currentLine = shapes.size() - 1;
         
         firstPress = true;
@@ -118,8 +119,15 @@ public class BlindShapes extends AlcModule {
     }
     
     public void sliderEvent(ActionEvent e) {
-        root.println("Slider Event " + e.getSource());
-        ui.getSliderValue("ShapeColour");
+        //root.println("Slider Event " + e.getActionCommand());
+        if(e.getActionCommand().equals("Shape Colour")){
+            //ui.removeSlider(e.getID());
+            int col = ui.getSliderValue(e.getID());
+            shapeColour = root.color(0, 0, 0, col*2.55F);
+        }
+        
+        root.println(ui.getSliderValue(e.getID()));
+        
     }
     
 }

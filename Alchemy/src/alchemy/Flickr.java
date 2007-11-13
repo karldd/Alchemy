@@ -1,7 +1,5 @@
 package alchemy;
 
-import processing.core.*;
-
 import java.awt.Image;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -33,7 +31,6 @@ import org.xml.sax.SAXException;
  */
 
 public class Flickr {
-    PApplet parent;
     
     private static Flickr theInstance = null;
     private final Logger logger;
@@ -56,11 +53,12 @@ public class Flickr {
             "&format=rest" +
             "&api_key=3f44e4e680a2a1b89af1b4bb803057ac" +
             "&per_page=1" +        // just send one match back
-            "&sort=interestingness-desc" +
+            //"&sort=interestingness-desc" +
+            "&sort=date-posted-asc" +
+            "&page=%s" +
             "&text=%s";
     
     public Flickr() throws ParserConfigurationException {
-        this.parent = parent;
         
         logger = Logger.getLogger(Flickr.class.getName());
         DocumentBuilderFactory dcb = DocumentBuilderFactory.newInstance();
@@ -119,8 +117,8 @@ public class Flickr {
     }
     
     
-    public Image search(String keyword) {
-        URL searchURL = newURL(String.format(searchMethodFormat, keyword));
+    public Image search(String keyword, String page) {
+        URL searchURL = newURL(String.format(searchMethodFormat, page, keyword));
         if (searchURL == null) {
             return null;
         }
@@ -146,20 +144,17 @@ public class Flickr {
             if (imageURL != null) {
                 try {
                     image = ImageIO.read(imageURL);
+                    //image = ImageIO.read(new URL("http://www.darcy.co.nz/wp/wp-content/thumb-cache/9bf22e5c926b8f72cdd0d83c1449a967.jpg"));
                     System.out.println("read image from imageURL");
                 } catch (IOException e) {
+                    //System.out.println("Error");
                     logger.log(Level.WARNING, String.format("couldn't load \"%s\"", imageURL), e);
                 }
             }
         }
-        if(image != null){
-            System.out.println("image == null");
-        } else {
-            System.out.println("image != null");
-        }
         
         //return image != null ? new ImageIcon(image) : null;
-        return image;
-        //return image != null ? image : null;
+        //return image;
+        return image != null ? image : null;
     }
 }

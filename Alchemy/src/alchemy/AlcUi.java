@@ -51,7 +51,9 @@ public class AlcUi {
         buttons.add(new AlcUiButton(root, this, caller, name, x, y, icon, filePath));
     }
     
-    public void removeButton(String name){
+    // BROKEN - need to reissue the vector ID to each of the objects and their action
+    public void removeButton(int i){
+        /*
         for(int i = 0; i < buttons.size(); i++) {
             if(((AlcUiButton) buttons.get(i)).name == name){
                 buttons.remove(i);
@@ -59,6 +61,9 @@ public class AlcUi {
                 break;
             }
         }
+         */
+        buttons.remove(i);
+        root.redraw();
     }
     
     public void addToggleButton(AlcModule caller, String name, int x, int y, Boolean on, String icon){
@@ -69,7 +74,9 @@ public class AlcUi {
         toggleButtons.add(new AlcUiToggleButton(root, this, caller, name, x, y, on, icon, filePath));
     }
     
-    public void removeToogleButton(String name){
+    // BROKEN - need to reissue the vector ID to each of the objects and their action
+    public void removeToogleButton(int i){
+        /*
         for(int i = 0; i < toggleButtons.size(); i++) {
             if(((AlcUiToggleButton) toggleButtons.get(i)).name == name){
                 toggleButtons.remove(i);
@@ -77,12 +84,16 @@ public class AlcUi {
                 break;
             }
         }
+         */
+        toggleButtons.remove(i);
+        root.redraw();
     }
     
-    public boolean getToogleButtonState(String name){
+    public boolean getToogleButtonState(int i){
+        /*
         boolean state = false;
         boolean called = false;
-        
+         
         for(int i = 0; i < toggleButtons.size(); i++) {
             if(((AlcUiToggleButton) toggleButtons.get(i)).name == name){
                 state = ((AlcUiToggleButton)toggleButtons.get(i)).getState();
@@ -91,7 +102,9 @@ public class AlcUi {
             }
         }
         if(!called) root.println("No such button: " + name);
-        return state;
+         */
+        
+        return ((AlcUiToggleButton)toggleButtons.get(i)).getState();
     }
     
     public void addSlider(AlcModule caller, String name, int x, int y, int value, String icon){
@@ -102,7 +115,8 @@ public class AlcUi {
         sliders.add(new AlcUiSlider(root, this, caller, name, x, y, value, icon, filePath));
     }
     
-    public int getSliderValue(String name){
+    public int getSliderValue(int i){
+        /*
         int value = 0;
         boolean called = false;
         for(int i = 0; i < sliders.size(); i++) {
@@ -114,9 +128,13 @@ public class AlcUi {
         }
         if(!called) root.println("No such slider: " + name);
         return value;
+         */
+        return ((AlcUiSlider)sliders.get(i)).value;
     }
     
-    public void removeSlider(String name){
+    // BROKEN - need to reissue the vector ID to each of the objects and their action
+    public void removeSlider(int i){
+        /*
         for(int i = 0; i < sliders.size(); i++) {
             if(((AlcUiSlider) sliders.get(i)).name == name){
                 sliders.remove(i);
@@ -124,7 +142,11 @@ public class AlcUi {
                 break;
             }
         }
+         */
+        sliders.remove(i);
+        root.redraw();
     }
+    
     
     public void addTab(String name, int x, int y, boolean on, int id, String text, String icon){
         tabs.add(new AlcUiTab(root, this, name, x, y, on, id, text, icon));
@@ -158,7 +180,7 @@ public class AlcUi {
         root.noStroke();
         root.fill(215);
         root.rect(0, 0, root.width, 39);
-         
+        
     }
     
     
