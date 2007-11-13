@@ -13,8 +13,8 @@ import java.awt.event.KeyEvent;
 
 public class ShapeImager extends AlcModule {
     
-    Image random = null;
     PImage randomP = null;
+    String searchWords[] = {};
     
     public ShapeImager() {
     }
@@ -28,35 +28,19 @@ public class ShapeImager extends AlcModule {
         root.noFill();
         root.stroke(0);
         resetSmooth();
-        root.println(randomP);
+
         if(randomP != null){
-            root.println("NOT NULL");
             root.image(randomP, 0, 0);
         }
     }
     
     public void randomImage(){
-        Flickr f = null;
-        try{
-            f = new Flickr();
-        } catch (ParserConfigurationException e) {
-            System.err.println("Caught ParserConfigurationException: " + e.getMessage());
-        }
-        //root.println(f);
-        random = f.search("test");
+        String pageOffset = String.valueOf((int)root.random(1, 100));
+        Image random = Flickr.getInstance().search("abstract", pageOffset);
         
-        PImage randomP = null;
         if(random != null){
-            root.println("random is not null... loading PIMAGE");
             randomP = root.loadImageSync(random);
         }
-        
-        if(random != null){
-            root.println("Random == null");
-        } else {
-            root.println("Random != null");
-        }
-        
         root.redraw();
     }
     
