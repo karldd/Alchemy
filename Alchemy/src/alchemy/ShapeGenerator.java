@@ -79,7 +79,7 @@ public class ShapeGenerator extends AlcModule {
         
         // Draw the lines
         for(int i = 0; i < shapes.size(); i++) {
-            ((AlcSketchPath)shapes.get(i)).draw();
+            //((AlcSketchPath)shapes.get(i)).draw();
         }
         
     }
@@ -297,7 +297,7 @@ public class ShapeGenerator extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
-        shapes.add(new AlcSketchPath(root, x, y));
+        //shapes.add(new AlcSketchPath(root, x, y));
         currentShape = shapes.size() - 1;
         
         firstPress = true;
