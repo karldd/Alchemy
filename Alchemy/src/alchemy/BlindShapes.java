@@ -49,7 +49,7 @@ public class BlindShapes extends AlcModule {
         // Draw the shapes
         for(int i = 0; i < shapes.size(); i++) {
             root.fill(((AlcSketchPath)shapes.get(i)).getColour());
-            ((AlcSketchPath)shapes.get(i)).draw();
+            //((AlcSketchPath)shapes.get(i)).draw();
         }
         
     }
@@ -76,7 +76,7 @@ public class BlindShapes extends AlcModule {
         int x = e.getX();
         int y = e.getY();
         
-        shapes.add(new AlcSketchPath(root, x, y, shapeColour));
+        //shapes.add(new AlcSketchPath(root, x, y, shapeColour));
         currentLine = shapes.size() - 1;
         
         firstPress = true;
