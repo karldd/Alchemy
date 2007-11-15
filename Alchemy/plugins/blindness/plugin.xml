@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="alchemy.affect.blindness" version="1.0.3">
+
+    <requires> 
+        <import plugin-id="alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="blindness" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="alchemy.core" point-id="Affect" id="blindnessAffect"> 
+        <parameter id="class" value="alchemy.affect.Blindness"/> 
+        <parameter id="name" value="Blindness"/> 
+        <parameter id="description" value="Blind shape creation and drawing" />
+        <parameter id="icon" value="tab.gif" />
+    </extension>
+
+</plugin>
