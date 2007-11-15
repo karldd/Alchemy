@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="alchemy.create.fontShapes" version="1.0.3">
+    
+    <requires> 
+        <import plugin-id="alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="fontShapes" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="alchemy.core" point-id="Create" id="fontShapesCreate"> 
+        <parameter id="class" value="alchemy.create.FontShapes"/> 
+        <parameter id="name" value="Font Shapes"/> 
+        <parameter id="description" value="Shapes generated from fonts" />
+        <parameter id="icon" value="tab.gif" />
+    </extension>
+    
+</plugin>

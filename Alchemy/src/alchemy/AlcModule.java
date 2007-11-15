@@ -1,20 +1,21 @@
 package alchemy;
 
+import alchemy.ui.AlcUi;
 import processing.core.PApplet;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-abstract class AlcModule {
+public abstract class AlcModule {
     
-    PApplet root;
-    String moduleName, iconName, descriptionName;
-    int id, cursor;
-    boolean loaded = false;
-    boolean smooth, loop;
-    File pluginPath;
-    AlcUi ui;
+    public PApplet root;
+    public String moduleName, iconName, descriptionName;
+    public int id, cursor;
+    public boolean loaded = false;
+    public boolean smooth, loop;
+    public File pluginPath;
+    public AlcUi ui;
     
     public AlcModule(){
     }

@@ -1,9 +1,10 @@
 package alchemy;
 
+import alchemy.ui.AlcUi;
+
 import processing.core.*;
 import processing.pdf.*;
 
-import java.util.Vector;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.awt.Point;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -93,22 +95,36 @@ public class AlcMain extends PApplet {
     
     
     
-    
+    // PLUGIN
     private PluginManager pluginManager;
-    AlcModule[] modules;
+    ArrayList<AlcModule> creates = new ArrayList<AlcModule>(10);
+    ArrayList<AlcModule> affects = new ArrayList<AlcModule>(10);
     int numberOfPlugins;
-    int currentModule;
     
     AlcUi ui;
     
+    // BUFFER
+    PGraphics canvas;
+    
+    // PDF
     boolean saveOneFrame = false;
     String pdfURL;
+    
+    // SHAPES
+    ArrayList<AlcShape> shapes;
     
     boolean firstLoad = true;
     boolean inToolBar = false;
     
     public void setup(){
         size(640, 480);
+        
+        canvas = createGraphics(width, height, JAVA2D);
+        canvas.beginDraw();
+        canvas.background(255);
+        canvas.smooth();
+        canvas.endDraw();
+        
         //size(screen.width, screen.height);
         
         /* RESIZEABLE FRAME - BUGGY
@@ -144,13 +160,30 @@ public class AlcMain extends PApplet {
         if(numberOfPlugins > 0){
             addPlugins();
             // Set the start module
-            currentModule = 0;
-            loadTabs();
+            //currentModule = 0;
+            
+            //loadTabs();
+            
+            println(affects.size());
         }
         
+        /*
+        for (Iterator<AlcModule> it = creates.iterator(); it.hasNext(); ) {
+            AlcModule a = it.next();
+            println(a.getName());
+        }
+         
+        for (Iterator<AlcModule> it = affects.iterator(); it.hasNext(); ) {
+            AlcModule a = it.next();
+            println(a.getName());
+        }
+         */
         
-        Toolkit tk = Toolkit.getDefaultToolkit();
-        System.out.println("Menu shortcut key mask = " + tk.getMenuShortcutKeyMask());
+        shapes = new ArrayList<AlcShape>(100);
+        shapes.ensureCapacity(100);
+        
+        noFill();
+        smooth();
         
         noLoop();
         
@@ -163,9 +196,15 @@ public class AlcMain extends PApplet {
         }
         
         background(255);
-        //rect(width-40, height-40, 40, 40);
         
-        modules[currentModule].draw();
+        //image(canvas, 0, 0);
+        
+        // Draw all shapes
+        for(int i = 0; i < shapes.size(); i++) {
+            ((AlcShape)shapes.get(i)).draw();
+        }
+        
+        //modules[currentModule].draw();
         
         if(saveOneFrame) {
             endRecord();
@@ -173,34 +212,35 @@ public class AlcMain extends PApplet {
         }
     }
     
-    public void loadTabs(){
-        
-        ui = new AlcUi(this);
-        int tabsWidth = 0;
-        
-        for(int i = 0; i < modules.length; i++) {
-            boolean current = false;
-            if(i == currentModule){
-                current = true;
-            }
-            
-            // Add Tabs
-            ui.addTab(modules[i].getName(), tabsWidth + 5, 5, current, modules[i].getId(), modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
-            
-            tabsWidth = ui.getTabWidth(i);
-            
-        }
-        
-        setModule(currentModule);
-    }
-    
+//    public void loadTabs(){
+//
+//        ui = new AlcUi(this);
+//        int tabsWidth = 0;
+//
+//        for(int i = 0; i < modules.length; i++) {
+//            boolean current = false;
+//            if(i == currentModule){
+//                current = true;
+//            }
+//
+//            // Add Tabs
+//            ui.addTab(modules[i].getName(), tabsWidth + 5, 5, current, modules[i].getId(), modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
+//
+//            tabsWidth = ui.getTabWidth(i);
+//
+//        }
+//
+//        setModule(currentModule);
+//    }
+//
     private void loadPlugins() {
         
         pluginManager = ObjectFactory.newInstance().createManager();
         
+        // Folder of the plugins
         File pluginsDir = new File("plugins");
         
-        
+        // Get all plugins that end with .zip
         File[] plugins = pluginsDir.listFiles(new FilenameFilter() {
             
             public boolean accept(File dir, String name) {
@@ -215,7 +255,6 @@ public class AlcMain extends PApplet {
             
             // Number of plugins minus one for the core plugin
             numberOfPlugins = plugins.length-1;
-            modules = new AlcModule[numberOfPlugins];
             
             for (int i = 0; i < plugins.length; i++) {
                 locations[i] = StandardPluginLocation.create(plugins[i]);
@@ -233,26 +272,31 @@ public class AlcMain extends PApplet {
     
     private void addPlugins() {
         
-        try {
-            
+        creates = addExtensionPoint("Create");
+        affects = addExtensionPoint("Affect");
+        
+    }
+    
+    private ArrayList addExtensionPoint(String pointName){
+        
+        ArrayList<AlcModule> plugins = new ArrayList<AlcModule>();
+        
+        try{
             PluginDescriptor core = pluginManager.getRegistry().getPluginDescriptor("alchemy.core");
             
-            ExtensionPoint point = pluginManager.getRegistry().getExtensionPoint(core.getId(), "Module");
+            ExtensionPoint point = pluginManager.getRegistry().getExtensionPoint(core.getId(), pointName);
             
-            int i = 0;
-            
-            for (Iterator it = point.getConnectedExtensions().iterator(); it.hasNext();) {
+            for (Iterator<Extension> it = point.getConnectedExtensions().iterator(); it.hasNext();) {
                 
-                Extension ext = (Extension) it.next();
-                
+                Extension ext = it.next();
                 PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
-                
                 pluginManager.activatePlugin(descr.getId());
                 
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
                 
-                modules[i] =  (AlcModule)pluginCls.newInstance();
+                plugins.add( (AlcModule)pluginCls.newInstance() );
+                AlcModule currentPlugin = plugins.get(plugins.size()-1);
                 
                 // GET THE FILE PATH & ICON NAME
                 // Return the path of the XML file as a string
@@ -263,8 +307,7 @@ public class AlcMain extends PApplet {
                 File pathFile = new File(pathUri);
                 
                 if(pathFile.exists()){
-                    
-                    modules[i].setPluginPath(pathFile);
+                    currentPlugin.setPluginPath(pathFile);
                     println("Loaded " + pathFile.getPath());
                 }
                 
@@ -280,11 +323,10 @@ public class AlcMain extends PApplet {
                 println(name);
                  */
                 
-                modules[i].setName(nameParam);
-                modules[i].setIconName(iconParam);
-                modules[i].setDescriptionName(descriptionParam);
-                modules[i].setId(i);
-                i++;
+                currentPlugin.setName(nameParam);
+                currentPlugin.setIconName(iconParam);
+                currentPlugin.setDescriptionName(descriptionParam);
+                currentPlugin.setId(plugins.size()-1);
                 
                 //textFont(font);
                 //text(modules.getName(), 15, 60, -30);
@@ -294,57 +336,60 @@ public class AlcMain extends PApplet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        return plugins;
     }
     
-    public void setModule(int i){
-        if(firstLoad){
-            modules[i].setLoaded(true);
-            modules[i].setup(this);
-            modules[i].resetCursor();
-            firstLoad = false;
-        } else{
-            if(currentModule != i){
-                if(modules[i].getLoaded()){
-                    modules[i].refocus();
-                    modules[i].resetSmooth();
-                    modules[i].resetLoop();
-                } else{
-                    modules[i].setLoaded(true);
-                    modules[i].setup(this);
-                }
-                ui.changeTab(i, modules[i].hasUi());
-                
-                // Toggle visibility of Module UI
-                for(int j = 0; j < modules.length; j++) {
-                    if (j == i){
-                        modules[j].setUiVisible(true);
-                    }else {
-                        modules[j].setUiVisible(false);
-                    }
-                }
-                currentModule = i;
-            }
-        }
-    }
     
-    public void toggleToolbar(int why){
-        if(why < 5){
-            if(!ui.getVisible()){
-                cursor(ARROW);
-                ui.setVisible(true);
-                modules[currentModule].setUiVisible(true);
-                inToolBar = true;
-            }
-        } else if(why > 85){
-            if(ui.getVisible()){
-                modules[currentModule].resetCursor();
-                modules[currentModule].setUiVisible(false);
-                ui.setVisible(false);
-                inToolBar = false;
-            }
-        }
-    }
-    
+//    public void setModule(int i){
+//        if(firstLoad){
+//            modules[i].setLoaded(true);
+//            modules[i].setup(this);
+//            modules[i].resetCursor();
+//            firstLoad = false;
+//        } else{
+//            if(currentModule != i){
+//                if(modules[i].getLoaded()){
+//                    modules[i].refocus();
+//                    modules[i].resetSmooth();
+//                    modules[i].resetLoop();
+//                } else{
+//                    modules[i].setLoaded(true);
+//                    modules[i].setup(this);
+//                }
+//                ui.changeTab(i, modules[i].hasUi());
+//
+//                // Toggle visibility of Module UI
+//                for(int j = 0; j < modules.length; j++) {
+//                    if (j == i){
+//                        modules[j].setUiVisible(true);
+//                    }else {
+//                        modules[j].setUiVisible(false);
+//                    }
+//                }
+//                currentModule = i;
+//            }
+//        }
+//    }
+//
+//    public void toggleToolbar(int why){
+//        if(why < 5){
+//            if(!ui.getVisible()){
+//                cursor(ARROW);
+//                ui.setVisible(true);
+//                modules[currentModule].setUiVisible(true);
+//                inToolBar = true;
+//            }
+//        } else if(why > 85){
+//            if(ui.getVisible()){
+//                modules[currentModule].resetCursor();
+//                modules[currentModule].setUiVisible(false);
+//                ui.setVisible(false);
+//                inToolBar = false;
+//            }
+//        }
+//    }
+//
     public void keyPressed(){
         // Disable the default Processing quit key - ESC
         if(keyCode == ESC || key == ESC){
@@ -354,35 +399,31 @@ public class AlcMain extends PApplet {
     }
     
     public void mouseEvent(MouseEvent event) {
+        
+        Point pt = event.getPoint();
+        
         switch (event.getID()) {
             case MouseEvent.MOUSE_PRESSED:
-                if(!inToolBar){
-                    modules[currentModule].mousePressed(event);
-                }
+                
+                shapes.add( new AlcShape(this, canvas, pt) );
+                println(shapes.size());
+                redraw();
+                
                 break;
             case MouseEvent.MOUSE_CLICKED:
-                if(!inToolBar){
-                    modules[currentModule].mouseClicked(event);
-                }
+                
                 break;
             case MouseEvent.MOUSE_MOVED:
-                int y = event.getY();
-                toggleToolbar(y);
-                if(!inToolBar){
-                    modules[currentModule].mouseMoved(event);
-                }
+                
                 break;
             case MouseEvent.MOUSE_DRAGGED:
-                if(!inToolBar){
-                    modules[currentModule].mouseDragged(event);
-                }
-                //resizeWindow();
+                
+                (shapes.get(shapes.size()-1)).drag(pt);
+                redraw();
+                
                 break;
             case MouseEvent.MOUSE_RELEASED:
-                if(!inToolBar){
-                    modules[currentModule].mouseReleased(event);
-                }
-                //resizing = false;
+                
                 break;
         }
     }
@@ -394,12 +435,9 @@ public class AlcMain extends PApplet {
         
         switch(event.getID()){
             case KeyEvent.KEY_PRESSED:
-                modules[currentModule].keyPressed(event);
-                //println(keyCode);
+                
                 break;
             case KeyEvent.KEY_RELEASED:
-                modules[currentModule].keyReleased(event);
-                //println(event.getModifiersExText(keyCode));
                 
                 // Modifier + E = Save a PDF file
                 if(event.getModifiers() == MENU_SHORTCUT && keyCode == 69){
@@ -411,14 +449,14 @@ public class AlcMain extends PApplet {
                 
                 break;
             case KeyEvent.KEY_TYPED:
-                modules[currentModule].keyTyped(event);
+                
                 break;
         }
     }
     
-    public void tabEvent(ActionEvent e){
-        setModule(e.getID());
-    }
+//    public void tabEvent(ActionEvent e){
+//        setModule(e.getID());
+//    }
     
     public void openFileDialog(){
         // create a file chooser

@@ -70,12 +70,11 @@
     <target name="-post-jar">
         
         <!-- Move the compiled Plugin classes -->
-        <move file="${build.classes.dir}/alchemy/Core.class" todir="${basedir}/plugins/core/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/Symmskribbl.class" todir="${basedir}/plugins/symmskribbl/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/Sketch.class" todir="${basedir}/plugins/sketch/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/ShapeGenerator.class" todir="${basedir}/plugins/shapeGenerator/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/BlindShapes.class" todir="${basedir}/plugins/blindShapes/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/ShapeImager.class" todir="${basedir}/plugins/shapeImager/alchemy"/>
+        <move file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/plugins/core/alchemy"/>
+        <move file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/Symmetry/alchemy/affect"/>
+        <move file="${build.classes.dir}/alchemy/create/FontShapes.class" todir="${basedir}/plugins/fontShapes/alchemy/create"/>
+        <move file="${build.classes.dir}/alchemy/affect/Blindness.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
+        <move file="${build.classes.dir}/alchemy/create/ImageShapes.class" todir="${basedir}/plugins/imageShapes/alchemy/create"/>
         
         <!-- Copy the Data folder to the Dist directory -->
         <copy todir="${dist.dir}/data">
