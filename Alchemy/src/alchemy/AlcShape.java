@@ -14,43 +14,43 @@ import java.util.Iterator;
 
 import java.awt.geom.GeneralPath;
 
-public class AlcShape {
+public class AlcShape implements AlcConstants{
     
-    GeneralPath shape;
+    private GeneralPath shape;
     
     /** Colour of this shape */
-    Color colour = Color.BLACK;
+    private Color colour = Color.BLACK;
     
     /** Alpha of this shape */
-    int alpha = 255;
+    private int alpha = 255;
     
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    int style = 1;
+    private int style = 1;
     
     /** Line Weight if the style is line */
-    int lineWidth = 1;
+    private int lineWidth = 1;
     
     /** Store the last point */
-    Point lastPt;
+    private Point lastPt;
     
     /** For drawing smaller marks - draw lines until x points have been made */
-    int startPoints = 5;
+    private int startPoints = 5;
     
     /** Minimum distance until points are added */
-    int minMovement = 5;
+    private int minMovement = 5;
     
     /** Keep track of the number of points added */
-    int totalPoints = 0;
+    private int totalPoints = 0;
     
     public AlcShape(Point p){
         setup(p, colour, alpha, style, lineWidth);
     }
     
-    public AlcShape(Point p, Color aColour, int aAlpha, int aStyle, int aLineWidth){
-        setup(p, aColour, aAlpha, aStyle, aLineWidth);
+    public AlcShape(Point p, Color colour, int alpha, int style, int lineWidth){
+        setup(p, colour, alpha, style, lineWidth);
     }
     
-    public void setup(Point p, Color aColour, int aAlpha, int aStyle, int aLineWidth){
+    public void setup(Point p, Color colour, int alpha, int style, int lineWidth){
         
         //System.out.println("Setup");
         
@@ -58,14 +58,13 @@ public class AlcShape {
         shape = new GeneralPath();
         shape.moveTo(p.x, p.y);
         totalPoints++;
-        lastPt = p;
         
         //System.out.println(p.x + " " + p.y);
         
-        alpha = aAlpha;
-        setColour(aColour);
-        style = aStyle;
-        lineWidth = aLineWidth;
+        this.alpha = alpha;
+        setColour(colour);
+        this.style = style;
+        this.lineWidth = lineWidth;
         
     }
     
@@ -112,8 +111,8 @@ public class AlcShape {
         
     }
     
-    public void release(Point xy) {
-        shape.lineTo(xy.x, xy.y);
+    public void release(Point p) {
+        shape.lineTo(p.x, p.y);
     }
     
     
@@ -122,40 +121,40 @@ public class AlcShape {
         return shape;
     }
     
-    public void setShape(GeneralPath aShape){
-        shape = aShape;
+    public void setShape(GeneralPath shape){
+        this.shape = shape;
     }
     
     public Color getColour(){
         return colour;
     }
     
-    public void setColour(Color c){
-        colour = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
+    public void setColour(Color colour){
+        this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
     }
     
     public int getAlpha(){
         return alpha;
     }
     
-    public void setAlpha(int a){
-        alpha = a;
+    public void setAlpha(int alpha){
+        this.alpha = alpha;
     }
     
     public int getStyle(){
         return style;
     }
     
-    public void setStyle(int s){
-        style = s;
+    public void setStyle(int style){
+        this.style = style;
     }
     
     public int getLineWidth(){
         return lineWidth;
     }
     
-    public void setLineWidth(int l){
-        lineWidth = l;
+    public void setLineWidth(int lineWidth){
+        this.lineWidth = lineWidth;
     }
     
 }

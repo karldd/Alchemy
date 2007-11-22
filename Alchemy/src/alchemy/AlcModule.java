@@ -1,7 +1,6 @@
 package alchemy;
 
-import alchemy.ui.AlcUi;
-import processing.core.PApplet;
+
 
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
@@ -9,20 +8,18 @@ import java.io.File;
 
 public abstract class AlcModule {
     
-    public PApplet root;
     public String moduleName, iconName, descriptionName;
     public int id, cursor;
     public boolean loaded = false;
     public boolean smooth, loop;
     public File pluginPath;
-    public AlcUi ui;
     
     public AlcModule(){
     }
     
     
     // STRUCTURE
-    public void setup(PApplet p){
+    public void setup(){
     }
     
     public void draw(){
@@ -81,7 +78,8 @@ public abstract class AlcModule {
         descriptionName = n;
     }
     
-    
+    /* Processing crap...
+     *
     // GLOBAL HARMONY
     public void setCursor(int c){
         root.cursor(c);
@@ -150,7 +148,7 @@ public abstract class AlcModule {
             return true;
         }
     }
-    
+    */
     
     
     // MOUSE EVENTS

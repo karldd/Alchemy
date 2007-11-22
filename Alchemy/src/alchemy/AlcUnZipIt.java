@@ -6,7 +6,7 @@
 
 package alchemy;
 
-import processing.core.*;
+//import processing.core.*;
 
 import java.io.*;
 import java.util.zip.*;
@@ -15,7 +15,7 @@ import java.awt.Toolkit;
 import java.awt.Image;
 
 public class AlcUnZipIt {
-    PApplet parent;
+    //PApplet parent;
     File zip;
     
     /**
@@ -23,9 +23,9 @@ public class AlcUnZipIt {
      * @param X float X-position
      * @param Y float Y-position
      */
-    public AlcUnZipIt(String Zipfile, PApplet parent) {
-        this.parent = parent;
-        parent.registerDispose(this);
+    public AlcUnZipIt(String Zipfile) {
+        //this.parent = parent;
+        //parent.registerDispose(this);
         zip = new File(Zipfile);
     }
     
@@ -99,6 +99,7 @@ public class AlcUnZipIt {
      * Get Filenames
      * @return String[] filenames
      */
+    /*
     public String[] getFilenames(){
         // returns a String array of all the files in the zip-file
         try {
@@ -120,6 +121,7 @@ public class AlcUnZipIt {
         }
         return null;
     }
+     */
     
     /**
      * Load a new Zip
@@ -188,12 +190,13 @@ public class AlcUnZipIt {
      * @param fname String Filename Inside Zip
      * @return PImage Image
      */
-    public PImage loadImage(String fname){
+    public Image loadImage(String fname){
         // returns a PImage object of the requested files Byte array
         byte[] ret = loadBytes(fname);
         if(ret != null){
-            PImage pimage;
+            //PImage pimage;
             Image img = Toolkit.getDefaultToolkit().createImage(ret);
+            /*
             pimage = parent.loadImageSync(img);
             
             // get the file extension
@@ -211,7 +214,8 @@ public class AlcUnZipIt {
                     }
                 }
             }
-            return pimage;
+             */
+            return img;
         }
         return null;
     }
@@ -221,6 +225,7 @@ public class AlcUnZipIt {
      * @param fname String Filename Inside Zip
      * @return PFont Font
      */
+    /*
     public PFont loadFont(String fname) {
         // returns a PFont object of the requested files Byte array
         try {
@@ -250,6 +255,7 @@ public class AlcUnZipIt {
         }
         return null;
     }
+     */
     
     /**
      * Unpacks a requested file to a requested location
