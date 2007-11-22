@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import java.awt.geom.GeneralPath;
 
-public class AlcCanvas extends JComponent {
+public class AlcCanvas extends JComponent implements AlcConstants{
     
     ArrayList<AlcShape> shapes;
     
@@ -52,8 +52,8 @@ public class AlcCanvas extends JComponent {
         }
     }
     
-    public void draw(ArrayList<AlcShape> aShapes){
-        shapes = aShapes;
+    public void draw(ArrayList<AlcShape> shapes){
+        this.shapes = shapes;
         this.repaint();
     }
     
