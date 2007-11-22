@@ -2,17 +2,15 @@ package alchemy;
 
 import alchemy.ui.AlcUi;
 
-import processing.core.*;
-import processing.pdf.*;
+//import processing.core.*;
+//import processing.pdf.*;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentAdapter;
 
-import java.awt.Toolkit;
+import java.awt.*;
 import javax.swing.*;
+import java.awt.event.*;
+
+import java.awt.geom.GeneralPath;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -23,6 +21,7 @@ import java.awt.Point;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+// JAVA PLUGIN FRAMEWORK
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
@@ -32,115 +31,23 @@ import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
 import org.java.plugin.PluginClassLoader;
 
-public class AlcMain extends PApplet {
+public class AlcMain extends JFrame implements MouseMotionListener, MouseListener {
     
     public AlcMain() {
-    }
-    
-    // platform IDs
-    static final int WINDOWS = 1;
-    static final int MACOSX  = 3;
-    static final int LINUX   = 4;
-    static final int OTHER   = 0;
-    
-    public static void main(String[] args) {
-        PApplet.main( new String[]{"alchemy.AlcMain"} );
-    }
-    
-    /**
-     * Full name of the Java version (i.e. 1.5.0_11).
-     */
-    public static final String javaVersionName = System.getProperty("java.version");
-    
-    /**
-     * Version of Java that's in use, whether 1.1 or 1.3 or whatever,
-     * stored as a float.
-     */
-    public static final float javaVersion = new Float(javaVersionName.substring(0, 3)).floatValue();
-    
-    /**
-     * Current platform in use.
-     * <P>
-     * Equivalent to System.getProperty("os.name"), just used internally.
-     */
-    static public String platformName =
-            System.getProperty("os.name");
-    
-    /**
-     * Current platform in use, one of the
-     * PConstants WINDOWS, MACOSX, LINUX or OTHER.
-     */
-    static public int platform;
-    
-    static {
-        if (platformName.indexOf("Mac") != -1) {
-            platform = MACOSX;
-            
-        } else if (platformName.indexOf("Windows") != -1) {
-            platform = WINDOWS;
-            
-        } else if (platformName.equals("Linux")) {  // true for the ibm vm
-            platform = LINUX;
-            
-        } else {
-            platform = OTHER;
-        }
-    }
-    
-    /**
-     * Modifier flags for the shortcut key used to trigger menus.
-     * (Cmd on Mac OS X, Ctrl on Linux and Windows)
-     */
-    static public final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-    
-    
-    
-    // PLUGIN
-    private PluginManager pluginManager;
-    ArrayList<AlcModule> creates = new ArrayList<AlcModule>(10);
-    ArrayList<AlcModule> affects = new ArrayList<AlcModule>(10);
-    int numberOfPlugins;
-    
-    AlcUi ui;
-    
-    // BUFFER
-    PGraphics canvas;
-    
-    // PDF
-    boolean saveOneFrame = false;
-    String pdfURL;
-    
-    // SHAPES
-    ArrayList<AlcShape> shapes;
-    
-    boolean firstLoad = true;
-    boolean inToolBar = false;
-    
-    public void setup(){
-        size(640, 480);
         
-        canvas = createGraphics(width, height, JAVA2D);
-        canvas.beginDraw();
-        canvas.background(255);
-        canvas.smooth();
-        canvas.endDraw();
+        JPanel content = new JPanel();              // Create content panel.
+        content.setLayout(new BorderLayout());
+        content.addMouseListener(this);
+        content.addMouseMotionListener(this);
         
-        //size(screen.width, screen.height);
+        canvas = new AlcCanvas();
+        content.add(canvas, BorderLayout.CENTER);  // Put in expandable center.
         
-        /* RESIZEABLE FRAME - BUGGY
-        frame.setResizable(true);
-        frame.addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent e) {
-                if(e.getSource()==frame) {
-                    println("Redraw");
-                    redraw();
-                }
-            }
-        }
-        );
-         */
-        
-        //frame.setTitle("Alchemy");
+        this.setContentPane(content);
+        //this.setTitle("al.chemy");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.pack();                                // Finalize window layout
+        this.setLocationRelativeTo(null);           // Center window on screen.
         
         // set system look and feel
         try {
@@ -149,22 +56,10 @@ public class AlcMain extends PApplet {
             e.printStackTrace();
         }
         
-        
-        registerMouseEvent(this);
-        registerKeyEvent(this);
-        
         loadPlugins();
-        
-        background(255);
         
         if(numberOfPlugins > 0){
             addPlugins();
-            // Set the start module
-            //currentModule = 0;
-            
-            //loadTabs();
-            
-            println(affects.size());
         }
         
         /*
@@ -182,57 +77,20 @@ public class AlcMain extends PApplet {
         shapes = new ArrayList<AlcShape>(100);
         shapes.ensureCapacity(100);
         
-        noFill();
-        smooth();
-        
-        noLoop();
-        
+    }
+    
+    public static void main(String[] args) {
+        //PApplet.main( new String[]{"alchemy.AlcMain"} );
+        AlcMain window = new AlcMain();
+        window.setVisible(true);
+    }
+    
+    public void setup(){
     }
     
     public void draw(){
-        if(saveOneFrame) {
-            //beginRecord(PDF, "Alchemy-####.pdf");
-            beginRecord(PDF, pdfURL);
-        }
-        
-        background(255);
-        
-        //image(canvas, 0, 0);
-        
-        // Draw all shapes
-        for(int i = 0; i < shapes.size(); i++) {
-            ((AlcShape)shapes.get(i)).draw();
-        }
-        
-        //modules[currentModule].draw();
-        
-        if(saveOneFrame) {
-            endRecord();
-            saveOneFrame = false;
-        }
     }
     
-//    public void loadTabs(){
-//
-//        ui = new AlcUi(this);
-//        int tabsWidth = 0;
-//
-//        for(int i = 0; i < modules.length; i++) {
-//            boolean current = false;
-//            if(i == currentModule){
-//                current = true;
-//            }
-//
-//            // Add Tabs
-//            ui.addTab(modules[i].getName(), tabsWidth + 5, 5, current, modules[i].getId(), modules[i].getName(), modules[i].getIconName(), modules[i].getPluginPath());
-//
-//            tabsWidth = ui.getTabWidth(i);
-//
-//        }
-//
-//        setModule(currentModule);
-//    }
-//
     private void loadPlugins() {
         
         pluginManager = ObjectFactory.newInstance().createManager();
@@ -308,7 +166,7 @@ public class AlcMain extends PApplet {
                 
                 if(pathFile.exists()){
                     currentPlugin.setPluginPath(pathFile);
-                    println("Loaded " + pathFile.getPath());
+                    System.out.println("Loaded " + pathFile.getPath());
                 }
                 
                 // Set the icon name and the decription name from the XML
@@ -340,123 +198,34 @@ public class AlcMain extends PApplet {
         return plugins;
     }
     
+    public void mouseMoved(MouseEvent e)    { }
     
-//    public void setModule(int i){
-//        if(firstLoad){
-//            modules[i].setLoaded(true);
-//            modules[i].setup(this);
-//            modules[i].resetCursor();
-//            firstLoad = false;
-//        } else{
-//            if(currentModule != i){
-//                if(modules[i].getLoaded()){
-//                    modules[i].refocus();
-//                    modules[i].resetSmooth();
-//                    modules[i].resetLoop();
-//                } else{
-//                    modules[i].setLoaded(true);
-//                    modules[i].setup(this);
-//                }
-//                ui.changeTab(i, modules[i].hasUi());
-//
-//                // Toggle visibility of Module UI
-//                for(int j = 0; j < modules.length; j++) {
-//                    if (j == i){
-//                        modules[j].setUiVisible(true);
-//                    }else {
-//                        modules[j].setUiVisible(false);
-//                    }
-//                }
-//                currentModule = i;
-//            }
-//        }
-//    }
-//
-//    public void toggleToolbar(int why){
-//        if(why < 5){
-//            if(!ui.getVisible()){
-//                cursor(ARROW);
-//                ui.setVisible(true);
-//                modules[currentModule].setUiVisible(true);
-//                inToolBar = true;
-//            }
-//        } else if(why > 85){
-//            if(ui.getVisible()){
-//                modules[currentModule].resetCursor();
-//                modules[currentModule].setUiVisible(false);
-//                ui.setVisible(false);
-//                inToolBar = false;
-//            }
-//        }
-//    }
-//
-    public void keyPressed(){
-        // Disable the default Processing quit key - ESC
-        if(keyCode == ESC || key == ESC){
-            key = 0;
-            keyCode = 0;
-        }
+    public void mousePressed(MouseEvent e)  {
+        
+        // Create a new shape
+        shapes.add( new AlcShape(e.getPoint()) );
+        
+        //System.out.println("New Shape");
+        
     }
     
-    public void mouseEvent(MouseEvent event) {
-        
-        Point pt = event.getPoint();
-        
-        switch (event.getID()) {
-            case MouseEvent.MOUSE_PRESSED:
-                
-                shapes.add( new AlcShape(this, canvas, pt) );
-                println(shapes.size());
-                redraw();
-                
-                break;
-            case MouseEvent.MOUSE_CLICKED:
-                
-                break;
-            case MouseEvent.MOUSE_MOVED:
-                
-                break;
-            case MouseEvent.MOUSE_DRAGGED:
-                
-                (shapes.get(shapes.size()-1)).drag(pt);
-                redraw();
-                
-                break;
-            case MouseEvent.MOUSE_RELEASED:
-                
-                break;
-        }
-    }
+    public void mouseClicked(MouseEvent e)  { }
+    public void mouseEntered(MouseEvent e)  { }
+    public void mouseExited(MouseEvent e)   { }
+    public void mouseReleased(MouseEvent e) { }
     
-    public void keyEvent(KeyEvent event) {
+    public void mouseDragged(MouseEvent e)  {
         
-        int keyCode = event.getKeyCode();
-        //String keyText = event.getKeyText(keyCode);
+        // Add points to the shape
+        (shapes.get(shapes.size()-1)).drag(e.getPoint());
         
-        switch(event.getID()){
-            case KeyEvent.KEY_PRESSED:
-                
-                break;
-            case KeyEvent.KEY_RELEASED:
-                
-                // Modifier + E = Save a PDF file
-                if(event.getModifiers() == MENU_SHORTCUT && keyCode == 69){
-                    openFileDialog();
-                    //saveOneFrame = true;
-                    //println("PDF Export");
-                    redraw();
-                }
-                
-                break;
-            case KeyEvent.KEY_TYPED:
-                
-                break;
-        }
+        // Do something here to change the shape
+        //System.out.println("Drag");
+        
+        // Pass the shapes to the canvas to be drawn
+        canvas.draw(shapes);
+        
     }
-    
-//    public void tabEvent(ActionEvent e){
-//        setModule(e.getID());
-//    }
     
     public void openFileDialog(){
         // create a file chooser
@@ -471,12 +240,84 @@ public class AlcMain extends PApplet {
             pdfURL = file.getPath();
             
             saveOneFrame = true;
-            redraw();
-            println(pdfURL);
+            //redraw();
+            //println(pdfURL);
             
         } else {
-            println("Open command cancelled by user.");
+            //println("Open command cancelled by user.");
         }
     }
+    
+    
+    // platform IDs
+    static final int WINDOWS = 1;
+    static final int MACOSX  = 3;
+    static final int LINUX   = 4;
+    static final int OTHER   = 0;
+    
+    
+    /**
+     * Full name of the Java version (i.e. 1.5.0_11).
+     */
+    public static final String javaVersionName = System.getProperty("java.version");
+    
+    /**
+     * Version of Java that's in use, whether 1.1 or 1.3 or whatever,
+     * stored as a float.
+     */
+    public static final float javaVersion = new Float(javaVersionName.substring(0, 3)).floatValue();
+    
+    /**
+     * Current platform in use.
+     * <P>
+     * Equivalent to System.getProperty("os.name"), just used internally.
+     */
+    static public String platformName =
+            System.getProperty("os.name");
+    
+    /**
+     * Current platform in use, one of the
+     * PConstants WINDOWS, MACOSX, LINUX or OTHER.
+     */
+    static public int platform;
+    
+    static {
+        if (platformName.indexOf("Mac") != -1) {
+            platform = MACOSX;
+            
+        } else if (platformName.indexOf("Windows") != -1) {
+            platform = WINDOWS;
+            
+        } else if (platformName.equals("Linux")) {  // true for the ibm vm
+            platform = LINUX;
+            
+        } else {
+            platform = OTHER;
+        }
+    }
+    
+    /**
+     * Modifier flags for the shortcut key used to trigger menus.
+     * (Cmd on Mac OS X, Ctrl on Linux and Windows)
+     */
+    static public final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    
+    AlcCanvas canvas;
+    
+    // PLUGIN
+    private PluginManager pluginManager;
+    ArrayList<AlcModule> creates = new ArrayList<AlcModule>(10);
+    ArrayList<AlcModule> affects = new ArrayList<AlcModule>(10);
+    int numberOfPlugins;
+    
+    // PDF
+    boolean saveOneFrame = false;
+    String pdfURL;
+    
+    // SHAPES
+    ArrayList<AlcShape> shapes;
+    
+    boolean firstLoad = true;
+    boolean inToolBar = false;
     
 }
