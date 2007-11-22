@@ -66,15 +66,18 @@
     nbproject/build-impl.xml file. 
 
     -->    
-           
+    
     <target name="-post-jar">
         
         <!-- Move the compiled Plugin classes -->
         <move file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/plugins/core/alchemy"/>
+        
+        <!--
         <move file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/Symmetry/alchemy/affect"/>
         <move file="${build.classes.dir}/alchemy/create/FontShapes.class" todir="${basedir}/plugins/fontShapes/alchemy/create"/>
         <move file="${build.classes.dir}/alchemy/affect/Blindness.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
         <move file="${build.classes.dir}/alchemy/create/ImageShapes.class" todir="${basedir}/plugins/imageShapes/alchemy/create"/>
+        -->
         
         <!-- Copy the Data folder to the Dist directory -->
         <copy todir="${dist.dir}/data">
