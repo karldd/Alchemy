@@ -9,16 +9,12 @@
 
 package alchemy;
 
+import alchemy.ui.*;
 import java.awt.*;
-import java.util.Iterator;
 import javax.swing.*;
 import java.awt.event.*;
 
-import java.awt.geom.GeneralPath;
-
-import java.util.Random;
-import java.util.ArrayList;
-import java.awt.Point;
+import java.util.*;
 
 public class AlcMain extends JFrame implements AlcConstants, MouseMotionListener, MouseListener {
     
@@ -71,6 +67,7 @@ public class AlcMain extends JFrame implements AlcConstants, MouseMotionListener
     
     AlcCanvas canvas;
     AlcPlugin plugins;
+    AlcUi ui;
     ArrayList<AlcModule> creates;
     ArrayList<AlcModule> affects;
     
@@ -84,22 +81,41 @@ public class AlcMain extends JFrame implements AlcConstants, MouseMotionListener
     boolean firstLoad = true;
     boolean inToolBar = false;
     
+    JPanel buttonPanel;
     
     public AlcMain() {
         
-        JPanel content = new JPanel();              // Create content panel.
-        content.setLayout(new BorderLayout());
-        content.addMouseListener(this);
-        content.addMouseMotionListener(this);
+        JPanel contentPanel = new JPanel();              // Create contentPanel panel.
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.addMouseListener(this);
+        contentPanel.addMouseMotionListener(this);
         
+        JPanel canvasPanel = new JPanel();
+        canvasPanel.setLayout(new BorderLayout());
         canvas = new AlcCanvas();
-        content.add(canvas, BorderLayout.CENTER);  // Put in expandable center.
+        canvasPanel.add(canvas, BorderLayout.CENTER);
         
-        this.setContentPane(content);
+        
+        
+        buttonPanel = new JPanel();
+        JButton mybtn = new JButton("Do Something");
+        buttonPanel.add(mybtn);
+        buttonPanel.setVisible(false);
+        
+        contentPanel.add(canvasPanel, BorderLayout.CENTER);  // Put in expandable center.
+        contentPanel.add(buttonPanel, BorderLayout.NORTH);  // Put in expandable center.
+        
+        // UI
+        //ui = new AlcUi(contentPanel);
+        
+        
+        this.setContentPane(contentPanel);
         //this.setTitle("al.chemy");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                                // Finalize window layout
         this.setLocationRelativeTo(null);           // Center window on screen.
+        
+        
         
         // Set system look and feel
         try {
@@ -147,7 +163,19 @@ public class AlcMain extends JFrame implements AlcConstants, MouseMotionListener
     public void draw(){
     }
     
-    public void mouseMoved(MouseEvent e)    { }
+    public void mouseMoved(MouseEvent e)    {
+        
+        int y = e.getY();
+        
+        if(y < 10){
+            buttonPanel.setVisible(true);
+            //System.out.println("IN");
+        } else if (y > 50){
+            buttonPanel.setVisible(false);
+            System.out.println("OUT");
+        }
+        
+    }
     
     public void mousePressed(MouseEvent e)  {
         
