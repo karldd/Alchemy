@@ -53,6 +53,7 @@ public interface AlcConstants {
     static final char RETURN    = 13;
     static final char ESC       = 27;
     static final char DELETE    = 127;
+    static final char SPACE    = 32;
     
     // i.e. if ((key == CODED) && (keyCode == UP))
     static final int CODED     = 0xffff;
@@ -77,5 +78,9 @@ public interface AlcConstants {
     static final int MOVE  = Cursor.MOVE_CURSOR;
     static final int TEXT  = Cursor.TEXT_CURSOR;
     static final int WAIT  = Cursor.WAIT_CURSOR;
+    
+    // shape types
+    static final int LINE = 0;
+    static final int SOLID = 1;
     
 }

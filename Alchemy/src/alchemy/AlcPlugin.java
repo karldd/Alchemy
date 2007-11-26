@@ -30,7 +30,7 @@ import org.java.plugin.standard.StandardPluginLocation;
 import org.java.plugin.PluginClassLoader;
 
 
-public class AlcPlugin implements AlcConstants {
+public class AlcPlugin {
     
     // PLUGIN
     private PluginManager pluginManager;
@@ -38,13 +38,7 @@ public class AlcPlugin implements AlcConstants {
     private int numberOfPlugins;
     
     /** Creates a new instance of AlcPlugin */
-    public AlcPlugin(int s) {
-
-        loadPlugins();
-        
-    }
-    
-    private void loadPlugins() {
+    public AlcPlugin() {
         
         pluginManager = ObjectFactory.newInstance().createManager();
         
@@ -78,6 +72,7 @@ public class AlcPlugin implements AlcConstants {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        
         
     }
     
