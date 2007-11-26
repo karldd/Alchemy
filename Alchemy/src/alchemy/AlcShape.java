@@ -25,7 +25,7 @@ public class AlcShape implements AlcConstants{
     private int alpha = 255;
     
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    private int style = 1;
+    private int style = LINE;
     
     /** Line Weight if the style is line */
     private int lineWidth = 1;
@@ -43,24 +43,44 @@ public class AlcShape implements AlcConstants{
     private int totalPoints = 0;
     
     public AlcShape(Point p){
-        setup(p, colour, alpha, style, lineWidth);
+        setupPoint(p, colour, alpha, style, lineWidth);
     }
     
     public AlcShape(Point p, Color colour, int alpha, int style, int lineWidth){
-        setup(p, colour, alpha, style, lineWidth);
+        setupPoint(p, colour, alpha, style, lineWidth);
     }
     
-    public void setup(Point p, Color colour, int alpha, int style, int lineWidth){
+    public AlcShape(GeneralPath gp){
+        setupShape(gp, colour, alpha, style, lineWidth);
+    }
+    
+    public AlcShape(GeneralPath gp, int style){
+        setupShape(gp, colour, alpha, style, lineWidth);
+    }
         
-        //System.out.println("Setup");
+    public AlcShape(GeneralPath gp,  Color colour, int alpha, int style, int lineWidth){
+        setupShape(gp, colour, alpha, style, lineWidth);
+    }
+    
+    public void setupPoint(Point p, Color colour, int alpha, int style, int lineWidth){
         
-        /** Create the shape and move to the first point */
+        // Create the shape and move to the first point
         shape = new GeneralPath();
         shape.moveTo(p.x, p.y);
         totalPoints++;
         
-        //System.out.println(p.x + " " + p.y);
+        this.alpha = alpha;
+        setColour(colour);
+        this.style = style;
+        this.lineWidth = lineWidth;
         
+    }
+    
+    public void setupShape(GeneralPath gp, Color colour, int alpha, int style, int lineWidth){
+        
+        // Add the shape
+        setShape(gp);
+        System.out.println(style);
         this.alpha = alpha;
         setColour(colour);
         this.style = style;

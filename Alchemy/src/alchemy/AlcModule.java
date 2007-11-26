@@ -8,23 +8,27 @@ import java.io.File;
 
 public abstract class AlcModule {
     
-    public String moduleName, iconName, descriptionName;
-    public int id, cursor;
-    public boolean loaded = false;
-    public boolean smooth, loop;
-    public File pluginPath;
+    public AlcMain root;
+    
+    private String moduleName, iconName, descriptionName;
+    private int id, cursor;
+    private boolean loaded = false;
+    private boolean smooth, loop;
+    private File pluginPath;
     
     public AlcModule(){
     }
     
     
     // STRUCTURE
-    public void setup(){
+    /** Called on first load */
+    public void setup(AlcMain root){
     }
     
     public void draw(){
     }
     
+    /** Called when the module is re-selected */
     public void refocus(){
     }
     
@@ -84,15 +88,15 @@ public abstract class AlcModule {
     public void setCursor(int c){
         root.cursor(c);
     }
-    
+     
     public int getCursor(){
         return cursor;
     }
-    
+     
     public void resetCursor(){
         root.cursor(cursor);
     }
-    
+     
     public void setSmooth(boolean b){
         if(b){
             root.smooth();
@@ -100,11 +104,11 @@ public abstract class AlcModule {
             root.noSmooth();
         }
     }
-    
+     
     public boolean getSmooth(){
         return smooth;
     }
-    
+     
     public void resetSmooth(){
         if(smooth){
             root.smooth();
@@ -112,7 +116,7 @@ public abstract class AlcModule {
             root.noSmooth();
         }
     }
-    
+     
     public void setLoop(boolean b){
         if(b){
             root.loop();
@@ -120,11 +124,11 @@ public abstract class AlcModule {
             root.noLoop();
         }
     }
-    
+     
     public boolean getLoop(){
         return loop;
     }
-    
+     
     public void resetLoop(){
         if(loop){
             root.loop();
@@ -132,15 +136,15 @@ public abstract class AlcModule {
             root.noLoop();
         }
     }
-    
-    
+     
+     
     // OBJECTS
     public void setUiVisible(boolean b){
         if(ui != null){
             ui.setVisible(b);
         }
     }
-    
+     
     public boolean hasUi(){
         if(ui == null){
             return false;
@@ -148,7 +152,7 @@ public abstract class AlcModule {
             return true;
         }
     }
-    */
+     */
     
     
     // MOUSE EVENTS
