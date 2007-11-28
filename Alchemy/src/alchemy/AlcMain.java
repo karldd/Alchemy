@@ -65,14 +65,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     
     
     private AlcPlugin plugins;
-    private ArrayList<AlcModule> creates;
-    private ArrayList<AlcModule> affects;
+    public ArrayList<AlcModule> creates;
+    public ArrayList<AlcModule> affects;
     
     AlcModule currentCreate;
     ArrayList<AlcModule> currentAffects;
     
     // Module name strings to pass to the ui
-    private String[] createNames, affectNames;
+    //private String[] createNames, affectNames;
     
     /** Preferred size of the window */
     private Dimension windowSize = new Dimension(800, 600);
@@ -107,6 +107,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     
     private void loadInterface(){
         
+        /*
         if(plugins.getNumberOfPlugins() > 0){
             // Load the names of the plugins for the ComboBoxes
             createNames = new String[creates.size()];
@@ -118,9 +119,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 affectNames[i] = affects.get(i).getName();
             }
         }
+         */
         
         // User Interface toolbar
-        ui = new AlcUi(this, windowSize, createNames, affectNames);
+        ui = new AlcUi(this);
         
         // The canvas to draw on
         canvas = new AlcCanvas(this);

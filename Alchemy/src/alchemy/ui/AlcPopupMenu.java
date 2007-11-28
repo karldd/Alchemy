@@ -9,7 +9,8 @@
 
 package alchemy.ui;
 
-import javax.swing.JMenuItem;
+import java.awt.Color;
+import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 
 public class AlcPopupMenu extends JPopupMenu{
@@ -20,6 +21,18 @@ public class AlcPopupMenu extends JPopupMenu{
     public AlcPopupMenu(AlcUi parent) {
         
         this.parent = parent;
+        
+        this.setBackground(parent.getUiBgColour());
+        
+        
+        
+        //this.setPopupSize(100, 100);
+        //this.setMinimumSize(new Dimension(200, 100));
+        //this.setBorder(BorderFactory.createLineBorder(Color.black));
+        //this.setUI(new BasicPopupMenuUI());
+        //this.setLabel(label); 
+        //this.setBorderPainted(false);
+        //this.add(new JMenuItem("yes"));
         
         
     }

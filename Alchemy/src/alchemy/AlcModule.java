@@ -5,6 +5,7 @@ package alchemy;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
 
 public abstract class AlcModule {
     
@@ -15,6 +16,7 @@ public abstract class AlcModule {
     private boolean loaded = false;
     private boolean smooth, loop;
     private File pluginPath;
+    private URL iconUrl;
     
     public AlcModule(){
     }
@@ -72,6 +74,16 @@ public abstract class AlcModule {
     
     public void setIconName(String n){
         iconName = n;
+    }
+    
+    /** Get the Icon URL from within the modules .zip file */
+    public URL getIconUrl(){
+        return iconUrl;
+    }
+    
+    /** Set the Icon URL within the modules .zip file */
+    public void setIconUrl(URL url){
+        iconUrl = url;
     }
     
     public String getDescriptionName(){
