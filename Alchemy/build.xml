@@ -80,10 +80,11 @@
         -->
         
         <!-- Copy the Data folder to the Dist directory -->
+        <!--
         <copy todir="${dist.dir}/data">
             <fileset dir="${basedir}/data"/>
         </copy>
-        
+         -->
         
         <!-- Define custom JPF specific Ant tasks -->
         <path id="classpath">

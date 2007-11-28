@@ -22,6 +22,8 @@ public class AlcComboBox extends JComboBox{
     /** Creates a new instance of AlcComboBox */
     public AlcComboBox(AlcUi parent, Object[] list) {
         
+        // TODO delete this?
+        
         this.parent = parent;
         
         //BasicComboBoxUI basic = new BasicComboBoxUI();

@@ -22,6 +22,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     
     /** 'Redraw' on or off **/
     private boolean redraw = true;
+    /** Drawing on or off - stop mark making when inside the UI */
+    private boolean draw = true;
     /** Smoothing on or off */
     private boolean smoothing = true;
     
@@ -169,13 +171,19 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     
     /** Function to control the display of the Ui toolbar */
     private void toggleUi(MouseEvent e){
-        
         int y = e.getY();
-        
         if(y < 5){
-            root.ui.setUiVisible(true);
+            if(!root.ui.getUiVisible()){
+                root.ui.setUiVisible(true);
+                // Turn drawing off while in the UI
+                draw = false;
+            }
         } else if (y > root.ui.getUiHeight()){
-            root.ui.setUiVisible(false);
+            if(root.ui.getUiVisible()){
+                root.ui.setUiVisible(false);
+                // Turn drawing on once out of the UI
+                draw = true;
+            }
         }
     }
     
@@ -195,7 +203,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             tempShape = null;
         }
         // Create a new shape
-        shapes.add( new AlcShape(e.getPoint()) );
+        if(draw)
+            shapes.add( new AlcShape(e.getPoint()) );
         
     }
     
@@ -207,7 +216,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void mouseDragged(MouseEvent e)  {
         
         // Add points to the shape
-        shapes.get(shapes.size()-1).drag(e.getPoint());
+        if(draw)
+            shapes.get(shapes.size()-1).drag(e.getPoint());
         
         // Pass this shape to the affect(s) be processed
         /*

@@ -14,10 +14,9 @@ import java.io.FilenameFilter;
 import java.util.Iterator;
 
 import java.util.ArrayList;
-import java.awt.Point;
 
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 
 // JAVA PLUGIN FRAMEWORK
 import org.java.plugin.ObjectFactory;
@@ -27,8 +26,6 @@ import org.java.plugin.registry.Extension;
 import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
-import org.java.plugin.PluginClassLoader;
-
 
 public class AlcPlugin {
     
@@ -106,6 +103,7 @@ public class AlcPlugin {
                 File pathFile = new File(pathUri);
                 
                 if(pathFile.exists()){
+                    // TODO do we need this pathFile??
                     currentPlugin.setPluginPath(pathFile);
                     System.out.println("Loaded " + pathFile.getPath());
                 }
@@ -115,6 +113,13 @@ public class AlcPlugin {
                 String iconParam = ext.getParameter("icon").valueAsString();
                 String nameParam = ext.getParameter("name").valueAsString();
                 
+                URL iconUrl = null;
+                
+                if (iconParam != null) {
+                    iconUrl = classLoader.getResource(iconParam);
+                    currentPlugin.setIconUrl(iconUrl);
+                }
+               
                 /*
                 // Get the ID
                 String name = descr.getId();
