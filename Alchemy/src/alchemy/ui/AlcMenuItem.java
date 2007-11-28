@@ -11,7 +11,7 @@ package alchemy.ui;
 
 import java.awt.Font;
 import java.net.URL;
-import javax.swing.ImageIcon;
+import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 
 public class AlcMenuItem extends JMenuItem {
@@ -44,8 +44,15 @@ public class AlcMenuItem extends JMenuItem {
             //this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
             
         }
+        
+        this.setOpaque(true);
         //this.setMargin(new Insets(100, 100, 100, 100));
         //this.setBorderPainted(false);
+        //this.setContentAreaFilled(false);
+        //this.setFocusPainted(false);
+        //
+        // Top Left Bottom Right
+        this.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
         
         
         //this.setPreferredSize(new Dimension(100, 50));
