@@ -90,14 +90,14 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
                 menuItem.setActionCommand(CREATE_COMMAND);
                 menuItem.addActionListener(this);
                 createPopup.add(menuItem);
-                //createPopup.addSeparator();
+                createPopup.addSeparator();
             }
             
             //createPopup.add(new JCheckBoxMenuItem("Hello", true));
             createPopup.add(new AlcMenuItem(this, "Something Else", getUrlPath("../data/icon.png")));
             //createPopup.addSeparator();
             //createPopup.add(new AlcMenuItem(this, "Yes Ok then", createImageIcon("../data/icon-over.png")));
-            createPopup.setBorderPainted(false);
+            //createPopup.setBorderPainted(false);
             //createPopup.addSeparator();
             
         }
