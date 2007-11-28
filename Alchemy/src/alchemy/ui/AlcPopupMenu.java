@@ -22,9 +22,10 @@ public class AlcPopupMenu extends JPopupMenu{
         
         this.parent = parent;
         
-        this.setBackground(parent.getUiBgLineColour());
-        
-        this.setBorder(BorderFactory.createLineBorder(parent.getUiBgColour(), 1));
+        // Set the colour for the bg
+        this.setBackground(parent.getUiBgColour());
+        // Set the width of the box here
+        this.setBorder(BorderFactory.createLineBorder(parent.getUiBgLineColour(), 1));
         
         //this.setPopupSize(100, 100);
         //this.setMinimumSize(new Dimension(200, 100));
