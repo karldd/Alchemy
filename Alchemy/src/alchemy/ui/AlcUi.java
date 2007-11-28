@@ -115,22 +115,10 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
         
         //JToggleButton tbtn = new JToggleButton("Yes");
         //this.add(tbtn);
-        
-        /*
-        if(affectNames != null){
-            affectComboBox = new JComboBox(affectNames);
-            //affectComboBox.setSelectedIndex(2);
-            //affectComboBox.setActionCommand(LAYER_COMMAND);
-            //affectComboBox.addActionListener(this);
-            this.add(affectComboBox);
-        }
-         */
-        
-        
-        
+   
     }
     
-    
+    // Override the paint component to draw the gradient bg
     @Override protected void paintComponent( Graphics g ) {
         super.paintComponent( g );
         int panelHeight = getHeight();
@@ -138,7 +126,8 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
         GradientPaint gradientPaint = new GradientPaint( 0 , 0 , uiBgStartColour , 0 , panelHeight , uiBgEndColour, true );
         if( g instanceof Graphics2D ) {
             Graphics2D g2 = (Graphics2D)g;
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            // Turn on text antialias - windows does not use it by default
+            //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint( gradientPaint );
             g2.fillRect( 0 , 0 , panelWidth , panelHeight );
             g2.setPaint( uiBgLineColour );
@@ -177,6 +166,13 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
     public Color getUiBgColour(){
         return uiBgColour;
     }
+    
+    /** Return the colour of the UI toolbar background line */
+    public Color getUiBgLineColour(){
+        return uiBgLineColour;
+    }
+            
+            
     
     /** Return the height of the UI Toolbar */
     public int getUiTextSize(){

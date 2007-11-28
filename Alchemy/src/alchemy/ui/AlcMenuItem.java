@@ -52,7 +52,7 @@ public class AlcMenuItem extends JMenuItem {
         //this.setFocusPainted(false);
         //
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+        this.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 2));
         
         
         //this.setPreferredSize(new Dimension(100, 50));
