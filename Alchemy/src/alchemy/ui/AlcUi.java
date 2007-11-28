@@ -137,11 +137,12 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
         int panelWidth = getWidth();
         GradientPaint gradientPaint = new GradientPaint( 0 , 0 , uiBgStartColour , 0 , panelHeight , uiBgEndColour, true );
         if( g instanceof Graphics2D ) {
-            Graphics2D graphics2D = (Graphics2D)g;
-            graphics2D.setPaint( gradientPaint );
-            graphics2D.fillRect( 0 , 0 , panelWidth , panelHeight );
-            graphics2D.setPaint( uiBgLineColour );
-            graphics2D.drawLine(0, panelHeight-1, panelWidth, panelHeight-1);
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2.setPaint( gradientPaint );
+            g2.fillRect( 0 , 0 , panelWidth , panelHeight );
+            g2.setPaint( uiBgLineColour );
+            g2.drawLine(0, panelHeight-1, panelWidth, panelHeight-1);
         }
     }
     
