@@ -71,7 +71,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     AlcModule currentCreate;
     ArrayList<AlcModule> currentAffects;
     
-    // Module name strings to pass to the ui
+    // Module name strings to pass to the toolBar
     //private String[] createNames, affectNames;
     
     /** Preferred size of the window */
@@ -79,7 +79,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private Color bgColour = Color.WHITE;
     
     /** User Interface Tool Bar */
-    public AlcUi ui;
+    public AlcToolBar toolBar;
     /** Canvas to draw on to */
     public AlcCanvas canvas;
     
@@ -122,7 +122,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
          */
         
         // User Interface toolbar
-        ui = new AlcUi(this);
+        toolBar = new AlcToolBar(this);
         
         // The canvas to draw on
         canvas = new AlcCanvas(this);
@@ -132,7 +132,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         JLayeredPane layeredPane = new JLayeredPane();
         // Add the UI on top of the canvas
         layeredPane.add(canvas, new Integer(1));
-        layeredPane.add(ui, new Integer(2));
+        layeredPane.add(toolBar, new Integer(2));
         
         // FRAME
         this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
@@ -267,7 +267,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Get and set the new size of the window
         windowSize = e.getComponent().getSize();
         // Resize the UI and Canvas
-        ui.resizeUi(windowSize);
+        toolBar.resizeUi(windowSize);
         canvas.resizeCanvas(windowSize);
         
     }

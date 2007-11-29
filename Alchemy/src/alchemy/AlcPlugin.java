@@ -103,7 +103,7 @@ public class AlcPlugin {
                 File pathFile = new File(pathUri);
                 
                 if(pathFile.exists()){
-                    // TODO do we need this pathFile??
+                    // TODO - do we need this pathFile??
                     currentPlugin.setPluginPath(pathFile);
                     System.out.println("Loaded " + pathFile.getPath());
                 }
@@ -120,6 +120,8 @@ public class AlcPlugin {
                     currentPlugin.setIconUrl(iconUrl);
                 }
                
+                // TODO - How to load .class files from here?
+                
                 /*
                 // Get the ID
                 String name = descr.getId();

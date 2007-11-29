@@ -15,17 +15,17 @@ import javax.swing.JPopupMenu;
 
 public class AlcPopupMenu extends JPopupMenu{
     
-    AlcUi parent;
+    AlcToolBar parent;
     
     /** Creates a new instance of AlcPopupMenu */
-    public AlcPopupMenu(AlcUi parent) {
+    public AlcPopupMenu(AlcToolBar parent) {
         
         this.parent = parent;
         
         // Set the colour for the bg
-        this.setBackground(parent.getUiBgColour());
+        this.setBackground(parent.toolBarBgColour);
         // Set the width of the box here
-        this.setBorder(BorderFactory.createLineBorder(parent.getUiBgLineColour(), 1));
+        this.setBorder(BorderFactory.createLineBorder(parent.toolBarLineColour, 1));
         
         //this.setPopupSize(100, 100);
         //this.setMinimumSize(new Dimension(200, 100));

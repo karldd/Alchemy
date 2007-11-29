@@ -1,5 +1,5 @@
 /**
- * AlcUi.java
+ * AlcToolBar.java
  *
  * Created on November 24, 2007, 3:08 PM
  *
@@ -16,26 +16,30 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.*;
 
-public class AlcUi extends JPanel implements ActionListener { // Extend JPanel rather than JComponent so the background can be set
+public class AlcToolBar extends JPanel implements ActionListener { // Extend JPanel rather than JComponent so the background can be set
     
     /** Reference to the root **/
     private AlcMain root;
-    /** Visibility of the Ui */
-    private boolean uiVisible = true;
-    /** Height of the Ui */
-    private int uiHeight = 65;
+    /** Visibility of the ToolBar */
+    private boolean toolBarVisible = true;
+    /** Height of the ToolBar */
+    private int toolBarHeight = 60;
     
-    /** Ui Background Colour */
-    private static Color uiBgColour = new Color(225, 225, 225);
-    private static Color uiBgStartColour = new Color(235, 235, 235);
-    private static Color uiBgEndColour = new Color(215, 215, 215);
-    private static Color uiBgLineColour = new Color(140, 140, 140);
+    /** Keep track of the windowSize */
+    public Dimension windowSize;
+    
+    /** ToolBar Background Colour */
+    public static Color toolBarBgColour = new Color(225, 225, 225);
+    public static Color toolBarBgStartColour = new Color(235, 235, 235);
+    public static Color toolBarBgEndColour = new Color(215, 215, 215);
+    public static Color toolBarLineColour = new Color(140, 140, 140);
+    public static Color toolBarHighlightColour = new Color(231, 231, 231);
     
     
-    /** Ui Text Size */
-    private static final int uiTextSize = 10;
-    /** Ui Popup Menu Y Location */
-    private static final int uiPopupMenuY = 55;
+    /** ToolBar Text Size */
+    private final int toolBarTextSize = 10;
+    /** ToolBar Popup Menu Y Location */
+    private final int uiPopupMenuY = toolBarHeight - 10;
     
     /** Action command for Mark menu popup */
     private static String MARK_COMMAND = "mark";
@@ -44,34 +48,48 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
     /** Action command for Affect menu popup */
     private static String AFFECT_COMMAND = "affect";
     
-    
-    
-    
-    
-    /** Combo Box drop down menu with the list of create functions */
-    JComboBox createComboBox;
-    /** Combo Box drop down menu with the list of affect functions */
-    JComboBox affectComboBox;
-    
+    /** Popup menu for the create button in the toolbar */
     private JPopupMenu createPopup;
     
-    /** Creates a new instance of AlcUi */
-    public AlcUi(AlcMain root) {
+    /** The main tool bar nestled inside the tool bar */
+    private AlcMainToolBar mainToolBar;
+    
+    /** The create tool bar nestled inside the tool bar */
+    private AlcSubToolBar createToolBar;
+    
+    
+    /**
+     * Creates a new instance of AlcToolBar
+     */
+    public AlcToolBar(AlcMain root) {
         
         // General Toolbar settings
         this.root = root;
-        this.setLayout(new FlowLayout(FlowLayout.LEFT));
-        this.setBackground(uiBgColour);
-        setUiVisible(false);
-        this.setLocation(0, 0);
-        this.setBounds(0, 0, root.getWindowSize().width, uiHeight);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        //this.setBackground(toolBarBgColour);
+        setToolBarVisible(false);
+        //this.setLocation(0, 0);
+        //this.setBounds(0, 0, root.getWindowSize().width, toolBarHeight);
+        
+        mainToolBar = new AlcMainToolBar(root, this);
+        
+        //mainToolBar.setBackground(toolBarBgColour);
+        
         
         // Buttons
         AlcButton markButton = new AlcButton(this, "Marks", getUrlPath("../data/icon.png"));
-        this.add(markButton);
+        mainToolBar.add(markButton);
         
         AlcButton createButton = new AlcButton(this, "Create", getUrlPath("../data/icon.png"));
-        this.add(createButton);
+        mainToolBar.add(createButton);
+        
+        this.add(mainToolBar);
+        
+        createToolBar = new AlcSubToolBar(root, this, root.creates.get(0));
+        createToolBar.setLocation(0, 100);
+        this.add(createToolBar);
+        
+        
         
         // PopupMenus on the buttons
         if(root.creates != null){
@@ -90,7 +108,7 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
                 menuItem.setActionCommand(CREATE_COMMAND);
                 menuItem.addActionListener(this);
                 createPopup.add(menuItem);
-                createPopup.addSeparator();
+                //createPopup.addSeparator();
             }
             
             //createPopup.add(new JCheckBoxMenuItem("Hello", true));
@@ -101,6 +119,7 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
             //createPopup.addSeparator();
             
         }
+        
         
         
         //System.out.println("Width: "+createPopup.getInsets());
@@ -115,68 +134,45 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
         
         //JToggleButton tbtn = new JToggleButton("Yes");
         //this.add(tbtn);
-   
+        
     }
     
-    // Override the paint component to draw the gradient bg
-    @Override protected void paintComponent( Graphics g ) {
-        super.paintComponent( g );
-        int panelHeight = getHeight();
-        int panelWidth = getWidth();
-        GradientPaint gradientPaint = new GradientPaint( 0 , 0 , uiBgStartColour , 0 , panelHeight , uiBgEndColour, true );
-        if( g instanceof Graphics2D ) {
-            Graphics2D g2 = (Graphics2D)g;
-            // Turn on text antialias - windows does not use it by default
-            //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            g2.setPaint( gradientPaint );
-            g2.fillRect( 0 , 0 , panelWidth , panelHeight );
-            g2.setPaint( uiBgLineColour );
-            g2.drawLine(0, panelHeight-1, panelWidth, panelHeight-1);
-        }
-    }
+    
+    
+    
     
     public void resizeUi(Dimension windowSize){
-        this.setBounds(0, 0, windowSize.width, uiHeight);
+        this.setBounds(0, 0, windowSize.width, mainToolBar.getHeight() + createToolBar.getHeight());
+        this.windowSize = windowSize;
     }
     
     
     /** Set the visibility of the UI Toolbar */
-    public void setUiVisible(boolean b){
+    public void setToolBarVisible(boolean b){
         this.setVisible(b);
         // Turn off the popup(s) when we leave the toolbar area
         if(!b){
             if(createPopup != null) createPopup.setVisible(false);
         }
-        uiVisible = b;
+        toolBarVisible = b;
     }
     
     
     // GETTERS
     /** Return the visibility of the UI Toolbar */
-    public boolean getUiVisible(){
-        return uiVisible;
+    public boolean getToolBarVisible(){
+        return toolBarVisible;
+    }
+    
+    // TODO - make a function that dynamically calculates the height of all the toolbars and sets a variable
+    /** Return the height of the UI Toolbar */
+    public int getToolBarHeight(){
+        return toolBarHeight;
     }
     
     /** Return the height of the UI Toolbar */
-    public int getUiHeight(){
-        return uiHeight;
-    }
-    
-    /** Return the colour of the UI toolbar background */
-    public Color getUiBgColour(){
-        return uiBgColour;
-    }
-    
-    /** Return the colour of the UI toolbar background line */
-    public Color getUiBgLineColour(){
-        return uiBgLineColour;
-    }
-            
-            
-    
-    /** Return the height of the UI Toolbar */
-    public int getUiTextSize(){
-        return uiTextSize;
+    public int getToolBarTextSize(){
+        return toolBarTextSize;
     }
     
     /** Returns a URL from a String, or null if the path was invalid. */
@@ -239,6 +235,11 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
         }
     }
     
+    public void loadCreate(int index){
+        root.setCurrentCreate(index);
+        
+    }
+    
     
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
@@ -251,24 +252,11 @@ public class AlcUi extends JPanel implements ActionListener { // Extend JPanel r
             AlcMenuItem source = (AlcMenuItem)(e.getSource());
             int index = createPopup.getComponentIndex(source);
             //System.out.println(index);
-            root.setCurrentCreate(index);
+            loadCreate(index);
             
         } else if(command.equals(AFFECT_COMMAND)){
             
         }
-        
-        
-        
-        /*
-        //System.out.println(source.getText());
-        // Get the type of command
-        String commandType = command.substring(0, command.lastIndexOf("-"));
-        System.out.println(commandType);
-        // Get the index of the
-        String index = command.substring(command.lastIndexOf("-")+1);
-        int i = Integer.valueOf(index).intValue();
-         */
-        
         
     }
     

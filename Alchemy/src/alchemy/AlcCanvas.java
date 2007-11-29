@@ -170,17 +170,17 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     
     
     /** Function to control the display of the Ui toolbar */
-    private void toggleUi(MouseEvent e){
+    private void toggleToolBar(MouseEvent e){
         int y = e.getY();
         if(y < 5){
-            if(!root.ui.getUiVisible()){
-                root.ui.setUiVisible(true);
-                // Turn drawing off while in the UI
+            if(!root.toolBar.getToolBarVisible()){
+                root.toolBar.setToolBarVisible(true);
+                // Turn drawing off while in the toolbar
                 draw = false;
             }
-        } else if (y > root.ui.getUiHeight()){
-            if(root.ui.getUiVisible()){
-                root.ui.setUiVisible(false);
+        } else if (y > root.toolBar.getToolBarHeight()){
+            if(root.toolBar.getToolBarVisible()){
+                root.toolBar.setToolBarVisible(false);
                 // Turn drawing on once out of the UI
                 draw = true;
             }
@@ -191,8 +191,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // MOUSE EVENTS
     public void mouseMoved(MouseEvent e)    {
         
-        // Toogle visibility of the Ui
-        toggleUi(e);
+        // Toogle visibility of the Toolbar
+        toggleToolBar(e);
         
     }
     
