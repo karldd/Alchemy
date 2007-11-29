@@ -19,10 +19,10 @@ import javax.swing.*;
 
 public class AlcButton extends JButton{
     
-    AlcUi parent;
+    AlcToolBar parent;
     
     /** Creates a new instance of AlcButton */
-    public AlcButton(AlcUi parent, String text, URL iconUrl) {
+    public AlcButton(AlcToolBar parent, String text, URL iconUrl) {
         
         this.parent = parent;
         //this.setUI(new BasicButtonUI());
@@ -38,22 +38,14 @@ public class AlcButton extends JButton{
             
         }
         
-        
-        // TODO Make a function to read image icons and append the correct file names
-        //ImageIcon icon = parent.createImageIcon("../data/icon.png");
-        //ImageIcon iconOver = parent.createImageIcon("../data/icon-over.png");
-        //this.setIcon(icon);
-        // this.setRolloverIcon(iconOver);
-        
-        
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getUiTextSize()));
+        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
         //this.setVerticalAlignment(SwingConstants.TOP);
         this.setText(text);
         
         // Insets(int top, int left, int bottom, int right)
-        this.setMargin(new Insets(8, 8, 8, 8));
+        this.setMargin(new Insets(4, 8, 8, 4));
         //this.setIconTextGap(-24);
         
         //this.setBackground(parent.getUiBgColour());

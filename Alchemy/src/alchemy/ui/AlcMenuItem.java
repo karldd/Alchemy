@@ -16,20 +16,20 @@ import javax.swing.JMenuItem;
 
 public class AlcMenuItem extends JMenuItem {
     
-    AlcUi parent;
+    AlcToolBar parent;
     
     /** Creates a new instance of AlcMenuItem */
-    public AlcMenuItem(AlcUi parent, String text) {
+    public AlcMenuItem(AlcToolBar parent, String text) {
         URL nullUrl = null;
         setup(parent, text, nullUrl);
     }
     
     /** Creates a new instance of AlcMenuItem */
-    public AlcMenuItem(AlcUi parent, String text, URL iconUrl) {
+    public AlcMenuItem(AlcToolBar parent, String text, URL iconUrl) {
         setup(parent, text, iconUrl);
     }
     
-    private void setup(AlcUi parent, String text, URL iconUrl){
+    private void setup(AlcToolBar parent, String text, URL iconUrl){
      
         this.parent = parent;
      
@@ -38,7 +38,7 @@ public class AlcMenuItem extends JMenuItem {
             // Set the main Icon
             this.setIcon( parent.createImageIcon(iconUrl) );
             
-            // TODO Rollovers not working??
+            // TODO - Rollovers not working??
             //URL rolloverIconUrl = parent.appendStringToUrl(iconUrl, "-over");
             //System.out.println(rolloverIconUrl);
             //this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
@@ -52,13 +52,13 @@ public class AlcMenuItem extends JMenuItem {
         //this.setFocusPainted(false);
         //
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 2));
+        this.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
         
         
         //this.setPreferredSize(new Dimension(100, 50));
         
-        this.setBackground(parent.getUiBgColour());
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getUiTextSize()));
+        this.setBackground(parent.toolBarHighlightColour);
+        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
         
     }
     
