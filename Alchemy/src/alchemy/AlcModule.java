@@ -1,7 +1,5 @@
 package alchemy;
 
-
-
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -11,7 +9,7 @@ public abstract class AlcModule {
     
     public AlcMain root;
     
-    private String moduleName, iconName, descriptionName;
+    private String moduleName, iconName, description;
     private int id, cursor;
     private boolean loaded = false;
     private boolean smooth, loop;
@@ -32,6 +30,11 @@ public abstract class AlcModule {
     
     /** Called when the module is re-selected */
     public void refocus(){
+    }
+    
+    /** Affect - Process an AlcShape */
+    public AlcShape process(AlcShape shape){
+        return shape;
     }
     
     
@@ -86,12 +89,12 @@ public abstract class AlcModule {
         iconUrl = url;
     }
     
-    public String getDescriptionName(){
-        return descriptionName;
+    public String getDescription(){
+        return description;
     }
     
-    public void setDescriptionName(String n){
-        descriptionName = n;
+    public void setDescription(String n){
+        description = n;
     }
     
     /* Processing crap...

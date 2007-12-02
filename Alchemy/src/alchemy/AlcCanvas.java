@@ -149,6 +149,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      *  Mouse Interaction adds this shape to the main shapes array
      */
     public void previewShape(AlcShape tempShape){
+        
+        // If there is an affect selected
+        if(root.currentAffects != null){
+            
+            for (int i = 0; i < root.currentAffects.size(); i++) {
+                AlcModule currentAffect = root.currentAffects.get(i);
+                tempShape = currentAffect.process(tempShape);
+            }
+        }
+        
         this.tempShape = tempShape;
         redraw();
     }
@@ -178,7 +188,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 // Turn drawing off while in the toolbar
                 draw = false;
             }
-        } else if (y > root.toolBar.getToolBarHeight()){
+        } else if (y > root.toolBar.getTotalHeight()){
             if(root.toolBar.getToolBarVisible()){
                 root.toolBar.setToolBarVisible(false);
                 // Turn drawing on once out of the UI

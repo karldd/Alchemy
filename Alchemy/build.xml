@@ -72,6 +72,7 @@
         <!-- Move the compiled Plugin classes -->
         <move file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/plugins/core/alchemy"/>
         <move file="${build.classes.dir}/alchemy/create/TypeShapes.class" todir="${basedir}/plugins/typeShapes/alchemy/create"/>
+        <move file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/symmetry/alchemy/affect"/>
         
         <!--
         <move file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/Symmetry/alchemy/affect"/>

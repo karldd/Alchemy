@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import javax.swing.*;
 
 public class AlcToolBar extends JPanel implements ActionListener { // Extend JPanel rather than JComponent so the background can be set
@@ -24,6 +25,8 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
     private boolean toolBarVisible = true;
     /** Height of the ToolBar */
     private int toolBarHeight = 60;
+    /** Total height of all tool bars */
+    private int totalHeight = toolBarHeight;
     
     /** Keep track of the windowSize */
     public Dimension windowSize;
@@ -39,24 +42,17 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
     /** ToolBar Text Size */
     private final int toolBarTextSize = 10;
     /** ToolBar Popup Menu Y Location */
-    private final int uiPopupMenuY = toolBarHeight - 10;
-    
-    /** Action command for Mark menu popup */
-    private static String MARK_COMMAND = "mark";
-    /** Action command for Create menu popup */
-    private static String CREATE_COMMAND = "create";
-    /** Action command for Affect menu popup */
-    private static String AFFECT_COMMAND = "affect";
+    public final int uiPopupMenuY = toolBarHeight - 10;
     
     /** Popup menu for the create button in the toolbar */
     private JPopupMenu createPopup;
     
-    /** The main tool bar nestled inside the tool bar */
+    /** The main tool bar inside the tool bar */
     private AlcMainToolBar mainToolBar;
-    
-    /** The create tool bar nestled inside the tool bar */
+    /** The create tool bar inside the tool bar */
     private AlcSubToolBar createToolBar;
-    
+    /** The afect tool bars inside the tool bar */
+    private ArrayList<AlcSubToolBar> affectToolBars;
     
     /**
      * Creates a new instance of AlcToolBar
@@ -66,83 +62,89 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         // General Toolbar settings
         this.root = root;
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        //this.setBackground(toolBarBgColour);
+        // Turn off the visibility untill the mouse enters the top of the screen
         setToolBarVisible(false);
-        //this.setLocation(0, 0);
-        //this.setBounds(0, 0, root.getWindowSize().width, toolBarHeight);
         
-        mainToolBar = new AlcMainToolBar(root, this);
+        // Create the main toolbar
+        mainToolBar = new AlcMainToolBar(root);
         
-        //mainToolBar.setBackground(toolBarBgColour);
+        // Buttons in the main toolbar
+        // Align LEFT
+        JPanel toolBarLeft = new JPanel();
+        toolBarLeft.setOpaque(false);   // Turn off the background
+        AlcMainButton markButton = new AlcMainButton(this, "Marks", "Change the settings for making Marks", getUrlPath("../data/icon.png"));
+        toolBarLeft.add(markButton);
+        
+        // TODO - Add Marks Button set
+        //JToggleButton tbtn = new JToggleButton("Yes");
+        //toolBarLeft.add(tbtn);
+        mainToolBar.add(toolBarLeft, BorderLayout.LINE_START);
         
         
-        // Buttons
-        AlcButton markButton = new AlcButton(this, "Marks", getUrlPath("../data/icon.png"));
-        mainToolBar.add(markButton);
+        // Align Right
+        JPanel toolBarRight = new JPanel();
+        toolBarRight.setOpaque(false);
+        // Create
+        AlcPopupButton createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("../data/create.png"), root.creates);
+        toolBarRight.add(createButton);
+        // Affect
+        AlcPopupButton affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("../data/create.png"), root.affects);
+        toolBarRight.add(affectButton);
         
-        AlcButton createButton = new AlcButton(this, "Create", getUrlPath("../data/icon.png"));
-        mainToolBar.add(createButton);
-        
+        mainToolBar.add(toolBarRight, BorderLayout.CENTER);
         this.add(mainToolBar);
         
-        createToolBar = new AlcSubToolBar(root, this, root.creates.get(0));
-        createToolBar.setLocation(0, 100);
-        this.add(createToolBar);
-        
-        
-        
+        /*
         // PopupMenus on the buttons
         if(root.creates != null){
             createPopup = new AlcPopupMenu(this);
-            //createPopup.addSeparator();
-            
+         
             // Populate the Popup Menu
             for (int i = 0; i < root.creates.size(); i++) {
                 // The current module
                 AlcModule currentModule = root.creates.get(i);
-                // The icon for this module
-                //ImageIcon createIcon = createImageIcon();
+         
                 // Set the text and icon
                 AlcMenuItem menuItem = new AlcMenuItem(this, currentModule.getName(), currentModule.getIconUrl());
+                menuItem.setToolTipText(currentModule.getDescription());
+         
                 // Set the action command and listener
                 menuItem.setActionCommand(CREATE_COMMAND);
                 menuItem.addActionListener(this);
                 createPopup.add(menuItem);
-                //createPopup.addSeparator();
+         
             }
-            
             //createPopup.add(new JCheckBoxMenuItem("Hello", true));
             createPopup.add(new AlcMenuItem(this, "Something Else", getUrlPath("../data/icon.png")));
             //createPopup.addSeparator();
-            //createPopup.add(new AlcMenuItem(this, "Yes Ok then", createImageIcon("../data/icon-over.png")));
-            //createPopup.setBorderPainted(false);
-            //createPopup.addSeparator();
-            
         }
-        
-        
-        
-        //System.out.println("Width: "+createPopup.getInsets());
-        
-        
-        
+         
+        // Add a mouse listner to detect when the button is pressed and display the popup menu
         createButton.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 createPopup.show(e.getComponent(), 0, uiPopupMenuY);
             }
         });
+         
+         */
+        
+        
+        
+        
+        
         
         //JToggleButton tbtn = new JToggleButton("Yes");
         //this.add(tbtn);
         
     }
     
+    public void resizeToolBar(){
+        Dimension windowSize = new Dimension(this.windowSize.width, getTotalHeight());
+        resizeToolBar(windowSize);
+    }
     
-    
-    
-    
-    public void resizeUi(Dimension windowSize){
-        this.setBounds(0, 0, windowSize.width, mainToolBar.getHeight() + createToolBar.getHeight());
+    public void resizeToolBar(Dimension windowSize){
+        this.setBounds(0, 0, windowSize.width, getTotalHeight());
         this.windowSize = windowSize;
     }
     
@@ -157,6 +159,22 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         toolBarVisible = b;
     }
     
+    /** Add a Create Module sub-toolbar */
+    public void addCreateSubToolBar(AlcSubToolBar subToolBar){
+        
+        createToolBar = subToolBar;
+        createToolBar.setLocation(0, 100);
+        this.add(createToolBar);
+        
+        // Recalculate the total height of the tool bar
+        calculateTotalHeight();
+        // Then resize it
+        resizeToolBar();
+        // And refresh it
+        this.revalidate();
+        
+    }
+    
     
     // GETTERS
     /** Return the visibility of the UI Toolbar */
@@ -164,7 +182,6 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         return toolBarVisible;
     }
     
-    // TODO - make a function that dynamically calculates the height of all the toolbars and sets a variable
     /** Return the height of the UI Toolbar */
     public int getToolBarHeight(){
         return toolBarHeight;
@@ -175,6 +192,9 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         return toolBarTextSize;
     }
     
+    
+    
+    // IMAGE LOADING FUNCTIONS
     /** Returns a URL from a String, or null if the path was invalid. */
     public URL getUrlPath(String path){
         URL imgUrl = getClass().getResource(path);
@@ -235,28 +255,58 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         }
     }
     
+    
+    /** Calculate the total height of the toolbar and its subtoolbars */
+    public void calculateTotalHeight(){
+        // Start with the main toolbar height
+        int totalHeight = mainToolBar.getHeight();
+        // Add the create toolbar height
+        if(createToolBar != null)
+            totalHeight +=  createToolBar.getHeight();
+        // Add the height of each affect toolbar
+        if(affectToolBars != null) {
+            for (int i = 0; i < affectToolBars.size(); i++) {
+                totalHeight += affectToolBars.get(i).getHeight();
+            }
+        }
+        
+        this.totalHeight = totalHeight;
+    }
+    
+    /** Return the total height of the toolbar and its subtoolbars */
+    public int getTotalHeight(){
+        return totalHeight;
+    }
+    
+    
     public void loadCreate(int index){
         root.setCurrentCreate(index);
-        
     }
     
     
     public void actionPerformed(ActionEvent e) {
-        String command = e.getActionCommand();
+        String rawCommand = e.getActionCommand();
         
-        if(command.equals(MARK_COMMAND)){
+        // Get the type of command
+        String commandType = rawCommand.substring(0, rawCommand.lastIndexOf("-"));
+
+        // Get the index
+        int index = Integer.parseInt( rawCommand.substring(rawCommand.lastIndexOf("-")+1) );
+        System.out.println("INDEX :" + index);
+        
+        if(commandType.equals("mark")){
             
+        } else if(commandType.equals("create")){
             
-        } else if(command.equals(CREATE_COMMAND)){
-            
-            AlcMenuItem source = (AlcMenuItem)(e.getSource());
-            int index = createPopup.getComponentIndex(source);
+            //AlcMenuItem source = (AlcMenuItem)(e.getSource());
+            //int index = createPopup.getComponentIndex(source);
             //System.out.println(index);
             loadCreate(index);
             
-        } else if(command.equals(AFFECT_COMMAND)){
-            
+        } else if(commandType.equals("affect")){
+            // Do something
         }
+        
         
     }
     

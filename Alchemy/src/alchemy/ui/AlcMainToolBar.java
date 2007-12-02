@@ -20,14 +20,16 @@ public class AlcMainToolBar extends JPanel {
     private int height = 60;
     
     /** Creates a new instance of AlcMainToolBar */
-    public AlcMainToolBar(AlcMain root, AlcToolBar parent) {
+    public AlcMainToolBar(AlcMain root) {
         
         this.root = root;
-        this.parent = parent;
+        this.parent = root.toolBar;
         
         //this.setBounds(0, 0, root.getWindowSize().width, this.height);
         
-        this.setLayout(new FlowLayout(FlowLayout.LEFT));
+        //this.setLayout(new FlowLayout(FlowLayout.LEFT));
+        this.setLayout(new BorderLayout());
+        
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
         //this.setAlignmentY(Component.TOP_ALIGNMENT);
         

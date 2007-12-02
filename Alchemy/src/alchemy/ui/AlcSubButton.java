@@ -17,12 +17,14 @@ import java.net.URL;
 import javax.swing.*;
 //import javax.swing.plaf.basic.*;
 
-public class AlcButton extends JButton{
+public class AlcSubButton extends JButton{
     
     AlcToolBar parent;
     
-    /** Creates a new instance of AlcButton */
-    public AlcButton(AlcToolBar parent, String text, URL iconUrl) {
+    /**
+     * Creates a new instance of AlcMainButton
+     */
+    public AlcSubButton(AlcToolBar parent, String text, URL iconUrl) {
         
         this.parent = parent;
         //this.setUI(new BasicButtonUI());
@@ -30,17 +32,17 @@ public class AlcButton extends JButton{
         if(iconUrl != null){
             // Set the main Icon
             this.setIcon( parent.createImageIcon(iconUrl) );
-            System.out.println(iconUrl);
+            //System.out.println(iconUrl);
             
             URL rolloverIconUrl = parent.appendStringToUrl(iconUrl, "-over");
-            System.out.println(rolloverIconUrl);
+            //System.out.println(rolloverIconUrl);
             this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
             
         }
         
         this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
-        this.setVerticalTextPosition(SwingConstants.BOTTOM);
-        this.setHorizontalTextPosition(SwingConstants.CENTER);
+        //this.setVerticalTextPosition(SwingConstants.BOTTOM);
+        //this.setHorizontalTextPosition(SwingConstants.CENTER);
         //this.setVerticalAlignment(SwingConstants.TOP);
         this.setText(text);
         
