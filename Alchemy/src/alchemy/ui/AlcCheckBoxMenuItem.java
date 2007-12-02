@@ -33,7 +33,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
      
         this.parent = parent;
         // Set the intial state to false
-        this.setState(true);
+        //this.setState(true);
         
         this.setText(text);
         if(iconUrl != null){

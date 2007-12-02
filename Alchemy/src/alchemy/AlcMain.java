@@ -68,13 +68,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** Class of utility math functions */
     public AlcMath math = new AlcMath();
     
-    public ArrayList<AlcModule> creates;
-    public ArrayList<AlcModule> affects;
+    /** Lists of the installed modules */
+    public ArrayList<AlcModule> creates = new ArrayList<AlcModule>(10);
+    public ArrayList<AlcModule> affects = new ArrayList<AlcModule>(10);
     
     /** The currently selected create module */
     AlcModule currentCreate;
     /** The currently selected affect modules */
-    ArrayList<AlcModule> currentAffects;
+    ArrayList<AlcModule> currentAffects = new ArrayList<AlcModule>(10);
     
     
     /** Preferred size of the window */
@@ -89,7 +90,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcMain() {
         
         // LOAD PLUGINS
-        plugins = new AlcPlugin();
+        plugins = new AlcPlugin(this);
         System.out.println("Number of Plugins: "+plugins.getNumberOfPlugins());
         
         // Add each type of plugin
@@ -185,7 +186,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         
         // Call that module
         if(!currentCreate.getLoaded()){
-            currentCreate.setup(this);
+            currentCreate.setup();
         } else {
             currentCreate.refocus();
         }
@@ -196,7 +197,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
     
     public void addAffect(int i){
-        currentAffects.add(affects.get(i));
+        //System.out.println(affects.get(i));
+
+        currentAffects.add((AlcModule)affects.get(i));
     }
     
     // KEY EVENTS
@@ -242,7 +245,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
             
         }
-                
+        
         
         // Pass the key event on to the current modules
         if(currentCreate!= null){

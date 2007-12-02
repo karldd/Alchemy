@@ -63,6 +63,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         g2.fillRect(0, 0, w, h);
         
         
+        // TODO - turned off for debugging symmetry bug
+        /* 
         // Draw all the shapes
         if(shapes != null){
             for (int i = 0; i < shapes.size(); i++) {
@@ -87,6 +89,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 
             }
         }
+         */
         
         
         // Draw the tempShape if present
@@ -117,7 +120,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Redraw the canvas */
     public void redraw(){
         if(redraw){
-            
             this.repaint();
         }
     }
@@ -148,7 +150,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      *  Used by shapeGenerators to browse generated shapes.
      *  Mouse Interaction adds this shape to the main shapes array
      */
-    public void previewShape(AlcShape tempShape){
+    public void previewTempShape(AlcShape tempShape){
         
         // If there is an affect selected
         if(root.currentAffects != null){
@@ -161,6 +163,23 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         
         this.tempShape = tempShape;
         redraw();
+    }
+    
+    /** A temporary shape stored seperately.
+     *  Used as a buffer before it is added to the shapes array.
+     *  Stops the shapes from constantly adding to themselves while marks are being made.
+     */
+    public void addTempShape(AlcShape tempShape){
+        this.tempShape = tempShape;
+        //redraw();
+    }
+    
+    /** Commit the temporary shape to the main shapes array */
+    private void commitTempShape(){
+        if(tempShape != null){
+            shapes.add( tempShape );
+            tempShape = null;
+        }
     }
     
     /** Set Antialiasing */
@@ -208,10 +227,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     
     public void mousePressed(MouseEvent e)  {
         
-        if(tempShape != null){
-            shapes.add( tempShape );
-            tempShape = null;
-        }
+        commitTempShape();
         // Create a new shape
         if(draw)
             shapes.add( new AlcShape(e.getPoint()) );
@@ -221,28 +237,29 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void mouseClicked(MouseEvent e)  { }
     public void mouseEntered(MouseEvent e)  { }
     public void mouseExited(MouseEvent e)   { }
-    public void mouseReleased(MouseEvent e) { }
+    
+    public void mouseReleased(MouseEvent e) {
+        commitTempShape();
+    }
     
     public void mouseDragged(MouseEvent e)  {
         
         // Add points to the shape
-        if(draw)
-            shapes.get(shapes.size()-1).drag(e.getPoint());
-        
-        // Pass this shape to the affect(s) be processed
-        /*
-        if(root.currentAffects.size() > 0){
-            AlcShape processShape = shapes.get(shapes.size()-1);
-         
-            for (int i = 0; i < root.currentAffects.size(); i++) {
-                AlcModule currentAffect = root.currentAffects.get(i);
-                processShape = currentAffect.process(currentShape);
+        if(draw){
+            AlcShape currentShape = shapes.get(shapes.size()-1);
+            currentShape.drag(e.getPoint());
+            
+            // Pass this shape to the affect(s) be processed
+            if(root.currentAffects != null){
+                for (int i = 0; i < root.currentAffects.size(); i++) {
+                    AlcModule currentAffect = root.currentAffects.get(i);
+                    currentAffect.increment(currentShape);
+                }
             }
+            
+            // Redraw the screen
+            redraw();
         }
-         */
-        // Redraw the screen
-        redraw();
-        
         
     }
     

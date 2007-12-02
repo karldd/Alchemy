@@ -17,12 +17,18 @@ public abstract class AlcModule {
     private URL iconUrl;
     
     public AlcModule(){
+        
     }
     
     
     // STRUCTURE
-    /** Called on first load */
-    public void setup(AlcMain root){
+    /** Called by the plugin manager once the module is found */
+    public void init(AlcMain root){
+        this.root = root;
+    }
+    
+    /* Called to load the module when first run */
+    public void setup(){
     }
     
     public void draw(){
@@ -32,10 +38,21 @@ public abstract class AlcModule {
     public void refocus(){
     }
     
-    /** Affect - Process an AlcShape */
+    /** Affect - Process an AlcShape.
+     *  Used to process whole shapes, typically those generated from create modules.
+     *  Get the shape, process it in some way and return and replace the original.
+     */
     public AlcShape process(AlcShape shape){
         return shape;
     }
+    
+    /** Affect - Increment an AlcShape.
+     *  Used to increment a shape, typically for drawn lines etc...
+     *  Typically store the temp shape in a canvas buffer until it gets added on mouse up.
+     */
+    public void increment(AlcShape shape){
+    }
+    
     
     
     // MODULE DATA

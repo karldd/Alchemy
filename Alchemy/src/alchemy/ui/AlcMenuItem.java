@@ -18,7 +18,9 @@ import javax.swing.JRadioButtonMenuItem;
 public class AlcMenuItem extends JRadioButtonMenuItem {
     
     // TODO - change this to AlcRadioButtonMenuItem
-    // TODO - find some way to avoid the ugly round selected circle mark
+    // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here: 
+    // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
+    
     
     AlcToolBar parent;
     

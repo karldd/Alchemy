@@ -256,7 +256,6 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         
         // Get the index
         int index = Integer.parseInt( rawCommand.substring(rawCommand.lastIndexOf("-")+1) );
-        System.out.println("INDEX :" + index);
         
         if(commandType.equals("mark")){
             
