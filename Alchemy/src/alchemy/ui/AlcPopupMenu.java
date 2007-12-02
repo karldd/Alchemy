@@ -23,9 +23,11 @@ public class AlcPopupMenu extends JPopupMenu{
         this.parent = parent;
         
         // Set the colour for the bg
-        this.setBackground(parent.toolBarBgColour);
-        // Set the width of the box here
-        this.setBorder(BorderFactory.createLineBorder(parent.toolBarLineColour, 1));
+        this.setBackground(parent.toolBarHighlightColour);
+        //this.setBorder(BorderFactory.createLineBorder(parent.toolBarLineColour, 1));
+        
+        // Add some 'padding' Top Left Bottom Right
+        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
         //this.setPopupSize(100, 100);
         //this.setMinimumSize(new Dimension(200, 100));

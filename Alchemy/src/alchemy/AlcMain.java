@@ -71,11 +71,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public ArrayList<AlcModule> creates;
     public ArrayList<AlcModule> affects;
     
+    /** The currently selected create module */
     AlcModule currentCreate;
+    /** The currently selected affect modules */
     ArrayList<AlcModule> currentAffects;
     
-    // Module name strings to pass to the toolBar
-    //private String[] createNames, affectNames;
     
     /** Preferred size of the window */
     private Dimension windowSize = new Dimension(800, 600);
@@ -201,11 +201,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     
     // KEY EVENTS
     public void keyPressed(KeyEvent e) {
-        if(currentCreate!= null){
+        if(currentCreate != null){
             currentCreate.keyPressed(e);
         }
         /*
-        if(currentAffects.size() > 0){
+        if(currentAffects != null){
             for (int i = 0; i < currentAffects.size(); i++) {
                 currentAffects.get(i).keyPressed(e);
             }
@@ -218,7 +218,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             currentCreate.keyTyped(e);
         }
         /*
-        if(currentAffects.size() > 0){
+        if(currentAffects != null){
             for (int i = 0; i < currentAffects.size(); i++) {
                 currentAffects.get(i).keyTyped(e);
             }
@@ -242,8 +242,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
             
         }
-        
-        
+                
         
         // Pass the key event on to the current modules
         if(currentCreate!= null){
@@ -252,7 +251,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         
         
         /*
-        if(currentAffects.size() > 0){
+        if(currentAffects != null){
             for (int i = 0; i < currentAffects.size(); i++) {
                 currentAffects.get(i).keyReleased(e);
             }

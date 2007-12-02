@@ -14,10 +14,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import javax.swing.ButtonGroup;
 
 public class AlcPopupButton extends AlcMainButton {
     
-    ArrayList<AlcModule> moduleList;
+    //private ArrayList<AlcModule> moduleList;
     private final int uiPopupMenuY = parent.getToolBarHeight() - 10;
     AlcPopupMenu popup;
     
@@ -35,23 +36,47 @@ public class AlcPopupButton extends AlcMainButton {
             // Get the last part of the package name - the type of module
             String command = s.substring(s.lastIndexOf(".")+1);
             
+            ButtonGroup group = new ButtonGroup();
+            
             // Populate the Popup Menu
             for (int i = 0; i < moduleList.size(); i++) {
                 // The current module
                 AlcModule currentModule = moduleList.get(i);
                 
-                // Set the text and icon
-                AlcMenuItem menuItem = new AlcMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
-                menuItem.setToolTipText(currentModule.getDescription());
-                
-                // Set the action command and listener
-                menuItem.setActionCommand(command + "-" + i);
-                menuItem.addActionListener(parent);
-                popup.add(menuItem);
+                // Add check box menu items if it is an affect popup, else add normal menu items
+                if(command.equals("affect")){
+                    
+                    AlcCheckBoxMenuItem menuItem = new AlcCheckBoxMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
+                    menuItem.setToolTipText(currentModule.getDescription());
+                    
+                    // Set the action command and listener
+                    menuItem.setActionCommand(command + "-" + i);
+                    menuItem.addActionListener(parent);
+                    popup.add(menuItem);
+                    
+                } else{
+                    
+                    AlcMenuItem menuItem = new AlcMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
+                    menuItem.setToolTipText(currentModule.getDescription());
+                    //menuItem.
+                    
+                    // Set the action command and listener
+                    menuItem.setActionCommand(command + "-" + i);
+                    menuItem.addActionListener(parent);
+                    menuItem.setSelected(true);
+                    group.add(menuItem);
+                    popup.add(menuItem);
+                    
+                    AlcMenuItem menuItem2 = new AlcMenuItem(parent, "Something Else", parent.getUrlPath("../data/icon.png"));
+                    group.add(menuItem2);
+                    popup.add(menuItem2);
+                    
+                }
                 
             }
+            
             //createPopup.add(new JCheckBoxMenuItem("Hello", true));
-            popup.add(new AlcMenuItem(parent, "Something Else", parent.getUrlPath("../data/icon.png")));
+            //popup.add(new AlcCheckBoxMenuItem(parent, "Something Else", parent.getUrlPath("../data/icon.png")));
             //createPopup.addSeparator();
             
             
@@ -64,10 +89,11 @@ public class AlcPopupButton extends AlcMainButton {
             
         }
         
-        
-        
     }
     
+    public void hidePopup(){
+        popup.setVisible(false);
+    }
     
     
 }

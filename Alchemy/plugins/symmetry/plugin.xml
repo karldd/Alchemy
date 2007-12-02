@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.affect.Symmetry"/> 
         <parameter id="name" value="Symmetry"/> 
         <parameter id="description" value="Symmetrical shapes" />
-        <parameter id="icon" value="tab.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>
