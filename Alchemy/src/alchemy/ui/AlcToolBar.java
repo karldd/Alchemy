@@ -44,8 +44,8 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
     /** ToolBar Popup Menu Y Location */
     public final int uiPopupMenuY = toolBarHeight - 10;
     
-    /** Popup menu for the create button in the toolbar */
-    private JPopupMenu createPopup;
+    /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
+    private AlcPopupButton createButton, affectButton;
     
     /** The main tool bar inside the tool bar */
     private AlcMainToolBar mainToolBar;
@@ -85,51 +85,14 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         JPanel toolBarRight = new JPanel();
         toolBarRight.setOpaque(false);
         // Create
-        AlcPopupButton createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("../data/create.png"), root.creates);
+        createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("../data/create.png"), root.creates);
         toolBarRight.add(createButton);
         // Affect
-        AlcPopupButton affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("../data/create.png"), root.affects);
+        affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("../data/create.png"), root.affects);
         toolBarRight.add(affectButton);
         
         mainToolBar.add(toolBarRight, BorderLayout.CENTER);
         this.add(mainToolBar);
-        
-        /*
-        // PopupMenus on the buttons
-        if(root.creates != null){
-            createPopup = new AlcPopupMenu(this);
-         
-            // Populate the Popup Menu
-            for (int i = 0; i < root.creates.size(); i++) {
-                // The current module
-                AlcModule currentModule = root.creates.get(i);
-         
-                // Set the text and icon
-                AlcMenuItem menuItem = new AlcMenuItem(this, currentModule.getName(), currentModule.getIconUrl());
-                menuItem.setToolTipText(currentModule.getDescription());
-         
-                // Set the action command and listener
-                menuItem.setActionCommand(CREATE_COMMAND);
-                menuItem.addActionListener(this);
-                createPopup.add(menuItem);
-         
-            }
-            //createPopup.add(new JCheckBoxMenuItem("Hello", true));
-            createPopup.add(new AlcMenuItem(this, "Something Else", getUrlPath("../data/icon.png")));
-            //createPopup.addSeparator();
-        }
-         
-        // Add a mouse listner to detect when the button is pressed and display the popup menu
-        createButton.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                createPopup.show(e.getComponent(), 0, uiPopupMenuY);
-            }
-        });
-         
-         */
-        
-        
-        
         
         
         
@@ -154,7 +117,8 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         this.setVisible(b);
         // Turn off the popup(s) when we leave the toolbar area
         if(!b){
-            if(createPopup != null) createPopup.setVisible(false);
+            if(createButton != null) createButton.hidePopup();
+            if(affectButton != null) affectButton.hidePopup();
         }
         toolBarVisible = b;
     }
@@ -289,7 +253,7 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         
         // Get the type of command
         String commandType = rawCommand.substring(0, rawCommand.lastIndexOf("-"));
-
+        
         // Get the index
         int index = Integer.parseInt( rawCommand.substring(rawCommand.lastIndexOf("-")+1) );
         System.out.println("INDEX :" + index);
@@ -301,10 +265,10 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
             //AlcMenuItem source = (AlcMenuItem)(e.getSource());
             //int index = createPopup.getComponentIndex(source);
             //System.out.println(index);
-            loadCreate(index);
+            root.setCurrentCreate(index);
             
         } else if(commandType.equals("affect")){
-            // Do something
+            root.addAffect(index);
         }
         
         

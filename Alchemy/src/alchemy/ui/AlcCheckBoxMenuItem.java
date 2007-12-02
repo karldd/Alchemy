@@ -12,32 +12,28 @@ package alchemy.ui;
 import java.awt.Font;
 import java.net.URL;
 import javax.swing.BorderFactory;
-import javax.swing.JRadioButtonMenuItem;
-//import javax.swing.plaf.basic.BasicMenuItemUI;
+import javax.swing.JCheckBoxMenuItem;
 
-public class AlcMenuItem extends JRadioButtonMenuItem {
-    
-    // TODO - change this to AlcRadioButtonMenuItem
-    // TODO - find some way to avoid the ugly round selected circle mark
+public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
     
     AlcToolBar parent;
     
-    /** Creates a new instance of AlcMenuItem */
-    public AlcMenuItem(AlcToolBar parent, String text) {
+    /** Creates a new instance of AlcCheckBoxMenuItem */
+    public AlcCheckBoxMenuItem(AlcToolBar parent, String text) {
         URL nullUrl = null;
         setup(parent, text, nullUrl);
     }
     
-    /** Creates a new instance of AlcMenuItem */
-    public AlcMenuItem(AlcToolBar parent, String text, URL iconUrl) {
+    /** Creates a new instance of AlcCheckBoxMenuItem */
+    public AlcCheckBoxMenuItem(AlcToolBar parent, String text, URL iconUrl) {
         setup(parent, text, iconUrl);
     }
     
     private void setup(AlcToolBar parent, String text, URL iconUrl){
-        
-        //this.setUI(new BasicMenuItemUI());
-        
+     
         this.parent = parent;
+        // Set the intial state to false
+        this.setState(true);
         
         this.setText(text);
         if(iconUrl != null){

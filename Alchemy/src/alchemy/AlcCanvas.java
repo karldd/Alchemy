@@ -182,7 +182,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Function to control the display of the Ui toolbar */
     private void toggleToolBar(MouseEvent e){
         int y = e.getY();
-        if(y < 5){
+        if(y < 10){
             if(!root.toolBar.getToolBarVisible()){
                 root.toolBar.setToolBarVisible(true);
                 // Turn drawing off while in the toolbar
