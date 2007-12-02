@@ -9,9 +9,9 @@
 
 package alchemy.ui;
 
-import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
+import javax.swing.border.Border;
 
 public class AlcPopupMenu extends JPopupMenu{
     
@@ -24,18 +24,13 @@ public class AlcPopupMenu extends JPopupMenu{
         
         // Set the colour for the bg
         this.setBackground(parent.toolBarHighlightColour);
-        //this.setBorder(BorderFactory.createLineBorder(parent.toolBarLineColour, 1));
         
-        // Add some 'padding' Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        //this.setPopupSize(100, 100);
-        //this.setMinimumSize(new Dimension(200, 100));
-        //this.setBorder(BorderFactory.createLineBorder(Color.black));
-        //this.setUI(new BasicPopupMenuUI());
-        //this.setLabel(label);
-        //this.setBorderPainted(false);
-        //this.add(new JMenuItem("yes"));
+        Border outline = BorderFactory.createLineBorder(parent.toolBarLineColour, 1);
+        Border empty = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+        // Compound border combining the above two
+        Border compound = BorderFactory.createCompoundBorder(outline, empty);
+        this.setBorder(compound);
         
         
     }
