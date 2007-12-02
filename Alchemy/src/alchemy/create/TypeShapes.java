@@ -42,9 +42,8 @@ public class TypeShapes extends AlcModule implements AlcConstants{
     public TypeShapes() {
     }
     
-    public void setup(AlcMain root){
+    public void setup(){
         
-        this.root = root;
         setLoaded(true);
         
         halfWidth = root.getWindowSize().width/2;
@@ -58,7 +57,7 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         loadFonts();
         
         // Call the canvas to preview the returned random shape
-        root.canvas.previewShape(randomShape());
+        root.canvas.previewTempShape(randomShape());
         
     }
     
@@ -77,7 +76,7 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         runButton.addActionListener(
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                root.canvas.previewShape(randomShape());
+                root.canvas.previewTempShape(randomShape());
             }
         }
         );
@@ -246,13 +245,13 @@ public class TypeShapes extends AlcModule implements AlcConstants{
             case DELETE:
                 
                 //System.out.println("DELETE");
-                root.canvas.clear();
+                //root.canvas.clear();
                 break;
                 
             case SPACE:
                 
                 //System.out.println("SPACE");
-                root.canvas.previewShape(randomShape());
+                root.canvas.previewTempShape(randomShape());
                 break;
                 
         }

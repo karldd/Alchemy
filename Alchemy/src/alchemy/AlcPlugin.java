@@ -34,8 +34,12 @@ public class AlcPlugin {
     
     private int numberOfPlugins;
     
+    AlcMain root;
+    
     /** Creates a new instance of AlcPlugin */
-    public AlcPlugin() {
+    public AlcPlugin(AlcMain root) {
+        
+        this.root = root;
         
         pluginManager = ObjectFactory.newInstance().createManager();
         
@@ -93,6 +97,9 @@ public class AlcPlugin {
                 
                 plugins.add( (AlcModule)pluginCls.newInstance() );
                 AlcModule currentPlugin = plugins.get(plugins.size()-1);
+                
+                // Set the root value
+                currentPlugin.init(root);
                 
                 // GET THE FILE PATH & ICON NAME
                 // Return the path of the XML file as a string
