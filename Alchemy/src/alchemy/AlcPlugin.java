@@ -131,7 +131,7 @@ public class AlcPlugin {
                 
                 currentPlugin.setName(nameParam);
                 currentPlugin.setIconName(iconParam);
-                currentPlugin.setDescriptionName(descriptionParam);
+                currentPlugin.setDescription(descriptionParam);
                 currentPlugin.setId(plugins.size()-1);
                 
                 //textFont(font);

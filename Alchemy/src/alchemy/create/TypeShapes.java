@@ -10,6 +10,7 @@
 package alchemy.create;
 
 import alchemy.*;
+import alchemy.ui.*;
 
 import java.awt.geom.*;
 import java.awt.Shape;
@@ -17,25 +18,25 @@ import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 
-public class TypeShapes extends Create implements AlcConstants{
+public class TypeShapes extends AlcModule implements AlcConstants{
     
     // SHAPE GENERATION
     Font fonts[];
     FontRenderContext fontRenderContext;
     Area union;
-    int inc, scale, doubleScale, randX, randY, halfWidth, halfHeight, quarterWidth, quarterHeight;
+    int inc, scale, doubleScale, randX, randY, halfWidth, halfHeight, quarterWidth, quarterHeight, explode;
     
+    float noisiness;
     float noiseScale = 0.0F;
     // All ASCII characters, sorted according to their visual density
     String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
-    
-    
-    AlcMath math = new AlcMath();
     
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
@@ -51,6 +52,9 @@ public class TypeShapes extends Create implements AlcConstants{
         quarterWidth = root.getWindowSize().width/4;
         quarterHeight = root.getWindowSize().height/4;
         
+        // Add this modules toolbar to the main ui
+        root.toolBar.addCreateSubToolBar(createSubToolBar());
+        
         loadFonts();
         
         // Call the canvas to preview the returned random shape
@@ -62,6 +66,27 @@ public class TypeShapes extends Create implements AlcConstants{
         //System.out.println("Refocus Called");
     }
     
+    public AlcSubToolBar createSubToolBar(){
+        AlcSubToolBar subToolBar = new AlcSubToolBar(root, getName(), getIconUrl(), getDescription());
+        
+        
+        // Buttons
+        AlcSubButton runButton = new AlcSubButton(root.toolBar, "Create", getIconUrl());
+        runButton.setToolTipText("Create Type Shapes (Space)");
+        
+        runButton.addActionListener(
+                new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                root.canvas.previewShape(randomShape());
+            }
+        }
+        );
+        
+        
+        subToolBar.add(runButton);
+        return subToolBar;
+    }
+    
     /** Load all available system fonts into an array */
     public void loadFonts(){
         GraphicsEnvironment graphicsenvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -70,17 +95,20 @@ public class TypeShapes extends Create implements AlcConstants{
     
     /** Returns a random font from the list */
     public Font randomFont(){
-        return new Font(fonts[(int)math.random(0, fonts.length)].getName(), Font.PLAIN, (int)math.random(100, 200));
+        return new Font(fonts[(int)root.math.random(0, fonts.length)].getName(), Font.PLAIN, (int)root.math.random(100, 300));
     }
     
     public AlcShape randomShape(){
-        randX = quarterWidth + (int)math.random(halfWidth);
-        randY = quarterHeight + (int)math.random(halfHeight);
+        randX = quarterWidth + (int)root.math.random(halfWidth);
+        randY = quarterHeight + (int)root.math.random(halfHeight);
         
         inc = 0;
-        scale = (int)math.random(2, 8);
-        //root.println(scale);
-        doubleScale = scale * 2;
+        scale = (int)root.math.random(2, 8);
+        doubleScale = scale << 1;
+        
+        explode = (int)root.math.random(1, 5);
+        noisiness = root.math.random(0.0001F, 0.5F);
+        //System.out.println(noisiness);
         
         //f = new Font("Helvetica", Font.PLAIN, 150);
         Font f = randomFont();
@@ -90,12 +118,17 @@ public class TypeShapes extends Create implements AlcConstants{
         
         union = makeShape(f);
         
-        int iterations = (int)math.random(5, 15);
+        int iterations = (int)root.math.random(5, 15);
         System.out.println("Iterations: "+iterations+ " Scale: "+scale);
+        
         for(int i = 0; i < iterations; i++) {
             Area a = makeShape(f);
             union.add(a);
         }
+        
+        AffineTransform centre = new AffineTransform();
+        centre.translate(root.math.random(root.getWindowSize().width), root.math.random(root.getWindowSize().height));
+        union = union.createTransformedArea(centre);
         
         // Convert the random shape into a general path
         GeneralPath gp = new GeneralPath((Shape)union);
@@ -106,7 +139,7 @@ public class TypeShapes extends Create implements AlcConstants{
     
     public Area makeShape(Font font){
         // Make a string from one random char from the letters string
-        String randomLetter = Character.toString(letters.charAt((int)math.random(letters.length())));
+        String randomLetter = Character.toString(letters.charAt((int)root.math.random(letters.length())));
         
         GlyphVector gv = font.createGlyphVector(fontRenderContext, randomLetter);
         Shape shp = gv.getOutline();
@@ -148,6 +181,7 @@ public class TypeShapes extends Create implements AlcConstants{
                 segCount++;
             }
             
+            // TODO - review this code to see what causes the: "java.lang.InternalError: Odd number of new curves!" error
             // Only add the first segment
             if(segCount == 1){
                 if(pointCount < 20){
@@ -164,6 +198,8 @@ public class TypeShapes extends Create implements AlcConstants{
                             //newShape.quadTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3]);
                             break;
                         case PathIterator.SEG_CUBICTO:
+                            // Randomising the curves tends to generate errors and unresposiveness
+                            //newShape.curveTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]), mess(cutPts[4]), mess(cutPts[5]));
                             newShape.curveTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3], cutPts[4], cutPts[5]);
                             break;
                         case PathIterator.SEG_CLOSE:
@@ -184,33 +220,33 @@ public class TypeShapes extends Create implements AlcConstants{
         
         // Move the shape to the middle of the screen
         AffineTransform newTr = new AffineTransform();
-        newTr.translate(math.random(root.getWindowSize().width), math.random(root.getWindowSize().height));
+        int offsetX = root.getWindowSize().width >> explode;
+        int offsetY = root.getWindowSize().width >> explode;
+        newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
         
         // Rotate the shape randomly
-        newTr.rotate(math.random(TWO_PI));
+        newTr.rotate(root.math.random(TWO_PI));
         Area newA = new Area(newShape);
         return newA.createTransformedArea(newTr);
         
     }
     
     public float mess(float f){
-        noiseScale += 0.002F;
-        float n =  (math.noise(noiseScale) * doubleScale) - scale;
-        //System.out.println(n);
+        noiseScale += noisiness;
+        float n =  (root.math.noise(noiseScale) * doubleScale) - scale;
         return n * f;
     }
     
     // KEY EVENTS
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        //root.println(keyCode);
         
         switch(keyCode){
             case BACKSPACE:
             case DELETE:
                 
                 //System.out.println("DELETE");
-                //root.canvas.clear();
+                root.canvas.clear();
                 break;
                 
             case SPACE:

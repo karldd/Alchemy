@@ -19,6 +19,15 @@ public class AlcMath implements AlcConstants{
     public AlcMath() {
     }
     
+    
+    /** 
+     *  Random and noise functions adapted from the Processing project
+     *  http://processing.org
+     *  http://dev.processing.org/source/index.cgi/trunk/processing/core/src/processing/core/PApplet.java?view=markup
+     *
+     */
+    
+
     //////////////////////////////////////////////////////////////
     
     // RANDOM NUMBERS

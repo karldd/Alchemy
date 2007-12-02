@@ -63,8 +63,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      */
     static public final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
     
-    
+    /** Class to take care of plugin loading */
     private AlcPlugin plugins;
+    /** Class of utility math functions */
+    public AlcMath math = new AlcMath();
+    
     public ArrayList<AlcModule> creates;
     public ArrayList<AlcModule> affects;
     
@@ -196,7 +199,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         currentAffects.add(affects.get(i));
     }
     
-    
     // KEY EVENTS
     public void keyPressed(KeyEvent e) {
         if(currentCreate!= null){
@@ -267,7 +269,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Get and set the new size of the window
         windowSize = e.getComponent().getSize();
         // Resize the UI and Canvas
-        toolBar.resizeUi(windowSize);
+        toolBar.resizeToolBar(windowSize);
         canvas.resizeCanvas(windowSize);
         
     }
