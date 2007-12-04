@@ -15,23 +15,27 @@ import javax.swing.BorderFactory;
 import javax.swing.JRadioButtonMenuItem;
 //import javax.swing.plaf.basic.BasicMenuItemUI;
 
-public class AlcMenuItem extends JRadioButtonMenuItem {
+public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem {
     
-    // TODO - change this to AlcRadioButtonMenuItem
-    // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here: 
+    // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here:
     // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
     
-    
     AlcToolBar parent;
+    private int index;
+    private String command;
     
-    /** Creates a new instance of AlcMenuItem */
-    public AlcMenuItem(AlcToolBar parent, String text) {
+    /**
+     * Creates a new instance of AlcRadioButtonMenuItem
+     */
+    public AlcRadioButtonMenuItem(AlcToolBar parent, String text) {
         URL nullUrl = null;
         setup(parent, text, nullUrl);
     }
     
-    /** Creates a new instance of AlcMenuItem */
-    public AlcMenuItem(AlcToolBar parent, String text, URL iconUrl) {
+    /**
+     * Creates a new instance of AlcRadioButtonMenuItem
+     */
+    public AlcRadioButtonMenuItem(AlcToolBar parent, String text, URL iconUrl) {
         setup(parent, text, iconUrl);
     }
     
@@ -52,6 +56,23 @@ public class AlcMenuItem extends JRadioButtonMenuItem {
         this.setBackground(parent.toolBarHighlightColour);
         this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
         
+    }
+    
+    
+    public void setIndex(int index){
+        this.index = index;
+    }
+    
+    public int getIndex(){
+        return index;
+    }
+    
+    public void setCommand(String command){
+        this.command = command;
+    }
+    
+    public String getCommand(){
+        return command;
     }
     
 }

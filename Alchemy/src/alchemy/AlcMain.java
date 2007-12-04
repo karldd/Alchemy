@@ -69,13 +69,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcMath math = new AlcMath();
     
     /** Lists of the installed modules */
-    public ArrayList<AlcModule> creates = new ArrayList<AlcModule>(10);
-    public ArrayList<AlcModule> affects = new ArrayList<AlcModule>(10);
+    public AlcModule[] creates;
+    public AlcModule[] affects;
     
     /** The currently selected create module */
     AlcModule currentCreate;
     /** The currently selected affect modules */
-    ArrayList<AlcModule> currentAffects = new ArrayList<AlcModule>(10);
+    AlcModule[] currentAffects;
     
     
     /** Preferred size of the window */
@@ -93,11 +93,17 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         plugins = new AlcPlugin(this);
         System.out.println("Number of Plugins: "+plugins.getNumberOfPlugins());
         
+        // Initialise the array for current affects
+        currentAffects = new AlcModule[plugins.getNumberOfAffectModules()];
+        
         // Add each type of plugin
         if(plugins.getNumberOfPlugins() > 0){
-            creates = plugins.addPlugins("Create");
-            affects = plugins.addPlugins("Affect");
+            creates = plugins.addPlugins("Create", plugins.getNumberOfCreateModules());
+            affects = plugins.addPlugins("Affect", plugins.getNumberOfAffectModules());
         }
+        
+        System.out.println(creates[0].getName());
+        System.out.println(affects[0].getName());
         
         // LOAD INTERFACE AND CANVAS
         loadInterface();
@@ -110,20 +116,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
     
     private void loadInterface(){
-        
-        /*
-        if(plugins.getNumberOfPlugins() > 0){
-            // Load the names of the plugins for the ComboBoxes
-            createNames = new String[creates.size()];
-            for (int i = 0; i < creates.size(); i++) {
-                createNames[i] = creates.get(i).getName();
-            }
-            affectNames = new String[affects.size()];
-            for (int i = 0; i < affects.size(); i++) {
-                affectNames[i] = affects.get(i).getName();
-            }
-        }
-         */
         
         // User Interface toolbar
         toolBar = new AlcToolBar(this);
@@ -182,24 +174,25 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     
     /** Set the current create function */
     public void setCurrentCreate(int i) {
-        currentCreate = creates.get(i);
         
         // Call that module
-        if(!currentCreate.getLoaded()){
-            currentCreate.setup();
+        if(!creates[i].getLoaded()){
+            creates[i].setup();
         } else {
-            currentCreate.refocus();
+            creates[i].refocus();
         }
     }
     
     public void removeAffect(int i){
-        currentAffects.remove(i);
+        currentAffects[i] = null;
+        System.out.println( "Current Affects: " + currentAffects.length );
     }
     
     public void addAffect(int i){
         //System.out.println(affects.get(i));
-
-        currentAffects.add((AlcModule)affects.get(i));
+        
+        currentAffects[i] = affects[i];
+        System.out.println( "Current Affects: " + currentAffects.length );
     }
     
     // KEY EVENTS

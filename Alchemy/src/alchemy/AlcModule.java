@@ -38,19 +38,28 @@ public abstract class AlcModule {
     public void refocus(){
     }
     
-    /** Affect - Process an AlcShape.
-     *  Used to process whole shapes, typically those generated from create modules.
-     *  Get the shape, process it in some way and return and replace the original.
+    /**
+     *  Affect - Initialise an AlcShape.
+     *  Used to initialise shapes, typically from when the mouse is first pressed down to draw a line.
      */
-    public AlcShape process(AlcShape shape){
+    public void initialiseShape(AlcShape shape){
+    }
+    
+    /**
+     *  Affect - Process an AlcShape.
+     *  Used to process whole shapes, typically those generated from create modules.
+     *  Get the shape, processShape it in some way and return and replace the original.
+     */
+    public AlcShape processShape(AlcShape shape){
         return shape;
     }
     
-    /** Affect - Increment an AlcShape.
+    /**
+     * Affect - Increment an AlcShape.
      *  Used to increment a shape, typically for drawn lines etc...
      *  Typically store the temp shape in a canvas buffer until it gets added on mouse up.
      */
-    public void increment(AlcShape shape){
+    public void incrementShape(AlcShape shape){
     }
     
     

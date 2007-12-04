@@ -17,6 +17,8 @@ import javax.swing.JCheckBoxMenuItem;
 public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
     
     AlcToolBar parent;
+    private int index;
+    private String command;
     
     /** Creates a new instance of AlcCheckBoxMenuItem */
     public AlcCheckBoxMenuItem(AlcToolBar parent, String text) {
@@ -30,7 +32,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
     }
     
     private void setup(AlcToolBar parent, String text, URL iconUrl){
-     
+        
         this.parent = parent;
         // Set the intial state to false
         //this.setState(true);
@@ -47,5 +49,22 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
         this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
         
     }
+    
+    public void setIndex(int index){
+        this.index = index;
+    }
+    
+    public int getIndex(){
+        return index;
+    }
+    
+    public void setCommand(String command){
+        this.command = command;
+    }
+    
+    public String getCommand(){
+        return command;
+    }
+    
     
 }

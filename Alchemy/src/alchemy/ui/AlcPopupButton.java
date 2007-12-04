@@ -23,7 +23,7 @@ public class AlcPopupButton extends AlcMainButton {
     AlcPopupMenu popup;
     
     /** Creates a new instance of AlcPopupButton */
-    public AlcPopupButton(AlcToolBar parent, String text, String toolTip, URL iconUrl, ArrayList<AlcModule> moduleList) {
+    public AlcPopupButton(AlcToolBar parent, String text, String toolTip, URL iconUrl, AlcModule[] moduleList) {
         super(parent, text, toolTip, iconUrl);
         //this.moduleList = moduleList;
         
@@ -32,42 +32,53 @@ public class AlcPopupButton extends AlcMainButton {
             popup = new AlcPopupMenu(parent);
             
             // Get the name of the package
-            String s = moduleList.get(0).getClass().getPackage().getName();
+            String s = moduleList[0].getClass().getPackage().getName();
             // Get the last part of the package name - the type of module
             String command = s.substring(s.lastIndexOf(".")+1);
             
             ButtonGroup group = new ButtonGroup();
             
             // Populate the Popup Menu
-            for (int i = 0; i < moduleList.size(); i++) {
+            for (int i = 0; i < moduleList.length; i++) {
                 // The current module
-                AlcModule currentModule = moduleList.get(i);
+                AlcModule currentModule = moduleList[i];
                 
                 // Add check box menu items if it is an affect popup, else add normal menu items
                 if(command.equals("affect")){
                     
                     AlcCheckBoxMenuItem menuItem = new AlcCheckBoxMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
                     menuItem.setToolTipText(currentModule.getDescription());
+                    // Set the index and command to retrieve when the button is triggered
+                    menuItem.setIndex(i);
+                    menuItem.setCommand(command);
                     
                     // Set the action command and listener
-                    menuItem.setActionCommand(command + "-" + i);
-                    menuItem.addActionListener(parent);
+                    // menuItem.setActionCommand(command + "-" + i);
+                    menuItem.addItemListener(parent);
+                    //menuItem.addActionListener(parent);
                     popup.add(menuItem);
                     
-                } else{
+                } else {
                     
-                    AlcMenuItem menuItem = new AlcMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
+                    AlcRadioButtonMenuItem menuItem = new AlcRadioButtonMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
                     menuItem.setToolTipText(currentModule.getDescription());
                     //menuItem.
                     
                     // Set the action command and listener
-                    menuItem.setActionCommand(command + "-" + i);
+                    // menuItem.setActionCommand(command + "-" + i);
                     menuItem.addActionListener(parent);
-                    menuItem.setSelected(true);
+                    if(i == 0)
+                        menuItem.setSelected(true);
+                    
+                    // Set the index and command to retrieve when the button is triggered
+                    menuItem.setIndex(i);
+                    menuItem.setCommand(command);
+                    
                     group.add(menuItem);
                     popup.add(menuItem);
                     
-                    AlcMenuItem menuItem2 = new AlcMenuItem(parent, "Something Else", parent.getUrlPath("../data/icon.png"));
+                    // For testing purposes - REMOVE
+                    AlcRadioButtonMenuItem menuItem2 = new AlcRadioButtonMenuItem(parent, "Something Else", parent.getUrlPath("../data/icon.png"));
                     group.add(menuItem2);
                     popup.add(menuItem2);
                     

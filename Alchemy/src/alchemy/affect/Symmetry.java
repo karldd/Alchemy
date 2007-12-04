@@ -17,6 +17,8 @@ import java.awt.geom.GeneralPath;
 
 public class Symmetry extends AlcModule implements AlcConstants{
     
+    private AlcShape tempShape;
+        
     /** Creates a new instance of Symmetry */
     public Symmetry() {
     }
@@ -25,7 +27,15 @@ public class Symmetry extends AlcModule implements AlcConstants{
         setLoaded(true);
     }
     
-    public AlcShape process(AlcShape shape){
+    public void initialiseShape(AlcShape shape){
+        
+        //(GeneralPath gp,  Color colour, int alpha, int style, int lineWidth){
+        tempShape = new AlcShape(shape.getShape(), shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
+        //tempShape = shape;
+        
+    }
+    
+    public AlcShape processShape(AlcShape shape){
         
         GeneralPath rawShape = shape.getShape();    // Get the raw shape fromt the custom class
         Area shapeArea = new Area(rawShape);        // Make this into an area
@@ -41,11 +51,9 @@ public class Symmetry extends AlcModule implements AlcConstants{
         return shape;
     }
     
-    public void increment(AlcShape shape){
-        // TODO - fix this bug in reflecting symmetry
+    public void incrementShape(AlcShape shape){
         
-        AlcShape tempShape = shape;
-        GeneralPath rawShape = tempShape.getShape();    // Get the raw shape from the custom class
+        GeneralPath rawShape = shape.getShape();    // Get the raw shape from the custom class
         AffineTransform reflection = horizontalReflect();  // Get a horizontal transform
         GeneralPath processedShape = (GeneralPath)rawShape.createTransformedShape(reflection);
         tempShape.setShape(processedShape); // Add the transformed shape

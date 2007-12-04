@@ -33,6 +33,9 @@ public class AlcPlugin {
     private PluginManager pluginManager;
     
     private int numberOfPlugins;
+    private int numberOfCreateModules = 0;
+    private int numberOfAffectModules = 0;
+    
     
     AlcMain root;
     
@@ -61,10 +64,19 @@ public class AlcPlugin {
             
             // Number of plugins minus one for the core plugin
             numberOfPlugins = plugins.length-1;
+            int numberOfCreates = 0;
+            int numberOfAffects = 0;
             
             for (int i = 0; i < plugins.length; i++) {
                 locations[i] = StandardPluginLocation.create(plugins[i]);
-                //println(plugins[i].getAbsolutePath());
+                
+                // Check for each type of module using the filename
+                if(plugins[i].getName().startsWith("alchemy.create")){
+                    numberOfCreateModules++;
+                } else if(plugins[i].getName().startsWith("alchemy.affect")){
+                    numberOfAffectModules++;
+                }
+                //System.out.println(plugins[i].getName());
             }
             
             // Registers plug-ins and their locations with this plug-in manager.
@@ -77,9 +89,10 @@ public class AlcPlugin {
         
     }
     
-    public ArrayList<AlcModule> addPlugins(String pointName){
+    public AlcModule[] addPlugins(String pointName, int numberOfModules){
         
-        ArrayList<AlcModule> plugins = new ArrayList<AlcModule>();
+        AlcModule[] plugins = new AlcModule[numberOfModules];
+        int index = 0;
         
         try{
             PluginDescriptor core = pluginManager.getRegistry().getPluginDescriptor("alchemy.core");
@@ -95,8 +108,8 @@ public class AlcPlugin {
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
                 
-                plugins.add( (AlcModule)pluginCls.newInstance() );
-                AlcModule currentPlugin = plugins.get(plugins.size()-1);
+                plugins[index] = ( (AlcModule)pluginCls.newInstance() );
+                AlcModule currentPlugin = plugins[index];
                 
                 // Set the root value
                 currentPlugin.init(root);
@@ -126,7 +139,7 @@ public class AlcPlugin {
                     iconUrl = classLoader.getResource(iconParam);
                     currentPlugin.setIconUrl(iconUrl);
                 }
-               
+                
                 // TODO - How to load .class files from here?
                 
                 /*
@@ -139,8 +152,9 @@ public class AlcPlugin {
                 currentPlugin.setName(nameParam);
                 currentPlugin.setIconName(iconParam);
                 currentPlugin.setDescription(descriptionParam);
-                currentPlugin.setId(plugins.size()-1);
+                currentPlugin.setId(index);
                 
+                index++;
                 //textFont(font);
                 //text(modules.getName(), 15, 60, -30);
                 //println(modules.getName());
@@ -155,6 +169,14 @@ public class AlcPlugin {
     
     public int getNumberOfPlugins(){
         return numberOfPlugins;
+    }
+    
+    public int getNumberOfCreateModules(){
+        return numberOfCreateModules;
+    }
+    
+    public int getNumberOfAffectModules(){
+        return numberOfAffectModules;
     }
     
 }
