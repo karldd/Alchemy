@@ -43,49 +43,57 @@ public class AlcShape implements AlcConstants{
     private int totalPoints = 0;
     
     public AlcShape(Point p){
-        setupPoint(p, colour, alpha, style, lineWidth);
+        setupPoint(p);
+        setupAttributes(colour, alpha, style, lineWidth);
     }
     
     public AlcShape(Point p, Color colour, int alpha, int style, int lineWidth){
-        setupPoint(p, colour, alpha, style, lineWidth);
+        setupPoint(p);
+        setupAttributes(colour, alpha, style, lineWidth);
+    }
+    
+    public AlcShape(){
+        setupBlank();
+        setupAttributes(colour, alpha, style, lineWidth);
     }
     
     public AlcShape(GeneralPath gp){
-        setupShape(gp, colour, alpha, style, lineWidth);
+        setupShape(gp);
+        setupAttributes(colour, alpha, style, lineWidth);
     }
     
     public AlcShape(GeneralPath gp, int style){
-        setupShape(gp, colour, alpha, style, lineWidth);
-    }
-        
-    public AlcShape(GeneralPath gp,  Color colour, int alpha, int style, int lineWidth){
-        setupShape(gp, colour, alpha, style, lineWidth);
+        setupShape(gp);
+        setupAttributes(colour, alpha, style, lineWidth);
     }
     
-    public void setupPoint(Point p, Color colour, int alpha, int style, int lineWidth){
-        
+    public AlcShape(GeneralPath gp,  Color colour, int alpha, int style, int lineWidth){
+        setupShape(gp);
+        setupAttributes(colour, alpha, style, lineWidth);
+    }
+    
+    public void setupBlank(){
+        // Create an empty shape
+        shape = new GeneralPath();
+    }
+    
+    public void setupPoint(Point p){
         // Create the shape and move to the first point
         shape = new GeneralPath();
         shape.moveTo(p.x, p.y);
         totalPoints++;
-        
-        this.alpha = alpha;
-        setColour(colour);
-        this.style = style;
-        this.lineWidth = lineWidth;
-        
     }
     
-    public void setupShape(GeneralPath gp, Color colour, int alpha, int style, int lineWidth){
-        
+    public void setupShape(GeneralPath gp){
         // Add the shape
         setShape(gp);
-        System.out.println(style);
+    }
+    
+    public void setupAttributes(Color colour, int alpha, int style, int lineWidth){
         this.alpha = alpha;
         setColour(colour);
         this.style = style;
         this.lineWidth = lineWidth;
-        
     }
     
     public void drag(Point p) {

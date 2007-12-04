@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.*;
 
-public class AlcToolBar extends JPanel implements ActionListener { // Extend JPanel rather than JComponent so the background can be set
+public class AlcToolBar extends JPanel implements ActionListener, ItemListener { // Extend JPanel rather than JComponent so the background can be set
     
     /** Reference to the root **/
     private AlcMain root;
@@ -219,6 +219,13 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
         }
     }
     
+    // Returns just the class name -- no package info.
+    public String getClassName(Object o) {
+        String classString = o.getClass().getName();
+        int dotIndex = classString.lastIndexOf(".");
+        return classString.substring(dotIndex+1);
+    }
+    
     
     /** Calculate the total height of the toolbar and its subtoolbars */
     public void calculateTotalHeight(){
@@ -249,28 +256,60 @@ public class AlcToolBar extends JPanel implements ActionListener { // Extend JPa
     
     
     public void actionPerformed(ActionEvent e) {
-        String rawCommand = e.getActionCommand();
+        //String rawCommand = e.getActionCommand();
+        
+        //JMenuItem source = (JMenuItem)(e.getSource());
+        //System.out.println( source.getClass().getName() );
         
         // Get the type of command
-        String commandType = rawCommand.substring(0, rawCommand.lastIndexOf("-"));
-        
+        //String commandType = rawCommand.substring(0, rawCommand.lastIndexOf("-"));
         // Get the index
-        int index = Integer.parseInt( rawCommand.substring(rawCommand.lastIndexOf("-")+1) );
+        //int index = Integer.parseInt( rawCommand.substring(rawCommand.lastIndexOf("-")+1) );
         
-        if(commandType.equals("mark")){
+        AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem)e.getSource();
+        String command = source.getCommand();
+        int index = source.getIndex();
+        
+        
+        if(command.equals("mark")){
             
-        } else if(commandType.equals("create")){
+        } else if(command.equals("create")){
             
             //AlcMenuItem source = (AlcMenuItem)(e.getSource());
             //int index = createPopup.getComponentIndex(source);
             //System.out.println(index);
+            //System.out.println(e.getSource());
             root.setCurrentCreate(index);
             
-        } else if(commandType.equals("affect")){
-            root.addAffect(index);
         }
         
         
     }
+    
+    public void itemStateChanged(ItemEvent e) {
+        
+        // TODO - Right now this can only be used for the affect module popup button
+        // Needs to be coded so we can tell who is sending the command
+        
+        AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem)e.getItemSelectable();
+        String command = source.getCommand();
+        int index = source.getIndex();
+        
+        
+        // SELECTED
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+            
+            //System.out.println( index );
+            
+            root.addAffect(index);
+            
+            // DESELECTED
+        } else {
+            
+            root.removeAffect(index);
+            
+        }
+    }
+    
     
 }

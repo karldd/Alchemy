@@ -63,8 +63,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         g2.fillRect(0, 0, w, h);
         
         
-        // TODO - turned off for debugging symmetry bug
-        /* 
         // Draw all the shapes
         if(shapes != null){
             for (int i = 0; i < shapes.size(); i++) {
@@ -89,7 +87,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 
             }
         }
-         */
+        
         
         
         // Draw the tempShape if present
@@ -155,9 +153,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         // If there is an affect selected
         if(root.currentAffects != null){
             
-            for (int i = 0; i < root.currentAffects.size(); i++) {
-                AlcModule currentAffect = root.currentAffects.get(i);
-                tempShape = currentAffect.process(tempShape);
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                AlcModule currentAffect = root.currentAffects[i];
+                tempShape = currentAffect.processShape(tempShape);
             }
         }
         
@@ -229,8 +227,18 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         
         commitTempShape();
         // Create a new shape
-        if(draw)
+        if(draw) {
             shapes.add( new AlcShape(e.getPoint()) );
+
+            // TODO - Find a way to test if there are currentAffects assigned
+            if(root.currentAffects != null){
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    AlcModule currentAffect = root.currentAffects[i];
+                    currentAffect.initialiseShape( shapes.get(shapes.size()-1) );
+                }
+            }
+            
+        }
         
     }
     
@@ -251,9 +259,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             
             // Pass this shape to the affect(s) be processed
             if(root.currentAffects != null){
-                for (int i = 0; i < root.currentAffects.size(); i++) {
-                    AlcModule currentAffect = root.currentAffects.get(i);
-                    currentAffect.increment(currentShape);
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    AlcModule currentAffect = root.currentAffects[i];
+                    currentAffect.incrementShape(currentShape);
                 }
             }
             
