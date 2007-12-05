@@ -10,8 +10,8 @@
 package alchemy;
 
 import java.awt.Cursor;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
-
 
 /**
  *
@@ -24,6 +24,32 @@ public interface AlcConstants {
     static final int MACOSX  = 3;
     static final int LINUX   = 4;
     static final int OTHER   = 0;
+    
+    /**
+     * Modifier flags for the shortcut key used to trigger menus.
+     * (Cmd on Mac OS X, Ctrl on Linux and Windows)
+     */
+    static public final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    
+    /**
+     * Full name of the Java version (i.e. 1.5.0_11).
+     */
+    public static final String javaVersionName = System.getProperty("java.version");
+    
+    /**
+     * Version of Java that's in use, whether 1.1 or 1.3 or whatever,
+     * stored as a float.
+     */
+    public static final float javaVersion = new Float(javaVersionName.substring(0, 3)).floatValue();
+    
+    /**
+     * Current platform in use.
+     * <P>
+     * Equivalent to System.getProperty("os.name"), just used internally.
+     */
+    static public String platformName =
+            System.getProperty("os.name");
+    
     
     
     // useful goodness

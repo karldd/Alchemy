@@ -242,6 +242,14 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         this.style = style;
     }
     
+    public void toggleStyle(){
+        if(style == LINE) {
+            style = SOLID;
+        } else {
+            style = LINE;
+        }
+    }
+    
     public void setLineWidth(int lineWidth){
         this.lineWidth = lineWidth;
     }
@@ -252,6 +260,14 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         
         // Toogle visibility of the Toolbar
         toggleToolBar(e);
+        
+        if(root.hasCurrentAffects()){
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if(root.currentAffects[i]){
+                    root.affects[i].mouseMoved(e);
+                }
+            }
+        }
         
     }
     
@@ -265,8 +281,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             // Pass along the shape to the affect(s) to be initialised
             if(root.hasCurrentAffects()){
                 for (int i = 0; i < root.currentAffects.length; i++) {
-                    if(root.currentAffects[i])
+                    if(root.currentAffects[i]){
                         root.affects[i].initialiseShape( shapes.get(shapes.size()-1) );
+                        root.affects[i].mousePressed(e);
+                    }
                 }
             }
             
@@ -274,12 +292,44 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         
     }
     
-    public void mouseClicked(MouseEvent e)  { }
-    public void mouseEntered(MouseEvent e)  { }
-    public void mouseExited(MouseEvent e)   { }
+    public void mouseClicked(MouseEvent e)  {
+        if(root.hasCurrentAffects()){
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if(root.currentAffects[i]){
+                    root.affects[i].mouseClicked(e);
+                }
+            }
+        }
+    }
+    
+    public void mouseEntered(MouseEvent e)  {
+        if(root.hasCurrentAffects()){
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if(root.currentAffects[i]){
+                    root.affects[i].mouseEntered(e);
+                }
+            }
+        }
+    }
+    public void mouseExited(MouseEvent e)   {
+        if(root.hasCurrentAffects()){
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if(root.currentAffects[i]){
+                    root.affects[i].mouseExited(e);
+                }
+            }
+        }}
     
     public void mouseReleased(MouseEvent e) {
         commitTempShape();
+        
+        if(root.hasCurrentAffects()){
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if(root.currentAffects[i]){
+                    root.affects[i].mouseReleased(e);
+                }
+            }
+        }
     }
     
     public void mouseDragged(MouseEvent e)  {
@@ -292,8 +342,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             // Pass this shape to the affect(s) be processed
             if(root.hasCurrentAffects()){
                 for (int i = 0; i < root.currentAffects.length; i++) {
-                    if(root.currentAffects[i])
+                    if(root.currentAffects[i]){
                         root.affects[i].incrementShape(currentShape);
+                        root.affects[i].mouseDragged(e);
+                    }
                 }
             }
             

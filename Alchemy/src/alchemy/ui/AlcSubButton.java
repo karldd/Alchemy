@@ -9,13 +9,10 @@
 
 package alchemy.ui;
 
-//import java.awt.Color;
-//import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
-//import javax.swing.plaf.basic.*;
 
 public class AlcSubButton extends JButton{
     
@@ -27,34 +24,19 @@ public class AlcSubButton extends JButton{
     public AlcSubButton(AlcToolBar parent, String text, URL iconUrl) {
         
         this.parent = parent;
-        //this.setUI(new BasicButtonUI());
         
         if(iconUrl != null){
-            // Set the main Icon
+            // Set the main icon
             this.setIcon( parent.createImageIcon(iconUrl) );
-            //System.out.println(iconUrl);
-            
+            // Set the rollover icon
             URL rolloverIconUrl = parent.appendStringToUrl(iconUrl, "-over");
-          
             this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
-            
         }
         
         this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
-        //this.setVerticalTextPosition(SwingConstants.BOTTOM);
-        //this.setHorizontalTextPosition(SwingConstants.CENTER);
-        //this.setVerticalAlignment(SwingConstants.TOP);
         this.setText(text);
-        
         // Insets(int top, int left, int bottom, int right)
         this.setMargin(new Insets(4, 8, 8, 4));
-        //this.setIconTextGap(-24);
-        
-        //this.setBackground(parent.getUiBgColour());
-        //this.setPreferredSize(new Dimension(100, 65));
-        //this.setBorder(BorderFactory.createRaisedBevelBorder());
-        
-        //System.out.println(this.getUI());
         
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button

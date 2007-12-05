@@ -10,13 +10,15 @@
 package alchemy.affect;
 
 import alchemy.*;
-import alchemy.ui.AlcSubButton;
-import alchemy.ui.AlcSubToolBar;
+import alchemy.ui.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 public class Blindness extends AlcModule implements AlcConstants{
+    
+    private boolean blindShapes = false;
     
     /** Creates a new instance of Blindness */
     public Blindness() {
@@ -59,10 +61,37 @@ public class Blindness extends AlcModule implements AlcConstants{
             }
         }
         );
-        
-        
         subToolBar.add(redrawButton);
+        
+        AlcSubToggleButton blindShapeButton = new AlcSubToggleButton(root.toolBar, "Blind Shapes", getIconUrl());
+        blindShapeButton.setToolTipText("Redraw the screen after each shape");
+        
+        blindShapeButton.addActionListener(
+                new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                toggleBlindShapes();
+            }
+        }
+        );
+        subToolBar.add(blindShapeButton);
+        
         return subToolBar;
+    }
+    
+    private void toggleBlindShapes(){
+        if(blindShapes){
+            blindShapes = false;
+        } else {
+            blindShapes = true;
+        }
+    }
+    
+    // MOUSE EVENTS
+    
+    public void mouseReleased(MouseEvent e) {
+        if(blindShapes){
+            redrawOnce();
+        }
     }
     
     // KEY EVENTS

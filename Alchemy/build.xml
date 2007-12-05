@@ -69,11 +69,14 @@
     
     <target name="-post-jar">
         
-        <!-- Move the compiled Plugin classes -->
-        <move file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/plugins/core/alchemy"/>
-        <move file="${build.classes.dir}/alchemy/create/TypeShapes.class" todir="${basedir}/plugins/typeShapes/alchemy/create"/>
-        <move file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/symmetry/alchemy/affect"/>
-        <move file="${build.classes.dir}/alchemy/affect/Blindness.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
+        <!-- Move the compiled Plugin classes  - Need to find a better way to do this! -->
+        <copy file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/plugins/core/alchemy"/>
+        <copy file="${build.classes.dir}/alchemy/create/TypeShapes.class" todir="${basedir}/plugins/typeShapes/alchemy/create"/>
+        <copy file="${build.classes.dir}/alchemy/create/TypeShapes$1.class" todir="${basedir}/plugins/typeShapes/alchemy/create"/>
+        <copy file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/symmetry/alchemy/affect"/>
+        <copy file="${build.classes.dir}/alchemy/affect/Blindness.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
+        <copy file="${build.classes.dir}/alchemy/affect/Blindness$1.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
+        <copy file="${build.classes.dir}/alchemy/affect/Blindness$2.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
         
         <!--
         <move file="${build.classes.dir}/alchemy/create/ImageShapes.class" todir="${basedir}/plugins/imageShapes/alchemy/create"/>
