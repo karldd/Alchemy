@@ -7,23 +7,32 @@ import java.net.URL;
 
 public abstract class AlcModule {
     
+    /** Access to the root */
     public AlcMain root;
+    /** The name of this module */
+    private String moduleName;
+    /** The type of module  - either CREATE (0) or AFFECT (1) */
+    private int moduleType;
+    /** The description of this module as documented in the modules plugin.xml file */
+    private String description;
     
-    private String moduleName, iconName, description;
-    private int id, cursor;
-    private boolean loaded = false;
-    private boolean smooth, loop;
-    private File pluginPath;
+    /** The name of the icon used for this modules button as documented in the modules plugin.xml file */
+    private String iconName;
+    /** The full icon url for this modules button */
     private URL iconUrl;
     
-    public AlcModule(){
-        
-    }
+    /** The index of this module in the "root.creates" or "root.affects" array */
+    private int index;
+    /** The loaded state of this module - set to true when the module is first selected */
+    private boolean loaded = false;
     
+    
+    public AlcModule(){
+    }
     
     // STRUCTURE
     /** Called by the plugin manager once the module is found */
-    public void init(AlcMain root){
+    public void setRoot(AlcMain root){
         this.root = root;
     }
     
@@ -34,8 +43,12 @@ public abstract class AlcModule {
     public void draw(){
     }
     
-    /** Called when the module is re-selected */
-    public void refocus(){
+    /** Called when the module is reselected */
+    public void reselect(){
+    }
+    
+    /** Called when the module is deselected */
+    public void deselect(){
     }
     
     /**
@@ -73,13 +86,22 @@ public abstract class AlcModule {
         moduleName = m;
     }
     
-    public int getId(){
-        return id;
+    public int getIndex(){
+        return index;
     }
     
-    public void setId(int i){
-        id = i;
+    public void setIndex(int i){
+        index = i;
     }
+    
+    public int getModuleType(){
+        return moduleType;
+    }
+    
+    public void setModuleType(int moduleType){
+        this.moduleType = moduleType;
+    }
+    
     
     public boolean getLoaded(){
         return loaded;
@@ -87,14 +109,6 @@ public abstract class AlcModule {
     
     public void setLoaded(boolean l){
         loaded = l;
-    }
-    
-    public File getPluginPath(){
-        return pluginPath;
-    }
-    
-    public void setPluginPath(File p){
-        pluginPath = p;
     }
     
     public String getIconName(){
@@ -123,77 +137,6 @@ public abstract class AlcModule {
         description = n;
     }
     
-    /* Processing crap...
-     *
-    // GLOBAL HARMONY
-    public void setCursor(int c){
-        root.cursor(c);
-    }
-     
-    public int getCursor(){
-        return cursor;
-    }
-     
-    public void resetCursor(){
-        root.cursor(cursor);
-    }
-     
-    public void setSmooth(boolean b){
-        if(b){
-            root.smooth();
-        } else {
-            root.noSmooth();
-        }
-    }
-     
-    public boolean getSmooth(){
-        return smooth;
-    }
-     
-    public void resetSmooth(){
-        if(smooth){
-            root.smooth();
-        } else {
-            root.noSmooth();
-        }
-    }
-     
-    public void setLoop(boolean b){
-        if(b){
-            root.loop();
-        } else {
-            root.noLoop();
-        }
-    }
-     
-    public boolean getLoop(){
-        return loop;
-    }
-     
-    public void resetLoop(){
-        if(loop){
-            root.loop();
-        } else {
-            root.noLoop();
-        }
-    }
-     
-     
-    // OBJECTS
-    public void setUiVisible(boolean b){
-        if(ui != null){
-            ui.setVisible(b);
-        }
-    }
-     
-    public boolean hasUi(){
-        if(ui == null){
-            return false;
-        } else{
-            return true;
-        }
-    }
-     */
     
     
     // MOUSE EVENTS

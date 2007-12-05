@@ -16,7 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 
-public class AlcPopupButton extends AlcMainButton {
+public class AlcPopupButton extends AlcButton {
     
     //private ArrayList<AlcModule> moduleList;
     private final int uiPopupMenuY = parent.getToolBarHeight() - 10;
@@ -46,41 +46,25 @@ public class AlcPopupButton extends AlcMainButton {
                 // Add check box menu items if it is an affect popup, else add normal menu items
                 if(command.equals("affect")){
                     
-                    AlcCheckBoxMenuItem menuItem = new AlcCheckBoxMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
+                    AlcCheckBoxMenuItem menuItem = new AlcCheckBoxMenuItem(parent, currentModule);
                     menuItem.setToolTipText(currentModule.getDescription());
-                    // Set the index and command to retrieve when the button is triggered
-                    menuItem.setIndex(i);
-                    menuItem.setCommand(command);
-                    
-                    // Set the action command and listener
-                    // menuItem.setActionCommand(command + "-" + i);
                     menuItem.addItemListener(parent);
-                    //menuItem.addActionListener(parent);
                     popup.add(menuItem);
                     
                 } else {
                     
-                    AlcRadioButtonMenuItem menuItem = new AlcRadioButtonMenuItem(parent, currentModule.getName(), currentModule.getIconUrl());
+                    AlcRadioButtonMenuItem menuItem = new AlcRadioButtonMenuItem(parent, currentModule);
                     menuItem.setToolTipText(currentModule.getDescription());
                     //menuItem.
                     
                     // Set the action command and listener
                     // menuItem.setActionCommand(command + "-" + i);
                     menuItem.addActionListener(parent);
-                    if(i == 0)
-                        menuItem.setSelected(true);
-                    
-                    // Set the index and command to retrieve when the button is triggered
-                    menuItem.setIndex(i);
-                    menuItem.setCommand(command);
+                    //if(i == 0)
+                    //menuItem.setSelected(true);
                     
                     group.add(menuItem);
                     popup.add(menuItem);
-                    
-                    // For testing purposes - REMOVE
-                    AlcRadioButtonMenuItem menuItem2 = new AlcRadioButtonMenuItem(parent, "Something Else", parent.getUrlPath("../data/icon.png"));
-                    group.add(menuItem2);
-                    popup.add(menuItem2);
                     
                 }
                 

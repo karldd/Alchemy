@@ -18,15 +18,13 @@ public class AlcShape implements AlcConstants{
     
     private GeneralPath shape;
     
+    // SHAPE DEFAULTS
     /** Colour of this shape */
     private Color colour = Color.BLACK;
-    
     /** Alpha of this shape */
     private int alpha = 255;
-    
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
     private int style = LINE;
-    
     /** Line Weight if the style is line */
     private int lineWidth = 1;
     
@@ -75,18 +73,24 @@ public class AlcShape implements AlcConstants{
     public void setupBlank(){
         // Create an empty shape
         shape = new GeneralPath();
+        shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
     
     public void setupPoint(Point p){
         // Create the shape and move to the first point
         shape = new GeneralPath();
+        // TODO - get Jacobs opinion on this winding rule
+        shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
+        //shape.setWindingRule(GeneralPath.WIND_EVEN_ODD);
+        
         shape.moveTo(p.x, p.y);
         totalPoints++;
     }
     
     public void setupShape(GeneralPath gp){
         // Add the shape
-        setShape(gp);
+        this.shape = gp;
+        shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
     
     public void setupAttributes(Color colour, int alpha, int style, int lineWidth){
@@ -167,6 +171,7 @@ public class AlcShape implements AlcConstants{
     
     public void setAlpha(int alpha){
         this.alpha = alpha;
+        setColour(this.colour);
     }
     
     public int getStyle(){

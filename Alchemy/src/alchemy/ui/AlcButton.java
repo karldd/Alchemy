@@ -17,14 +17,14 @@ import java.net.URL;
 import javax.swing.*;
 //import javax.swing.plaf.basic.*;
 
-public class AlcMainButton extends JButton{
+public class AlcButton extends JButton{
     
     AlcToolBar parent;
     
     /**
-     * Creates a new instance of AlcMainButton
+     * Creates a new instance of AlcButton
      */
-    public AlcMainButton(AlcToolBar parent, String text, String toolTip, URL iconUrl) {
+    public AlcButton(AlcToolBar parent, String text, String toolTip, URL iconUrl) {
         
         this.parent = parent;
         //this.setUI(new BasicButtonUI());

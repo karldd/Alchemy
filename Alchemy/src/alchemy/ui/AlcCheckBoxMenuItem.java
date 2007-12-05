@@ -9,6 +9,7 @@
 
 package alchemy.ui;
 
+import alchemy.AlcModule;
 import java.awt.Font;
 import java.net.URL;
 import javax.swing.BorderFactory;
@@ -16,32 +17,24 @@ import javax.swing.JCheckBoxMenuItem;
 
 public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
     
-    AlcToolBar parent;
-    private int index;
-    private String command;
+    private AlcToolBar parent;
+    private AlcModule module;
+    private int index, moduleType;
     
     /** Creates a new instance of AlcCheckBoxMenuItem */
-    public AlcCheckBoxMenuItem(AlcToolBar parent, String text) {
-        URL nullUrl = null;
-        setup(parent, text, nullUrl);
-    }
-    
-    /** Creates a new instance of AlcCheckBoxMenuItem */
-    public AlcCheckBoxMenuItem(AlcToolBar parent, String text, URL iconUrl) {
-        setup(parent, text, iconUrl);
-    }
-    
-    private void setup(AlcToolBar parent, String text, URL iconUrl){
+    public AlcCheckBoxMenuItem(AlcToolBar parent, AlcModule module) {
         
         this.parent = parent;
+        this.index = module.getIndex();
+        this.moduleType = module.getModuleType();
+        
         // Set the intial state to false
         //this.setState(true);
         
-        this.setText(text);
-        if(iconUrl != null){
-            // Set the main Icon
-            this.setIcon( parent.createImageIcon(iconUrl) );
-        }
+        this.setText(module.getName());
+        // Set the main Icon
+        this.setIcon( parent.createImageIcon( module.getIconUrl() ) );
+        
         
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
@@ -50,21 +43,11 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem {
         
     }
     
-    public void setIndex(int index){
-        this.index = index;
-    }
-    
     public int getIndex(){
         return index;
     }
     
-    public void setCommand(String command){
-        this.command = command;
+    public int getModuleType(){
+        return moduleType;
     }
-    
-    public String getCommand(){
-        return command;
-    }
-    
-    
 }
