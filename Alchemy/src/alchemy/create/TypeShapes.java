@@ -44,15 +44,13 @@ public class TypeShapes extends AlcModule implements AlcConstants{
     
     public void setup(){
         
-        setLoaded(true);
-        
         halfWidth = root.getWindowSize().width/2;
         halfHeight = root.getWindowSize().height/2;
         quarterWidth = root.getWindowSize().width/4;
         quarterHeight = root.getWindowSize().height/4;
         
         // Add this modules toolbar to the main ui
-        root.toolBar.addCreateSubToolBar(createSubToolBar());
+        root.toolBar.addSubToolBar(createSubToolBar());
         
         loadFonts();
         
@@ -61,14 +59,13 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         
     }
     
-    public void refocus(){
+    public void reselect(){
         //System.out.println("Refocus Called");
     }
     
     public AlcSubToolBar createSubToolBar(){
-        AlcSubToolBar subToolBar = new AlcSubToolBar(root, getName(), getIconUrl(), getDescription());
-        
-        
+        AlcSubToolBar subToolBar = new AlcSubToolBar(root, this, getName(), getIconUrl(), getDescription());
+
         // Buttons
         AlcSubButton runButton = new AlcSubButton(root.toolBar, "Create", getIconUrl());
         runButton.setToolTipText("Create Type Shapes (Space)");
@@ -97,7 +94,7 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         return new Font(fonts[(int)root.math.random(0, fonts.length)].getName(), Font.PLAIN, (int)root.math.random(100, 300));
     }
     
-    public AlcShape randomShape(){
+    public GeneralPath randomShape(){
         randX = quarterWidth + (int)root.math.random(halfWidth);
         randY = quarterHeight + (int)root.math.random(halfHeight);
         
@@ -131,9 +128,9 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         
         // Convert the random shape into a general path
         GeneralPath gp = new GeneralPath((Shape)union);
-        AlcShape alcShape = new AlcShape(gp, SOLID);
+        //AlcShape alcShape = new AlcShape(gp, SOLID);
         
-        return alcShape;
+        return gp;
     }
     
     public Area makeShape(Font font){

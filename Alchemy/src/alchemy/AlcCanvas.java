@@ -12,6 +12,7 @@ package alchemy;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.geom.GeneralPath;
 
 import java.util.ArrayList;
 
@@ -20,12 +21,24 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Reference to the root **/
     private AlcMain root;
     
+    // GLOBAL SETTINGS
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** Drawing on or off - stop mark making when inside the UI */
     private boolean draw = true;
     /** Smoothing on or off */
     private boolean smoothing = true;
+    
+    // SHAPE DEFAULTS
+    /** Colour of this shape */
+    private Color colour = Color.BLACK;
+    /** Alpha of this shape */
+    private int alpha = 255;
+    /** Style of this shape - (1) LINE or (2) SOLID FILL */
+    private int style = LINE;
+    /** Line Weight if the style is line */
+    private int lineWidth = 1;
+    
     
     /** Array list to contain the shapes created */
     private ArrayList<AlcShape> shapes;
@@ -148,14 +161,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      *  Used by shapeGenerators to browse generated shapes.
      *  Mouse Interaction adds this shape to the main shapes array
      */
-    public void previewTempShape(AlcShape tempShape){
+    public void previewTempShape(GeneralPath tempGp){
+        
+        // Create the shape with the global characteristics
+        AlcShape tempShape = new AlcShape(tempGp, colour, alpha, style, lineWidth);
         
         // If there is an affect selected
-        if(root.currentAffects != null){
-            
+        if(root.hasCurrentAffects()){
             for (int i = 0; i < root.currentAffects.length; i++) {
-                AlcModule currentAffect = root.currentAffects[i];
-                tempShape = currentAffect.processShape(tempShape);
+                if(root.currentAffects[i])
+                    root.affects[i].processShape(tempShape);
             }
         }
         
@@ -214,6 +229,23 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
     
+    public void setColour(Color colour){
+        this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+    }
+    
+    public void setAlpha(int alpha){
+        this.alpha = alpha;
+        setColour(this.colour);
+    }
+    
+    public void setStyle(int style){
+        this.style = style;
+    }
+    
+    public void setLineWidth(int lineWidth){
+        this.lineWidth = lineWidth;
+    }
+    
     
     // MOUSE EVENTS
     public void mouseMoved(MouseEvent e)    {
@@ -228,13 +260,13 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         commitTempShape();
         // Create a new shape
         if(draw) {
-            shapes.add( new AlcShape(e.getPoint()) );
-
-            // TODO - Find a way to test if there are currentAffects assigned
-            if(root.currentAffects != null){
+            shapes.add( new AlcShape(e.getPoint(), colour, alpha, style, lineWidth) );
+            
+            // Pass along the shape to the affect(s) to be initialised
+            if(root.hasCurrentAffects()){
                 for (int i = 0; i < root.currentAffects.length; i++) {
-                    AlcModule currentAffect = root.currentAffects[i];
-                    currentAffect.initialiseShape( shapes.get(shapes.size()-1) );
+                    if(root.currentAffects[i])
+                        root.affects[i].initialiseShape( shapes.get(shapes.size()-1) );
                 }
             }
             
@@ -258,10 +290,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             currentShape.drag(e.getPoint());
             
             // Pass this shape to the affect(s) be processed
-            if(root.currentAffects != null){
+            if(root.hasCurrentAffects()){
                 for (int i = 0; i < root.currentAffects.length; i++) {
-                    AlcModule currentAffect = root.currentAffects[i];
-                    currentAffect.incrementShape(currentShape);
+                    if(root.currentAffects[i])
+                        root.affects[i].incrementShape(currentShape);
                 }
             }
             

@@ -18,20 +18,18 @@ import java.awt.geom.GeneralPath;
 public class Symmetry extends AlcModule implements AlcConstants{
     
     private AlcShape tempShape;
-        
+    
     /** Creates a new instance of Symmetry */
     public Symmetry() {
     }
     
     public void setup(){
-        setLoaded(true);
     }
     
     public void initialiseShape(AlcShape shape){
         
-        //(GeneralPath gp,  Color colour, int alpha, int style, int lineWidth){
+        // Make a local tempShape based on the AlcShape passed in
         tempShape = new AlcShape(shape.getShape(), shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
-        //tempShape = shape;
         
     }
     

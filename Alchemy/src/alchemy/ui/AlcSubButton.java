@@ -35,7 +35,7 @@ public class AlcSubButton extends JButton{
             //System.out.println(iconUrl);
             
             URL rolloverIconUrl = parent.appendStringToUrl(iconUrl, "-over");
-            //System.out.println(rolloverIconUrl);
+          
             this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
             
         }

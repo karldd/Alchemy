@@ -9,8 +9,8 @@
 
 package alchemy.ui;
 
+import alchemy.AlcModule;
 import java.awt.Font;
-import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.JRadioButtonMenuItem;
 //import javax.swing.plaf.basic.BasicMenuItemUI;
@@ -20,36 +20,24 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem {
     // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here:
     // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
     
-    AlcToolBar parent;
-    private int index;
-    private String command;
+    private AlcToolBar parent;
+    private AlcModule module;
+    private int index, moduleType;
     
-    /**
-     * Creates a new instance of AlcRadioButtonMenuItem
-     */
-    public AlcRadioButtonMenuItem(AlcToolBar parent, String text) {
-        URL nullUrl = null;
-        setup(parent, text, nullUrl);
-    }
-    
-    /**
-     * Creates a new instance of AlcRadioButtonMenuItem
-     */
-    public AlcRadioButtonMenuItem(AlcToolBar parent, String text, URL iconUrl) {
-        setup(parent, text, iconUrl);
-    }
-    
-    private void setup(AlcToolBar parent, String text, URL iconUrl){
-        
-        //this.setUI(new BasicMenuItemUI());
+    /** Creates a new instance of AlcCheckBoxMenuItem */
+    public AlcRadioButtonMenuItem(AlcToolBar parent, AlcModule module) {
         
         this.parent = parent;
+        this.index = module.getIndex();
+        this.moduleType = module.getModuleType();
         
-        this.setText(text);
-        if(iconUrl != null){
-            // Set the main Icon
-            this.setIcon( parent.createImageIcon(iconUrl) );
-        }
+        // Set the intial state to false
+        //this.setState(true);
+        
+        this.setText(module.getName());
+        // Set the main Icon
+        this.setIcon( parent.createImageIcon( module.getIconUrl() ) );
+        
         
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
@@ -58,21 +46,12 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem {
         
     }
     
-    
-    public void setIndex(int index){
-        this.index = index;
-    }
-    
     public int getIndex(){
         return index;
     }
     
-    public void setCommand(String command){
-        this.command = command;
-    }
-    
-    public String getCommand(){
-        return command;
+    public int getModuleType(){
+        return moduleType;
     }
     
 }

@@ -16,23 +16,23 @@ import javax.swing.*;
 
 public class AlcSubToolBar extends JPanel{
     
-    AlcMain root;
-    AlcToolBar parent;
-    //AlcModule module;
+    private AlcMain root;
+    private AlcToolBar parent;
+    private AlcModule module;
     private int height = 42;
     
     /** Creates a new instance of AlcSubToolBar */
-    public AlcSubToolBar(AlcMain root, String title, URL iconUrl, String description) {
+    public AlcSubToolBar(AlcMain root, AlcModule module, String title, URL iconUrl, String description) {
         
         this.root = root;
         this.parent = root.toolBar;
-        //this.module = module;
+        this.module = module;
         
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
-
+        
         this.add(new AlcLabel(parent, title, iconUrl, description));
         
         //this.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -71,4 +71,11 @@ public class AlcSubToolBar extends JPanel{
         return this.height;
     }
     
+    public int getIndex(){
+        return module.getIndex();
+    }
+    
+    public int getModuleType(){
+        return module.getModuleType();
+    }
 }

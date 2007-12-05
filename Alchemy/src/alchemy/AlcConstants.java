@@ -83,4 +83,8 @@ public interface AlcConstants {
     static final int LINE = 0;
     static final int SOLID = 1;
     
+    // module types
+    static final int CREATE = 0;
+    static final int AFFECT = 1;
+    
 }

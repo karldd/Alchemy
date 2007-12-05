@@ -27,7 +27,7 @@ import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
 
-public class AlcPlugin {
+public class AlcPlugin implements AlcConstants{
     
     // PLUGIN
     private PluginManager pluginManager;
@@ -89,7 +89,7 @@ public class AlcPlugin {
         
     }
     
-    public AlcModule[] addPlugins(String pointName, int numberOfModules){
+    public AlcModule[] addPlugins(String pointName, int numberOfModules, int moduleType){
         
         AlcModule[] plugins = new AlcModule[numberOfModules];
         int index = 0;
@@ -111,23 +111,6 @@ public class AlcPlugin {
                 plugins[index] = ( (AlcModule)pluginCls.newInstance() );
                 AlcModule currentPlugin = plugins[index];
                 
-                // Set the root value
-                currentPlugin.init(root);
-                
-                // GET THE FILE PATH & ICON NAME
-                // Return the path of the XML file as a string
-                String path = descr.getLocation().getPath();
-                // Remove the XML file name after the "!" mark and make a URI
-                URI pathUri = new URI(path.substring(0, path.lastIndexOf("!")));
-                // Convert it into an abstract file name
-                File pathFile = new File(pathUri);
-                
-                if(pathFile.exists()){
-                    // TODO - do we need this pathFile??
-                    currentPlugin.setPluginPath(pathFile);
-                    System.out.println("Loaded " + pathFile.getPath());
-                }
-                
                 // Set the icon name and the decription name from the XML
                 String descriptionParam = ext.getParameter("description").valueAsString();
                 String iconParam = ext.getParameter("icon").valueAsString();
@@ -142,22 +125,16 @@ public class AlcPlugin {
                 
                 // TODO - How to load .class files from here?
                 
-                /*
-                // Get the ID
-                String name = descr.getId();
-                name = name.substring(name.lastIndexOf(".")+1);
-                println(name);
-                 */
                 
+                // Set the root value
+                currentPlugin.setRoot(root);
+                currentPlugin.setModuleType(moduleType);
                 currentPlugin.setName(nameParam);
                 currentPlugin.setIconName(iconParam);
                 currentPlugin.setDescription(descriptionParam);
-                currentPlugin.setId(index);
+                currentPlugin.setIndex(index);
                 
                 index++;
-                //textFont(font);
-                //text(modules.getName(), 15, 60, -30);
-                //println(modules.getName());
             }
             
         } catch (Exception e) {
