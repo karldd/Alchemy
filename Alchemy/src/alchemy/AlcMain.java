@@ -18,50 +18,35 @@ import java.util.ArrayList;
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
     
     /**
-     * Full name of the Java version (i.e. 1.5.0_11).
-     */
-    public static final String javaVersionName = System.getProperty("java.version");
-    
-    /**
-     * Version of Java that's in use, whether 1.1 or 1.3 or whatever,
-     * stored as a float.
-     */
-    public static final float javaVersion = new Float(javaVersionName.substring(0, 3)).floatValue();
-    
-    /**
-     * Current platform in use.
-     * <P>
-     * Equivalent to System.getProperty("os.name"), just used internally.
-     */
-    static public String platformName =
-            System.getProperty("os.name");
-    
-    /**
      * Current platform in use, one of the
      * PConstants WINDOWS, MACOSX, LINUX or OTHER.
      */
     static public int platform;
     
+    /** Modifier Key to show for tool tips */
+    static public String MODIFIER_KEY;
+    
     static {
         if (platformName.indexOf("Mac") != -1) {
             platform = MACOSX;
+            // Mac command key symbol
+            MODIFIER_KEY =  "\u2318";
             
         } else if (platformName.indexOf("Windows") != -1) {
             platform = WINDOWS;
+            MODIFIER_KEY = "Ctrl";
             
         } else if (platformName.equals("Linux")) {  // true for the ibm vm
             platform = LINUX;
+            MODIFIER_KEY = "Ctrl";
             
         } else {
             platform = OTHER;
+            MODIFIER_KEY = "Modifier";
         }
     }
     
-    /**
-     * Modifier flags for the shortcut key used to trigger menus.
-     * (Cmd on Mac OS X, Ctrl on Linux and Windows)
-     */
-    static public final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    
     
     /** Class to take care of plugin loading */
     private AlcPlugin plugins;
@@ -90,6 +75,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcCanvas canvas;
     
     public AlcMain() {
+        
+        // TODO - Sort out the build.xml - copy correctly etc...
         
         // LOAD PLUGINS
         plugins = new AlcPlugin(this);
@@ -134,6 +121,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
         this.setPreferredSize(windowSize);          // Set the window size
         this.addComponentListener(this);            // Add a component listener to detect window resizing
+        //this.addWindowStateListener(this);          // Add a window state listener to detect window maximising
         this.addKeyListener(this);                  // Key Listener
         this.setFocusable(true);                    // Make the key listener focusable so we can get key events
         this.requestFocus();                        // Get focus for the key listener
@@ -240,6 +228,15 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         affects[i].deselect();
     }
     
+    private void resizeWindow(ComponentEvent e){
+        // Get and set the new size of the window
+        windowSize = e.getComponent().getSize();
+        System.out.println(windowSize);
+        // Resize the UI and Canvas
+        toolBar.resizeToolBar(windowSize);
+        canvas.resizeCanvas(windowSize);
+    }
+    
     
     // KEY EVENTS
     
@@ -312,14 +309,15 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public void componentShown(ComponentEvent e) {}
     
     public void componentResized(ComponentEvent e) {
-        
-        // Get and set the new size of the window
-        windowSize = e.getComponent().getSize();
-        // Resize the UI and Canvas
-        toolBar.resizeToolBar(windowSize);
-        canvas.resizeCanvas(windowSize);
-        
+        resizeWindow(e);
     }
+    
+    /*
+    public void windowStateChanged(WindowEvent e) {
+        System.out.println("STATE CHANGED");
+        //resizeWindow(e);
+    }
+    */
     /*
     public void openFileDialog(){
         // create a file chooser

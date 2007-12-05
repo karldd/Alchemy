@@ -84,27 +84,27 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         JPanel toolBarLeft = new JPanel();
         toolBarLeft.setOpaque(false);   // Turn off the background
         
-        // TODO - Change the Line/Solid to a single toggle button?
-        // Line Button
-        AlcButton lineButton = new AlcButton(this, "Line", "Draw as a Line", getUrlPath("data/icon.png"));
+        // Style Button
+        AlcToggleButton lineButton = new AlcToggleButton(this, "Style", "Make marks as a lines or solid shapes", getUrlPath("data/style.png"));
         lineButton.addActionListener(
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                root.canvas.setStyle(LINE);
+                root.canvas.toggleStyle();
             }
         }
         );
         toolBarLeft.add(lineButton);
         
-        AlcButton solidButton = new AlcButton(this, "Solid", "Draw as a Solid Shape", getUrlPath("data/icon.png"));
-        solidButton.addActionListener(
+        // Clear Button
+        AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen ("+root.MODIFIER_KEY+"+BACKSPACE/DELETE)", getUrlPath("data/icon.png"));
+        clearButton.addActionListener(
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                root.canvas.setStyle(SOLID);
+                root.canvas.clear();
             }
         }
         );
-        toolBarLeft.add(solidButton);
+        toolBarLeft.add(clearButton);
         
         // TODO - Line Thickness button
         // TODO - Toggle Black/White Button
@@ -142,6 +142,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     public void resizeToolBar(Dimension windowSize){
         this.setBounds(0, 0, windowSize.width, getTotalHeight());
         this.windowSize = windowSize;
+        this.revalidate();
     }
     
     
@@ -161,8 +162,6 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         calculateTotalHeight();
         // Then resize it
         resizeToolBar();
-        // And refresh it
-        this.revalidate();
     }
     
     /** Add a Create Module sub-toolbar */
