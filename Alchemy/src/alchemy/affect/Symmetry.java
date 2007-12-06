@@ -26,13 +26,6 @@ public class Symmetry extends AlcModule implements AlcConstants{
     public void setup(){
     }
     
-    public void initialiseShape(AlcShape shape){
-        
-        // Make a local tempShape based on the AlcShape passed in
-        tempShape = new AlcShape(shape.getShape(), shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
-        
-    }
-    
     public AlcShape processShape(AlcShape shape){
         
         GeneralPath rawShape = shape.getShape();    // Get the raw shape fromt the custom class
@@ -54,9 +47,11 @@ public class Symmetry extends AlcModule implements AlcConstants{
         GeneralPath rawShape = shape.getShape();    // Get the raw shape from the custom class
         AffineTransform reflection = horizontalReflect();  // Get a horizontal transform
         GeneralPath processedShape = (GeneralPath)rawShape.createTransformedShape(reflection);
-        tempShape.setShape(processedShape); // Add the transformed shape
+        // Make a new shape from the given shape
+        tempShape = new AlcShape(processedShape, shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
+        //tempShape.setShape(processedShape); // Add the transformed shape
         
-        root.canvas.addTempShape(tempShape);
+        canvas.addTempShape(tempShape);
         
     }
     

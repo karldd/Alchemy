@@ -79,7 +79,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // TODO - Sort out the build.xml - copy correctly etc...
         
         // LOAD PLUGINS
-        plugins = new AlcPlugin(this);
+        plugins = new AlcPlugin();
         System.out.println("Number of Plugins: " + getNumberOfPlugins());
         
         // Initialise the on/off array for current affects
@@ -87,13 +87,27 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         
         // Add each type of plugin
         if(plugins.getNumberOfPlugins() > 0){
+            String[] createsOrder = {"Shapes", "Inverse Shapes", "Type Shapes"};
+            String[] affectsOrder = {"Symmetry", "Blindness", "Microphone"};
             // Extension Point Name, Array Size, Module Type
-            creates = plugins.addPlugins("Create", getNumberOfCreateModules(), CREATE);
-            affects = plugins.addPlugins("Affect", getNumberOfAffectModules(), AFFECT);
+            creates = plugins.addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
+            affects = plugins.addPlugins("Affect", getNumberOfAffectModules(), AFFECT, affectsOrder);
         }
         
         // LOAD INTERFACE AND CANVAS
         loadInterface();
+                
+        // Set the global access to root, canvas, and toolBar for each module
+        for (int i = 0; i < creates.length; i++) {
+            creates[i].setGlobals(this, canvas, toolBar);
+        }
+        for (int i = 0; i < affects.length; i++) {
+            affects[i].setGlobals(this, canvas, toolBar);
+        }
+        
+        // Set the default create module
+        currentCreate = 0;
+        creates[currentCreate].setup();
         
     }
     
@@ -106,7 +120,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         
         // User Interface toolbar
         toolBar = new AlcToolBar(this);
-        
         // The canvas to draw on
         canvas = new AlcCanvas(this);
         
@@ -231,7 +244,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private void resizeWindow(ComponentEvent e){
         // Get and set the new size of the window
         windowSize = e.getComponent().getSize();
-        System.out.println(windowSize);
         // Resize the UI and Canvas
         toolBar.resizeToolBar(windowSize);
         canvas.resizeCanvas(windowSize);
@@ -317,7 +329,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         System.out.println("STATE CHANGED");
         //resizeWindow(e);
     }
-    */
+     */
     /*
     public void openFileDialog(){
         // create a file chooser

@@ -100,7 +100,7 @@ public class AlcShape implements AlcConstants{
         this.lineWidth = lineWidth;
     }
     
-    public void drag(Point p) {
+    public void addPoint(Point p) {
         
         // At the start just draw lines so smaller marks can be made
         if(totalPoints < startPoints) {
@@ -143,7 +143,7 @@ public class AlcShape implements AlcConstants{
         
     }
     
-    public void release(Point p) {
+    public void addLastPoint(Point p) {
         shape.lineTo(p.x, p.y);
     }
     

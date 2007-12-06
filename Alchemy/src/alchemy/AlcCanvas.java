@@ -28,6 +28,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private boolean draw = true;
     /** Smoothing on or off */
     private boolean smoothing = true;
+    /** Automatic shape creation on or off */
+    private boolean shapeCreation = true;
     
     // SHAPE DEFAULTS
     /** Colour of this shape */
@@ -144,6 +146,15 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void clear() {
         tempShape = null;
         shapes.clear();
+        
+        if(root.hasCurrentAffects()){
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if(root.currentAffects[i]){
+                    root.affects[i].cleared();
+                }
+            }
+        }
+        
         redraw();
     }
     
@@ -188,11 +199,40 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
     
     /** Commit the temporary shape to the main shapes array */
-    private void commitTempShape(){
+    public void commitTempShape(){
         if(tempShape != null){
             shapes.add( tempShape );
             tempShape = null;
         }
+    }
+    
+    /** Returns the most recently added shape */
+    public AlcShape getCurrentShape(){
+        if(shapes.size() > 0){
+            return shapes.get(shapes.size()-1);
+        } else{
+            return null;
+        }
+    }
+    
+    /** Returns the shape at index */
+    public AlcShape getShape(int index){
+        // Check that the index is not out of bounds
+        if(index < 0 || index > (shapes.size()-1)){
+            return null;
+        } else {
+            return shapes.get(index);
+        }
+    }
+    
+    /** Returns the size of the shapes arraylist*/
+    public int getShapesSize(){
+        return shapes.size();
+    }
+    
+    /** Adds a shape into the shape array */
+    public void addShape(AlcShape newShape){
+        shapes.add(newShape);
     }
     
     /** Set Antialiasing */
@@ -208,6 +248,21 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Get Antialiasing */
     public boolean getSmoothing() {
         return smoothing;
+    }
+    
+    /** Set automatic shape creation - when on shapes are automatically draw and then passed to the affects */
+    public void setShapeCreation(boolean b) {
+        if (b){ // ON
+            if(!shapeCreation) shapeCreation = true;
+            
+        } else { // OFF
+            if(shapeCreation) shapeCreation = false;
+        }
+    }
+    
+    /** Get Shape Creation */
+    public boolean getShapeCreation() {
+        return shapeCreation;
     }
     
     
@@ -229,13 +284,25 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
     
+    public Color getColour(){
+        return colour;
+    }
+    
     public void setColour(Color colour){
         this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+    }
+    
+    public int getAlpha(){
+        return alpha;
     }
     
     public void setAlpha(int alpha){
         this.alpha = alpha;
         setColour(this.colour);
+    }
+    
+    public int getStyle(){
+        return style;
     }
     
     public void setStyle(int style){
@@ -250,107 +317,132 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
     
+    public int getLineWidth(){
+        return lineWidth;
+    }
+    
     public void setLineWidth(int lineWidth){
         this.lineWidth = lineWidth;
     }
     
-    
-    // MOUSE EVENTS
-    public void mouseMoved(MouseEvent e)    {
-        
-        // Toogle visibility of the Toolbar
-        toggleToolBar(e);
-        
+    public void applyAffects(){
         if(root.hasCurrentAffects()){
             for (int i = 0; i < root.currentAffects.length; i++) {
                 if(root.currentAffects[i]){
-                    root.affects[i].mouseMoved(e);
+                    root.affects[i].incrementShape( getCurrentShape() );
                 }
             }
         }
-        
+        redraw();
     }
     
-    public void mousePressed(MouseEvent e)  {
+    
+    // MOUSE EVENTS
+    public void mouseMoved(MouseEvent e) {
+        // Toogle visibility of the Toolbar
+        toggleToolBar(e);
         
-        commitTempShape();
-        // Create a new shape
         if(draw) {
-            shapes.add( new AlcShape(e.getPoint(), colour, alpha, style, lineWidth) );
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mouseMoved(e);
             
-            // Pass along the shape to the affect(s) to be initialised
             if(root.hasCurrentAffects()){
                 for (int i = 0; i < root.currentAffects.length; i++) {
                     if(root.currentAffects[i]){
-                        root.affects[i].initialiseShape( shapes.get(shapes.size()-1) );
+                        root.affects[i].mouseMoved(e);
+                    }
+                }
+            }
+        }
+    }
+    
+    public void mousePressed(MouseEvent e)  {
+        if(draw) {
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mousePressed(e);
+            
+            if(root.hasCurrentAffects()){
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    if(root.currentAffects[i]){
                         root.affects[i].mousePressed(e);
                     }
                 }
             }
-            
         }
-        
     }
     
     public void mouseClicked(MouseEvent e)  {
-        if(root.hasCurrentAffects()){
-            for (int i = 0; i < root.currentAffects.length; i++) {
-                if(root.currentAffects[i]){
-                    root.affects[i].mouseClicked(e);
+        if(draw){
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mouseClicked(e);
+            
+            if(root.hasCurrentAffects()){
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    if(root.currentAffects[i]){
+                        root.affects[i].mouseClicked(e);
+                    }
                 }
             }
         }
     }
     
     public void mouseEntered(MouseEvent e)  {
-        if(root.hasCurrentAffects()){
-            for (int i = 0; i < root.currentAffects.length; i++) {
-                if(root.currentAffects[i]){
-                    root.affects[i].mouseEntered(e);
+        if(draw){
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mouseEntered(e);
+            
+            if(root.hasCurrentAffects()){
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    if(root.currentAffects[i]){
+                        root.affects[i].mouseEntered(e);
+                    }
                 }
             }
         }
     }
+    
     public void mouseExited(MouseEvent e)   {
-        if(root.hasCurrentAffects()){
-            for (int i = 0; i < root.currentAffects.length; i++) {
-                if(root.currentAffects[i]){
-                    root.affects[i].mouseExited(e);
+        if(draw){
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mouseExited(e);
+            
+            if(root.hasCurrentAffects()){
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    if(root.currentAffects[i]){
+                        root.affects[i].mouseExited(e);
+                    }
                 }
             }
-        }}
+        }
+    }
     
     public void mouseReleased(MouseEvent e) {
-        commitTempShape();
-        
-        if(root.hasCurrentAffects()){
-            for (int i = 0; i < root.currentAffects.length; i++) {
-                if(root.currentAffects[i]){
-                    root.affects[i].mouseReleased(e);
+        if(draw){
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mouseReleased(e);
+            
+            if(root.hasCurrentAffects()){
+                for (int i = 0; i < root.currentAffects.length; i++) {
+                    if(root.currentAffects[i]){
+                        root.affects[i].mouseReleased(e);
+                    }
                 }
             }
         }
     }
     
     public void mouseDragged(MouseEvent e)  {
-        
-        // Add points to the shape
         if(draw){
-            AlcShape currentShape = shapes.get(shapes.size()-1);
-            currentShape.drag(e.getPoint());
+            if(root.currentCreate >= 0)
+                root.creates[root.currentCreate].mouseDragged(e);
             
-            // Pass this shape to the affect(s) be processed
             if(root.hasCurrentAffects()){
                 for (int i = 0; i < root.currentAffects.length; i++) {
                     if(root.currentAffects[i]){
-                        root.affects[i].incrementShape(currentShape);
                         root.affects[i].mouseDragged(e);
                     }
                 }
             }
-            
-            // Redraw the screen
-            redraw();
         }
         
     }
