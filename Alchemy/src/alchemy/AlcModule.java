@@ -1,14 +1,20 @@
 package alchemy;
 
+import alchemy.ui.AlcToolBar;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.net.URL;
 
 public abstract class AlcModule {
     
     /** Access to the root */
     public AlcMain root;
+    /** Access to the canvas */
+    public AlcCanvas canvas;
+    /** Access to the toolBar */
+    public AlcToolBar toolBar;
+    
+    
     /** The name of this module */
     private String moduleName;
     /** The type of module  - either CREATE (0) or AFFECT (1) */
@@ -31,9 +37,12 @@ public abstract class AlcModule {
     }
     
     // STRUCTURE
-    /** Called by the plugin manager once the module is found */
-    public void setRoot(AlcMain root){
+    /** Called by the plugin manager once the module is found
+     *  Sets global references to the root, canvas, and toolbar */
+    public void setGlobals(AlcMain root, AlcCanvas canvas, AlcToolBar toolBar){
         this.root = root;
+        this.canvas = canvas;
+        this.toolBar = toolBar;
     }
     
     /* Called to load the module when first run */
@@ -51,11 +60,8 @@ public abstract class AlcModule {
     public void deselect(){
     }
     
-    /**
-     *  Affect - Initialise an AlcShape.
-     *  Used to initialise shapes, typically from when the mouse is first pressed down to draw a line.
-     */
-    public void initialiseShape(AlcShape shape){
+    /** Called after the canvas is cleared */
+    public void cleared(){
     }
     
     /**

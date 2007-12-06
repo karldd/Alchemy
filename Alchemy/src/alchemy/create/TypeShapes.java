@@ -21,6 +21,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 
 public class TypeShapes extends AlcModule implements AlcConstants{
@@ -55,7 +56,7 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         loadFonts();
         
         // Call the canvas to preview the returned random shape
-        root.canvas.previewTempShape(randomShape());
+        canvas.previewTempShape(randomShape());
         
     }
     
@@ -65,7 +66,7 @@ public class TypeShapes extends AlcModule implements AlcConstants{
     
     public AlcSubToolBar createSubToolBar(){
         AlcSubToolBar subToolBar = new AlcSubToolBar(root, this, getName(), getIconUrl(), getDescription());
-
+        
         // Buttons
         AlcSubButton runButton = new AlcSubButton(root.toolBar, "Create", getIconUrl());
         runButton.setToolTipText("Create Type Shapes (Space)");
@@ -73,7 +74,7 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         runButton.addActionListener(
                 new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                root.canvas.previewTempShape(randomShape());
+                canvas.previewTempShape(randomShape());
             }
         }
         );
@@ -233,6 +234,12 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         return n * f;
     }
     
+    
+    public void mousePressed(MouseEvent e) {
+        // Commit the shape when the mouse is pressed
+        canvas.commitTempShape();
+    }
+    
     // KEY EVENTS
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
@@ -242,13 +249,13 @@ public class TypeShapes extends AlcModule implements AlcConstants{
             case DELETE:
                 
                 //System.out.println("DELETE");
-                //root.canvas.clear();
+                //canvas.clear();
                 break;
                 
             case SPACE:
                 
                 //System.out.println("SPACE");
-                root.canvas.previewTempShape(randomShape());
+                canvas.previewTempShape(randomShape());
                 break;
                 
         }

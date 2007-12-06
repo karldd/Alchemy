@@ -9,13 +9,10 @@
 
 package alchemy;
 
+import alchemy.ui.AlcToolBar;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Iterator;
-
-import java.util.ArrayList;
-
-import java.net.URI;
 import java.net.URL;
 
 // JAVA PLUGIN FRAMEWORK
@@ -36,13 +33,8 @@ public class AlcPlugin implements AlcConstants{
     private int numberOfCreateModules = 0;
     private int numberOfAffectModules = 0;
     
-    
-    AlcMain root;
-    
     /** Creates a new instance of AlcPlugin */
-    public AlcPlugin(AlcMain root) {
-        
-        this.root = root;
+    public AlcPlugin() {
         
         pluginManager = ObjectFactory.newInstance().createManager();
         
@@ -89,10 +81,10 @@ public class AlcPlugin implements AlcConstants{
         
     }
     
-    public AlcModule[] addPlugins(String pointName, int numberOfModules, int moduleType){
+    public AlcModule[] addPlugins(String pointName, int numberOfModules, int moduleType, String[] order){
         
         AlcModule[] plugins = new AlcModule[numberOfModules];
-        int index = 0;
+        int noMatchCount = 0;
         
         try{
             PluginDescriptor core = pluginManager.getRegistry().getPluginDescriptor("alchemy.core");
@@ -108,33 +100,48 @@ public class AlcPlugin implements AlcConstants{
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
                 
-                plugins[index] = ( (AlcModule)pluginCls.newInstance() );
-                AlcModule currentPlugin = plugins[index];
+                AlcModule currentPlugin = ( (AlcModule)pluginCls.newInstance() );
                 
                 // Set the icon name and the decription name from the XML
                 String descriptionParam = ext.getParameter("description").valueAsString();
                 String iconParam = ext.getParameter("icon").valueAsString();
                 String nameParam = ext.getParameter("name").valueAsString();
                 
+                // Set the index to negative so we can test if it has been set later
+                int index = -1;
+                // Loop through the order list given - somewhat inefficient?
+                for (int i = 0; i < order.length; i++) {
+                    // Check if this one matches
+                    if(order[i].equals(nameParam)){
+                        plugins[i] = currentPlugin;
+                        index = i;
+                    }
+                }
+                
+                // If there was no match, then add the module on to the end
+                if(index < 0){
+                    index = order.length + noMatchCount;
+                    System.out.println(nameParam);
+                    plugins[index] = currentPlugin;
+                    // Keep track of how many non-matches
+                    noMatchCount++;
+                }
+                
                 URL iconUrl = null;
                 
                 if (iconParam != null) {
                     iconUrl = classLoader.getResource(iconParam);
-                    currentPlugin.setIconUrl(iconUrl);
+                    plugins[index].setIconUrl(iconUrl);
                 }
                 
                 // TODO - How to load .class files from here?
                 
+                plugins[index].setModuleType(moduleType);
+                plugins[index].setName(nameParam);
+                plugins[index].setIconName(iconParam);
+                plugins[index].setDescription(descriptionParam);
+                plugins[index].setIndex(index);
                 
-                // Set the root value
-                currentPlugin.setRoot(root);
-                currentPlugin.setModuleType(moduleType);
-                currentPlugin.setName(nameParam);
-                currentPlugin.setIconName(iconParam);
-                currentPlugin.setDescription(descriptionParam);
-                currentPlugin.setIndex(index);
-                
-                index++;
             }
             
         } catch (Exception e) {

@@ -25,7 +25,7 @@ public class Blindness extends AlcModule implements AlcConstants{
     }
     
     public void setup(){
-        root.canvas.setRedraw(false);
+        canvas.setRedraw(false);
         
         // Add this modules toolbar to the main ui
         root.toolBar.addSubToolBar(createSubToolBar());
@@ -33,13 +33,13 @@ public class Blindness extends AlcModule implements AlcConstants{
     }
     
     public void reselect(){
-        root.canvas.setRedraw(false);
+        canvas.setRedraw(false);
     }
     
     public void deselect(){
         // Turn drawing back on and show what is underneath
-        root.canvas.setRedraw(true);
-        root.canvas.redraw();
+        canvas.setRedraw(true);
+        canvas.redraw();
     }
     
     private void redrawOnce(){
@@ -112,7 +112,7 @@ public class Blindness extends AlcModule implements AlcConstants{
             case DELETE:
          
                 //System.out.println("DELETE");
-                //root.canvas.clear();
+                //canvas.clear();
                 break;
          
             case SPACE:

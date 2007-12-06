@@ -60,8 +60,8 @@ public class AlcPopupButton extends AlcButton {
                     // Set the action command and listener
                     // menuItem.setActionCommand(command + "-" + i);
                     menuItem.addActionListener(parent);
-                    //if(i == 0)
-                    //menuItem.setSelected(true);
+                    if(i == 0)
+                        menuItem.setSelected(true);
                     
                     group.add(menuItem);
                     popup.add(menuItem);
