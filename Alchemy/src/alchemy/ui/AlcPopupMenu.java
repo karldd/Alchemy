@@ -12,6 +12,7 @@ package alchemy.ui;
 import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 import javax.swing.border.Border;
+//import javax.swing.plaf.basic.BasicPopupMenuUI;
 
 public class AlcPopupMenu extends JPopupMenu{
     
@@ -22,6 +23,8 @@ public class AlcPopupMenu extends JPopupMenu{
         
         this.parent = parent;
         
+        //this.setLightWeightPopupEnabled(false);
+        //this.setUI(new BasicPopupMenuUI());
         // Set the colour for the bg
         this.setBackground(parent.toolBarHighlightColour);
         
