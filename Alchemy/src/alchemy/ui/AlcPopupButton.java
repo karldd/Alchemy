@@ -13,7 +13,6 @@ import alchemy.AlcModule;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.ArrayList;
 import javax.swing.ButtonGroup;
 
 public class AlcPopupButton extends AlcButton {

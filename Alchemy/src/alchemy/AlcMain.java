@@ -9,10 +9,10 @@
 package alchemy;
 
 import alchemy.ui.*;
+import com.apple.cocoa.application.NSMenu;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
@@ -68,6 +68,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private Dimension oldWindowSize = null;
     /** For storing the old display location before entering fullscreen */
     private Point oldLocation = null;
+    private boolean menuBarVisible = true;
 
     public AlcMain() {
 
@@ -133,7 +134,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         this.addKeyListener(this);                  // Key Listener
         this.setFocusable(true);                    // Make the key listener focusable so we can get key events
         this.requestFocus();                        // Get focus for the key listener
-        //this.setTitle("al.chemy");                // Title of the frame
+        //this.setTitle("al.chemy");                // Title of the frame - Dock name should also be set -Xdock:name="Alchemy"
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                                // Finalize window layout
         this.setLocationRelativeTo(null);           // Center window on screen.
@@ -241,72 +242,56 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /**
      * Method allows changing whether this window is displayed in fullscreen or
      * windowed mode. 
+     * Based on code from http://gpsnippets.blogspot.com/2007/08/toggle-fullscreen-mode.html
      * 
      * @param fullscreen true = change to fullscreen, 
      *                   false = change to windowed
      */
     public void setFullscreen(boolean fullscreen) {
-        if (this.fullscreen != fullscreen) { //are we actually changing modes.
-            //change modes.
-            this.fullscreen = fullscreen;
+        if (this.fullscreen != fullscreen) {        //are we actually changing modes.
 
-            // toggle fullscreen mode
-            if (!fullscreen) { //change to windowed mode.
+            this.fullscreen = fullscreen;           //change modes.
 
-                //set the display mode back to the what it was when
-                //the program was launched.
-                //device.setDisplayMode(oldDispMode);
+            //change to windowed mode.
+            if (!fullscreen) {
 
-                //hide the frame so we can change it.
-                //setVisible(false);
+                //System.out.println(System.getProperty("user.name"));
 
-                //remove the frame from being displayable.
-                dispose();
+                //setVisible(false);                //hide the frame so we can change it.
+                dispose();                          //remove the frame from being displayable.
+                setUndecorated(false);              //put the borders back on the frame.
+                //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
+                setSize(oldWindowSize);             //make sure the size of the window is correct.
+                setLocation(oldLocation);           //reset location of the window
+                setAlwaysOnTop(false);
 
-                //put the borders back on the frame.
-                setUndecorated(false);
-
-                //needed to unset this window as the fullscreen window.
-                device.setFullScreenWindow(null);
-
-                //make sure the size of the window is correct.
-                setSize(oldWindowSize);
-
-                //recenter window
-                //setLocationRelativeTo(null);
-                setLocation(oldLocation);
-
-                //reset the display mode to what it was before 
-                //we changed it.
+                menuBarVisible = true;
                 setVisible(true);
 
-            } else { //change to fullscreen.
-                // Save the old window size and location
-                oldWindowSize = windowSize;
+            //change to fullscreen.
+            } else {
+
+                oldWindowSize = windowSize;          //save the old window size and location
                 oldLocation = getLocation();
 
-                //hide everything
-                //setVisible(false);
+                try {
+                    setVisible(false);                  //hide everything
+                    dispose();                          //remove the frame from being displayable.
 
-                //remove the frame from being displayable.
-                dispose();
+                    setUndecorated(true);               //remove borders around the frame
+                    setSize(displayMode.getWidth(), displayMode.getHeight());   // set the size to maximum
+                    setLocation(0, 0);
+                    setAlwaysOnTop(true);
+                    //device.setFullScreenWindow(this);   //make the window fullscreen.
+                    menuBarVisible = false;
+                    setVisible(true);                   //show the frame
 
-                //remove borders around the frame
-                setUndecorated(true);
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
+            }
 
-                //make the window fullscreen.
-                device.setFullScreenWindow(this);
-
-                //attempt to change the screen resolution.
-                //device.setDisplayMode(displayMode);
-
-                //show the frame
-                setVisible(true);
-
-            } // end if
-
-            //make sure that the screen is refreshed.
-            repaint();
+            repaint();  //make sure that the screen is refreshed.
         }
     }
 
@@ -318,6 +303,34 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      */
     public boolean isFullscreen() {
         return fullscreen;
+    }
+
+    /**
+     * Override the JFrame setVisible
+     * This is a very hacky way of turning off the mac menubar. 
+     * Unfortunately using setFullScreenWindow() on a mac causes very buggy behaviour 
+     * ie. PopupMenus do not appear at all
+     * 
+     * @param visible true for visible, otherwise false
+     */
+    @Override
+    public void setVisible(final boolean visible) {
+        // Only 
+        if (platform == MACOSX) {
+            // Turn on
+            if (menuBarVisible) {
+                //call it when already not visible and it crashes, so check first
+                if (!NSMenu.menuBarVisible()) {
+                    NSMenu.setMenuBarVisible(true);
+                }
+            // Turn off
+            } else {
+                if (NSMenu.menuBarVisible()) {
+                    NSMenu.setMenuBarVisible(false);
+                }
+            }
+        }
+        super.setVisible(visible);
     }
 
     /**
@@ -378,7 +391,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Toggle Fullscreen
         if (keyCode == KeyEvent.VK_ESCAPE) {
-            setFullscreen(!isFullscreen());
+            if (fullScreenSupported) {
+                setFullscreen(!isFullscreen());
+            }
         }
 
         // GLOBAL KEYS - when the Modifier is down
@@ -386,24 +401,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
             switch (keyCode) {
                 // Clear the Canvas
-                case BACKSPACE:
-                case DELETE:
+                case KeyEvent.VK_BACK_SPACE:
+                case KeyEvent.VK_DELETE:
                     canvas.clear();
-                    break;
-            }
-
-            int keyChar = e.getKeyChar();
-
-            switch (keyChar) {
-                // Save Pdf
-                case 's':
-                    canvas.startPdf();
-                    break;
-                case '.':
-                    canvas.savePdfFrame();
-                    break;
-                case ',':
-                    canvas.endPdf();
                     break;
             }
 

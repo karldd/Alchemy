@@ -178,8 +178,14 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 }
             }
         }
-
-        redraw();
+        // Redraw to clear the screen even if redrawing is off
+        if (redraw) {
+            redraw();
+        } else {
+            redraw = true;
+            redraw();
+            redraw = false;
+        }
     }
 
     /** Apply affects to the current shape and redraw the canvas */
@@ -362,6 +368,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // PDF STUFF
     //////////////////////////////////////////////////////////////
     /** Start PDF record */
+    // TODO = implement this into the menu
     public void startPdf() {
         pdfWidth = root.getWindowSize().width;
         pdfHeight = root.getWindowSize().height;
@@ -382,10 +389,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             writer = PdfWriter.getInstance(document, new FileOutputStream(path));
             document.open();
             content = writer.getDirectContent();
+            /* Drawing on the first frame 
             Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
-
             this.paint(g2pdf);
             g2pdf.dispose();
+             */
 
         } catch (DocumentException ex) {
             System.err.println(ex);

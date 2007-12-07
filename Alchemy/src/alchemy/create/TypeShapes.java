@@ -253,14 +253,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         int keyCode = e.getKeyCode();
 
         switch (keyCode) {
-            case BACKSPACE:
-            case DELETE:
-
-                //System.out.println("DELETE");
-                //canvas.clear();
-                break;
-
-            case SPACE:
+            case KeyEvent.VK_SPACE:
 
                 //System.out.println("SPACE");
                 generate();
