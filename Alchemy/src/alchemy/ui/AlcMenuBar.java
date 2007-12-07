@@ -6,84 +6,77 @@
  * @author  Karl D.D. Willis
  * @version 1.0
  */
-
 package alchemy.ui;
 
-
+import alchemy.AlcMain;
+import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class AlcMenuBar {
-    
-    
-    //... Menuitems are instance variables when they are referenced
-    //    in a listener, eg, to en-/disabled them.
-    private JMenuItem m_copyItem;
-    private JMenuItem m_pasteItem;
-    
-    private JPopupMenu m_popup = new JPopupMenu();
-    
-    
-    
+public class AlcMenuBar extends JMenuBar {
+
+    AlcToolBar parent;
+    AlcMain root;
+    JMenu menu;
+    JMenuItem menuItem;
+
     /** Creates a new instance of AlcMenuBar */
-    public AlcMenuBar() {
-        
-        
-        // (1) Create menu items and set their mnemonic, accelerator, enabled.
-        m_copyItem = new JMenuItem("Copy");
-        m_copyItem.setEnabled(false);
-        m_copyItem.setAccelerator(KeyStroke.getKeyStroke("control C"));
-        m_pasteItem = new JMenuItem("Paste");
-        m_pasteItem.setEnabled(false);
-        m_pasteItem.setAccelerator(KeyStroke.getKeyStroke("control V"));
-        JMenuItem openItem = new JMenuItem("Open...");
-        openItem.setMnemonic('O');
-        openItem.setAccelerator(KeyStroke.getKeyStroke("control O"));
-        JMenuItem quitItem = new JMenuItem("Quit");
-        quitItem.setMnemonic('Q');
-        quitItem.setAccelerator(KeyStroke.getKeyStroke("control Q"));
-        
-        // (2) Build  menubar, menus, and add menuitems.
-        JMenuBar menubar = new JMenuBar();  // Create new menu bar
-        JMenu fileMenu = new JMenu("File"); // Create new menu
-        fileMenu.setMnemonic('F');
-        menubar.add(fileMenu);      // Add menu to the menubar
-        fileMenu.add(openItem);     // Add menu item to the menu
-        fileMenu.addSeparator();    // Add separator line to menu
-        fileMenu.add(quitItem);
-        JMenu editMenu = new JMenu("Edit");
-        fileMenu.setMnemonic('E');
-        menubar.add(editMenu);
-        editMenu.add(m_copyItem);
-        editMenu.add(m_pasteItem);
-        
-        // (3) Add listeners to menu items
-        openItem.addActionListener(new OpenAction());
-        quitItem.addActionListener(new QuitAction());
-        
-        
-        
-        //... Add menu items to popup menu, add popup menu to text area.
-        m_popup.add(new JMenuItem("Testing"));
-        
-        //... Set the JFrame's content pane and menu bar.
-        //setJMenuBar(menubar);
-        
+    public AlcMenuBar(AlcToolBar parent, AlcMain root) {
+
+        this.parent = parent;
+        this.root = root;
+
+
+        this.setBackground(parent.toolBarBgColour);
+        //this.setOpaque(false);
+        //this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+
+
+        //Build the first menu.
+        menu = new JMenu("A Menu");
+        // TODO - fix up the menu - add PDF stuff
+        menu.setBackground(parent.toolBarHighlightColour);
+        menu.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
+        menu.setOpaque(false);
+
+        menu.setMnemonic(KeyEvent.VK_A);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "The only menu in this program that has menu items");
+        this.add(menu);
+
+        //a group of JMenuItems
+        menuItem = new JMenuItem("A text-only menu item",
+                KeyEvent.VK_T);
+        //menuItem.setMnemonic(KeyEvent.VK_T); //used constructor instead
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_1, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+                "This doesn't really do anything");
+        //menuItem.addActionListener(this);
+        menuItem.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
+        menuItem.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        menu.add(menuItem);
+
     }
-    
-    ///////////////////////////////////////////////////////////// OpenAction
-    class OpenAction implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            //JOptionPane.showMessageDialog(MenuDemo.this, "Can't Open.");
+
+    // Override the paint component to draw the gradient bg
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        //int panelWidth = getWidth();
+
+        GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(215, 215, 215), 0, this.getHeight(), new Color(207, 207, 207), true);
+        if (g instanceof Graphics2D) {
+            Graphics2D g2 = (Graphics2D) g;
+            // Turn on text antialias - windows does not use it by default
+            //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g2.setPaint(gradientPaint);
+            g2.fillRect(0, 0, root.getWindowSize().width, this.getHeight());
+            g2.setPaint(parent.toolBarHighlightColour);
+            g2.drawLine(0, 0, root.getWindowSize().width, 0);
+            g2.setPaint(parent.toolBarLineColour);
+            g2.drawLine(0, this.getHeight() - 1, root.getWindowSize().width, this.getHeight() - 1);
         }
     }
-    
-    ///////////////////////////////////////////////////////////// QuitAction
-    class QuitAction implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            System.exit(0);  // Terminate the program.
-        }
-    }
-    
-    
 }
