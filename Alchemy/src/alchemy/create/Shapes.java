@@ -22,17 +22,20 @@ public class Shapes extends AlcModule{
     public Shapes() {
     }
     
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.addShape( makeShape(p) );
     }
     
+    @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
-        canvas.getCurrentShape().addPoint(p);
+        canvas.getCurrentShape().addCurvePoint(p);
         canvas.applyAffects();
     }
     
+    @Override
     public void mouseReleased(MouseEvent e){
         Point p = e.getPoint();
         canvas.getCurrentShape().addLastPoint(p);

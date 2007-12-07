@@ -6,10 +6,10 @@
  * @author  Karl D.D. Willis
  * @version 1.0
  */
-
 package alchemy.create;
 
 import alchemy.*;
+import alchemy.AlcShape;
 import alchemy.ui.*;
 
 import java.awt.geom.*;
@@ -23,126 +23,133 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
+public class TypeShapes extends AlcModule implements AlcConstants {
 
-public class TypeShapes extends AlcModule implements AlcConstants{
-    
     // SHAPE GENERATION
     Font fonts[];
     FontRenderContext fontRenderContext;
     Area union;
     int inc, scale, doubleScale, randX, randY, halfWidth, halfHeight, quarterWidth, quarterHeight, explode;
-    
     float noisiness;
     float noiseScale = 0.0F;
     // All ASCII characters, sorted according to their visual density
     String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
-    
+
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
     }
-    
-    public void setup(){
-        
-        halfWidth = root.getWindowSize().width/2;
-        halfHeight = root.getWindowSize().height/2;
-        quarterWidth = root.getWindowSize().width/4;
-        quarterHeight = root.getWindowSize().height/4;
-        
+
+    @Override
+    public void setup() {
+
+        halfWidth = root.getWindowSize().width / 2;
+        halfHeight = root.getWindowSize().height / 2;
+        quarterWidth = root.getWindowSize().width / 4;
+        quarterHeight = root.getWindowSize().height / 4;
+
         // Add this modules toolbar to the main ui
         root.toolBar.addSubToolBar(createSubToolBar());
-        
+
         loadFonts();
-        
+
         // Call the canvas to preview the returned random shape
-        canvas.previewTempShape(randomShape());
-        
+        generate();
+
     }
-    
-    public void reselect(){
-        //System.out.println("Refocus Called");
+
+    @Override
+    public void reselect() {
+    //System.out.println("Refocus Called");
     }
-    
-    public AlcSubToolBar createSubToolBar(){
+
+    public AlcSubToolBar createSubToolBar() {
         AlcSubToolBar subToolBar = new AlcSubToolBar(root, this, getName(), getIconUrl(), getDescription());
-        
+
         // Buttons
         AlcSubButton runButton = new AlcSubButton(root.toolBar, "Create", getIconUrl());
         runButton.setToolTipText("Create Type Shapes (Space)");
-        
+
         runButton.addActionListener(
                 new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                canvas.previewTempShape(randomShape());
-            }
-        }
-        );
-        
-        
+
+                    public void actionPerformed(ActionEvent e) {
+                        generate();
+                    }
+                });
+
+
         subToolBar.add(runButton);
         return subToolBar;
     }
-    
+
+    private void generate() {
+        AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+        canvas.addTempShape(shape);
+        // Apply affects and update the canvas
+        canvas.applyAffects();
+    }
+
     /** Load all available system fonts into an array */
-    public void loadFonts(){
+    public void loadFonts() {
         GraphicsEnvironment graphicsenvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         fonts = graphicsenvironment.getAllFonts();
     }
-    
+
     /** Returns a random font from the list */
-    public Font randomFont(){
-        return new Font(fonts[(int)root.math.random(0, fonts.length)].getName(), Font.PLAIN, (int)root.math.random(100, 300));
+    public Font randomFont() {
+        return new Font(fonts[(int) root.math.random(0, fonts.length)].getName(), Font.PLAIN, (int) root.math.random(100, 300));
     }
-    
-    public GeneralPath randomShape(){
-        randX = quarterWidth + (int)root.math.random(halfWidth);
-        randY = quarterHeight + (int)root.math.random(halfHeight);
-        
+
+    public GeneralPath randomShape() {
+        randX = quarterWidth + (int) root.math.random(halfWidth);
+        randY = quarterHeight + (int) root.math.random(halfHeight);
+
         inc = 0;
-        scale = (int)root.math.random(2, 8);
+        scale = (int) root.math.random(2, 8);
         doubleScale = scale << 1;
-        
-        explode = (int)root.math.random(1, 5);
+
+        explode = (int) root.math.random(1, 5);
         noisiness = root.math.random(0.0001F, 0.5F);
         //System.out.println(noisiness);
-        
+
         //f = new Font("Helvetica", Font.PLAIN, 150);
         Font f = randomFont();
         System.out.println(f.toString());
         AffineTransform affineTransform = f.getTransform();
         fontRenderContext = new FontRenderContext(affineTransform, false, false);
-        
+
         union = makeShape(f);
-        
-        int iterations = (int)root.math.random(5, 15);
-        System.out.println("Iterations: "+iterations+ " Scale: "+scale);
-        
-        for(int i = 0; i < iterations; i++) {
+
+        int iterations = (int) root.math.random(5, 15);
+        System.out.println("Iterations: " + iterations + " Scale: " + scale);
+
+        for (int i = 0; i < iterations; i++) {
             Area a = makeShape(f);
             union.add(a);
         }
-        
+
         AffineTransform centre = new AffineTransform();
         centre.translate(root.math.random(root.getWindowSize().width), root.math.random(root.getWindowSize().height));
         union = union.createTransformedArea(centre);
-        
+
         // Convert the random shape into a general path
-        GeneralPath gp = new GeneralPath((Shape)union);
+        GeneralPath gp = new GeneralPath((Shape) union);
         //AlcShape alcShape = new AlcShape(gp, SOLID);
-        
+
         return gp;
     }
-    
-    public Area makeShape(Font font){
+
+    public Area makeShape(Font font) {
         // Make a string from one random char from the letters string
-        String randomLetter = Character.toString(letters.charAt((int)root.math.random(letters.length())));
-        
+        String randomLetter = Character.toString(letters.charAt((int) root.math.random(letters.length())));
+
         GlyphVector gv = font.createGlyphVector(fontRenderContext, randomLetter);
         Shape shp = gv.getOutline();
         //Shape shp = gv.getOutline(math.random(150), math.random(150));
         PathIterator count = shp.getPathIterator(null);
-        
+
         int numberOfSegments = 0;
         float[] pts = new float[6];
         int type;
@@ -154,12 +161,12 @@ public class TypeShapes extends AlcModule implements AlcConstants{
                     numberOfSegments++;
                     break;
             }
-            
+
             count.next();
         }
-        
+
         //root.println(randomLetter + " " + numberOfSegments);
-        
+
         //if(numberOfSegments > 1){
         // Make a new shape
         GeneralPath newShape = new GeneralPath();
@@ -169,19 +176,19 @@ public class TypeShapes extends AlcModule implements AlcConstants{
         int segCount = 0;
         int pointCount = 0;
         boolean close = true;
-        
+
         while (!cut.isDone()) {
             cutType = cut.currentSegment(cutPts);
-            
+
             // Count the number of new segments
-            if(cutType == PathIterator.SEG_MOVETO){
+            if (cutType == PathIterator.SEG_MOVETO) {
                 segCount++;
             }
-            
+
             // TODO - review this code to see what causes the: "java.lang.InternalError: Odd number of new curves!" error
             // Only add the first segment
-            if(segCount == 1){
-                if(pointCount < 20){
+            if (segCount == 1) {
+                if (pointCount < 20) {
                     switch (cutType) {
                         case PathIterator.SEG_MOVETO:
                             newShape.moveTo(cutPts[0], cutPts[1]);
@@ -203,8 +210,8 @@ public class TypeShapes extends AlcModule implements AlcConstants{
                             newShape.closePath();
                             break;
                     }
-                } else{
-                    if(close){
+                } else {
+                    if (close) {
                         newShape.closePath();
                         close = false;
                     }
@@ -212,53 +219,53 @@ public class TypeShapes extends AlcModule implements AlcConstants{
                 pointCount++;
             }
             cut.next();
-            
+
         }
-        
+
         // Move the shape to the middle of the screen
         AffineTransform newTr = new AffineTransform();
         int offsetX = root.getWindowSize().width >> explode;
         int offsetY = root.getWindowSize().width >> explode;
         newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
-        
+
         // Rotate the shape randomly
         newTr.rotate(root.math.random(TWO_PI));
         Area newA = new Area(newShape);
         return newA.createTransformedArea(newTr);
-        
+
     }
-    
-    public float mess(float f){
+
+    public float mess(float f) {
         noiseScale += noisiness;
-        float n =  (root.math.noise(noiseScale) * doubleScale) - scale;
+        float n = (root.math.noise(noiseScale) * doubleScale) - scale;
         return n * f;
     }
-    
-    
+
+    @Override
     public void mousePressed(MouseEvent e) {
         // Commit the shape when the mouse is pressed
         canvas.commitTempShape();
     }
-    
+
     // KEY EVENTS
+    @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        
-        switch(keyCode){
+
+        switch (keyCode) {
             case BACKSPACE:
             case DELETE:
-                
+
                 //System.out.println("DELETE");
                 //canvas.clear();
                 break;
-                
+
             case SPACE:
-                
+
                 //System.out.println("SPACE");
-                canvas.previewTempShape(randomShape());
+                generate();
                 break;
-                
+
         }
     }
-    
 }
