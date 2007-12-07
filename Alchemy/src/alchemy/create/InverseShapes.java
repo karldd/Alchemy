@@ -13,7 +13,7 @@ import alchemy.AlcShape;
 import alchemy.AlcModule;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.geom.GeneralPath;
+
 
 public class InverseShapes extends AlcModule{
     
@@ -27,28 +27,34 @@ public class InverseShapes extends AlcModule{
     public InverseShapes() {
     }
     
+    @Override
     public void setup(){
         canvas.setShapeCreation(false);
     }
     
+    @Override
     public void reselect(){
         mouseUp = true;
         moveTo = true;
     }
     
+    @Override
     public void deselect(){
         canvas.setShapeCreation(true);
         canvas.commitTempShape();
     }
     
+    @Override
     public void cleared(){
         moveTo = true;
     }
     
+    @Override
     public void mousePressed(MouseEvent e) {
         mouseUp = false;
     }
     
+    @Override
     public void mouseMoved(MouseEvent e) {
         if(mouseUp){
             Point p = e.getPoint();
@@ -56,7 +62,7 @@ public class InverseShapes extends AlcModule{
                 canvas.addShape( makeShape(p) );
                 moveTo = false;
             } else {
-                canvas.getCurrentShape().addPoint(p);
+                canvas.getCurrentShape().addCurvePoint(p);
                 canvas.applyAffects();
                 canvas.redraw();
             }
@@ -64,6 +70,7 @@ public class InverseShapes extends AlcModule{
         
     }
     
+    @Override
     public void mouseReleased(MouseEvent e) {
         mouseUp = true;
         moveTo = true;

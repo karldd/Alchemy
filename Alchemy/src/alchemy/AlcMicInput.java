@@ -57,6 +57,7 @@ public class AlcMicInput extends Thread {
         stopMicInput = true;
     }
     
+    @Override
     public void run(){
         stopMicInput = false;
         
@@ -86,6 +87,9 @@ public class AlcMicInput extends Thread {
         return sum / tempBuffer.length;
     }
     
+    public byte[] getBuffer(){
+        return tempBuffer;
+    }
     
     
     //This method creates and returns an
