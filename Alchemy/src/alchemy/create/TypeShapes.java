@@ -61,7 +61,8 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     @Override
     public void reselect() {
-    //System.out.println("Refocus Called");
+        // Add this modules toolbar to the main ui
+        root.toolBar.addSubToolBar(createSubToolBar());
     }
 
     public AlcSubToolBar createSubToolBar() {

@@ -9,11 +9,10 @@
 package alchemy;
 
 import alchemy.ui.*;
-import com.apple.cocoa.application.NSMenu;
+//import com.apple.cocoa.application.NSMenu;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.prefs.Preferences;
 
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
@@ -136,14 +135,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             // This may needsto go somewhere else
             //////////////////////////////////////////////////////////////
             // Mac Java 1.3
-            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
+            //System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+            //System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
             //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
             //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
 
             // Mac Java 1.4
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("apple.awt.showGrowBox", "true");
+            //System.setProperty("apple.laf.useScreenMenuBar", "true");
+            //System.setProperty("apple.awt.showGrowBox", "true");
 
         }
 
@@ -384,6 +383,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      * 
      * @param visible true for visible, otherwise false
      */
+    /*
     @Override
     public void setVisible(final boolean visible) {
         // Only 
@@ -403,7 +403,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         }
         super.setVisible(visible);
     }
-
+    */
     //////////////////////////////////////////////////////////////
     // KEY EVENTS
     //////////////////////////////////////////////////////////////
