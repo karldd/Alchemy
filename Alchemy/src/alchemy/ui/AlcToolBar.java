@@ -11,7 +11,6 @@ package alchemy.ui;
 import alchemy.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import javax.swing.*;
 
@@ -93,7 +92,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         toolBarLeft.add(lineButton);
 
         // Clear Button
-        AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/icon.png"));
+        AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/clear.png"));
         clearButton.addActionListener(
                 new ActionListener() {
 

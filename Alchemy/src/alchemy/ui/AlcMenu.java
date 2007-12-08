@@ -24,7 +24,7 @@ public class AlcMenu extends JMenu implements AlcConstants {
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
 
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
         this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
 
