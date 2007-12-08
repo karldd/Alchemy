@@ -33,7 +33,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     public final static Color toolBarLineColour = new Color(140, 140, 140);
     public final static Color toolBarHighlightColour = new Color(231, 231, 231);
     /** ToolBar Text Size */
-    private final static int toolBarTextSize = 10;
+    private final static int toolBarTextSize = 11;
     /** ToolBar Popup Menu Y Location */
     public final static int uiPopupMenuY = toolBarHeight - 10;
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
@@ -144,6 +144,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean b) {
         this.setVisible(b);
+        // TODO - find a way to hide this without altering the origin XY
         //menuBar.setVisible(b);
         // Turn off the popup(s) when we leave the toolbar area
         if (!b) {

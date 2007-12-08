@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class AlcMenuBar extends JMenuBar implements ActionListener {
 
@@ -29,9 +30,11 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         this.parent = parent;
         this.root = root;
 
-        this.setBackground(AlcToolBar.toolBarBgColour);
-        //this.setOpaque(false);
-        //this.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        this.setBackground(AlcToolBar.toolBarHighlightColour);
+
+        // TODO - find out how better to customise the JMenu border etc...
+        // A fake separator, adds 5 pixels to the top - Top Left Bottom Right
+        Border separator = BorderFactory.createEmptyBorder(11, 0, 6, 0);
 
         // FILE MENU
         fileMenu = new AlcMenu(parent, "File");
@@ -39,15 +42,19 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         newItem = new AlcMenuItem(parent, "New...", KeyEvent.VK_N);
         newItem.addActionListener(this);
         fileMenu.add(newItem);
-        fileMenu.addSeparator();
+        //fileMenu.addSeparator();
         // Export
         exportItem = new AlcMenuItem(parent, "Export...", KeyEvent.VK_E);
         exportItem.addActionListener(this);
+        exportItem.setBorder(separator);
+
+
         fileMenu.add(exportItem);
-        fileMenu.addSeparator();
+        //fileMenu.addSeparator();
         // Print
         printItem = new AlcMenuItem(parent, "Print...", KeyEvent.VK_P);
         printItem.addActionListener(this);
+        printItem.setBorder(separator);
         fileMenu.add(printItem);
         //
         this.add(fileMenu);
@@ -70,11 +77,12 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         }
         recordingItem.addActionListener(this);
         sessionMenu.add(recordingItem);
-        sessionMenu.addSeparator();
+        //sessionMenu.addSeparator();
         // Default Recording
         defaultRecordingItem = new AlcCheckBoxMenuItem(parent, "Record on Startup", KeyEvent.VK_R);
         defaultRecordingItem.setState(root.prefs.getRecordingState());
         defaultRecordingItem.addActionListener(this);
+        defaultRecordingItem.setBorder(separator);
         sessionMenu.add(defaultRecordingItem);
         // Interval submenu
         intervalMenu = new AlcMenu(parent, "Record Interval");
@@ -91,6 +99,7 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
             group.add(intervalItem);
             intervalMenu.add(intervalItem);
         }
+        intervalMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
         sessionMenu.add(intervalMenu);
         // Default Directory
         directoryItem = new AlcMenuItem(parent, "Set Session Directory...");

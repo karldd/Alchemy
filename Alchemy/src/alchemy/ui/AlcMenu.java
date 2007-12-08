@@ -19,14 +19,16 @@ public class AlcMenu extends JMenu implements AlcConstants {
         this.parent = parent;
 
         this.setText(title);
+        
 
+        this.setContentAreaFilled(false);
         //this.setMnemonic(KeyEvent.VK_A);
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
-
+        //this.setOpaque(false);
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
-
+        this.setFont(new Font("Verdana", Font.PLAIN, parent.getToolBarTextSize()));
+        
     }
 }
