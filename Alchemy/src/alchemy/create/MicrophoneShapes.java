@@ -52,17 +52,22 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         //Point pt = rightAngle(p, oldP, micIn.getMicLevel());
         Point pt = rightAngle(p, oldP, buffer[0] >> 2);
 
-
-        canvas.getCurrentShape().addCurvePoint(pt);
-        canvas.applyAffects();
-        oldP = p;
+        // Need to test if it is null incase the shape has been auto-cleared
+        if (canvas.getCurrentShape() != null) {
+            canvas.getCurrentShape().addCurvePoint(pt);
+            canvas.applyAffects();
+            oldP = p;
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
-        canvas.getCurrentShape().addLastPoint(p);
-        canvas.applyAffects();
+        // Need to test if it is null incase the shape has been auto-cleared
+        if (canvas.getCurrentShape() != null) {
+            canvas.getCurrentShape().addLastPoint(p);
+            canvas.applyAffects();
+        }
     }
 
     private Point rightAngle(Point p1, Point p2, double distance) {

@@ -93,7 +93,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         toolBarLeft.add(lineButton);
 
         // Clear Button
-        AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + root.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/icon.png"));
+        AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/icon.png"));
         clearButton.addActionListener(
                 new ActionListener() {
 
@@ -145,7 +145,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean b) {
         this.setVisible(b);
-        menuBar.setVisible(b);
+        //menuBar.setVisible(b);
         // Turn off the popup(s) when we leave the toolbar area
         if (!b) {
             if (createButton != null) {
@@ -237,30 +237,6 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         }
     }
 
-    /** Function to append a string to the end of a given URL */
-    public static URL appendStringToUrl(URL url, String append) {
-        String urlString = url.toString();
-        URL newUrl = null;
-        // Look for a file extension
-        int dot = url.toString().lastIndexOf(".");
-        if (dot == -1) {
-            try {
-                // If no file extension return as is
-                newUrl = new URL(urlString + append);
-            } catch (MalformedURLException ex) {
-                System.err.println(ex);
-            }
-        } else {
-            try {
-                // Append the string before the file extension
-                newUrl = new URL(urlString.substring(0, dot) + append + urlString.substring(dot));
-            } catch (MalformedURLException ex) {
-                System.err.println(ex);
-            }
-        }
-        return newUrl;
-    }
-
     /** Returns an ImageIcon from a String, or null if the path was invalid. */
     public ImageIcon createImageIcon(String path) {
 
@@ -284,13 +260,6 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         }
         //System.err.println("Couldn't find file: " + imgUrl.toString());
         return null;
-    }
-
-    // Returns just the class name -- no package info.
-    public String getClassName(Object o) {
-        String classString = o.getClass().getName();
-        int dotIndex = classString.lastIndexOf(".");
-        return classString.substring(dotIndex + 1);
     }
 
     /** Calculate the total height of the toolbar and its subtoolbars */

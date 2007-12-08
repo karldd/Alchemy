@@ -19,11 +19,11 @@ import java.io.IOException;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.Rectangle;
 
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener {
@@ -37,12 +37,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private Color bgColour = Color.WHITE;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
-    /** Drawing on or off - stop mark making when inside the UI */
-    private boolean draw = true;
+    /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
+    private boolean mouseEvents = true;
+    /** Mouse down */
+    private boolean mouseDown;
     /** Smoothing on or off */
     private boolean smoothing = true;
     /** Automatic shape creation on or off */
     private boolean shapeCreation = true;
+    /** Boolean used by the timer to determin if there has been canvas activity */
+    private boolean canvasChanged = false;
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
@@ -161,6 +165,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
+    /** Turn on/off mouseEvents being sent to modules */
+    public void setMouseEvents(boolean b) {
+        mouseEvents = b;
+    }
+
     /** Resize the canvas - called when the window is resized */
     public void resizeCanvas(Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, windowSize.height);
@@ -197,6 +206,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 }
             }
         }
+        // Something has happened on the canvas and the user is still active
+        canvasChanged = true;
         redraw();
     }
 
@@ -257,6 +268,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public boolean getRedraw() {
         return redraw;
     }
+    
+    /** Return if the mouse is down - this does not take into account left/right buttons */
+    public boolean getMouseDown(){
+        return mouseDown;
+    }
 
     /** Get the Background Colour */
     public Color getBgColour() {
@@ -282,7 +298,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         return smoothing;
     }
 
-    /** Set automatic shape creation - when on shapes are automatically draw and then passed to the affects */
+    /** Set automatic shape creation - when on shapes are automatically mouseEvents and then passed to the affects */
     public void setShapeCreation(boolean b) {
         if (b) { // ON
             if (!shapeCreation) {
@@ -308,15 +324,25 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             if (!root.toolBar.getToolBarVisible()) {
                 root.toolBar.setToolBarVisible(true);
                 // Turn drawing off while in the toolbar
-                draw = false;
+                mouseEvents = false;
             }
         } else if (y > root.toolBar.getTotalHeight()) {
             if (root.toolBar.getToolBarVisible()) {
                 root.toolBar.setToolBarVisible(false);
                 // Turn drawing on once out of the UI
-                draw = true;
+                mouseEvents = true;
             }
         }
+    }
+
+    /** Return if there has been activity on the canvas since the last time the timer checked */
+    boolean canvasChange() {
+        return canvasChanged;
+    }
+
+    /** Reset the activity flag - called by the timer */
+    void resetCanvasChange() {
+        canvasChanged = false;
     }
 
     //////////////////////////////////////////////////////////////
@@ -369,7 +395,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     /** Start PDF record */
     // TODO = implement this into the menu
-    public void startPdf() {
+    public void startPdf(String path) {
         pdfWidth = root.getWindowSize().width;
         pdfHeight = root.getWindowSize().height;
         document = new Document(new Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
@@ -378,22 +404,22 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         //document.addSubject("This example explains how to add metadata.");
         //document.addKeywords("iText, Hello World, step 3, metadata");
         document.addCreator("al.chemy.org");
-        System.out.println(System.getProperty("user.home"));
-        System.out.println(System.getProperty("user.dir"));
 
-        String path = "test.pdf";
-        System.out.println("startPDF Called");
+        //String path = "test.pdf";
+        System.out.println("Start PDF Called: " + path);
 
         try {
 
             writer = PdfWriter.getInstance(document, new FileOutputStream(path));
             document.open();
             content = writer.getDirectContent();
-            /* Drawing on the first frame 
-            Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
-            this.paint(g2pdf);
-            g2pdf.dispose();
-             */
+            if (shapes.size() > 0) {
+                // Drawing on the first frame 
+                Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
+                this.paint(g2pdf);
+                g2pdf.dispose();
+            }
+
 
         } catch (DocumentException ex) {
             System.err.println(ex);
@@ -420,8 +446,19 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void endPdf() {
         System.out.println("End Pdf Called");
         if (document != null) {
-            document.close();
-            document = null;
+            if (root.session.getPageCount() > 0) {
+                document.close();
+                document = null;
+            } else {
+                document = null;
+                // If the document has no pages delete the empty file
+                // TODO - fix the error called when deleteing
+                File f = new File(root.session.getCurrentPdfPath());
+                if (f.exists()) {
+                    f.delete();
+                }
+
+            }
         }
     }
 
@@ -432,7 +469,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         // Toogle visibility of the Toolbar
         toggleToolBar(e);
 
-        if (draw) {
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mouseMoved(e);
             }
@@ -448,7 +485,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mousePressed(MouseEvent e) {
-        if (draw) {
+        mouseDown = true;
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mousePressed(e);
             }
@@ -464,7 +502,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mouseClicked(MouseEvent e) {
-        if (draw) {
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mouseClicked(e);
             }
@@ -480,7 +518,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mouseEntered(MouseEvent e) {
-        if (draw) {
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mouseEntered(e);
             }
@@ -496,7 +534,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mouseExited(MouseEvent e) {
-        if (draw) {
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mouseExited(e);
             }
@@ -512,7 +550,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (draw) {
+        mouseDown = false;
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mouseReleased(e);
             }
@@ -528,7 +567,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mouseDragged(MouseEvent e) {
-        if (draw) {
+        if (mouseEvents) {
             if (root.currentCreate >= 0) {
                 root.creates[root.currentCreate].mouseDragged(e);
             }

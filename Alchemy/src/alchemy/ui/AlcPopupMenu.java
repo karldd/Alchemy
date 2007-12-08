@@ -26,10 +26,10 @@ public class AlcPopupMenu extends JPopupMenu{
         //this.setLightWeightPopupEnabled(false);
         //this.setUI(new BasicPopupMenuUI());
         // Set the colour for the bg
-        this.setBackground(parent.toolBarHighlightColour);
+        this.setBackground(AlcToolBar.toolBarHighlightColour);
         
         
-        Border outline = BorderFactory.createLineBorder(parent.toolBarLineColour, 1);
+        Border outline = BorderFactory.createLineBorder(AlcToolBar.toolBarLineColour, 1);
         Border empty = BorderFactory.createEmptyBorder(5, 5, 5, 5);
         // Compound border combining the above two
         Border compound = BorderFactory.createCompoundBorder(outline, empty);

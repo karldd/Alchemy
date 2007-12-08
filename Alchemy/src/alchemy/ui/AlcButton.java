@@ -9,6 +9,7 @@
 
 package alchemy.ui;
 
+import alchemy.AlcUtil;
 import java.awt.Font;
 import java.awt.Insets;
 import java.net.URL;
@@ -29,7 +30,7 @@ public class AlcButton extends JToggleButton{
             // Set the main icon
             this.setIcon( parent.createImageIcon(iconUrl) );
             // Set the rollover icon
-            URL rolloverIconUrl = parent.appendStringToUrl(iconUrl, "-over");
+            URL rolloverIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-over");
             this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
         }
         
