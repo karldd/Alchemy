@@ -13,66 +13,86 @@ import com.apple.cocoa.application.NSMenu;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.prefs.Preferences;
 
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
     /**
-     * Current platform in use, one of the
-     * PConstants WINDOWS, MACOSX, LINUX or OTHER.
+     * Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER.
      */
-    static public int platform;
+    static public int PLATFORM;
     /** Modifier Key to show for tool tips */
     static public String MODIFIER_KEY;
 
     static {
-        if (platformName.indexOf("Mac") != -1) {
-            platform = MACOSX;
+        if (PLATFORM_NAME.indexOf("Mac") != -1) {
+            PLATFORM = MACOSX;
             // Mac command key symbol
             MODIFIER_KEY = "\u2318";
 
-        } else if (platformName.indexOf("Windows") != -1) {
-            platform = WINDOWS;
+        } else if (PLATFORM_NAME.indexOf("Windows") != -1) {
+            PLATFORM = WINDOWS;
             MODIFIER_KEY = "Ctrl";
 
-        } else if (platformName.equals("Linux")) {  // true for the ibm vm
-            platform = LINUX;
+        } else if (PLATFORM_NAME.equals("Linux")) {  // true for the ibm vm
+            PLATFORM = LINUX;
             MODIFIER_KEY = "Ctrl";
 
         } else {
-            platform = OTHER;
+            PLATFORM = OTHER;
             MODIFIER_KEY = "Modifier";
         }
     }
+    //
+    //////////////////////////////////////////////////////////////
+    // ALCHEMY CLASSES AND MODULES
+    //////////////////////////////////////////////////////////////
     /** Class to take care of plugin loading */
     private AlcPlugin plugins;
     /** Class of utility math functions */
     public AlcMath math = new AlcMath();
+    /** Canvas to draw on to */
+    public AlcCanvas canvas;
+    /** User Interface Tool Bar */
+    public AlcToolBar toolBar;
+    /** Preferences class */
+    public AlcPreferences prefs;
+    /** Session class - controls automatic saving of the canvas */
+    public AlcSession session;
     /** Lists of the installed modules */
     public AlcModule[] creates;
     public AlcModule[] affects;
+    //
+    //////////////////////////////////////////////////////////////
+    // ALCHEMY STATUS
+    //////////////////////////////////////////////////////////////
     /** The currently selected create module - set to -1 initially when nothing is selected */
     public int currentCreate = -1;
     /** The currently selected affect modules */
-    boolean[] currentAffects;
+    public boolean[] currentAffects;
     /** The number of affect modules currently selected */
     private int numberOfCurrentAffects = 0;
     /** Preferred size of the window */
     private Dimension windowSize = new Dimension(800, 600);
-    /** User Interface Tool Bar */
-    public AlcToolBar toolBar;
-    /** Canvas to draw on to */
-    public AlcCanvas canvas;
+    //
+    //////////////////////////////////////////////////////////////
+    // FULLSCREEN
+    //////////////////////////////////////////////////////////////
     /** Toggle between windowed and fullscreen */
     protected boolean fullscreen = false;
     /** For storing the old display size before entering fullscreen */
     private Dimension oldWindowSize = null;
     /** For storing the old display location before entering fullscreen */
     private Point oldLocation = null;
-    private boolean menuBarVisible = true;
+    /** Toggle the state of the osx menu bar on a mac */
+    private boolean macMenuBarVisible = true;
 
     public AlcMain() {
 
         // TODO - Sort out the build.xml - copy correctly etc...
+
+        // LOAD PREFERENCES
+        prefs = new AlcPreferences();
 
         // LOAD PLUGINS
         plugins = new AlcPlugin();
@@ -93,37 +113,80 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // LOAD INTERFACE AND CANVAS
         loadInterface();
 
-        // Set the global access to root, canvas, and toolBar for each module
-        for (int i = 0; i < creates.length; i++) {
-            creates[i].setGlobals(this, canvas, toolBar);
-        }
-        for (int i = 0; i < affects.length; i++) {
-            affects[i].setGlobals(this, canvas, toolBar);
-        }
+        // INITIALISE THE MODULES
+        initialiseModules();
 
-        // Set the default create module
-        currentCreate = 0;
-        creates[currentCreate].setup();
+
+        // Exit Function
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                exitAlchemy();
+            }
+        });
 
     }
 
     public static void main(String[] args) {
+        if (PLATFORM == MACOSX) {
+            //////////////////////////////////////////////////////////////
+            // MAC ONLY PROPERTIES 
+            // Called before the interface is built
+            // This may needsto go somewhere else
+            //////////////////////////////////////////////////////////////
+            // Mac Java 1.3
+            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
+            //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
+            //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
+
+            // Mac Java 1.4
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.awt.showGrowBox", "true");
+
+        }
+
+        // Set system look and feel
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         AlcMain window = new AlcMain();
         window.setVisible(true);
     }
 
+    private void exitAlchemy() {
+        System.out.println("Closing");
+        // Turn off recording if on
+        if (session.isRecording()) {
+            session.setRecording(false);
+        }
+        // Save changes to the preferences
+        prefs.writeChanges();
+        dispose();
+        System.exit(0); //calling the method is a must
+    }
+
     private void loadInterface() {
+
+        // The canvas to draw on
+        canvas = new AlcCanvas(this);
+        // LOAD SESSION
+        session = new AlcSession(this);
 
         // User Interface toolbar
         toolBar = new AlcToolBar(this);
-        // The canvas to draw on
-        canvas = new AlcCanvas(this);
 
 
         // LAYERED PANE
         JLayeredPane layeredPane = new JLayeredPane();
         // Add the UI on top of the canvas
         layeredPane.add(canvas, new Integer(1));
+        // LOAD SESSION
+        session = new AlcSession(this);
         layeredPane.add(toolBar, new Integer(2));
 
         // FRAME
@@ -139,14 +202,20 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         this.pack();                                // Finalize window layout
         this.setLocationRelativeTo(null);           // Center window on screen.
 
+    }
 
-        // Set system look and feel
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void initialiseModules() {
+        // Set the global access to root, canvas, and toolBar for each module
+        for (int i = 0; i < creates.length; i++) {
+            creates[i].setGlobals(this, canvas, toolBar);
+        }
+        for (int i = 0; i < affects.length; i++) {
+            affects[i].setGlobals(this, canvas, toolBar);
         }
 
+        // Set the default create module
+        currentCreate = 0;
+        creates[currentCreate].setup();
     }
 
     // GLOBAL GETTER INFO
@@ -155,9 +224,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         return windowSize;
     }
 
-    /** Get the platform */
+    /** Get the PLATFORM */
     public int getPlatform() {
-        return platform;
+        return PLATFORM;
     }
 
     /** Get the number of plugins */
@@ -248,50 +317,52 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      *                   false = change to windowed
      */
     public void setFullscreen(boolean fullscreen) {
-        if (this.fullscreen != fullscreen) {        //are we actually changing modes.
+        if (FULLSCREEN_SUPPORTED) {
+            if (this.fullscreen != fullscreen) {        //are we actually changing modes.
 
-            this.fullscreen = fullscreen;           //change modes.
+                this.fullscreen = fullscreen;           //change modes.
 
-            //change to windowed mode.
-            if (!fullscreen) {
+                //change to windowed mode.
+                if (!fullscreen) {
 
-                //System.out.println(System.getProperty("user.name"));
+                    //System.out.println(System.getProperty("user.name"));
 
-                //setVisible(false);                //hide the frame so we can change it.
-                dispose();                          //remove the frame from being displayable.
-                setUndecorated(false);              //put the borders back on the frame.
-                //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
-                setSize(oldWindowSize);             //make sure the size of the window is correct.
-                setLocation(oldLocation);           //reset location of the window
-                setAlwaysOnTop(false);
-
-                menuBarVisible = true;
-                setVisible(true);
-
-            //change to fullscreen.
-            } else {
-
-                oldWindowSize = windowSize;          //save the old window size and location
-                oldLocation = getLocation();
-
-                try {
-                    setVisible(false);                  //hide everything
+                    //setVisible(false);                //hide the frame so we can change it.
                     dispose();                          //remove the frame from being displayable.
+                    setUndecorated(false);              //put the borders back on the frame.
+                    //DEVICE.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
+                    setSize(oldWindowSize);             //make sure the size of the window is correct.
+                    setLocation(oldLocation);           //reset location of the window
+                    setAlwaysOnTop(false);
 
-                    setUndecorated(true);               //remove borders around the frame
-                    setSize(displayMode.getWidth(), displayMode.getHeight());   // set the size to maximum
-                    setLocation(0, 0);
-                    setAlwaysOnTop(true);
-                    //device.setFullScreenWindow(this);   //make the window fullscreen.
-                    menuBarVisible = false;
-                    setVisible(true);                   //show the frame
+                    macMenuBarVisible = true;
+                    setVisible(true);
 
-                } catch (Exception e) {
-                    System.err.println(e);
+                //change to fullscreen.
+                } else {
+
+                    oldWindowSize = windowSize;          //save the old window size and location
+                    oldLocation = getLocation();
+
+                    try {
+                        setVisible(false);                  //hide everything
+                        dispose();                          //remove the frame from being displayable.
+
+                        setUndecorated(true);               //remove borders around the frame
+                        setSize(DISPLAY_MODE.getWidth(), DISPLAY_MODE.getHeight());   // set the size to maximum
+                        setLocation(0, 0);
+                        setAlwaysOnTop(true);
+                        //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
+                        macMenuBarVisible = false;
+                        setVisible(true);                   //show the frame
+
+                    } catch (Exception e) {
+                        System.err.println(e);
+                    }
                 }
-            }
 
-            repaint();  //make sure that the screen is refreshed.
+                repaint();  //make sure that the screen is refreshed.
+            }
         }
     }
 
@@ -316,9 +387,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     @Override
     public void setVisible(final boolean visible) {
         // Only 
-        if (platform == MACOSX) {
+        if (PLATFORM == MACOSX) {
             // Turn on
-            if (menuBarVisible) {
+            if (macMenuBarVisible) {
                 //call it when already not visible and it crashes, so check first
                 if (!NSMenu.menuBarVisible()) {
                     NSMenu.setMenuBarVisible(true);
@@ -331,22 +402,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         }
         super.setVisible(visible);
-    }
-
-    /**
-     * Used as a single function to save off information before exiting
-     * and to keep all cleanup code in the same place.
-     */
-    public void onExit() {
-
-        //immediately hide the window (no falling apart windows)
-        setVisible(false);
-
-        //cleanup and destroy the window threads
-        dispose();
-
-        //exit the application without an error
-        System.exit(0);
     }
 
     //////////////////////////////////////////////////////////////
@@ -389,10 +444,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         int keyCode = e.getKeyCode();
 
-        // Toggle Fullscreen
+        // Turn off fullscreen mode with the escape key if in fullscreen mode
         if (keyCode == KeyEvent.VK_ESCAPE) {
-            if (fullScreenSupported) {
-                setFullscreen(!isFullscreen());
+            if (isFullscreen()) {
+                setFullscreen(false);
             }
         }
 
@@ -443,23 +498,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public void windowStateChanged(WindowEvent e) {
     System.out.println("STATE CHANGED");
     //resizeWindow(e);
-    }
-     */
-    /*
-    public void openFileDialog(){
-    // create a file chooser
-    final JFileChooser fc = new JFileChooser();
-    // in response to a button click:
-    int returnVal = fc.showSaveDialog(this);
-    if (returnVal == JFileChooser.APPROVE_OPTION) {
-    File file = fc.getSelectedFile();
-    pdfURL = file.getPath();
-    saveOneFrame = true;
-    //redraw();
-    //println(pdfURL);
-    } else {
-    //println("Open command cancelled by user.");
-    }
     }
      */
 }
