@@ -78,6 +78,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Creates a new instance of AlcCanvas */
     public AlcCanvas(AlcMain root) {
         this.root = root;
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 
         addMouseListener(this);
         addMouseMotionListener(this);

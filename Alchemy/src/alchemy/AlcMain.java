@@ -196,7 +196,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         this.addKeyListener(this);                  // Key Listener
         this.setFocusable(true);                    // Make the key listener focusable so we can get key events
         this.requestFocus();                        // Get focus for the key listener
-        //this.setTitle("al.chemy");                // Title of the frame - Dock name should also be set -Xdock:name="Alchemy"
+        this.setTitle("Alchemy");                // Title of the frame - Dock name should also be set -Xdock:name="Alchemy"
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                                // Finalize window layout
         this.setLocationRelativeTo(null);           // Center window on screen.
