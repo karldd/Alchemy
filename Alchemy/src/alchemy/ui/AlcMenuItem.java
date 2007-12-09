@@ -1,7 +1,6 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
-import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
@@ -11,9 +10,9 @@ import javax.swing.KeyStroke;
  * 
  * @author Karl D.D. Willis
  */
-public class AlcMenuItem extends JMenuItem implements AlcConstants{
-    
-        private AlcToolBar parent;
+public class AlcMenuItem extends JMenuItem implements AlcConstants {
+
+    private AlcToolBar parent;
 
     public AlcMenuItem(AlcToolBar parent, String title) {
         setup(parent, title, -1);
@@ -37,8 +36,7 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants{
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
+        this.setFont(AlcToolBar.toolBarFont);
 
     }
-
 }

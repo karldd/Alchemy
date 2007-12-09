@@ -32,8 +32,8 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     public final static Color toolBarBgEndColour = new Color(215, 215, 215);
     public final static Color toolBarLineColour = new Color(140, 140, 140);
     public final static Color toolBarHighlightColour = new Color(231, 231, 231);
-    /** ToolBar Text Size */
-    private final static int toolBarTextSize = 11;
+    /** ToolBar Font */
+    public final static Font toolBarFont = new Font("Verdana", Font.PLAIN, 11);
     /** ToolBar Popup Menu Y Location */
     public final static int uiPopupMenuY = toolBarHeight - 10;
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
@@ -217,11 +217,6 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     /** Return the height of the UI Toolbar */
     public int getToolBarHeight() {
         return toolBarHeight;
-    }
-
-    /** Return the height of the UI Toolbar */
-    public int getToolBarTextSize() {
-        return toolBarTextSize;
     }
 
     // IMAGE LOADING FUNCTIONS

@@ -59,14 +59,15 @@ public class AlcSubToolBar extends JPanel{
             //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint( gradientPaint );
             g2.fillRect( 0 , 0 , root.getWindowSize().width , this.height );
-            g2.setPaint( parent.toolBarHighlightColour );
+            g2.setPaint( AlcToolBar.toolBarHighlightColour );
             g2.drawLine(0, 0, root.getWindowSize().width, 0);
-            g2.setPaint( parent.toolBarLineColour );
+            g2.setPaint( AlcToolBar.toolBarLineColour );
             g2.drawLine(0, this.height-1, root.getWindowSize().width, this.height-1);
         }
     }
     
     
+    @Override
     public int getHeight(){
         return this.height;
     }

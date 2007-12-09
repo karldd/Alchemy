@@ -6,29 +6,27 @@
  * @author  Karl D.D. Willis
  * @version 1.0
  */
-
 package alchemy.ui;
 
 import alchemy.AlcUtil;
-import java.awt.Font;
 import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-public class AlcSubToggleButton extends JToggleButton{
-    
+public class AlcSubToggleButton extends JToggleButton {
+
     AlcToolBar parent;
-    
+
     /**
      * Creates a new instance of AlcMainButton
      */
     public AlcSubToggleButton(AlcToolBar parent, String text, URL iconUrl) {
-        
+
         this.parent = parent;
-        
-        if(iconUrl != null){
+
+        if (iconUrl != null) {
             // Set the main icon
-            this.setIcon( parent.createImageIcon(iconUrl) );
+            this.setIcon(parent.createImageIcon(iconUrl));
             // Set the rollover icon
             URL rolloverIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-over");
             this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
@@ -39,15 +37,14 @@ public class AlcSubToggleButton extends JToggleButton{
             URL rolloverSelectedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-on-over");
             this.setRolloverSelectedIcon(parent.createImageIcon(rolloverSelectedIconUrl));
         }
-        
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
+
+        this.setFont(AlcToolBar.toolBarFont);
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
         this.setMargin(new Insets(4, 8, 8, 4));
-        
+
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button
         this.setFocusPainted(false);       // Draw the highlight when focused
     }
-    
 }

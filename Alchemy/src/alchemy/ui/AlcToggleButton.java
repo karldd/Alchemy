@@ -10,7 +10,6 @@
 package alchemy.ui;
 
 import alchemy.AlcUtil;
-import java.awt.Font;
 import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
@@ -41,7 +40,7 @@ public class AlcToggleButton extends JToggleButton{
         }
         
         
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
+        this.setFont(AlcToolBar.toolBarFont);
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
         this.setText(text);
