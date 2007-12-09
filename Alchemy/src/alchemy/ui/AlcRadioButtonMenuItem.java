@@ -10,7 +10,6 @@ package alchemy.ui;
 
 import alchemy.AlcConstants;
 import alchemy.AlcModule;
-import java.awt.Font;
 import javax.swing.BorderFactory;
 import javax.swing.JRadioButtonMenuItem;
 //import javax.swing.plaf.basic.BasicMenuItemUI;
@@ -56,7 +55,7 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
-        this.setFont(new Font("sansserif", Font.PLAIN, parent.getToolBarTextSize()));
+        this.setFont(AlcToolBar.toolBarFont);
     }
 
     public int getIndex() {
