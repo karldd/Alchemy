@@ -122,6 +122,7 @@ public class AlcPlugin implements AlcConstants{
                 if(index < 0){
                     index = order.length + noMatchCount;
                     System.out.println(nameParam);
+                    System.out.println("Plugins: " + index + " / " + numberOfPlugins + " No Match: " + noMatchCount);
                     plugins[index] = currentPlugin;
                     // Keep track of how many non-matches
                     noMatchCount++;

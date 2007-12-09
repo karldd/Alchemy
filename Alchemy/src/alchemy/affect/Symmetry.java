@@ -27,6 +27,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
     public void setup() {
     }
 
+    /*
     @Override
     public AlcShape processShape(AlcShape shape) {
 
@@ -43,6 +44,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
 
         return shape;
     }
+     */
 
     @Override
     public void incrementShape(AlcShape shape) {
@@ -54,7 +56,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
         tempShape = new AlcShape(processedShape, shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
         //tempShape.setShape(processedShape); // Add the transformed shape
 
-        canvas.addTempShape(tempShape);
+        canvas.setTempShape(tempShape);
 
     }
 
@@ -68,6 +70,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        canvas.commitTempShape();
+        // Join this shape to the current one (no connecting)
+        canvas.appendTempShape(false);
     }
 }
