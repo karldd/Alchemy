@@ -24,6 +24,7 @@ public class Blindness extends AlcModule implements AlcConstants{
     public Blindness() {
     }
     
+    @Override
     public void setup(){
         canvas.setRedraw(false);
         
@@ -32,10 +33,12 @@ public class Blindness extends AlcModule implements AlcConstants{
         
     }
     
+    @Override
     public void reselect(){
         canvas.setRedraw(false);
     }
     
+    @Override
     public void deselect(){
         // Turn drawing back on and show what is underneath
         canvas.setRedraw(true);
@@ -88,6 +91,7 @@ public class Blindness extends AlcModule implements AlcConstants{
     
     // MOUSE EVENTS
     
+    @Override
     public void mouseReleased(MouseEvent e) {
         if(blindShapes){
             redrawOnce();
@@ -95,6 +99,7 @@ public class Blindness extends AlcModule implements AlcConstants{
     }
     
     // KEY EVENTS
+    @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
         char keyChar = e.getKeyChar();

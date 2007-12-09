@@ -87,7 +87,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     private void generate() {
         AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
-        canvas.addTempShape(shape);
+        canvas.setTempShape(shape);
         // Apply affects and update the canvas
         canvas.applyAffects();
     }

@@ -216,8 +216,18 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      *  Used as a buffer before it is added to the shapes array.
      *  Stops the shapes from constantly adding to themselves while marks are being made.
      */
-    public void addTempShape(AlcShape tempShape) {
+    public void setTempShape(AlcShape tempShape) {
         this.tempShape = tempShape;
+    }
+
+    /** Returns the current temp shape */
+    public AlcShape getTempShape() {
+        System.out.println(tempShape);
+        if (tempShape != null) {
+            return tempShape;
+        } else {
+            return null;
+        }
     }
 
     /** Commit the temporary shape to the main shapes array */
@@ -228,12 +238,30 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
+    /** Appends the temp shape to the most recent shape in the shapes array 
+     *  and sets the temp shape to null.
+     *  @param connect  connect the two shapes or not
+     */
+    public void appendTempShape(boolean connect) {
+        if (tempShape != null && shapes.size() > 0) {
+            getCurrentShape().getShape().append(tempShape.getShape(), connect);
+            tempShape = null;
+        }
+    }
+
     /** Returns the most recently added shape */
     public AlcShape getCurrentShape() {
         if (shapes.size() > 0) {
             return shapes.get(shapes.size() - 1);
         } else {
             return null;
+        }
+    }
+
+    /** Sets the most recently added shape */
+    public void setCurrentShape(AlcShape shape) {
+        if (shapes.size() > 0) {
+            shapes.set(shapes.size() - 1, shape);
         }
     }
 

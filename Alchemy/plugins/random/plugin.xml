@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="alchemy.affect.random" version="1.0.0">
+    
+    <requires> 
+        <import plugin-id="alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="random" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="alchemy.core" point-id="Affect" id="randomAffect"> 
+        <parameter id="class" value="alchemy.affect.Random"/> 
+        <parameter id="name" value="Random"/> 
+        <parameter id="description" value="Random shape distortion" />
+        <parameter id="icon" value="icon.png" />
+    </extension>
+    
+</plugin>

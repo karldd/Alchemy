@@ -116,7 +116,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         alphaGroup.setOpaque(false);
         alphaGroup.setLayout(new BoxLayout(alphaGroup, BoxLayout.PAGE_AXIS));
 
-        JSlider alphaSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 100);
+        JSlider alphaSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 255);
         //alphaSlider.setMajorTickSpacing(75); // sets numbers for biggest tick marks
         //alphaSlider.setMinorTickSpacing(1);  // smaller tick marks
         alphaSlider.setPaintTicks(true);     // display the ticks
