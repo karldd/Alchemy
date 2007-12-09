@@ -38,23 +38,37 @@ public class AlcPreferences implements AlcConstants {
     private int recordingInterval;
     /** Auto clean the canvas after saving */
     private boolean autoClear;
+    /** Switch Vector Application */
+    private String switchVectorApp;
+    /** Switch Bitmap Application */
+    private String switchBitmapApp;
 
     public AlcPreferences() {
 
         recordingState = prefs.getBoolean("Recording State", true);
-        sessionPath = prefs.get("Session Path", HOME_DIRECTORY);
+        sessionPath = prefs.get("Session Path", HOME_DIR);
         recordingInterval = prefs.getInt("Recording Delay", 60000);
         autoClear = prefs.getBoolean("Auto Clear Canvas", false);
+        switchVectorApp = prefs.get("Switch Vector Application", null);
+        switchBitmapApp = prefs.get("Switch Bitmap Application", null);
 
-        System.out.println("PREFS SAYS:" + recordingState + " " + sessionPath + " " + recordingInterval);
-
+        System.out.println("PREFS SAYS:" + switchVectorApp + " " + switchBitmapApp);
+    //System.out.println(prefs);
     }
 
+    /** Save the changes on exit */
     void writeChanges() {
         prefs.putBoolean("Recording State", this.recordingState);
         prefs.put("Session Path", this.sessionPath);
         prefs.putInt("Recording Delay", recordingInterval);
         prefs.putBoolean("Auto Clear Canvas", this.autoClear);
+
+        if (switchVectorApp != null) {
+            prefs.put("Switch Vector Application", this.switchVectorApp);
+        }
+        if (switchBitmapApp != null) {
+            prefs.put("Switch Bitmap Application", this.switchBitmapApp);
+        }
     }
 
     public boolean getRecordingState() {
@@ -87,5 +101,21 @@ public class AlcPreferences implements AlcConstants {
 
     public void setAutoClear(boolean b) {
         this.autoClear = b;
+    }
+
+    public String getSwitchVectorApp() {
+        return switchVectorApp;
+    }
+
+    public void setSwitchVectorApp(String path) {
+        this.switchVectorApp = path;
+    }
+
+    public String getBitmapApp() {
+        return switchBitmapApp;
+    }
+
+    public void setSwitchBitmapApp(String path) {
+        this.switchBitmapApp = path;
     }
 }

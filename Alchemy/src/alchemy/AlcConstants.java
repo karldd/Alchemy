@@ -39,8 +39,12 @@ public interface AlcConstants {
     public static final float JAVA_VERSION = new Float(JAVA_VERSION_NAME.substring(0, 3)).floatValue();
     /** Current platform in use. Equivalent to System.getProperty("os.name"), just used internally */
     static public String PLATFORM_NAME = System.getProperty("os.name");
+    /** The users name */
+    static public String USER_NAME = System.getProperty("user.name");
     /** The users home directory */
-    static public String HOME_DIRECTORY = System.getProperty("user.home");
+    static public String HOME_DIR = System.getProperty("user.home");
+    /** The default temp directory */
+    static public String TEMP_DIR = System.getProperty("java.io.tmpdir");
     /** File Separator */
     static public String FILE_SEPARATOR = System.getProperty("file.separator");
     //
