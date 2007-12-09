@@ -29,7 +29,7 @@ public class AlcMainToolBar extends JPanel {
         
         //this.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.setLayout(new BorderLayout());
-        
+                
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
         //this.setAlignmentY(Component.TOP_ALIGNMENT);
         
@@ -43,18 +43,19 @@ public class AlcMainToolBar extends JPanel {
         super.paintComponent( g );
         
         int panelWidth = getWidth();
-        GradientPaint gradientPaint = new GradientPaint( 0 , 0 , parent.toolBarBgStartColour , 0 , this.height , parent.toolBarBgEndColour, true );
+        GradientPaint gradientPaint = new GradientPaint( 0 , 0 , AlcToolBar.toolBarBgStartColour , 0 , this.height , AlcToolBar.toolBarBgEndColour, true );
         if( g instanceof Graphics2D ) {
             Graphics2D g2 = (Graphics2D)g;
             // Turn on text antialias - windows does not use it by default
             //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint( gradientPaint );
             g2.fillRect( 0 , 0 ,  root.getWindowSize().width , this.height );
-            g2.setPaint( parent.toolBarLineColour );
+            g2.setPaint( AlcToolBar.toolBarLineColour );
             g2.drawLine(0, this.height-1,  root.getWindowSize().width, this.height-1);
         }
     }
     
+    @Override
     public int getHeight(){
         return this.height;
     }

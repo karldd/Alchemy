@@ -14,7 +14,11 @@ import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
 
-public class AlcToolBar extends JPanel implements ActionListener, ItemListener, AlcConstants { // Extend JPanel rather than JComponent so the background can be set
+// Extend JPanel rather than JComponent so the background can be set
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+public class AlcToolBar extends JPanel implements ActionListener, ItemListener, ChangeListener, AlcConstants {
 
     /** Reference to the root */
     private final AlcMain root;
@@ -56,6 +60,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         this.root = root;
         // Make this a Box Layout so all submenus are stacked below
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
 
         // Intialise the array of subToolBars - maximum size is that off all the affect modules plus one (create module)
         subToolBars = new AlcSubToolBar[root.getNumberOfAffectModules() + 1];
@@ -104,7 +109,37 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
 
         // TODO - Line Thickness button
         // TODO - Toggle Black/White Button
-        // TODO - Transparency slider/numberbox
+
+        JPanel alphaGroup = new JPanel();
+        // Top Left Bottom Right
+        alphaGroup.setBorder(BorderFactory.createEmptyBorder(8, 8, 6, 4));
+        alphaGroup.setOpaque(false);
+        alphaGroup.setLayout(new BoxLayout(alphaGroup, BoxLayout.PAGE_AXIS));
+
+        JSlider alphaSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 100);
+        //alphaSlider.setMajorTickSpacing(75); // sets numbers for biggest tick marks
+        //alphaSlider.setMinorTickSpacing(1);  // smaller tick marks
+        alphaSlider.setPaintTicks(true);     // display the ticks
+        alphaSlider.addChangeListener(this);
+
+        // TODO - customise this slider?  or set to number box? http://www.java2s.com/Code/Java/Swing-Components/ThumbSliderExample1.htm
+        // or make a popupmenu with a slider inside?
+
+        //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
+        //alphaSlider.setOpaque(true);
+        //alphaSlider.setBackground(Color.black);
+        alphaSlider.setForeground(Color.black);
+        alphaSlider.setPreferredSize(new Dimension(75, 25));
+        alphaSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        alphaGroup.add(alphaSlider);
+
+        JLabel alphaLabel = new JLabel("Transparency");
+        alphaLabel.setFont(toolBarFont);
+        alphaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        alphaGroup.add(alphaLabel);
+
+        toolBarLeft.add(alphaGroup);
 
         //JToggleButton tbtn = new JToggleButton("Yes");
         //toolBarLeft.add(tbtn);
@@ -131,8 +166,8 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     }
 
     public void resizeToolBar() {
-        Dimension windowSize = new Dimension(this.windowSize.width, getTotalHeight());
-        resizeToolBar(windowSize);
+        Dimension toolBarWindowSize = new Dimension(this.windowSize.width, getTotalHeight());
+        resizeToolBar(toolBarWindowSize);
     }
 
     public void resizeToolBar(Dimension windowSize) {
@@ -260,18 +295,18 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     /** Calculate the total height of the toolbar and its subtoolbars */
     public void calculateTotalHeight() {
         // Start with the main toolbar height
-        int totalHeight = mainToolBar.getHeight();
+        int newTotalHeight = mainToolBar.getHeight();
 
         // Only run the loop if there are subtoolbars loaded
         if (numberOfCurrentSubToolBars > 0) {
             for (int i = 0; i < subToolBars.length; i++) {
                 if (subToolBars[i] != null) {
-                    totalHeight += subToolBars[i].getHeight();
+                    newTotalHeight += subToolBars[i].getHeight();
                 }
             }
         }
 
-        this.totalHeight = totalHeight;
+        this.totalHeight = newTotalHeight;
     }
 
     /** Return the total height of the toolbar and its subtoolbars */
@@ -321,6 +356,17 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
                 removeSubToolBar(source.getIndex() + 1);
 
             }
+        }
+
+    }
+
+    public void stateChanged(ChangeEvent e) {
+        JSlider source = (JSlider) e.getSource();
+        if (!source.getValueIsAdjusting()) {
+            int value = (int) source.getValue();
+            System.out.println(value);
+            root.canvas.setAlpha(value);
+
         }
 
     }
