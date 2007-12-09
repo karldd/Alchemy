@@ -237,7 +237,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                     commands = new String[]{"open", "-a", path.getName(), file};
                     break;
                 case WINDOWS:
-                    commands = new String[]{"cmd", "/c", "start "+path.getName(), "\"Alchemy\"", file};
+                    commands = new String[]{"cmd", "/c", "start \""+path.getName()+"\"", "\"Alchemy\"", file};
                     break;
             }
             if (commands != null) {
