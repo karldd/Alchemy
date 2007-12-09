@@ -37,7 +37,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     public final static Color toolBarLineColour = new Color(140, 140, 140);
     public final static Color toolBarHighlightColour = new Color(231, 231, 231);
     /** ToolBar Font */
-    public final static Font toolBarFont = new Font("Verdana", Font.PLAIN, 11);
+    public final static Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
     /** ToolBar Popup Menu Y Location */
     public final static int uiPopupMenuY = toolBarHeight - 10;
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
@@ -112,7 +112,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
 
         JPanel alphaGroup = new JPanel();
         // Top Left Bottom Right
-        alphaGroup.setBorder(BorderFactory.createEmptyBorder(8, 8, 6, 4));
+        alphaGroup.setBorder(BorderFactory.createEmptyBorder(1, 4, 6, 4));
         alphaGroup.setOpaque(false);
         alphaGroup.setLayout(new BoxLayout(alphaGroup, BoxLayout.PAGE_AXIS));
 
@@ -126,10 +126,10 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         // or make a popupmenu with a slider inside?
 
         //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
-        //alphaSlider.setOpaque(true);
+        alphaSlider.setOpaque(false);
         //alphaSlider.setBackground(Color.black);
-        alphaSlider.setForeground(Color.black);
-        alphaSlider.setPreferredSize(new Dimension(75, 25));
+        //alphaSlider.setForeground(Color.black);
+        alphaSlider.setPreferredSize(new Dimension(100, 28));
         alphaSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         alphaGroup.add(alphaSlider);
