@@ -20,6 +20,7 @@
  */
 package alchemy;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -33,25 +34,23 @@ import java.util.Date;
 public class AlcUtil {
 
     /** Checks a path for a file extension and adds one if not present */
-    public static String addFileExtension(String file, String ext) {
-        String finalPath = null;
+    public static File addFileExtension(File file, String ext) {
+        String fileName = file.getName();
+        String filePath = file.getPath();
+
         // Check if there is a file extension already
-        int dotIndex = file.lastIndexOf(".");
+        int dotIndex = fileName.lastIndexOf(".");
 
         // If there is a dot in there, check the extension
-        if (dotIndex > 0) {
-            String possibleExtension = file.substring(dotIndex + 1);
+        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
+            String possibleExtension = fileName.substring(dotIndex + 1);
             // If the extensions match return as is
             if (possibleExtension.equals(ext)) {
-                finalPath = file;
-            } else {
-                finalPath = file + "." + ext;
+                return file;
             }
-        } else {
-            finalPath = file + "." + ext;
         }
-
-        return finalPath;
+        // Otherwise append the extension
+        return new File(filePath, fileName + ext);
     }
 
     /** Returns just the class name -- no package info. */

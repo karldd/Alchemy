@@ -269,9 +269,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public boolean getRedraw() {
         return redraw;
     }
-    
+
     /** Return if the mouse is down - this does not take into account left/right buttons */
-    public boolean getMouseDown(){
+    public boolean getMouseDown() {
         return mouseDown;
     }
 
@@ -396,22 +396,22 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     /** Start PDF record */
     // TODO = implement this into the menu
-    public void startPdf(String path) {
+    public void startPdf(File file) {
         pdfWidth = root.getWindowSize().width;
         pdfHeight = root.getWindowSize().height;
         document = new Document(new Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
-        document.addTitle("al.chemy");
-        document.addAuthor(System.getProperty("user.name"));
+        document.addTitle("Alchemy");
+        document.addAuthor(USER_NAME);
         //document.addSubject("This example explains how to add metadata.");
         //document.addKeywords("iText, Hello World, step 3, metadata");
         document.addCreator("al.chemy.org");
 
         //String path = "test.pdf";
-        System.out.println("Start PDF Called: " + path);
+        System.out.println("Start PDF Called: " + file.toString());
 
         try {
 
-            writer = PdfWriter.getInstance(document, new FileOutputStream(path));
+            writer = PdfWriter.getInstance(document, new FileOutputStream(file));
             document.open();
             content = writer.getDirectContent();
             if (shapes.size() > 0) {
@@ -426,6 +426,41 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             System.err.println(ex);
         } catch (IOException ex) {
             System.err.println(ex);
+        }
+    }
+
+    public boolean saveSinglePdf(File file) {
+        int singlePdfWidth = root.getWindowSize().width;
+        int singlePdfHeight = root.getWindowSize().height;
+        Document singleDocument = new Document(new Rectangle(singlePdfWidth, singlePdfHeight), 0, 0, 0, 0);
+        singleDocument.addTitle("Alchemy");
+        singleDocument.addAuthor(USER_NAME);
+        //document.addSubject("This example explains how to add metadata.");
+        //document.addKeywords("iText, Hello World, step 3, metadata");
+        singleDocument.addCreator("al.chemy.org");
+
+        //String path = "test.pdf";
+        System.out.println("Save Single Pdf Called: " + file.toString());
+
+        try {
+
+            PdfWriter singleWriter = PdfWriter.getInstance(singleDocument, new FileOutputStream(file));
+            singleDocument.open();
+            PdfContentByte singleContent = singleWriter.getDirectContent();
+
+            Graphics2D g2pdf = singleContent.createGraphics(singlePdfWidth, singlePdfHeight);
+            this.paint(g2pdf);
+            g2pdf.dispose();
+
+            singleDocument.close();
+            return true;
+
+        } catch (DocumentException ex) {
+            System.err.println(ex);
+            return false;
+        } catch (IOException ex) {
+            System.err.println(ex);
+            return false;
         }
     }
 
@@ -451,14 +486,13 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 document.close();
                 document = null;
             } else {
-                document = null;
                 // If the document has no pages delete the empty file
                 // TODO - fix the error called when deleteing
-                File f = new File(root.session.getCurrentPdfPath());
+                File f = root.session.getCurrentPdfPath();
                 if (f.exists()) {
                     f.delete();
                 }
-
+                document = null;
             }
         }
     }

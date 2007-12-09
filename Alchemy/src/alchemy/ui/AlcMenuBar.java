@@ -12,17 +12,19 @@ import alchemy.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
 import javax.swing.*;
-import javax.swing.border.Border;
 
-public class AlcMenuBar extends JMenuBar implements ActionListener {
+public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener {
 
-    AlcToolBar parent;
-    AlcMain root;
-    AlcMenu fileMenu, sessionMenu, viewMenu, intervalMenu;
-    AlcMenuItem newItem, printItem, exportItem, fullScreenItem, directoryItem;
-    AlcCheckBoxMenuItem recordingItem, defaultRecordingItem, autoClearItem;
-    AlcRadioButtonMenuItem intervalItem;
+    private AlcToolBar parent;
+    private AlcMain root;
+    private AlcMenu fileMenu,  sessionMenu,  viewMenu,  intervalMenu,  switchMenu;
+    private AlcMenuItem newItem,  printItem,  exportItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
+    private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
+    private AlcRadioButtonMenuItem intervalItem;
+    /** Temporary files for Switch - to be deleted on exit */
+    public File tempBitmap,  tempVector;
 
     /** Creates a new instance of AlcMenuBar */
     public AlcMenuBar(AlcToolBar parent, AlcMain root) {
@@ -34,7 +36,7 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
 
         // TODO - find out how better to customise the JMenu border etc...
         // A fake separator, adds 5 pixels to the top - Top Left Bottom Right
-        Border separator = BorderFactory.createEmptyBorder(11, 0, 6, 0);
+        //Border separator = BorderFactory.createEmptyBorder(11, 0, 6, 0);
 
         // FILE MENU
         fileMenu = new AlcMenu(parent, "File");
@@ -42,19 +44,19 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         newItem = new AlcMenuItem(parent, "New...", KeyEvent.VK_N);
         newItem.addActionListener(this);
         fileMenu.add(newItem);
-        //fileMenu.addSeparator();
+        fileMenu.addSeparator();
         // Export
         exportItem = new AlcMenuItem(parent, "Export...", KeyEvent.VK_E);
         exportItem.addActionListener(this);
-        exportItem.setBorder(separator);
+        //exportItem.setBorder(separator);
 
 
         fileMenu.add(exportItem);
-        //fileMenu.addSeparator();
+        fileMenu.addSeparator();
         // Print
         printItem = new AlcMenuItem(parent, "Print...", KeyEvent.VK_P);
         printItem.addActionListener(this);
-        printItem.setBorder(separator);
+        //printItem.setBorder(separator);
         fileMenu.add(printItem);
         //
         this.add(fileMenu);
@@ -77,12 +79,12 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         }
         recordingItem.addActionListener(this);
         sessionMenu.add(recordingItem);
-        //sessionMenu.addSeparator();
+        sessionMenu.addSeparator();
         // Default Recording
         defaultRecordingItem = new AlcCheckBoxMenuItem(parent, "Record on Startup", KeyEvent.VK_R);
         defaultRecordingItem.setState(root.prefs.getRecordingState());
         defaultRecordingItem.addActionListener(this);
-        defaultRecordingItem.setBorder(separator);
+        //defaultRecordingItem.setBorder(separator);
         sessionMenu.add(defaultRecordingItem);
         // Interval submenu
         intervalMenu = new AlcMenu(parent, "Record Interval");
@@ -110,10 +112,29 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         autoClearItem.setState(root.prefs.getAutoClear());
         autoClearItem.addActionListener(this);
         sessionMenu.add(autoClearItem);
-
         this.add(sessionMenu);
 
 
+        // SWITCH MENU
+        switchMenu = new AlcMenu(parent, "Switch");
+        // Switch Vector
+        switchVectorItem = new AlcMenuItem(parent, "Switch Vector", KeyEvent.VK_V);
+        switchVectorItem.addActionListener(this);
+        switchMenu.add(switchVectorItem);
+        // Switch Bitmaps
+        switchBitmapItem = new AlcMenuItem(parent, "Switch Bitmap", KeyEvent.VK_B);
+        switchBitmapItem.addActionListener(this);
+        switchMenu.add(switchBitmapItem);
+        switchMenu.addSeparator();
+        // Switch Vector
+        switchVectorAppItem = new AlcMenuItem(parent, "Set Vector Application...");
+        switchVectorAppItem.addActionListener(this);
+        switchMenu.add(switchVectorAppItem);
+        // Switch Bitmaps
+        switchBitmapAppItem = new AlcMenuItem(parent, "Set Bitmap Application...");
+        switchBitmapAppItem.addActionListener(this);
+        switchMenu.add(switchBitmapAppItem);
+        this.add(switchMenu);
     }
 
     // Override the paint component to draw the gradient bg
@@ -147,29 +168,84 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         int returnVal = fc.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            String pdfPath = AlcUtil.addFileExtension(file.getPath(), "pdf");
-            System.out.println(pdfPath);
+            File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
 
-            root.canvas.startPdf(pdfPath);
-            root.canvas.savePdfFrame();
-            root.canvas.endPdf();
+
+            if (root.canvas.saveSinglePdf(fileWithExtension)) {
+                System.out.println(fileWithExtension.toString());
+            } else {
+                System.out.println("Didn't save???");
+            }
+
         }
     }
 
-    private void askDirectory() {
-        // create a file chooser
+    private File askLocation(String title) {
+        return askLocation(title, false);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  title       the name of the popup title
+     *  @param  foldersOnly to select only folders or not
+     *  @return             file/folder selected by the user
+     */
+    private File askLocation(String title, boolean foldersOnly) {
         // TODO - find a way to center this
+        // TODO - open in application menu by default when required
         final JFileChooser fc = new JFileChooser();
-        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        fc.setDialogTitle("Select Session Directory");
+        if (foldersOnly) {
+            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        }
+        fc.setDialogTitle(title);
 
         // in response to a button click:
         int returnVal = fc.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            String pdfPath = file.getPath();
-            root.prefs.setSessionPath(pdfPath);
-            System.out.println(pdfPath);
+            return fc.getSelectedFile();
+
+        } else {
+            return null;
+        }
+    }
+
+    private void switchVector() {
+        // Make a temporary file, create a PDF, and then open it
+        try {
+            tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
+            tempVector.deleteOnExit();
+            if (root.canvas.saveSinglePdf(tempVector)) {
+                openVector(tempVector.toString());
+            } else {
+                System.out.println("Didn't save???");
+            }
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+
+    }
+
+    private void switchBitmap() {
+    // TODO - save frame / screen capture - write file and open
+    }
+
+    private void openVector(String file) {
+        File path = new File(root.prefs.getSwitchVectorApp());
+        try {
+            String[] commands = null;
+            switch (AlcMain.PLATFORM) {
+                case MACOSX:
+                    commands = new String[]{"open", "-a", path.getName(), file};
+                    break;
+                case WINDOWS:
+                    commands = new String[]{"cmd", "/c", "start "+path.getName(), "\"Alchemy\"", file};
+                    break;
+            }
+            if (commands != null) {
+                Runtime.getRuntime().exec(commands);
+            }
+        //Runtime.getRuntime().exec("open "+file);
+        } catch (IOException ex) {
+            System.err.println(ex);
         }
     }
 
@@ -189,20 +265,47 @@ public class AlcMenuBar extends JMenuBar implements ActionListener {
         } else if (e.getSource() == recordingItem) {
             root.session.setRecording(recordingItem.getState());
 
+        } else if (e.getActionCommand().equals("Interval")) {
+            AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
+            root.session.setTimerInterval(source.getIndex());
+
         } else if (e.getSource() == defaultRecordingItem) {
             // Set the recording state reference
             root.prefs.setRecordingState(defaultRecordingItem.getState());
 
         } else if (e.getSource() == directoryItem) {
-            askDirectory();
+
+            File file = askLocation("Select Session Directory", true);
+            if (file != null) {
+                System.out.println(file.getPath());
+                root.prefs.setSessionPath(file.getPath());
+            }
 
         } else if (e.getSource() == autoClearItem) {
             // Set the recording state reference
             root.prefs.setAutoClear(autoClearItem.getState());
 
-        } else if (e.getActionCommand().equals("Interval")) {
-            AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
-            root.session.setTimerInterval(source.getIndex());
+        } else if (e.getSource() == switchVectorItem) {
+            switchVector();
+
+        } else if (e.getSource() == switchBitmapItem) {
+            switchBitmap();
+
+        } else if (e.getSource() == switchVectorAppItem) {
+            File file = askLocation("Select Vector Application");
+            if (file != null) {
+                System.out.println(file.toString());
+                root.prefs.setSwitchVectorApp(file.toString());
+            }
+        //
+
+        } else if (e.getSource() == switchBitmapAppItem) {
+            File file = askLocation("Select Bitmap Application");
+            if (file != null) {
+                System.out.println(file.toString());
+                root.prefs.setSwitchBitmapApp(file.toString());
+            }
+
         }
 
     }

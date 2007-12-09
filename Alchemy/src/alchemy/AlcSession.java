@@ -2,8 +2,8 @@ package alchemy;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import javax.swing.Timer;
 
 /**
@@ -24,7 +24,7 @@ public class AlcSession implements ActionListener, AlcConstants {
     /** Recording on or off */
     private boolean recordState;
     /** Current file path */
-    private String currentPdfFile;
+    private File currentPdfFile;
     /** Count of pages affed to the pdf */
     private int pageCount = 0;
 
@@ -35,7 +35,10 @@ public class AlcSession implements ActionListener, AlcConstants {
     public void setRecording(boolean record) {
         if (record) {
 
-            currentPdfFile = root.prefs.getSessionPath() + FILE_SEPARATOR + "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
+            String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
+            currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
+
+            //currentPdfFile = root.prefs.getSessionPath() + FILE_SEPARATOR + "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
 
             //Set up timer to save pages into the pdf
             if (timer == null) {
@@ -59,7 +62,7 @@ public class AlcSession implements ActionListener, AlcConstants {
             // Start the timer
 
 
-            System.out.println("Set Recording called: " + currentPdfFile);
+            System.out.println("Set Recording called: " + currentPdfFile.toString());
             root.canvas.startPdf(currentPdfFile);
             pageCount = 0;
             saveCount++;
@@ -74,6 +77,8 @@ public class AlcSession implements ActionListener, AlcConstants {
 
             System.out.println("recording off..." + currentPdfFile);
             root.canvas.endPdf();
+        //openFile(currentPdfFile);
+
         }
         //Remember the record start
         recordState = record;
@@ -101,8 +106,8 @@ public class AlcSession implements ActionListener, AlcConstants {
     }
 
     /** Return the current file being created by the pdf */
-    public String getCurrentPdfPath() {
-        System.out.println("get Current pdf path called : " + currentPdfFile);
+    public File getCurrentPdfPath() {
+        System.out.println("get Current pdf path called : " + currentPdfFile.toString());
         return currentPdfFile;
     }
 

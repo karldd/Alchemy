@@ -9,7 +9,6 @@
 package alchemy;
 
 import alchemy.ui.*;
-//import com.apple.cocoa.application.NSMenu;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -85,7 +84,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private Point oldLocation = null;
     /** Toggle the state of the osx menu bar on a mac */
     private boolean macMenuBarVisible = true;
-
+    
     public AlcMain() {
 
         // TODO - Sort out the build.xml - copy correctly etc...
@@ -135,14 +134,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             // This may needsto go somewhere else
             //////////////////////////////////////////////////////////////
             // Mac Java 1.3
-            //System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-            //System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
+            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+            System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
             //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
             //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
 
             // Mac Java 1.4
-            //System.setProperty("apple.laf.useScreenMenuBar", "true");
-            //System.setProperty("apple.awt.showGrowBox", "true");
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.awt.showGrowBox", "true");
 
         }
 
