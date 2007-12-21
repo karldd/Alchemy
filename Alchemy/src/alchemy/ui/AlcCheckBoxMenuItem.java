@@ -17,7 +17,6 @@ import javax.swing.KeyStroke;
 public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
 
     private AlcToolBar parent;
-    private AlcModule module;
     private int index,  moduleType;
 
     public AlcCheckBoxMenuItem(AlcToolBar parent, String title) {

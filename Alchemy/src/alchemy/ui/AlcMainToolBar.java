@@ -11,9 +11,9 @@ package alchemy.ui;
 
 import alchemy.*;
 import java.awt.*;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
-public class AlcMainToolBar extends JPanel {
+public class AlcMainToolBar extends JComponent {
     
     AlcMain root;
     AlcToolBar parent;
@@ -24,11 +24,12 @@ public class AlcMainToolBar extends JPanel {
         
         this.root = root;
         this.parent = root.toolBar;
+        //this.setOpaque(false);
         
         //this.setBounds(0, 0, root.getWindowSize().width, this.height);
         
-        //this.setLayout(new FlowLayout(FlowLayout.LEFT));
-        this.setLayout(new BorderLayout());
+        this.setLayout(new FlowLayout(FlowLayout.LEFT));
+        //this.setLayout(new BorderLayout());
                 
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
         //this.setAlignmentY(Component.TOP_ALIGNMENT);
@@ -42,7 +43,7 @@ public class AlcMainToolBar extends JPanel {
     @Override protected void paintComponent( Graphics g ) {
         super.paintComponent( g );
         
-        int panelWidth = getWidth();
+        //int panelWidth = getWidth();
         GradientPaint gradientPaint = new GradientPaint( 0 , 0 , AlcToolBar.toolBarBgStartColour , 0 , this.height , AlcToolBar.toolBarBgEndColour, true );
         if( g instanceof Graphics2D ) {
             Graphics2D g2 = (Graphics2D)g;

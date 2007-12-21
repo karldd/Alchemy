@@ -33,9 +33,9 @@ import java.awt.geom.PathIterator;
  */
 public class Random extends AlcModule {
 
-    private float noisiness;
+    private float noisiness = 0.1F;
     private float noiseScale = 0.0F;
-    private int doubleScale,  scale;
+    private float scale,  halfScale;
 
     public Random() {
 
@@ -57,7 +57,10 @@ public class Random extends AlcModule {
     }
 
     public AlcShape randomiseShape(AlcShape shape) {
-        noisiness = root.math.random(-0.01F, 0.1F);
+        //noisiness = root.math.random(-0.01F, 0.1F);
+
+        scale = 100F;
+        halfScale = scale / 2;
 
         GeneralPath randomisedShape = randomise(shape.getShape());
 
@@ -104,18 +107,31 @@ public class Random extends AlcModule {
 
     }
 
+    /** Apply Perlin noise to the given float */
     public float mess(float f) {
-        noiseScale += 0.1F;
-        // TODO - make this settable
-        float n = (root.math.noise(noiseScale) * 100F) - 50F;
+        noiseScale += noisiness;
+        float n = (root.math.noise(noiseScale) * scale) - halfScale;
         //n = n * 0.5F;
         //System.out.println(n);
         return n + f;
     }
 
+    // TODO - make an interface to allow setting of noisines and scale
+    /** Set the level of variation */
+    public void setNoisiness(float f) {
+        noisiness = f;
+    }
+
+    /** Set the scale on which to apply the noise */
+    public void setScale(float f) {
+        scale = f;
+        halfScale = scale / 2;
+    }
+
     @Override
     public void mouseReleased(MouseEvent e) {
         if (root.canvas.getCurrentShape() != null) {
+            // TODO - look at how randomness is applied on mouseUp or otherwise
             canvas.setCurrentShape(randomiseShape(root.canvas.getCurrentShape()));
         }
     }

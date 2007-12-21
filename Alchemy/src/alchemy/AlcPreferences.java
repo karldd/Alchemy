@@ -111,7 +111,7 @@ public class AlcPreferences implements AlcConstants {
         this.switchVectorApp = path;
     }
 
-    public String getBitmapApp() {
+    public String getSwitchBitmapApp() {
         return switchBitmapApp;
     }
 

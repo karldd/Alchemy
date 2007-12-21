@@ -23,8 +23,10 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.Rectangle;
 
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 
 public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener {
 
@@ -181,6 +183,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         tempShape = null;
         shapes.clear();
 
+        // Pass this on to the currently selected modules
+        // Does this need to be passed to all of the modules? Even if not selected?
+        if (root.currentCreate >= 0) {
+            root.creates[root.currentCreate].cleared();
+        }
         if (root.hasCurrentAffects()) {
             for (int i = 0; i < root.currentAffects.length; i++) {
                 if (root.currentAffects[i]) {
@@ -222,7 +229,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Returns the current temp shape */
     public AlcShape getTempShape() {
-        System.out.println(tempShape);
+        //System.out.println(tempShape);
         if (tempShape != null) {
             return tempShape;
         } else {
@@ -423,7 +430,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // PDF STUFF
     //////////////////////////////////////////////////////////////
     /** Start PDF record */
-    // TODO = implement this into the menu
     public void startPdf(File file) {
         pdfWidth = root.getWindowSize().width;
         pdfHeight = root.getWindowSize().height;
@@ -493,8 +499,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     /** Save frame of Pdf */
-    public void savePdfFrame() {
-        System.out.println("Save PDF Frame Called");
+    public void savePdfPage() {
+        System.out.println("Save PDF Page Called");
         try {
             document.newPage();
             Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
@@ -510,20 +516,57 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void endPdf() {
         System.out.println("End Pdf Called");
         if (document != null) {
+
+            // Check if the document has pages
             if (root.session.getPageCount() > 0) {
                 document.close();
                 document = null;
+
             } else {
-                // If the document has no pages delete the empty file
-                // TODO - fix the error called when deleteing
-                File f = root.session.getCurrentPdfPath();
-                if (f.exists()) {
-                    f.delete();
+
+                // If the document has shapes but no pages, make a page and close it
+                if (shapes.size() > 0) {
+                    savePdfPage();
+                    document.close();
+                    document = null;
+
+                // If there are no pages and no shapes then delete the empty file created
+                } else {
+                    File f = root.session.getCurrentPdfPath();
+                    if (f.exists()) {
+                        f.delete();
+                    }
+                    document = null;
                 }
-                document = null;
             }
         }
     }
+
+    //////////////////////////////////////////////////////////////
+    // SAVE BITMAP STUFF
+    //////////////////////////////////////////////////////////////
+    public boolean savePng(File file) {
+        try {
+            //File file = new File("saveToThisFile.jpg");
+            BufferedImage image = generatedBufferedImage();
+            ImageIO.write(image, "png", file);
+            return true;
+        } catch (IOException ex) {
+            System.err.println(ex);
+            return false;
+        }
+    }
+
+    public BufferedImage generatedBufferedImage() {
+        BufferedImage image = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = image.getGraphics();
+        //g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        this.print(g);
+        //System.out.println(this.getVisibleRect());
+        g.dispose();
+        return image;
+    }
+
 
     //////////////////////////////////////////////////////////////
     // MOUSE EVENTS
