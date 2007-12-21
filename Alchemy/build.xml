@@ -76,6 +76,7 @@
         <copy file="${build.classes.dir}/alchemy/create/TypeShapes$1.class" todir="${basedir}/plugins/typeShapes/alchemy/create"/>
         <copy file="${build.classes.dir}/alchemy/create/InverseShapes.class" todir="${basedir}/plugins/inverseShapes/alchemy/create"/>
         <copy file="${build.classes.dir}/alchemy/create/MicrophoneShapes.class" todir="${basedir}/plugins/microphoneShapes/alchemy/create"/>
+        <copy file="${build.classes.dir}/alchemy/create/MedianShapes.class" todir="${basedir}/plugins/medianShapes/alchemy/create"/>
         
         <copy file="${build.classes.dir}/alchemy/affect/Symmetry.class" todir="${basedir}/plugins/symmetry/alchemy/affect"/>
         <copy file="${build.classes.dir}/alchemy/affect/Blindness.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
@@ -94,6 +95,12 @@
             <fileset dir="${basedir}/data"/>
         </copy>
          -->
+         
+        <!-- Copy the lib folder to the Dist directory -->
+        <copy todir="${dist.dir}/lib">
+            <fileset dir="${basedir}/lib"/>
+        </copy>
+        
         
         <!-- Define custom JPF specific Ant tasks -->
         <path id="classpath">

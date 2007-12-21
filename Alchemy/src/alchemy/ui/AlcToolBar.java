@@ -14,11 +14,10 @@ import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
 
-// Extend JPanel rather than JComponent so the background can be set
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class AlcToolBar extends JPanel implements ActionListener, ItemListener, ChangeListener, AlcConstants {
+public class AlcToolBar extends JComponent implements ActionListener, ItemListener, ChangeListener, AlcConstants {
 
     /** Reference to the root */
     private final AlcMain root;
@@ -32,14 +31,12 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     public Dimension windowSize;
     /** ToolBar Background Colour */
     public final static Color toolBarBgColour = new Color(225, 225, 225);
-    public final static Color toolBarBgStartColour = new Color(235, 235, 235);
-    public final static Color toolBarBgEndColour = new Color(215, 215, 215);
+    public final static Color toolBarBgStartColour = new Color(235, 235, 235, 235);
+    public final static Color toolBarBgEndColour = new Color(215, 215, 215, 235);
     public final static Color toolBarLineColour = new Color(140, 140, 140);
     public final static Color toolBarHighlightColour = new Color(231, 231, 231);
     /** ToolBar Font */
     public final static Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
-    /** ToolBar Popup Menu Y Location */
-    public final static int uiPopupMenuY = toolBarHeight - 10;
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
     /** The main tool bar inside the toolbar */
@@ -82,8 +79,8 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
 
         // Buttons in the main toolbar
         // Align LEFT
-        JPanel toolBarLeft = new JPanel();
-        toolBarLeft.setOpaque(false);   // Turn off the background
+        //JPanel toolBarLeft = new JPanel();
+        //toolBarLeft.setOpaque(false);   // Turn off the background
 
         // Style Button
         AlcToggleButton lineButton = new AlcToggleButton(this, "Style", "Make marks as a lines or solid shapes", getUrlPath("data/style.png"));
@@ -94,7 +91,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
                         root.canvas.toggleStyle();
                     }
                 });
-        toolBarLeft.add(lineButton);
+        mainToolBar.add(lineButton);
 
         // Clear Button
         AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/clear.png"));
@@ -105,7 +102,7 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
                         root.canvas.clear();
                     }
                 });
-        toolBarLeft.add(clearButton);
+        mainToolBar.add(clearButton);
 
         // TODO - Line Thickness button
         // TODO - Toggle Black/White Button
@@ -139,30 +136,75 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
         alphaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         alphaGroup.add(alphaLabel);
 
-        toolBarLeft.add(alphaGroup);
+        mainToolBar.add(alphaGroup);
 
         //JToggleButton tbtn = new JToggleButton("Yes");
         //toolBarLeft.add(tbtn);
-        mainToolBar.add(toolBarLeft, BorderLayout.LINE_START);
+        //mainToolBar.add(toolBarLeft, BorderLayout.LINE_START);
 
+        // Separatpr
+        mainToolBar.add(new AlcSeparator(this));
 
         // Align Right
-        JPanel toolBarRight = new JPanel();
-        toolBarRight.setOpaque(false);
-        // Create
-        createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("data/create.png"), root.creates);
-        toolBarRight.add(createButton);
-        // Affect
-        affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("data/create.png"), root.affects);
-        toolBarRight.add(affectButton);
+        //JPanel toolBarRight = new JPanel();
+        //toolBarRight.setOpaque(false);
 
-        mainToolBar.add(toolBarRight, BorderLayout.CENTER);
+
+        // Create
+        createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("data/create.png"));
+        // Button group for the radio buttons
+        ButtonGroup group = new ButtonGroup();
+        // Populate the Popup Menu
+        for (int i = 0; i < root.creates.length; i++) {
+            // The current module
+            AlcModule currentModule = root.creates[i];
+            AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem(this, currentModule);
+            createMenuItem.setToolTipText(currentModule.getDescription());
+            //menuItem.
+
+            // Set the action listener
+            createMenuItem.addActionListener(this);
+            if (i == 0) {
+                createMenuItem.setSelected(true);
+            }
+
+            group.add(createMenuItem);
+            createButton.addItem(createMenuItem);
+        }
+        mainToolBar.add(createButton);
+
+
+        // Affect
+        affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("data/create.png"));
+        for (int i = 0; i < root.affects.length; i++) {
+            // The current module
+            AlcModule currentModule = root.affects[i];
+
+            AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(this, currentModule);
+            affectMenuItem.setToolTipText(currentModule.getDescription());
+            affectMenuItem.addItemListener(this);
+            affectButton.addItem(affectMenuItem);
+        }
+        mainToolBar.add(affectButton);
+
+        // Separator
+        mainToolBar.add(new AlcSeparator(this));
+
+        // TODO - customise this jspinner
+        // currentValue, min, max, stepsize
+        SpinnerNumberModel ambientSpinner = new SpinnerNumberModel(0, 0, 360, 1);
+        //ambientSpinner.addChangeListener(this);
+
+        JSpinner spinner = new JSpinner(ambientSpinner);
+        spinner.setPreferredSize(new Dimension(50, 24));
+        spinner.setOpaque(false);
+        // Top Left Bottom Right
+        spinner.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
+        mainToolBar.add(spinner);
+
+        //mainToolBar.add(toolBarRight, BorderLayout.CENTER);
         this.add(mainToolBar);
 
-
-
-    //JToggleButton tbtn = new JToggleButton("Yes");
-    //this.add(tbtn);
     }
 
     public void resizeToolBar() {
@@ -270,11 +312,11 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
     /** Returns an ImageIcon from a String, or null if the path was invalid. */
     public ImageIcon createImageIcon(String path) {
 
-        URL imgUrl = getClass().getResource(path);
+        URL imgUrl = AlcMain.class.getResource(path);
         if (imgUrl != null) {
             return createImageIcon(imgUrl);
         } else {
-            System.err.println("Couldn't find file: " + imgUrl.toString());
+            System.err.println("Couldn't find file: " + path);
             return null;
         }
     }
@@ -360,11 +402,11 @@ public class AlcToolBar extends JPanel implements ActionListener, ItemListener, 
 
     }
 
+    // ALPHA SLIDER
     public void stateChanged(ChangeEvent e) {
         JSlider source = (JSlider) e.getSource();
         if (!source.getValueIsAdjusting()) {
             int value = (int) source.getValue();
-            System.out.println(value);
             root.canvas.setAlpha(value);
 
         }

@@ -3,7 +3,6 @@ package alchemy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.Timer;
 
 /**
@@ -13,8 +12,6 @@ import javax.swing.Timer;
 public class AlcSession implements ActionListener, AlcConstants {
 
     private AlcMain root;
-    /** How many times the record function has been involved */
-    private int saveCount = 1; // TODO - figure out a way to not over write files in the same directory
     /** Timer */
     private Timer timer;
     /** Recording interval array in milliseconds */
@@ -35,7 +32,7 @@ public class AlcSession implements ActionListener, AlcConstants {
     public void setRecording(boolean record) {
         if (record) {
 
-            String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
+            String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-mm-ss") + ".pdf";
             currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
 
             //currentPdfFile = root.prefs.getSessionPath() + FILE_SEPARATOR + "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
@@ -65,7 +62,7 @@ public class AlcSession implements ActionListener, AlcConstants {
             System.out.println("Set Recording called: " + currentPdfFile.toString());
             root.canvas.startPdf(currentPdfFile);
             pageCount = 0;
-            saveCount++;
+            
         } else {
 
             if (timer != null) {
@@ -121,7 +118,7 @@ public class AlcSession implements ActionListener, AlcConstants {
         // If the canvas has changed
         if (root.canvas.canvasChange()) {
             System.out.println("SAVE FRAME CALL FROM TIMER");
-            root.canvas.savePdfFrame();
+            root.canvas.savePdfPage();
             if (root.prefs.getAutoClear()) {
                 root.canvas.clear();
             }

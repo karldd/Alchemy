@@ -23,8 +23,6 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private AlcMenuItem newItem,  printItem,  exportItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
-    /** Temporary files for Switch - to be deleted on exit */
-    public File tempBitmap,  tempVector;
 
     /** Creates a new instance of AlcMenuBar */
     public AlcMenuBar(AlcToolBar parent, AlcMain root) {
@@ -103,15 +101,16 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
         intervalMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
         sessionMenu.add(intervalMenu);
-        // Default Directory
-        directoryItem = new AlcMenuItem(parent, "Set Session Directory...");
-        directoryItem.addActionListener(this);
-        sessionMenu.add(directoryItem);
         // Auto Clear
         autoClearItem = new AlcCheckBoxMenuItem(parent, "Auto Clear Canvas");
         autoClearItem.setState(root.prefs.getAutoClear());
         autoClearItem.addActionListener(this);
         sessionMenu.add(autoClearItem);
+        sessionMenu.addSeparator();
+        // Default Directory
+        directoryItem = new AlcMenuItem(parent, "Set Session Directory...");
+        directoryItem.addActionListener(this);
+        sessionMenu.add(directoryItem);
         this.add(sessionMenu);
 
 
@@ -160,16 +159,24 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     }
 
     private void askExportPath() {
-        // create a file chooser
-        // TODO - find a way to center this
-        final JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle("Export Pdf");
-        // in response to a button click:
-        int returnVal = fc.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
 
+        FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
+        fileDialog.setVisible(true);
+        String fileString = fileDialog.getFile();
+        // Make sure that something was selected
+        if (fileString != null) {
+            String directory = fileDialog.getDirectory();
+
+            File file = new File(directory, fileString);
+
+            //final JFileChooser fc = new JFileChooser();
+            //fc.setDialogTitle("Export Pdf");
+            // in response to a button click:
+            //int returnVal = fc.showSaveDialog(this);
+            //if (returnVal == JFileChooser.APPROVE_OPTION) {
+            //File file = fc.getSelectedFile();
+            //File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
+            File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
 
             if (root.canvas.saveSinglePdf(fileWithExtension)) {
                 System.out.println(fileWithExtension.toString());
@@ -190,7 +197,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
      *  @return             file/folder selected by the user
      */
     private File askLocation(String title, boolean foldersOnly) {
-        // TODO - find a way to center this
+        // TODO - Change this to FileDialog? Find a way to select directiories only
         // TODO - open in application menu by default when required
         final JFileChooser fc = new JFileChooser();
         if (foldersOnly) {
@@ -211,10 +218,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private void switchVector() {
         // Make a temporary file, create a PDF, and then open it
         try {
-            tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
+            File tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
             tempVector.deleteOnExit();
             if (root.canvas.saveSinglePdf(tempVector)) {
-                openVector(tempVector.toString());
+                openSwitch(tempVector.toString(), root.prefs.getSwitchVectorApp());
             } else {
                 System.out.println("Didn't save???");
             }
@@ -225,11 +232,25 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     }
 
     private void switchBitmap() {
-    // TODO - save frame / screen capture - write file and open
+        // TODO - save frame / screen capture - write file and open
+
+        // Make a temporary file, create a PDF, and then open it
+        try {
+            File tempBitmap = File.createTempFile("AlchemyTempBitmapFile", ".png");
+            tempBitmap.deleteOnExit();
+            if (root.canvas.savePng(tempBitmap)) {
+                openSwitch(tempBitmap.toString(), root.prefs.getSwitchBitmapApp());
+            } else {
+                System.out.println("Didn't save???");
+            }
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+
     }
 
-    private void openVector(String file) {
-        File path = new File(root.prefs.getSwitchVectorApp());
+    private void openSwitch(String file, String app) {
+        File path = new File(app);
         try {
             String[] commands = null;
             switch (AlcMain.PLATFORM) {
@@ -237,7 +258,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                     commands = new String[]{"open", "-a", path.getName(), file};
                     break;
                 case WINDOWS:
-                    commands = new String[]{"cmd", "/c", "start \""+path.getName()+"\"", "\"Alchemy\"", file};
+                    commands = new String[]{"cmd", "/c", "start \"" + path.getName() + "\"", "\"Alchemy\"", file};
                     break;
             }
             if (commands != null) {

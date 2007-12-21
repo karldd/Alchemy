@@ -12,6 +12,11 @@ import alchemy.ui.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+//////////////////////////////////////////////////////////////
+// MAC SPECIFIC
+//////////////////////////////////////////////////////////////
+import com.apple.eawt.Application;
+import com.apple.eawt.ApplicationEvent;
 
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
@@ -60,6 +65,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** Lists of the installed modules */
     public AlcModule[] creates;
     public AlcModule[] affects;
+    /** About Box */
+    //protected AlcAboutBox aboutBox;
     //
     //////////////////////////////////////////////////////////////
     // ALCHEMY STATUS
@@ -71,7 +78,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** The number of affect modules currently selected */
     private int numberOfCurrentAffects = 0;
     /** Preferred size of the window */
-    private Dimension windowSize = new Dimension(1024, 768);
+    private Dimension windowSize = new Dimension(1024, 640);
     //
     //////////////////////////////////////////////////////////////
     // FULLSCREEN
@@ -84,7 +91,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private Point oldLocation = null;
     /** Toggle the state of the osx menu bar on a mac */
     private boolean macMenuBarVisible = true;
-    
+
     public AlcMain() {
 
         // TODO - Sort out the build.xml - copy correctly etc...
@@ -124,27 +131,17 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         });
 
+        // Run mac specific code
+        if (PLATFORM == MACOSX) {
+            setupMacMenuBar();
+        }
+
     }
 
     public static void main(String[] args) {
         if (PLATFORM == MACOSX) {
-            //////////////////////////////////////////////////////////////
-            // MAC ONLY PROPERTIES 
-            // Called before the interface is built
-            // This may needsto go somewhere else
-            //////////////////////////////////////////////////////////////
-            // Mac Java 1.3
-            System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-            System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
-            //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
-            //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
-
-            // Mac Java 1.4
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-            System.setProperty("apple.awt.showGrowBox", "true");
-
+            setupMacSystemProperties();
         }
-
         // Set system look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -374,6 +371,65 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         return fullscreen;
     }
 
+    //////////////////////////////////////////////////////////////
+    // MAC SPECIFIC
+    // For the moment this code is all grouped together here
+    // TODO - look into how the mac code should be seperated ie, in its own class/file
+    //////////////////////////////////////////////////////////////
+    /** Handle how the mac menubar is managed */
+    private void setupMacMenuBar() {
+        Application.getApplication().setEnabledPreferencesMenu(true);
+        Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
+            private Object aboutBox;
+
+            @Override
+            public void handleAbout(ApplicationEvent e) {
+                System.out.println("ABOUT CALLED");
+                //if (aboutBox == null) {
+                    //AlcAbout aboutDialog = new AlcAbout();
+                //}
+            //about(e);
+            //e.setHandled(true);
+            }
+
+            /*
+            public void handleOpenApplication(ApplicationEvent e) {
+            }
+            public void handleOpenFile(ApplicationEvent e) {
+            }
+            public void handlePreferences(ApplicationEvent e) {
+            if (prefs == null) {
+            prefs = new PrefPane();
+            }
+            preferences(e);
+            }
+            public void handlePrintFile(ApplicationEvent e) {
+            }
+             */
+            @Override
+            public void handleQuit(ApplicationEvent e) {
+                exitAlchemy();
+            }
+        });
+    }
+
+    /** 
+     * Set the system properties - called before the interface is built 
+     * This should eventually be removed once jar-builder is implemented
+     */
+    private static void setupMacSystemProperties() {
+        // Mac Java 1.3
+        System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+        //System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
+        //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
+        //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
+
+        // Mac Java 1.4
+        //System.setProperty("apple.awt.showGrowBox", "true");
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+    }
+
     /**
      * Override the JFrame setVisible
      * This is a very hacky way of turning off the mac menubar. 
@@ -385,28 +441,54 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /*
     @Override
     public void setVisible(final boolean visible) {
-        // Only 
-        if (PLATFORM == MACOSX) {
-            // Turn on
-            if (macMenuBarVisible) {
-                //call it when already not visible and it crashes, so check first
-                if (!NSMenu.menuBarVisible()) {
-                    NSMenu.setMenuBarVisible(true);
-                }
-            // Turn off
-            } else {
-                if (NSMenu.menuBarVisible()) {
-                    NSMenu.setMenuBarVisible(false);
-                }
-            }
-        }
-        super.setVisible(visible);
+    // Only 
+    if (PLATFORM == MACOSX) {
+    // Turn on
+    if (macMenuBarVisible) {
+    //call it when already not visible and it crashes, so check first
+    if (!NSMenu.menuBarVisible()) {
+    NSMenu.setMenuBarVisible(true);
     }
-    */
+    // Turn off
+    } else {
+    if (NSMenu.menuBarVisible()) {
+    NSMenu.setMenuBarVisible(false);
+    }
+    }
+    }
+    super.setVisible(visible);
+    }
+     */
     //////////////////////////////////////////////////////////////
     // KEY EVENTS
     //////////////////////////////////////////////////////////////
     public void keyPressed(KeyEvent e) {
+
+        int keyCode = e.getKeyCode();
+
+        // Turn off fullscreen mode with the escape key if in fullscreen mode
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            if (isFullscreen()) {
+                setFullscreen(false);
+            }
+        }
+
+        // GLOBAL KEYS - when the Modifier is down
+        if (e.getModifiers() == MENU_SHORTCUT) {
+
+            switch (keyCode) {
+                // Clear the Canvas
+                case KeyEvent.VK_BACK_SPACE:
+                case KeyEvent.VK_DELETE:
+                    canvas.clear();
+                    break;
+
+                case KeyEvent.VK_Q:
+                    System.out.println("Q Called");
+                    break;
+            }
+        }
+
         // Pass the key event on to the current modules
         if (currentCreate >= 0) {
             creates[currentCreate].keyPressed(e);
@@ -440,29 +522,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
 
     public void keyReleased(KeyEvent e) {
-
-        int keyCode = e.getKeyCode();
-
-        // Turn off fullscreen mode with the escape key if in fullscreen mode
-        if (keyCode == KeyEvent.VK_ESCAPE) {
-            if (isFullscreen()) {
-                setFullscreen(false);
-            }
-        }
-
-        // GLOBAL KEYS - when the Modifier is down
-        if (e.getModifiers() == MENU_SHORTCUT) {
-
-            switch (keyCode) {
-                // Clear the Canvas
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    canvas.clear();
-                    break;
-            }
-
-
-        }
 
         // Pass the key event on to the current modules
         if (currentCreate >= 0) {
