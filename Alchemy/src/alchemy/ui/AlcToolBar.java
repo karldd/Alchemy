@@ -189,6 +189,7 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
 
         // Separator
         mainToolBar.add(new AlcSeparator(this));
+        // or mainToolBar.addSeparator();
 
         // TODO - customise this jspinner
         // currentValue, min, max, stepsize
@@ -198,6 +199,7 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
         JSpinner spinner = new JSpinner(ambientSpinner);
         spinner.setPreferredSize(new Dimension(50, 24));
         spinner.setOpaque(false);
+        spinner.setBackground(AlcToolBar.toolBarBgColour);
         // Top Left Bottom Right
         spinner.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
         mainToolBar.add(spinner);

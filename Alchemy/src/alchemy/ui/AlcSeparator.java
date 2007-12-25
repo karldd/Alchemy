@@ -32,7 +32,9 @@ public class AlcSeparator extends JLabel {
 
     public AlcSeparator(AlcToolBar parent) {
         
-        System.out.println("Parent " + AlcSeparator.class.getDeclaringClass());
+        //Class c = this;
+        // TODO - how do we access parent without passing it in? using reflection
+        // System.out.println("Parent " + AlcSeparator.class.getDeclaringClass());
         
         this.setIcon(parent.createImageIcon("data/separator.png"));
         // Top Left Bottom Right

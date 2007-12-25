@@ -380,14 +380,15 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private void setupMacMenuBar() {
         Application.getApplication().setEnabledPreferencesMenu(true);
         Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
+
             private Object aboutBox;
 
             @Override
             public void handleAbout(ApplicationEvent e) {
                 System.out.println("ABOUT CALLED");
-                //if (aboutBox == null) {
-                    //AlcAbout aboutDialog = new AlcAbout();
-                //}
+            //if (aboutBox == null) {
+            //AlcAbout aboutDialog = new AlcAbout();
+            //}
             //about(e);
             //e.setHandled(true);
             }
