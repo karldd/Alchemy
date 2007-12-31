@@ -11,6 +11,7 @@ package alchemy.ui;
 import alchemy.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.*;
@@ -23,6 +24,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private AlcMenuItem newItem,  printItem,  exportItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
+    private File defaultAppDir;
+    //
+    private PrinterJob printer = null;
+    private PageFormat page = null;
 
     /** Creates a new instance of AlcMenuBar */
     public AlcMenuBar(AlcToolBar parent, AlcMain root) {
@@ -32,11 +37,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
         this.setBackground(AlcToolBar.toolBarHighlightColour);
 
-        // TODO - find out how better to customise the JMenu border etc...
-        // A fake separator, adds 5 pixels to the top - Top Left Bottom Right
-        //Border separator = BorderFactory.createEmptyBorder(11, 0, 6, 0);
+        // TODO - Test the default app directory for each platform
+        switch (AlcMain.PLATFORM) {
+            case MACOSX:
+                defaultAppDir = new File(File.separator+"Applications");
+                break;
+            case WINDOWS:
+                defaultAppDir = new File(File.separator+"Program Files");
+                break;
+            default:
+                break;
+        }
 
+        System.out.println(System.getProperty("user.dir"));
+
+        //////////////////////////////////////////////////////////////
         // FILE MENU
+        //////////////////////////////////////////////////////////////
         fileMenu = new AlcMenu(parent, "File");
         // New
         newItem = new AlcMenuItem(parent, "New...", KeyEvent.VK_N);
@@ -59,7 +76,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //
         this.add(fileMenu);
 
+        //////////////////////////////////////////////////////////////
         // VIEW MENU
+        //////////////////////////////////////////////////////////////
         viewMenu = new AlcMenu(parent, "View");
         // Fullscreen
         fullScreenItem = new AlcMenuItem(parent, "Fullscreen", KeyEvent.VK_F);
@@ -67,7 +86,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         viewMenu.add(fullScreenItem);
         this.add(viewMenu);
 
+        //////////////////////////////////////////////////////////////
         // SESSION MENU
+        //////////////////////////////////////////////////////////////
         sessionMenu = new AlcMenu(parent, "Session");
         // Toggle Recording
         recordingItem = new AlcCheckBoxMenuItem(parent, "Toggle Recording", KeyEvent.VK_R);
@@ -114,7 +135,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         this.add(sessionMenu);
 
 
+        //////////////////////////////////////////////////////////////
         // SWITCH MENU
+        //////////////////////////////////////////////////////////////
         switchMenu = new AlcMenu(parent, "Switch");
         // Switch Vector
         switchVectorItem = new AlcMenuItem(parent, "Switch Vector", KeyEvent.VK_V);
@@ -158,6 +181,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
     }
 
+    /** Print */
+    public void print() {
+        if (printer == null) {
+            printer = PrinterJob.getPrinterJob();
+            page = printer.defaultPage();
+        }
+        printer.setPrintable(root.canvas, page);
+
+        if (printer.printDialog()) {
+            try {
+                printer.print();
+            } catch (Exception e) {
+                System.err.println(e);
+            }
+        }
+    }
+
     private void askExportPath() {
 
         FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
@@ -187,22 +227,36 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
     }
 
-    private File askLocation(String title) {
-        return askLocation(title, false);
+    private File askLocation(String title, boolean foldersOnly) {
+        return askLocation(title, null, foldersOnly);
+    }
+
+    private File askLocation(String title, File defaultAppDirFile) {
+        return askLocation(title, defaultAppDirFile, false);
     }
 
     /** Ask for a location with a file chooser. 
-     *  @param  title       the name of the popup title
-     *  @param  foldersOnly to select only folders or not
-     *  @return             file/folder selected by the user
+     *  @param  title               the name of the popup title
+     *  @param  foldersOnly         to select only folders or not
+     *  @param defaultAppDirFile    the default directory
+     *  @return                     file/folder selected by the user
      */
-    private File askLocation(String title, boolean foldersOnly) {
+    private File askLocation(String title, File defaultAppDirFile, boolean foldersOnly) {
         // TODO - Change this to FileDialog? Find a way to select directiories only
-        // TODO - open in application menu by default when required
-        final JFileChooser fc = new JFileChooser();
+
+        JFileChooser fc = null;
+
+
+        if (defaultAppDirFile != null && defaultAppDirFile.exists()) {
+            fc = new JFileChooser(defaultAppDirFile);
+        } else {
+            fc = new JFileChooser();
+        }
+
         if (foldersOnly) {
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
+
         fc.setDialogTitle(title);
 
         // in response to a button click:
@@ -232,9 +286,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     }
 
     private void switchBitmap() {
-        // TODO - save frame / screen capture - write file and open
-
-        // Make a temporary file, create a PDF, and then open it
+        // Make a temporary file, create a PNG, and then open it
         try {
             File tempBitmap = File.createTempFile("AlchemyTempBitmapFile", ".png");
             tempBitmap.deleteOnExit();
@@ -278,7 +330,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             askExportPath();
 
         } else if (e.getSource() == printItem) {
-        // TODO - implement a print function
+            this.print();
 
         } else if (e.getSource() == fullScreenItem) {
             root.setFullscreen(!root.isFullscreen());
@@ -313,7 +365,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             switchBitmap();
 
         } else if (e.getSource() == switchVectorAppItem) {
-            File file = askLocation("Select Vector Application");
+            File file = askLocation("Select Vector Application", defaultAppDir);
             if (file != null) {
                 System.out.println(file.toString());
                 root.prefs.setSwitchVectorApp(file.toString());
@@ -321,7 +373,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //
 
         } else if (e.getSource() == switchBitmapAppItem) {
-            File file = askLocation("Select Bitmap Application");
+            File file = askLocation("Select Bitmap Application", defaultAppDir);
             if (file != null) {
                 System.out.println(file.toString());
                 root.prefs.setSwitchBitmapApp(file.toString());

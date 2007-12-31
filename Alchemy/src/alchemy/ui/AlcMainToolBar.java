@@ -20,7 +20,9 @@ public class AlcMainToolBar extends JToolBar {
     AlcToolBar parent;
     private int height = 60;
 
-    /** Creates a new instance of AlcMainToolBar */
+    /** Creates a new instance of AlcMainToolBar
+     * @param root Reference to the root
+     */
     public AlcMainToolBar(AlcMain root) {
 
         this.root = root;

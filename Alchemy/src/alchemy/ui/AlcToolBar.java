@@ -17,7 +17,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class AlcToolBar extends JComponent implements ActionListener, ItemListener, ChangeListener, AlcConstants {
+public class AlcToolBar extends JComponent implements AlcConstants {
 
     /** Reference to the root */
     private final AlcMain root;
@@ -82,7 +82,9 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
         //JPanel toolBarLeft = new JPanel();
         //toolBarLeft.setOpaque(false);   // Turn off the background
 
-        // Style Button
+        //////////////////////////////////////////////////////////////
+        // STYLE BUTTON
+        //////////////////////////////////////////////////////////////
         AlcToggleButton lineButton = new AlcToggleButton(this, "Style", "Make marks as a lines or solid shapes", getUrlPath("data/style.png"));
         lineButton.addActionListener(
                 new ActionListener() {
@@ -93,7 +95,9 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
                 });
         mainToolBar.add(lineButton);
 
-        // Clear Button
+        //////////////////////////////////////////////////////////////
+        // CLEAR BUTTON
+        //////////////////////////////////////////////////////////////
         AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/clear.png"));
         clearButton.addActionListener(
                 new ActionListener() {
@@ -104,53 +108,71 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
                 });
         mainToolBar.add(clearButton);
 
-        // TODO - Line Thickness button
-        // TODO - Toggle Black/White Button
+        //////////////////////////////////////////////////////////////
+        // LINE WIDTH SPINNER
+        //////////////////////////////////////////////////////////////
+        // currentValue, min, max, stepsize
+        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel(root.canvas.getLineWidth(), 0, 100, 1);
+        AlcSpinner lineWidthSpinner = new AlcSpinner(this, "Line Weight", lineWidthNumberModel);
+        lineWidthSpinner.spinner.addChangeListener(
+                new ChangeListener() {
 
-        JPanel alphaGroup = new JPanel();
-        // Top Left Bottom Right
-        alphaGroup.setBorder(BorderFactory.createEmptyBorder(1, 4, 6, 4));
-        alphaGroup.setOpaque(false);
-        alphaGroup.setLayout(new BoxLayout(alphaGroup, BoxLayout.PAGE_AXIS));
+                    public void stateChanged(ChangeEvent e) {
 
-        JSlider alphaSlider = new JSlider(JSlider.HORIZONTAL, 0, 255, 255);
-        //alphaSlider.setMajorTickSpacing(75); // sets numbers for biggest tick marks
-        //alphaSlider.setMinorTickSpacing(1);  // smaller tick marks
-        alphaSlider.setPaintTicks(true);     // display the ticks
-        alphaSlider.addChangeListener(this);
+                        JSpinner source = (JSpinner) e.getSource();
+                        Number number = (Number) source.getModel().getValue();
+                        int value = number.intValue();
 
-        // TODO - customise this slider?  or set to number box? http://www.java2s.com/Code/Java/Swing-Components/ThumbSliderExample1.htm
-        // or make a popupmenu with a slider inside?
+                        //System.out.println("Line Width: " + value);
+                        root.canvas.setLineWidth(value);
+                    }
+                });
 
-        //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
-        alphaSlider.setOpaque(false);
-        //alphaSlider.setBackground(Color.black);
-        //alphaSlider.setForeground(Color.black);
-        alphaSlider.setPreferredSize(new Dimension(100, 28));
-        alphaSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainToolBar.add(lineWidthSpinner);
 
-        alphaGroup.add(alphaSlider);
+        //////////////////////////////////////////////////////////////
+        // BLACK WHITE BUTTON
+        //////////////////////////////////////////////////////////////
+        AlcToggleButton bwButton = new AlcToggleButton(this, "Black/White", "Make marks in black or white", getUrlPath("data/style.png"));
+        bwButton.addActionListener(
+                new ActionListener() {
 
-        JLabel alphaLabel = new JLabel("Transparency");
-        alphaLabel.setFont(toolBarFont);
-        alphaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        alphaGroup.add(alphaLabel);
+                    public void actionPerformed(ActionEvent e) {
+                        root.canvas.toggleBlackWhite();
+                    }
+                });
+        mainToolBar.add(bwButton);
 
-        mainToolBar.add(alphaGroup);
 
-        //JToggleButton tbtn = new JToggleButton("Yes");
-        //toolBarLeft.add(tbtn);
-        //mainToolBar.add(toolBarLeft, BorderLayout.LINE_START);
+        //////////////////////////////////////////////////////////////
+        // TRANSPARENCY SLIDER
+        //////////////////////////////////////////////////////////////
+        AlcSlider alphaSlider = new AlcSlider(this, "Transparency", 0, 255, 255);
+        alphaSlider.slider.addChangeListener(
+                new ChangeListener() {
 
-        // Separatpr
+                    public void stateChanged(ChangeEvent e) {
+
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            int value = (int) source.getValue();
+                            root.canvas.setAlpha(value);
+
+                        }
+                    }
+                    });
+
+        mainToolBar.add(alphaSlider);
+
+        //////////////////////////////////////////////////////////////
+        // SEPARATOR
+        //////////////////////////////////////////////////////////////
         mainToolBar.add(new AlcSeparator(this));
 
-        // Align Right
-        //JPanel toolBarRight = new JPanel();
-        //toolBarRight.setOpaque(false);
 
-
-        // Create
+        //////////////////////////////////////////////////////////////
+        // CREATE
+        //////////////////////////////////////////////////////////////
         createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("data/create.png"));
         // Button group for the radio buttons
         ButtonGroup group = new ButtonGroup();
@@ -163,7 +185,21 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
             //menuItem.
 
             // Set the action listener
-            createMenuItem.addActionListener(this);
+            createMenuItem.addActionListener(
+                    new ActionListener() {
+
+                        public void actionPerformed(ActionEvent e) {
+                            AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
+                            // Check that the module is not already selected
+                            if (root.currentCreate != source.getIndex()) {
+                                // Remove the subtoolbar of the create module
+                                removeSubToolBar(0);
+                                root.setCurrentCreate(source.getIndex());
+                            }
+
+                        }
+                    });
+
             if (i == 0) {
                 createMenuItem.setSelected(true);
             }
@@ -171,10 +207,13 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
             group.add(createMenuItem);
             createButton.addItem(createMenuItem);
         }
+
         mainToolBar.add(createButton);
 
 
-        // Affect
+        //////////////////////////////////////////////////////////////
+        // AFFECT
+        //////////////////////////////////////////////////////////////
         affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("data/create.png"));
         for (int i = 0; i < root.affects.length; i++) {
             // The current module
@@ -182,29 +221,42 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
 
             AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(this, currentModule);
             affectMenuItem.setToolTipText(currentModule.getDescription());
-            affectMenuItem.addItemListener(this);
+            affectMenuItem.addItemListener(
+                    new ItemListener() {
+
+                        public void itemStateChanged(ItemEvent e) {
+
+                            AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
+
+                            // SELECTED
+                            if (e.getStateChange() == ItemEvent.SELECTED) {
+
+                                //System.out.println( index );
+
+                                root.addAffect(source.getIndex());
+
+                            // DESELECTED
+                            } else {
+
+                                root.removeAffect(source.getIndex());
+                                // Index is offset to allow for the create module to always be first
+                                removeSubToolBar(source.getIndex() + 1);
+
+                            }
+
+
+                        }
+                    });
+
             affectButton.addItem(affectMenuItem);
         }
         mainToolBar.add(affectButton);
 
-        // Separator
+        //////////////////////////////////////////////////////////////
+        // SEPARATOR
+        //////////////////////////////////////////////////////////////
         mainToolBar.add(new AlcSeparator(this));
-        // or mainToolBar.addSeparator();
 
-        // TODO - customise this jspinner
-        // currentValue, min, max, stepsize
-        SpinnerNumberModel ambientSpinner = new SpinnerNumberModel(0, 0, 360, 1);
-        //ambientSpinner.addChangeListener(this);
-
-        JSpinner spinner = new JSpinner(ambientSpinner);
-        spinner.setPreferredSize(new Dimension(50, 24));
-        spinner.setOpaque(false);
-        spinner.setBackground(AlcToolBar.toolBarBgColour);
-        // Top Left Bottom Right
-        spinner.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
-        mainToolBar.add(spinner);
-
-        //mainToolBar.add(toolBarRight, BorderLayout.CENTER);
         this.add(mainToolBar);
 
     }
@@ -360,58 +412,5 @@ public class AlcToolBar extends JComponent implements ActionListener, ItemListen
 
     public void loadCreate(int index) {
         root.setCurrentCreate(index);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-
-        AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
-
-        if (source.getModuleType() == CREATE) {
-            // Check that the module is not already selected
-            if (root.currentCreate != source.getIndex()) {
-                // Remove the subtoolbar of the create module
-                removeSubToolBar(0);
-                root.setCurrentCreate(source.getIndex());
-            }
-
-        }
-
-
-    }
-
-    public void itemStateChanged(ItemEvent e) {
-
-        AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
-
-
-        if (source.getModuleType() == AFFECT) {
-            // SELECTED
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-
-                //System.out.println( index );
-
-                root.addAffect(source.getIndex());
-
-            // DESELECTED
-            } else {
-
-                root.removeAffect(source.getIndex());
-                // Index is offset to allow for the create module to always be first
-                removeSubToolBar(source.getIndex() + 1);
-
-            }
-        }
-
-    }
-
-    // ALPHA SLIDER
-    public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider) e.getSource();
-        if (!source.getValueIsAdjusting()) {
-            int value = (int) source.getValue();
-            root.canvas.setAlpha(value);
-
-        }
-
     }
 }
