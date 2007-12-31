@@ -9,6 +9,8 @@
 package alchemy;
 
 import java.awt.*;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterException;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -24,11 +26,12 @@ import com.lowagie.text.Rectangle;
 
 
 import java.awt.image.BufferedImage;
+import java.awt.print.Printable;
 import java.io.File;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
-public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener {
+public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener, Printable {
 
     /** Reference to the root **/
     private AlcMain root;
@@ -77,7 +80,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     PdfContentByte content;
     int pdfWidth, pdfHeight;
 
-    /** Creates a new instance of AlcCanvas */
+    /** Creates a new instance of AlcCanvas
+     * @param root Reference to the root
+     */
     public AlcCanvas(AlcMain root) {
         this.root = root;
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
@@ -222,12 +227,15 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** A temporary shape stored seperately.
      *  Used as a buffer before it is added to the shapes array.
      *  Stops the shapes from constantly adding to themselves while marks are being made.
+     * @param tempShape Temporary Shape
      */
     public void setTempShape(AlcShape tempShape) {
         this.tempShape = tempShape;
     }
 
-    /** Returns the current temp shape */
+    /** Returns the current temp shape
+     * @return Temporary Shape
+     */
     public AlcShape getTempShape() {
         //System.out.println(tempShape);
         if (tempShape != null) {
@@ -256,7 +264,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    /** Returns the most recently added shape */
+    /** Returns the most recently added shape
+     * @return The current shape
+     */
     public AlcShape getCurrentShape() {
         if (shapes.size() > 0) {
             return shapes.get(shapes.size() - 1);
@@ -265,7 +275,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    /** Sets the most recently added shape */
+    /** Sets the most recently added shape
+     * @param shape Shape to become the current shape
+     */
     public void setCurrentShape(AlcShape shape) {
         if (shapes.size() > 0) {
             shapes.set(shapes.size() - 1, shape);
@@ -392,6 +404,15 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
     }
 
+    /** Toggle the colour between black and white */
+    public void toggleBlackWhite() {
+        if (this.colour == Color.BLACK) {
+            this.colour = Color.WHITE;
+        } else {
+            this.colour = Color.BLACK;
+        }
+    }
+
     public int getAlpha() {
         return alpha;
     }
@@ -409,6 +430,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         this.style = style;
     }
 
+    /** Toggle the style between line and solid */
     public void toggleStyle() {
         if (style == LINE) {
             style = SOLID;
@@ -686,6 +708,69 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 }
             }
         }
+
+    }
+
+    /**
+     * This is the method defined by the Printable interface.  It prints the
+     * canvas to the specified Graphics object, respecting the paper size
+     * and margins specified by the PageFormat.  If the specified page number
+     * is not page 0, it returns a code saying that printing is complete.  The
+     * method must be prepared to be called multiple times per printing request
+     * 
+     * This code is from the book Java Examples in a Nutshell, 2nd Edition. Copyright (c) 2000 David Flanagan. 
+     * 
+     **/
+    public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
+
+        // We are only one page long; reject any other page numbers
+        if (pageIndex > 0) {
+            return Printable.NO_SUCH_PAGE;
+        }
+
+        // The Java 1.2 printing API passes us a Graphics object, but we
+        // can always cast it to a Graphics2D object
+        Graphics2D g2p = (Graphics2D) g;
+
+        // Translate to accomodate the requested top and left margins.
+        g2p.translate(format.getImageableX(), format.getImageableY());
+
+
+        // Figure out how big the drawing is, and how big the page (excluding margins) is
+        Dimension size = this.getSize();                  // Canvas size
+        double pageWidth = format.getImageableWidth();    // Page width
+        double pageHeight = format.getImageableHeight();  // Page height
+
+        // If the canvas is too wide or tall for the page, scale it down
+        if (size.width > pageWidth) {
+            double factor = pageWidth / size.width;  // How much to scale
+            g2.scale(factor, factor);              // Adjust coordinate system
+            pageWidth /= factor;                   // Adjust page size up
+            pageHeight /= factor;
+        }
+        if (size.height > pageHeight) {   // Do the same thing for height
+            double factor = pageHeight / size.height;
+            g2.scale(factor, factor);
+            pageWidth /= factor;
+            pageHeight /= factor;
+        }
+
+        // Now we know the canvas will fit on the page.  Center it by translating as necessary.
+        g2.translate((pageWidth - size.width) / 2, (pageHeight - size.height) / 2);
+
+        // Draw a line around the outside of the drawing area
+        g2.drawRect(-1, -1, size.width + 2, size.height + 2);
+
+        // Set a clipping region so the canvas doesn't go out of bounds
+        g2.setClip(0, 0, size.width, size.height);
+
+        // Finally, print the component by calling the paintComponent() method.
+        // Or, call paint() to paint the component, its background, border, and
+        // children, including the Print JButton
+        this.paintComponent(g);
+
+        // Tell the PrinterJob that the page number was valid
+        return Printable.PAGE_EXISTS;
 
     }
 }
