@@ -38,7 +38,7 @@ public class AlcSpinner extends JPanel {
 
         this.parent = parent;
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(2, 4, 6, 4));
+        this.setBorder(BorderFactory.createEmptyBorder(2, 8, 6, 4));
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
