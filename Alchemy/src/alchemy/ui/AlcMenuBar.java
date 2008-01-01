@@ -24,7 +24,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private AlcMenuItem newItem,  printItem,  exportItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
-    private File defaultAppDir;
+    private File platformAppDir;
     //
     private PrinterJob printer = null;
     private PageFormat page = null;
@@ -40,12 +40,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // TODO - Test the default app directory for each platform
         switch (AlcMain.PLATFORM) {
             case MACOSX:
-                defaultAppDir = new File(File.separator + "Applications");
+                platformAppDir = new File(File.separator + "Applications");
                 break;
             case WINDOWS:
-                defaultAppDir = new File(File.separator + "Program Files");
-                break;
-            default:
+                platformAppDir = new File(File.separator + "Program Files");
                 break;
         }
 
@@ -163,26 +161,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     // Override the paint component to draw the gradient bg
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        //int panelWidth = getWidth();
-
-        //GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(215, 215, 215), 0, this.getHeight(), new Color(207, 207, 207), true);
-        if (g instanceof Graphics2D) {
-            Graphics2D g2 = (Graphics2D) g;
-            // Turn on text antialias - windows does not use it by default
-            //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            //g2.setPaint(gradientPaint);
-            g2.setPaint(AlcToolBar.toolBarHighlightColour);
-            g2.fillRect(0, 0, root.getWindowSize().width, this.getHeight());
-            //g2.setPaint(AlcToolBar.toolBarHighlightColour);
-            //g2.drawLine(0, 0, root.getWindowSize().width, 0);
-            g2.setPaint(AlcToolBar.toolBarLineColour);
-            g2.drawLine(0, this.getHeight() - 1, root.getWindowSize().width, this.getHeight() - 1);
-        }
+    super.paintComponent(g);
+    //int panelWidth = getWidth();
+    //GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(215, 215, 215), 0, this.getHeight(), new Color(207, 207, 207), true);
+    if (g instanceof Graphics2D) {
+    Graphics2D g2 = (Graphics2D) g;
+    // Turn on text antialias - windows does not use it by default
+    //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+    //g2.setPaint(gradientPaint);
+    g2.setPaint(AlcToolBar.toolBarHighlightColour);
+    g2.fillRect(0, 0, root.getWindowSize().width, this.getHeight());
+    //g2.setPaint(AlcToolBar.toolBarHighlightColour);
+    //g2.drawLine(0, 0, root.getWindowSize().width, 0);
+    g2.setPaint(AlcToolBar.toolBarLineColour);
+    g2.drawLine(0, this.getHeight() - 1, root.getWindowSize().width, this.getHeight() - 1);
     }
-    */
-
+    }
+     */
     /** Print */
     public void print() {
         if (printer == null) {
@@ -206,11 +201,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //fileDialog.setVisible(true);
         //String fileString = fileDialog.getFile();
 
-        final JFileChooser fc = new JFileChooser();
+        final AlcFileChooser  fc = new AlcFileChooser ();
         fc.setDialogTitle("Export Pdf");
         // in response to a button click:
         int returnVal = fc.showSaveDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
+        if (returnVal == AlcFileChooser .APPROVE_OPTION) {
 
             // Make sure that something was selected
             //if (fileString != null) {
@@ -234,37 +229,39 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         return askLocation(title, null, foldersOnly);
     }
 
-    private File askLocation(String title, File defaultAppDirFile) {
-        return askLocation(title, defaultAppDirFile, false);
+    private File askLocation(String title, File defaultDir) {
+        return askLocation(title, defaultDir, false);
     }
 
     /** Ask for a location with a file chooser. 
      *  @param  title               the name of the popup title
      *  @param  foldersOnly         to select only folders or not
-     *  @param defaultAppDirFile    the default directory
+     *  @param defaultDir    the default directory
      *  @return                     file/folder selected by the user
      */
-    private File askLocation(String title, File defaultAppDirFile, boolean foldersOnly) {
+    private File askLocation(String title, File defaultDir, boolean foldersOnly) {
         // TODO - Change this to FileDialog? Find a way to select directiories only
 
-        JFileChooser fc = null;
+        AlcFileChooser  fc = null;
 
 
-        if (defaultAppDirFile != null && defaultAppDirFile.exists()) {
-            fc = new JFileChooser(defaultAppDirFile);
+        if (defaultDir != null && defaultDir.exists()) {
+            fc = new AlcFileChooser (defaultDir);
         } else {
-            fc = new JFileChooser();
+            fc = new AlcFileChooser ();
         }
 
         if (foldersOnly) {
-            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            fc.setFileSelectionMode(AlcFileChooser .DIRECTORIES_ONLY);
         }
 
         fc.setDialogTitle(title);
+        
 
         // in response to a button click:
         int returnVal = fc.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
+        
+        if (returnVal == AlcFileChooser .APPROVE_OPTION) {
             return fc.getSelectedFile();
 
         } else {
@@ -368,7 +365,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             switchBitmap();
 
         } else if (e.getSource() == switchVectorAppItem) {
-            File file = askLocation("Select Vector Application", defaultAppDir);
+            File file = askLocation("Select Vector Application", platformAppDir);
             if (file != null) {
                 System.out.println(file.toString());
                 root.prefs.setSwitchVectorApp(file.toString());
@@ -376,7 +373,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //
 
         } else if (e.getSource() == switchBitmapAppItem) {
-            File file = askLocation("Select Bitmap Application", defaultAppDir);
+            File file = askLocation("Select Bitmap Application", platformAppDir);
             if (file != null) {
                 System.out.println(file.toString());
                 root.prefs.setSwitchBitmapApp(file.toString());

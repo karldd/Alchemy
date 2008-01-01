@@ -20,29 +20,35 @@
  */
 package alchemy.ui;
 
+import alchemy.AlcUtil;
 import java.awt.Component;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
+import java.awt.HeadlessException;
+import java.awt.Point;
+import java.io.File;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 
 /**
- * AlcSeparator
+ * AlcFileChooser
  * 
  * 
  */
-public class AlcSeparator extends JLabel {
+public class AlcFileChooser extends JFileChooser {
 
-    public AlcSeparator(AlcToolBar parent) {
-        
-        //Class c = this;
-        // TODO - how do we access parent without passing it in? using reflection
-        // System.out.println("Parent " + AlcSeparator.class.getDeclaringClass());
-        
-        this.setIcon(parent.createImageIcon("data/separator.png"));
-        this.setAlignmentY(Component.TOP_ALIGNMENT);
-        
-        // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
-        //this.setLocation(this.getX(), this.getY()-10);
+    public AlcFileChooser() {
+        super();
+    }
+
+    public AlcFileChooser(File currentDirectory) {
+        super(currentDirectory);
+    }
+
+    @Override
+    protected JDialog createDialog(Component parent) throws HeadlessException {
+        JDialog dialog = super.createDialog(parent);
+        Point p = AlcUtil.calculateCenter(dialog);
+        dialog.setLocation(p.x, p.y);
+        dialog.setResizable(false);
+        return dialog;
     }
 }
-

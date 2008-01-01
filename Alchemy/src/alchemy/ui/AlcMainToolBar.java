@@ -13,7 +13,6 @@ import java.awt.*;
 import javax.swing.BorderFactory;
 import javax.swing.JToolBar;
 
-
 public class AlcMainToolBar extends JToolBar {
 
     AlcMain root;
@@ -34,6 +33,8 @@ public class AlcMainToolBar extends JToolBar {
         //this.setBackground(AlcToolBar.toolBarBgColour);
         //this.setBorderPainted(false);
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        // Insets(int top, int left, int bottom, int right)
+        //this.setMargin(new Insets(0, 0, 0, 0));
 
         //this.setBounds(0, 0, root.getWindowSize().width, this.height);
 
