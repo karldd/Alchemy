@@ -11,6 +11,8 @@ package alchemy;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -28,6 +30,7 @@ import com.lowagie.text.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
@@ -122,8 +125,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 // LINE
                 if (currentShape.getStyle() == LINE) {
 
-                    float strokeWidth = (float) currentShape.getLineWidth();
-                    g2.setStroke(new BasicStroke(strokeWidth));
+                    g2.setStroke(new BasicStroke((float) currentShape.getLineWidth()));
                     g2.setPaint(currentShape.getColour());
                     g2.draw(currentShape.getShape());
 
@@ -366,8 +368,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     /** Function to control the display of the Ui toolbar */
-    private void toggleToolBar(MouseEvent e) {
-        int y = e.getY();
+    private void toggleToolBar(MouseEvent event) {
+        int y = event.getY();
         if (y < 10) {
             if (!root.toolBar.getToolBarVisible()) {
                 root.toolBar.setToolBarVisible(true);
@@ -392,6 +394,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     void resetCanvasChange() {
         canvasChanged = false;
     }
+
 
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
@@ -528,8 +531,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
             this.paint(g2pdf);
             g2pdf.dispose();
-        } catch (Exception e) {
-            System.err.println(e);
+        } catch (Exception event) {
+            System.err.println(event);
         }
 
     }
@@ -593,122 +596,62 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(MouseEvent event) {
         // Toogle visibility of the Toolbar
-        toggleToolBar(e);
-
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mouseMoved(e);
-            }
-
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mouseMoved(e);
-                    }
-                }
-            }
-        }
+        toggleToolBar(event);
+        passMouseEvent(event, "mouseMoved");
     }
 
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(MouseEvent event) {
         mouseDown = true;
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mousePressed(e);
-            }
-
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mousePressed(e);
-                    }
-                }
-            }
-        }
+        passMouseEvent(event, "mousePressed");
     }
 
-    public void mouseClicked(MouseEvent e) {
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mouseClicked(e);
-            }
-
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mouseClicked(e);
-                    }
-                }
-            }
-        }
+    public void mouseClicked(MouseEvent event) {
+        passMouseEvent(event, "mouseClicked");
     }
 
-    public void mouseEntered(MouseEvent e) {
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mouseEntered(e);
-            }
-
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mouseEntered(e);
-                    }
-                }
-            }
-        }
+    public void mouseEntered(MouseEvent event) {
+        passMouseEvent(event, "mouseEntered");
     }
 
-    public void mouseExited(MouseEvent e) {
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mouseExited(e);
-            }
-
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mouseExited(e);
-                    }
-                }
-            }
-        }
+    public void mouseExited(MouseEvent event) {
+        passMouseEvent(event, "mouseExited");
     }
 
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(MouseEvent event) {
         mouseDown = false;
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mouseReleased(e);
-            }
-
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mouseReleased(e);
-                    }
-                }
-            }
-        }
+        passMouseEvent(event, "mouseReleased");
     }
 
-    public void mouseDragged(MouseEvent e) {
-        if (mouseEvents) {
-            if (root.currentCreate >= 0) {
-                root.creates[root.currentCreate].mouseDragged(e);
-            }
+    public void mouseDragged(MouseEvent event) {
+        passMouseEvent(event, "mouseDragged");
+    }
 
-            if (root.hasCurrentAffects()) {
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        root.affects[i].mouseDragged(e);
+    private void passMouseEvent(MouseEvent event, String eventType) {
+        // Reflection is used here to simplify passing events to each module
+        if (mouseEvents) {
+            // Pass to the current create module
+            if (root.currentCreate >= 0) {
+                try {
+                    Method method = root.creates[root.currentCreate].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
+                    method.invoke(root.creates[root.currentCreate], new Object[]{event});
+                } catch (Throwable e) {
+                    System.err.println(e);
+                }
+            }
+            // Pass to all active affect modules
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if (root.currentAffects[i]) {
+                    try {
+                        Method method = root.affects[i].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
+                        method.invoke(root.affects[i], new Object[]{event});
+                    } catch (Throwable e) {
+                        System.err.println(e);
                     }
                 }
             }
         }
-
     }
 
     /**

@@ -40,10 +40,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // TODO - Test the default app directory for each platform
         switch (AlcMain.PLATFORM) {
             case MACOSX:
-                defaultAppDir = new File(File.separator+"Applications");
+                defaultAppDir = new File(File.separator + "Applications");
                 break;
             case WINDOWS:
-                defaultAppDir = new File(File.separator+"Program Files");
+                defaultAppDir = new File(File.separator + "Program Files");
                 break;
             default:
                 break;
@@ -200,22 +200,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
     private void askExportPath() {
 
-        FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
-        fileDialog.setVisible(true);
-        String fileString = fileDialog.getFile();
-        // Make sure that something was selected
-        if (fileString != null) {
-            String directory = fileDialog.getDirectory();
+        //FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
+        //fileDialog.setVisible(true);
+        //String fileString = fileDialog.getFile();
 
-            File file = new File(directory, fileString);
+        final JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle("Export Pdf");
+        // in response to a button click:
+        int returnVal = fc.showSaveDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-            //final JFileChooser fc = new JFileChooser();
-            //fc.setDialogTitle("Export Pdf");
-            // in response to a button click:
-            //int returnVal = fc.showSaveDialog(this);
-            //if (returnVal == JFileChooser.APPROVE_OPTION) {
-            //File file = fc.getSelectedFile();
-            //File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
+            // Make sure that something was selected
+            //if (fileString != null) {
+            //String directory = fileDialog.getDirectory();
+            //File file = new File(directory, fileString);
+
+
+            File file = fc.getSelectedFile();
             File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
 
             if (root.canvas.saveSinglePdf(fileWithExtension)) {
