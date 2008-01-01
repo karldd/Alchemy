@@ -110,6 +110,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         } else {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
+        
+        // Hints that don't seem to offer any extra performance on OSX
+        //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
 
         //... Paint background.
         g2.setPaint(bgColour);
@@ -125,7 +129,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 // LINE
                 if (currentShape.getStyle() == LINE) {
 
-                    g2.setStroke(new BasicStroke((float) currentShape.getLineWidth()));
+                    g2.setStroke(new BasicStroke((float) currentShape.getLineWidth(), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                     g2.setPaint(currentShape.getColour());
                     g2.draw(currentShape.getShape());
 

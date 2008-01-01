@@ -65,13 +65,11 @@ public class AlcShape implements AlcConstants {
     public void setupBlank() {
         // Create an empty shape
         shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
-        //shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
 
     public void setupPoint(Point p) {
         // Create the shape and move to the first point
         shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
-        // TODO - get Jacobs opinion on this winding rule
         //shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
         //shape.setWindingRule(GeneralPath.WIND_EVEN_ODD);
 
