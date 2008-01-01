@@ -159,6 +159,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         this.add(switchMenu);
     }
 
+    /*
     // Override the paint component to draw the gradient bg
     @Override
     protected void paintComponent(Graphics g) {
@@ -180,6 +181,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             g2.drawLine(0, this.getHeight() - 1, root.getWindowSize().width, this.getHeight() - 1);
         }
     }
+    */
 
     /** Print */
     public void print() {

@@ -38,22 +38,23 @@ public class AlcSpinner extends JPanel {
 
         this.parent = parent;
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(5, 4, 6, 4));
+        this.setBorder(BorderFactory.createEmptyBorder(2, 4, 6, 4));
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        
+
         spinner = new JSpinner(numberModel);
-        spinner.setPreferredSize(new Dimension(50, 29));
+        spinner.setPreferredSize(new Dimension(40, 24));
         spinner.setOpaque(false);
         spinner.setBackground(AlcToolBar.toolBarBgColour);
         // Top Left Bottom Right
-        spinner.setBorder(BorderFactory.createEmptyBorder(0, 8, 5, 4));
+        spinner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         spinner.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(spinner);
 
         JLabel label = new JLabel(name);
         label.setFont(AlcToolBar.toolBarFont);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         this.add(label);
 
     }
