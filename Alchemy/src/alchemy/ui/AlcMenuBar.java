@@ -37,7 +37,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
         this.setBackground(AlcToolBar.toolBarHighlightColour);
 
-        // TODO - Test the default app directory for each platform
+        // Default applications directory depending on the platform
         switch (AlcMain.PLATFORM) {
             case MACOSX:
                 platformAppDir = new File(File.separator + "Applications");
@@ -57,7 +57,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         newItem = new AlcMenuItem(parent, "New...", KeyEvent.VK_N);
         newItem.addActionListener(this);
         fileMenu.add(newItem);
-        fileMenu.addSeparator();
+        
+        JSeparator separator = new JSeparator();
+        separator.setForeground(Color.BLACK);
+        separator.setBackground(Color.WHITE);
+        fileMenu.add(separator);
+        //fileMenu.addSeparator();
+        
         // Export
         exportItem = new AlcMenuItem(parent, "Export...", KeyEvent.VK_E);
         exportItem.addActionListener(this);
@@ -195,17 +201,18 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
     }
 
+    /** Ask for a path and filename to export a PDF to */
     private void askExportPath() {
 
         //FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
         //fileDialog.setVisible(true);
         //String fileString = fileDialog.getFile();
 
-        final AlcFileChooser  fc = new AlcFileChooser ();
+        final AlcFileChooser fc = new AlcFileChooser();
         fc.setDialogTitle("Export Pdf");
         // in response to a button click:
         int returnVal = fc.showSaveDialog(this);
-        if (returnVal == AlcFileChooser .APPROVE_OPTION) {
+        if (returnVal == AlcFileChooser.APPROVE_OPTION) {
 
             // Make sure that something was selected
             //if (fileString != null) {
@@ -236,32 +243,28 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     /** Ask for a location with a file chooser. 
      *  @param  title               the name of the popup title
      *  @param  foldersOnly         to select only folders or not
-     *  @param defaultDir    the default directory
+     *  @param defaultDir           the default directory
      *  @return                     file/folder selected by the user
      */
     private File askLocation(String title, File defaultDir, boolean foldersOnly) {
-        // TODO - Change this to FileDialog? Find a way to select directiories only
-
-        AlcFileChooser  fc = null;
-
+        AlcFileChooser fc = null;
 
         if (defaultDir != null && defaultDir.exists()) {
-            fc = new AlcFileChooser (defaultDir);
+            fc = new AlcFileChooser(defaultDir);
         } else {
-            fc = new AlcFileChooser ();
+            fc = new AlcFileChooser();
         }
 
         if (foldersOnly) {
-            fc.setFileSelectionMode(AlcFileChooser .DIRECTORIES_ONLY);
+            fc.setFileSelectionMode(AlcFileChooser.DIRECTORIES_ONLY);
         }
 
         fc.setDialogTitle(title);
-        
 
         // in response to a button click:
         int returnVal = fc.showOpenDialog(this);
-        
-        if (returnVal == AlcFileChooser .APPROVE_OPTION) {
+
+        if (returnVal == AlcFileChooser.APPROVE_OPTION) {
             return fc.getSelectedFile();
 
         } else {

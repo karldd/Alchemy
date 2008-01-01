@@ -17,6 +17,7 @@ import java.awt.event.*;
 //////////////////////////////////////////////////////////////
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationEvent;
+import java.lang.reflect.Method;
 
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
@@ -337,6 +338,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     setAlwaysOnTop(false);
 
                     macMenuBarVisible = true;
+                    menuBar.setVisible(true);          // make the menubar visible
                     setVisible(true);
 
                 //change to fullscreen.
@@ -469,11 +471,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     //////////////////////////////////////////////////////////////
     // KEY EVENTS
     //////////////////////////////////////////////////////////////
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent event) {
 
-        int keyCode = e.getKeyCode();
+        int keyCode = event.getKeyCode();
 
-        // Turn off fullscreen mode with the escape key if in fullscreen mode
+        // Turn off fullscreen mode with just the escape key if in fullscreen mode
         if (keyCode == KeyEvent.VK_ESCAPE) {
             if (isFullscreen()) {
                 setFullscreen(false);
@@ -481,7 +483,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         }
 
         // GLOBAL KEYS - when the Modifier is down
-        if (e.getModifiers() == MENU_SHORTCUT) {
+        if (event.getModifiers() == MENU_SHORTCUT) {
 
             switch (keyCode) {
                 // Clear the Canvas
@@ -501,53 +503,37 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     break;
             }
         }
-
-        // Pass the key event on to the current modules
-        if (currentCreate >= 0) {
-            creates[currentCreate].keyPressed(e);
-        }
-
-        // Pass the key event to the current affects
-        if (hasCurrentAffects()) {
-            for (int i = 0; i < currentAffects.length; i++) {
-                if (currentAffects[i]) {
-                    affects[i].keyPressed(e);
-                }
-            }
-        }
-
+        passKeyEvent(event, "keyPressed");
     }
 
-    public void keyTyped(KeyEvent e) {
-
-        // Pass the key event on to the current modules
-        if (currentCreate >= 0) {
-            creates[currentCreate].keyTyped(e);
-        }
-
-        // Pass the key event to the current affects
-        if (hasCurrentAffects()) {
-            for (int i = 0; i < currentAffects.length; i++) {
-                if (currentAffects[i]) {
-                    affects[i].keyTyped(e);
-                }
-            }
-        }
+    public void keyTyped(KeyEvent event) {
+        passKeyEvent(event, "keyTyped");
     }
 
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent event) {
+        passKeyEvent(event, "keyReleased");
+    }
 
-        // Pass the key event on to the current modules
+    private void passKeyEvent(KeyEvent event, String eventType) {
+        // Reflection is used here to simplify passing events to each module
+
+        // Pass to the current create module
         if (currentCreate >= 0) {
-            creates[currentCreate].keyReleased(e);
+            try {
+                Method method = creates[currentCreate].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
+                method.invoke(creates[currentCreate], new Object[]{event});
+            } catch (Throwable e) {
+                System.err.println(e);
+            }
         }
-
-
-        // Pass the key event to the current affects
-        if (hasCurrentAffects()) {
-            for (int i = 0; i < currentAffects.length; i++) {
-                if (currentAffects[i]) {
-                    affects[i].keyReleased(e);
+        // Pass to all active affect modules
+        for (int i = 0; i < currentAffects.length; i++) {
+            if (currentAffects[i]) {
+                try {
+                    Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
+                    method.invoke(affects[i], new Object[]{event});
+                } catch (Throwable e) {
+                    System.err.println(e);
                 }
             }
         }

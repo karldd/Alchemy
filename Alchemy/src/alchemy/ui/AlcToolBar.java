@@ -269,8 +269,6 @@ public class AlcToolBar extends JComponent implements AlcConstants {
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean b) {
         this.setVisible(b);
-        // TODO - find a way to hide this without altering the origin XY
-        //menuBar.setVisible(b);
         // Turn off the popup(s) when we leave the toolbar area
         if (!b) {
             if (createButton != null) {
