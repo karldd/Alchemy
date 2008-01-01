@@ -20,6 +20,11 @@
  */
 package alchemy;
 
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.Window;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -107,5 +112,21 @@ public class AlcUtil {
         } else {
             return s;
         }
+    }
+
+    /** Calculate the centre of the screen with multiple monitors for the JFileChooser
+     *  From: http://www.juixe.com/techknow/index.php/2007/06/20/multiscreen-dialogs-and-the-jfilechooser/
+     */
+    public static Point calculateCenter(Container popupFrame) {
+        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        Window windowFrame = kfm.getFocusedWindow();
+        Point frameTopLeft = windowFrame.getLocation();
+        Dimension frameSize = windowFrame.getSize();
+        Dimension popSize = popupFrame.getSize();
+
+        int x = (int) (frameTopLeft.getX() + (frameSize.width / 2) - (popSize.width / 2));
+        int y = (int) (frameTopLeft.getY() + (frameSize.height / 2) - (popSize.height / 2));
+        Point center = new Point(x, y);
+        return center;
     }
 }

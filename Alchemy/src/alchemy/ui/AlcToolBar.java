@@ -57,8 +57,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         this.root = root;
         // Make this a Box Layout so all submenus are stacked below
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-
+        
         // Intialise the array of subToolBars - maximum size is that off all the affect modules plus one (create module)
         subToolBars = new AlcSubToolBar[root.getNumberOfAffectModules() + 1];
 
