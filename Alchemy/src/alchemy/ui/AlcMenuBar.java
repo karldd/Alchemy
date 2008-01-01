@@ -333,6 +333,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             this.print();
 
         } else if (e.getSource() == fullScreenItem) {
+            //System.out.println("Fullscreen to " + !root.isFullscreen());
             root.setFullscreen(!root.isFullscreen());
 
         } else if (e.getSource() == recordingItem) {

@@ -65,6 +65,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** Lists of the installed modules */
     public AlcModule[] creates;
     public AlcModule[] affects;
+    /** The menu bar */
+    public AlcMenuBar menuBar;
     /** About Box */
     //protected AlcAboutBox aboutBox;
     //
@@ -174,6 +176,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // User Interface toolbar
         toolBar = new AlcToolBar(this);
+
+        // Menu Bar
+        menuBar = new AlcMenuBar(toolBar, this);
+        this.setJMenuBar(menuBar);
 
 
         // LAYERED PANE
@@ -349,6 +355,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                         setAlwaysOnTop(true);
                         //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
                         macMenuBarVisible = false;
+                        menuBar.setVisible(false);          // make the menubar invisible
                         setVisible(true);                   //show the frame
 
                     } catch (Exception e) {
@@ -381,8 +388,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         Application.getApplication().setEnabledPreferencesMenu(true);
         Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
 
-            private Object aboutBox;
-
+            //private Object aboutBox;
             @Override
             public void handleAbout(ApplicationEvent e) {
                 System.out.println("ABOUT CALLED");
@@ -484,8 +490,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     canvas.clear();
                     break;
 
-                case KeyEvent.VK_Q:
-                    System.out.println("Q Called");
+                case KeyEvent.VK_F:
+                    // While in fullscreen the menubar is invisible
+                    // this obscures the shortcut key, so to come out of fullscreen
+                    // we set the menubar to visible again and it then picks up the 
+                    // key event immediately by itself - a bit hacky but...
+                    if (isFullscreen()) {
+                        menuBar.setVisible(true);
+                    }
                     break;
             }
         }
@@ -507,6 +519,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
 
     public void keyTyped(KeyEvent e) {
+
         // Pass the key event on to the current modules
         if (currentCreate >= 0) {
             creates[currentCreate].keyTyped(e);
