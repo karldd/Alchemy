@@ -38,10 +38,8 @@ public class AlcSlider extends JPanel {
 
         this.parent = parent;
 
-
-
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(1, 4, 6, 4));
+        this.setBorder(BorderFactory.createEmptyBorder(4, 8, 6, 4));
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
@@ -62,10 +60,11 @@ public class AlcSlider extends JPanel {
 
         this.add(slider);
 
-        JLabel alphaLabel = new JLabel(name);
-        alphaLabel.setFont(AlcToolBar.toolBarFont);
-        alphaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.add(alphaLabel);
+        JLabel label = new JLabel(name);
+        label.setFont(AlcToolBar.toolBarFont);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        this.add(label);
 
 
     }
