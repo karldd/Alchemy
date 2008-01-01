@@ -45,8 +45,6 @@ public class AlcToolBar extends JComponent implements AlcConstants {
     private AlcSubToolBar[] subToolBars;
     /** The number of subtoolbars modules currently loaded */
     private int numberOfCurrentSubToolBars = 0;
-    /** The menu bar */
-    private AlcMenuBar menuBar;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -62,9 +60,6 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         subToolBars = new AlcSubToolBar[root.getNumberOfAffectModules() + 1];
 
         loadToolBar();
-
-        menuBar = new AlcMenuBar(this, root);
-        root.setJMenuBar(menuBar);
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
