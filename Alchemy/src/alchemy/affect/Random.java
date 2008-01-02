@@ -130,9 +130,10 @@ public class Random extends AlcModule {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (root.canvas.getCurrentShape() != null) {
+        AlcShape currentShape = root.canvas.getCurrentShape();
+        if (currentShape != null) {
             // TODO - look at how randomness is applied on mouseUp or otherwise
-            canvas.setCurrentShape(randomiseShape(root.canvas.getCurrentShape()));
+            canvas.setCurrentShape(randomiseShape(currentShape));
         }
     }
 }

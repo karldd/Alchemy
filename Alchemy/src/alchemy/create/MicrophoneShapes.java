@@ -33,6 +33,12 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     @Override
     public void deselect() {
         micIn.stopMicInput();
+        micIn = null;
+    }
+
+    @Override
+    public void reselect() {
+        setup();
     }
 
     @Override
