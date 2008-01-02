@@ -83,6 +83,7 @@
         <copy file="${build.classes.dir}/alchemy/affect/Blindness$1.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
         <copy file="${build.classes.dir}/alchemy/affect/Blindness$2.class" todir="${basedir}/plugins/blindness/alchemy/affect"/>
         <copy file="${build.classes.dir}/alchemy/affect/Random.class" todir="${basedir}/plugins/random/alchemy/affect"/>
+        <copy file="${build.classes.dir}/alchemy/affect/MicExpand.class" todir="${basedir}/plugins/micExpand/alchemy/affect"/>
         
         
         <!--

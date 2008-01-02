@@ -62,12 +62,12 @@ public class AlcShape implements AlcConstants {
         setupAttributes(colour, alpha, style, lineWidth);
     }
 
-    public void setupBlank() {
+    private void setupBlank() {
         // Create an empty shape
         shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
     }
 
-    public void setupPoint(Point p) {
+    private void setupPoint(Point p) {
         // Create the shape and move to the first point
         shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
         //shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
@@ -77,13 +77,13 @@ public class AlcShape implements AlcConstants {
         totalPoints++;
     }
 
-    public void setupShape(GeneralPath gp) {
+    private void setupShape(GeneralPath gp) {
         // Add the shape
         this.shape = gp;
         shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
 
-    public void setupAttributes(Color colour, int alpha, int style, int lineWidth) {
+    private void setupAttributes(Color colour, int alpha, int style, int lineWidth) {
         this.alpha = alpha;
         setColour(colour);
         this.style = style;
@@ -146,7 +146,11 @@ public class AlcShape implements AlcConstants {
         }
     }
 
-    public void savePoints(Point p) {
+    /** Save the points to keep track of the total number of points
+     *  along with setting the last point
+     * @param p     Point to be saved
+     */
+    private void savePoints(Point p) {
 
         // Increment the total number of points
         totalPoints++;
@@ -156,19 +160,30 @@ public class AlcShape implements AlcConstants {
 
     }
 
+    /** Add the last point as a straight line */
     public void addLastPoint(Point p) {
         shape.lineTo(p.x, p.y);
     }
 
     // ALCSHAPE Interfaces
+    /** Return the GeneralPath shape */
     public GeneralPath getShape() {
         return shape;
     }
 
+    /** Set the shape using a GeneralPath */
     public void setShape(GeneralPath shape) {
         this.shape = shape;
     }
 
+    /** Return the total number of points in this shape
+     * 
+     *  @return Total number of points
+     */
+    public int getTotalPoints(){
+        return totalPoints;
+    }
+    
     public Color getColour() {
         return colour;
     }

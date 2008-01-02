@@ -25,11 +25,18 @@ public class AlcMicInput extends Thread {
     private TargetDataLine targetDataLine;
     private SourceDataLine sourceDataLine;
     
+    AlcMicInterface parent;
+
+        
     /** Creates a new instance of AlcMicInput */
     public AlcMicInput(int bufferSize) {
-        
         tempBuffer = new byte[bufferSize];
-        
+    }
+    
+    /** Creates a new instance of AlcMicInput */
+    public AlcMicInput(AlcMicInterface parent, int bufferSize) {
+        this.parent = parent;
+        tempBuffer = new byte[bufferSize];
     }
     
     public void startMicInput(){
@@ -69,6 +76,10 @@ public class AlcMicInput extends Thread {
                 
                 // When the buffer is full
                 if(cnt > 0){
+                    // Call back to the parent if it implements the 
+                    if(parent != null){
+                        parent.bufferFull();
+                    }
                     
                 }
             }
