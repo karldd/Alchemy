@@ -58,24 +58,18 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         newItem.addActionListener(this);
         fileMenu.add(newItem);
         
-        JSeparator separator = new JSeparator();
-        separator.setForeground(Color.BLACK);
-        separator.setBackground(Color.WHITE);
-        fileMenu.add(separator);
-        //fileMenu.addSeparator();
+        fileMenu.add(new JSeparator());
         
         // Export
         exportItem = new AlcMenuItem(parent, "Export...", KeyEvent.VK_E);
         exportItem.addActionListener(this);
-        //exportItem.setBorder(separator);
 
 
         fileMenu.add(exportItem);
-        fileMenu.addSeparator();
+        fileMenu.add(new JSeparator());
         // Print
         printItem = new AlcMenuItem(parent, "Print...", KeyEvent.VK_P);
         printItem.addActionListener(this);
-        //printItem.setBorder(separator);
         fileMenu.add(printItem);
         //
         this.add(fileMenu);
@@ -102,12 +96,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
         recordingItem.addActionListener(this);
         sessionMenu.add(recordingItem);
-        sessionMenu.addSeparator();
+        sessionMenu.add(new JSeparator());
         // Default Recording
         defaultRecordingItem = new AlcCheckBoxMenuItem(parent, "Record on Startup", KeyEvent.VK_R);
         defaultRecordingItem.setState(root.prefs.getRecordingState());
         defaultRecordingItem.addActionListener(this);
-        //defaultRecordingItem.setBorder(separator);
         sessionMenu.add(defaultRecordingItem);
         // Interval submenu
         intervalMenu = new AlcMenu(parent, "Record Interval");
@@ -131,7 +124,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         autoClearItem.setState(root.prefs.getAutoClear());
         autoClearItem.addActionListener(this);
         sessionMenu.add(autoClearItem);
-        sessionMenu.addSeparator();
+        sessionMenu.add(new JSeparator());
         // Default Directory
         directoryItem = new AlcMenuItem(parent, "Set Session Directory...");
         directoryItem.addActionListener(this);
@@ -151,7 +144,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         switchBitmapItem = new AlcMenuItem(parent, "Switch Bitmap", KeyEvent.VK_B);
         switchBitmapItem.addActionListener(this);
         switchMenu.add(switchBitmapItem);
-        switchMenu.addSeparator();
+        switchMenu.add(new JSeparator());
         // Switch Vector
         switchVectorAppItem = new AlcMenuItem(parent, "Set Vector Application...");
         switchVectorAppItem.addActionListener(this);
