@@ -21,7 +21,8 @@
 package alchemy.affect;
 
 import alchemy.*;
-import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
@@ -34,6 +35,14 @@ import java.awt.geom.PathIterator;
 public class MicExpand extends AlcModule implements AlcMicInterface {
 
     AlcMicInput micIn;
+    AlcShape currentShape;
+    private int centreX,  centreY;
+    private byte[] buffer;
+    private boolean spaceDown = false;
+    // Timing
+    private boolean firstRun = true;
+    private long delayGap = 40;
+    private long delayTime;
 
     public MicExpand() {
 
@@ -46,7 +55,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     @Override
     public void deselect() {
         micIn.stopMicInput();
-        micIn = null;
+    //micIn = null;
     }
 
     @Override
@@ -54,20 +63,53 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         setup();
     }
 
-    private void captureSound(AlcShape shape) {
-        int totalPoints = shape.getTotalPoints();
-        // TotalPoints has to be an even number
-        if (totalPoints % 2 != 0) {
-            totalPoints -= 1;
+    private void captureSound() {
+        currentShape = root.canvas.getCurrentShape();
+        if (currentShape != null) {
+
+            // Calculate the centre of the shape
+            Rectangle size = currentShape.getShape().getBounds();
+            centreX = size.width / 2 + size.x;
+            centreY = size.height / 2 + size.y;
+
+            //System.out.println("Centres: " + centreX + " " + centreY);
+
+            int totalPoints = currentShape.getTotalPoints();
+            // TotalPoints has to be an even number
+            if (totalPoints % 2 != 0) {
+                totalPoints += 1;
+                System.out.println("One Added to totalPoints");
+            } else {
+                totalPoints += 2;
+            }
+            // Create a new MicInput Object with a buffer equal to the number of points
+
+            micIn = new AlcMicInput(this, totalPoints);
+            micIn.startMicInput();
         }
-        // Create a new MicInput Object with a buffer equal to the number of points
-        micIn = new AlcMicInput(this, totalPoints);
-        micIn.startMicInput();
-        System.out.println("Total Points :" + totalPoints);
-    // 
     }
 
-    private GeneralPath randomise(GeneralPath shape) {
+    private void alterShape() {
+        //System.out.println("Alter Shape Called");
+        if (currentShape != null) {
+            GeneralPath expandedPath = expand(currentShape.getShape());
+            //AlcShape tempShape = new AlcShape(expandedShape, currentShape.getColour(), currentShape.getAlpha(), currentShape.getStyle(), currentShape.getLineWidth());
+            //tempShape.setShape(expandedShape);
+            //currentShape.setShape(expandedShape);
+            canvas.setCurrentShape(currentShape.customClone(expandedPath));
+            canvas.redraw();
+        }
+    }
+
+    private GeneralPath expand(GeneralPath shape) {
+
+
+
+        buffer = micIn.getBuffer();
+        //float distance = buffer[(int) root.math.random(0, buffer.length)];
+        //float distance = (float) micIn.getMicLevel();
+        //System.out.println(distance);
+        //System.out.println("Buffer Length : " + buffer.length);
 
         GeneralPath newShape = new GeneralPath();
         PathIterator path = shape.getPathIterator(null);
@@ -80,47 +122,99 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
             switch (pathType) {
                 case PathIterator.SEG_MOVETO:
-                    newShape.moveTo(pathPts[0], pathPts[1]);
+                    float[] expandMove = expandPoint(pathPts, buffer[pathCount]);
+                    newShape.moveTo(expandMove[0], expandMove[1]);
                     break;
                 case PathIterator.SEG_LINETO:
-                    newShape.lineTo(mess(pathPts[0]), mess(pathPts[1]));
-                    //newShape.lineTo(pathPts[0], pathPts[1]);
+                    float[] expandLine = expandPoint(pathPts, buffer[pathCount]);
+                    newShape.lineTo(expandLine[0], expandLine[1]);
                     break;
                 case PathIterator.SEG_QUADTO:
-                    newShape.quadTo(mess(pathPts[0]), mess(pathPts[1]), mess(pathPts[2]), mess(pathPts[3]));
-                    //newShape.quadTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3]);
+                    float[] expandQuad = expandPoint(pathPts, buffer[pathCount]);
+                    newShape.quadTo(expandQuad[0], expandQuad[1], expandQuad[2], expandQuad[3]);
                     break;
                 case PathIterator.SEG_CUBICTO:
-                    // Randomising the curves tends to generate errors and unresposiveness
-                    newShape.curveTo(mess(pathPts[0]), mess(pathPts[1]), mess(pathPts[2]), mess(pathPts[3]), mess(pathPts[4]), mess(pathPts[5]));
-                    //newShape.curveTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3], pathPts[4], pathPts[5]);
+                    float[] expandCubic = expandPoint(pathPts, buffer[pathCount]);
+                    newShape.curveTo(expandCubic[0], expandCubic[1], expandCubic[2], expandCubic[3], expandCubic[4], expandCubic[5]);
                     break;
                 case PathIterator.SEG_CLOSE:
                     newShape.closePath();
                     break;
             }
-            pathCount ++;
+
+            pathCount++;
             path.next();
         }
 
         return newShape;
 
     }
-    
-    private Point expandPoint(Point pt){
-        
+
+    private float[] expandPoint(float[] pts, float distance) {
+        float[] expandedPts = new float[pts.length];
+        //System.out.println(distance);
+        //distance = distance/10;
+        // Points come in multiples of 2, either 2, 4 or 6
+        for (int i = 0; i < pts.length / 2; i += 2) {
+            // Calculate the angle in radians between the centre and the point
+            //double angle = Math.atan2(centreX - pts[i], centreY - pts[i + 1]);
+            double angle = Math.atan2(centreY - pts[i + 1], centreX - pts[i]);
+            // Convert the polar coordinates to cartesian
+            double offsetX = distance * Math.cos(angle);
+            double offsetY = distance * Math.sin(angle);
+
+            //System.out.println("Offsets: "+ offsetX + " " + offsetY);
+
+            expandedPts[i] = (float) (pts[i] + offsetX);
+            expandedPts[i + 1] = (float) (pts[i + 1] + offsetY);
+        }
+        return expandedPts;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        AlcShape currentShape = root.canvas.getCurrentShape();
-        if (currentShape != null) {
-            captureSound(currentShape);
-        }
+    //captureSound();
     }
 
     public void bufferFull() {
-        deselect();
-        System.out.println("Buffer Full");
+        // If the spacebar has just been pressed
+        if (firstRun) {
+            delayTime = System.currentTimeMillis();
+            alterShape();
+            firstRun = false;
+        } else {
+            // If the spacebar comes up
+            if (!spaceDown) {
+                deselect();
+            // If the spacebar is down
+            } else {
+                // If there has been enough delay
+                if (System.currentTimeMillis() - delayTime >= delayGap) {
+                    delayTime = System.currentTimeMillis();
+                    alterShape();
+                }
+            }
+        }
+    }
+
+    // KEY EVENTS
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            spaceDown = false;
+        }
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            // Filter out the Key repeats
+            if (!spaceDown) {
+                System.out.println("SPACE BAR");
+                spaceDown = true;
+                firstRun = true;
+                captureSound();
+            }
+        }
     }
 }

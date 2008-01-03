@@ -47,7 +47,7 @@ public class AlcToggleButton extends JToggleButton{
         this.setToolTipText(toolTip);
         
         // Insets(int top, int left, int bottom, int right)
-        this.setMargin(new Insets(4, 8, 8, 4));
+        //this.setMargin(new Insets(4, 8, 8, 4));
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button
         this.setFocusPainted(false);       // Draw the highlight when focused

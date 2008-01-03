@@ -37,6 +37,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
     public final static Color toolBarHighlightColour = new Color(231, 231, 231);
     /** ToolBar Font */
     public final static Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
+    public final static Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
     /** The main tool bar inside the toolbar */

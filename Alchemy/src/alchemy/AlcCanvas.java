@@ -11,8 +11,6 @@ package alchemy;
 import java.awt.*;
 import java.awt.print.PageFormat;
 import java.awt.print.PrinterException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -27,6 +25,8 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.Rectangle;
 
 
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.io.File;
@@ -110,7 +110,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         } else {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
-        
+
         // Hints that don't seem to offer any extra performance on OSX
         //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
@@ -265,7 +265,27 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public void appendTempShape(boolean connect) {
         if (tempShape != null && shapes.size() > 0) {
-            getCurrentShape().getShape().append(tempShape.getShape(), connect);
+            AlcShape currentShape = getCurrentShape();
+            int combinedPoints = currentShape.getTotalPoints() + tempShape.getTotalPoints();
+            currentShape.setTotalPoints(combinedPoints);
+            currentShape.getShape().append(tempShape.getShape(), connect);
+            tempShape = null;
+        }
+    }
+
+    /** Merges the temp shape with the current shape */
+    public void mergeTempShape() {
+        if (tempShape != null && shapes.size() > 0) {
+            AlcShape currentShape = getCurrentShape();
+            Area union = new Area(currentShape.getShape());
+            Area tempArea = new Area(tempShape.getShape());
+            // Merge the two
+            union.add(tempArea);
+            // Set the shape
+            currentShape.setShape(new GeneralPath((Shape) union));
+            // Recalculate the number of points
+            currentShape.recalculateTotalPoints();
+            // Remove the temp shape
             tempShape = null;
         }
     }

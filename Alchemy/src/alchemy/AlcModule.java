@@ -8,11 +8,13 @@ import java.net.URL;
 public abstract class AlcModule {
 
     /** Access to the root */
-    public AlcMain root;
+    protected AlcMain root;
     /** Access to the canvas */
-    public AlcCanvas canvas;
+    protected AlcCanvas canvas;
     /** Access to the toolBar */
-    public AlcToolBar toolBar;
+    protected AlcToolBar toolBar;
+    /** ClassLoaded used to load other resources from the plugin */
+    private ClassLoader classLoader;
     /** The name of this module */
     private String moduleName;
     /** The type of module  - either CREATE (0) or AFFECT (1) */
@@ -34,29 +36,26 @@ public abstract class AlcModule {
     // STRUCTURE
     /** Called by the plugin manager once the module is found
      *  Sets global references to the root, canvas, and toolbar */
-    public void setGlobals(AlcMain root, AlcCanvas canvas, AlcToolBar toolBar) {
+    final void setGlobals(AlcMain root, AlcCanvas canvas, AlcToolBar toolBar) {
         this.root = root;
         this.canvas = canvas;
         this.toolBar = toolBar;
     }
 
     /* Called to load the module when first run */
-    public void setup() {
-    }
-
-    public void draw() {
+    protected void setup() {
     }
 
     /** Called when the module is reselected */
-    public void reselect() {
+    protected void reselect() {
     }
 
     /** Called when the module is deselected */
-    public void deselect() {
+    protected void deselect() {
     }
 
     /** Called after the canvas is cleared */
-    public void cleared() {
+    protected void cleared() {
     }
 
     /**
@@ -74,7 +73,7 @@ public abstract class AlcModule {
      *  Used to increment a shape, typically for drawn lines etc...
      *  Typically store the temp shape in a canvas buffer until it gets added on mouse up.
      */
-    public void incrementShape(AlcShape shape) {
+    protected void incrementShape(AlcShape shape) {
     }
 
     // MODULE DATA
@@ -82,7 +81,7 @@ public abstract class AlcModule {
         return moduleName;
     }
 
-    public void setName(String m) {
+    protected void setName(String m) {
         moduleName = m;
     }
 
@@ -98,7 +97,7 @@ public abstract class AlcModule {
         return moduleType;
     }
 
-    public void setModuleType(int moduleType) {
+    protected void setModuleType(int moduleType) {
         this.moduleType = moduleType;
     }
 
@@ -106,7 +105,7 @@ public abstract class AlcModule {
         return loaded;
     }
 
-    public void setLoaded(boolean l) {
+    protected void setLoaded(boolean l) {
         loaded = l;
     }
 
@@ -114,7 +113,7 @@ public abstract class AlcModule {
         return iconName;
     }
 
-    public void setIconName(String n) {
+    protected void setIconName(String n) {
         iconName = n;
     }
 
@@ -124,7 +123,7 @@ public abstract class AlcModule {
     }
 
     /** Set the Icon URL within the modules .zip file */
-    public void setIconUrl(URL url) {
+    protected void setIconUrl(URL url) {
         iconUrl = url;
     }
 
@@ -132,7 +131,7 @@ public abstract class AlcModule {
         return description;
     }
 
-    public void setDescription(String n) {
+    protected void setDescription(String n) {
         description = n;
     }
 

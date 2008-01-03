@@ -10,8 +10,9 @@ import java.awt.Point;
 import java.awt.Color;
 
 import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 
-public class AlcShape implements AlcConstants {
+public class AlcShape implements AlcConstants, Cloneable {
 
     private GeneralPath shape;
     // SHAPE DEFAULTS
@@ -180,10 +181,50 @@ public class AlcShape implements AlcConstants {
      * 
      *  @return Total number of points
      */
-    public int getTotalPoints(){
+    public int getTotalPoints() {
         return totalPoints;
     }
-    
+
+    /** Set the total number of points for this shape
+     *  Useful when creating a duplicate object
+     * 
+     * @param totalPoints   Total number of points
+     */
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
+    }
+
+    /** Recalculates the number of points for this shape
+     *  Useful when shapes have been merged together
+     */
+    public void recalculateTotalPoints() {
+        PathIterator count = shape.getPathIterator(null);
+        int numberOfPoints = 0;
+        while (!count.isDone()) {
+            numberOfPoints++;
+            count.next();
+        }
+        this.totalPoints = numberOfPoints;
+        System.out.println(numberOfPoints);
+    }
+
+    /** Return the last point
+     * 
+     *  @return The last point
+     */
+    public Point getLastPoint() {
+        return lastPt;
+    }
+
+    /** Set the last point for this shape
+     *  Useful when creating a duplicate object
+     * 
+     * @param lastPt   The last point
+     */
+    public void setLastPoint(Point lastPt) {
+        this.lastPt = lastPt;
+    }
+
     public Color getColour() {
         return colour;
     }
@@ -215,5 +256,28 @@ public class AlcShape implements AlcConstants {
 
     public void setLineWidth(int lineWidth) {
         this.lineWidth = lineWidth;
+    }
+
+    @Override
+    public Object clone() {
+        //Deep copy
+        AlcShape tempShape = new AlcShape(this.shape, this.colour, this.alpha, this.style, this.lineWidth);
+        tempShape.setTotalPoints(this.totalPoints);
+        tempShape.setLastPoint(this.lastPt);
+        return tempShape;
+    }
+
+    /** A custom clone that adds a new GeneralPath to the shape
+     *  while keeping all of the style infomation
+     * 
+     * @param tempPath  A GeneralPath to be added to the AlcShape
+     * @return          The cloned shape
+     */
+    public AlcShape customClone(GeneralPath tempPath) {
+        //Deep copy
+        AlcShape tempShape = new AlcShape(tempPath, this.colour, this.alpha, this.style, this.lineWidth);
+        tempShape.setTotalPoints(this.totalPoints);
+        tempShape.setLastPoint(this.lastPt);
+        return tempShape;
     }
 }

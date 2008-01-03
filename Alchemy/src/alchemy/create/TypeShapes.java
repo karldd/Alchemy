@@ -30,6 +30,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     FontRenderContext fontRenderContext;
     Area union;
     int inc, scale, doubleScale, randX, randY, halfWidth, halfHeight, quarterWidth, quarterHeight, explode;
+    int pointTally = 0;
     float noisiness;
     float noiseScale = 0.0F;
     // All ASCII characters, sorted according to their visual density
@@ -42,7 +43,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     @Override
-    public void setup() {
+    protected void setup() {
 
         halfWidth = root.getWindowSize().width / 2;
         halfHeight = root.getWindowSize().height / 2;
@@ -60,7 +61,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     @Override
-    public void reselect() {
+    protected void reselect() {
         // Add this modules toolbar to the main ui
         root.toolBar.addSubToolBar(createSubToolBar());
     }
@@ -69,7 +70,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         AlcSubToolBar subToolBar = new AlcSubToolBar(root, this, getName(), getIconUrl(), getDescription());
 
         // Buttons
-        AlcSubButton runButton = new AlcSubButton(root.toolBar, "Create", getIconUrl());
+        AlcSubButton runButton = new AlcSubButton(toolBar, "Create", getIconUrl());
         runButton.setToolTipText("Create Type Shapes (Space)");
 
         runButton.addActionListener(
@@ -86,7 +87,12 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     private void generate() {
+        // Reset the point tally for the new shape
+        pointTally = 0;
+        // Create a new shape with default properties
         AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+        // Set the number of points
+        shape.setTotalPoints(pointTally);
         canvas.setTempShape(shape);
         // Apply affects and update the canvas
         canvas.applyAffects();
@@ -149,23 +155,23 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         GlyphVector gv = font.createGlyphVector(fontRenderContext, randomLetter);
         Shape shp = gv.getOutline();
         //Shape shp = gv.getOutline(math.random(150), math.random(150));
-        PathIterator count = shp.getPathIterator(null);
+        //PathIterator count = shp.getPathIterator(null);
 
+        /*
         int numberOfSegments = 0;
         float[] pts = new float[6];
         int type;
         while (!count.isDone()) {
-            type = count.currentSegment(pts);
-            switch (type) {
-                case PathIterator.SEG_MOVETO:
-                    //root.println("Start");
-                    numberOfSegments++;
-                    break;
-            }
-
-            count.next();
+        type = count.currentSegment(pts);
+        switch (type) {
+        case PathIterator.SEG_MOVETO:
+        //root.println("Start");
+        numberOfSegments++;
+        break;
         }
-
+        count.next();
+        }
+         */
         //root.println(randomLetter + " " + numberOfSegments);
 
         //if(numberOfSegments > 1){
@@ -211,17 +217,20 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                             newShape.closePath();
                             break;
                     }
+                    pointCount++;
                 } else {
                     if (close) {
                         newShape.closePath();
                         close = false;
                     }
                 }
-                pointCount++;
+
             }
             cut.next();
 
         }
+        // Keep track of how many points in the shape
+        pointTally += pointCount;
 
         // Move the shape to the middle of the screen
         AffineTransform newTr = new AffineTransform();

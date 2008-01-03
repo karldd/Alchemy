@@ -37,8 +37,10 @@ public class AlcMainToolBar extends JToolBar {
         //this.setMargin(new Insets(0, 0, 0, 0));
 
         //this.setBounds(0, 0, root.getWindowSize().width, this.height);
-
-        this.setLayout(new FlowLayout(FlowLayout.LEFT));
+        // Set to true to allow button rollovers in the toolbar
+        this.setRollover(true);
+        
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 6));
         //this.setLayout(new BorderLayout());
 
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
