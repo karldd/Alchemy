@@ -37,7 +37,7 @@ public class AlcSeparator extends JLabel {
         this.setAlignmentY(Component.TOP_ALIGNMENT);
         
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
+        //this.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
         //this.setLocation(this.getX(), this.getY()-10);
     }
 }

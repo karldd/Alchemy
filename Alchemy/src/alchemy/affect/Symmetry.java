@@ -9,10 +9,8 @@
 package alchemy.affect;
 
 import alchemy.*;
-import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 
 public class Symmetry extends AlcModule implements AlcConstants {
@@ -30,33 +28,24 @@ public class Symmetry extends AlcModule implements AlcConstants {
     /*
     @Override
     public AlcShape processShape(AlcShape shape) {
-
-        GeneralPath rawShape = shape.getShape();    // Get the raw shape fromt the custom class
-        Area shapeArea = new Area(rawShape);        // Make this into an area
-
-        AffineTransform reflection = horizontalReflect();   // Get a horizontal transform
-        Area reflectShape = shapeArea.createTransformedArea(reflection);   // Apply the transform
-
-        shapeArea.add(reflectShape);    // Union the two together
-
-        GeneralPath processedShape = new GeneralPath((Shape) shapeArea);
-        shape.setShape(processedShape);
-
-        return shape;
+    GeneralPath rawShape = shape.getShape();    // Get the raw shape fromt the custom class
+    Area shapeArea = new Area(rawShape);        // Make this into an area
+    AffineTransform reflection = horizontalReflect();   // Get a horizontal transform
+    Area reflectShape = shapeArea.createTransformedArea(reflection);   // Apply the transform
+    shapeArea.add(reflectShape);    // Union the two together
+    GeneralPath processedShape = new GeneralPath((Shape) shapeArea);
+    shape.setShape(processedShape);
+    return shape;
     }
      */
-
     @Override
     public void incrementShape(AlcShape shape) {
 
         GeneralPath rawShape = shape.getShape();    // Get the raw shape from the custom class
         AffineTransform reflection = horizontalReflect();  // Get a horizontal transform
         GeneralPath processedShape = (GeneralPath) rawShape.createTransformedShape(reflection);
-        // Make a new shape from the given shape
-        tempShape = new AlcShape(processedShape, shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
-        //tempShape.setShape(processedShape); // Add the transformed shape
-
-        canvas.setTempShape(tempShape);
+        // Clone the shape and add the processedShape
+        canvas.setTempShape(shape.customClone(processedShape));
 
     }
 
@@ -70,7 +59,16 @@ public class Symmetry extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        // Join this shape to the current one (no connecting)
-        canvas.appendTempShape(false);
+//        canvas.getCurrentShape().getShape().closePath();
+//        canvas.getCurrentShape().getShape().setWindingRule(GeneralPath.WIND_EVEN_ODD);
+//        canvas.getTempShape().getShape().closePath();
+//        canvas.getTempShape().getShape().setWindingRule(GeneralPath.WIND_NON_ZERO);
+
+        if (canvas.getTempShape().getStyle() == SOLID) {
+            canvas.mergeTempShape();
+        } else {
+            // Join this shape to the current one (no connecting)
+            canvas.appendTempShape(false);
+        }
     }
 }

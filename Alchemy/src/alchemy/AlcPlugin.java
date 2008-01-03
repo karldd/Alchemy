@@ -56,9 +56,7 @@ public class AlcPlugin implements AlcConstants{
             
             // Number of plugins minus one for the core plugin
             numberOfPlugins = plugins.length-1;
-            int numberOfCreates = 0;
-            int numberOfAffects = 0;
-            
+
             for (int i = 0; i < plugins.length; i++) {
                 locations[i] = StandardPluginLocation.create(plugins[i]);
                 
@@ -99,6 +97,7 @@ public class AlcPlugin implements AlcConstants{
                 
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());
+                System.out.println(ext.getParameter("class").valueAsString());
                 
                 AlcModule currentPlugin = ( (AlcModule)pluginCls.newInstance() );
                 
@@ -121,8 +120,8 @@ public class AlcPlugin implements AlcConstants{
                 // If there was no match, then add the module on to the end
                 if(index < 0){
                     index = order.length + noMatchCount;
-                    System.out.println(nameParam);
-                    System.out.println("Plugins: " + index + " / " + numberOfPlugins + " No Match: " + noMatchCount);
+                    //System.out.println(nameParam);
+                    //System.out.println("Plugins: " + index + " / " + numberOfPlugins + " No Match: " + noMatchCount);
                     plugins[index] = currentPlugin;
                     // Keep track of how many non-matches
                     noMatchCount++;

@@ -26,7 +26,7 @@ public class AlcLabel extends JLabel {
             this.setIcon(parent.createImageIcon(iconUrl));
         }
 
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(AlcToolBar.subToolBarFont);
         this.setText(text);
         this.setToolTipText(description);
         //this.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -36,7 +36,7 @@ public class AlcLabel extends JLabel {
 
         // Cant set the margins so make an empty border to adjust the spacing
         // EmptyBorder(int top, int left, int bottom, int right) 
-        this.setBorder(BorderFactory.createEmptyBorder(4, 8, 8, 4));
+        //this.setBorder(BorderFactory.createEmptyBorder(4, 8, 8, 4));
 
     //this.setIconTextGap(10);
 

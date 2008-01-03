@@ -64,8 +64,8 @@ public class Random extends AlcModule {
 
         GeneralPath randomisedShape = randomise(shape.getShape());
 
-        // Make a new shape from the random shape
-        return new AlcShape(randomisedShape, shape.getColour(), shape.getAlpha(), shape.getStyle(), shape.getLineWidth());
+        // Clone the shape adding the new random GeneralPath
+        return shape.customClone(randomisedShape);
 
     }
 

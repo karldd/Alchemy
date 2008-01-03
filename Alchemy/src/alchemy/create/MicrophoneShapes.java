@@ -56,7 +56,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
 
 
         //Point pt = rightAngle(p, oldP, micIn.getMicLevel());
-        Point pt = rightAngle(p, oldP, buffer[0] >> 2);
+        Point pt = rightAngle(p, oldP, buffer[0]);
 
         // Need to test if it is null incase the shape has been auto-cleared
         if (canvas.getCurrentShape() != null) {
@@ -78,7 +78,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
 
     private Point rightAngle(Point p1, Point p2, double distance) {
         // Calculate the angle between the last point and the new point
-        double angle = Math.atan2(p1.x - p2.x, p1.y - p2.y);
+        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
         // Conver the polar coordinates to cartesian
         double x = p1.x + (distance * Math.cos(angle));
         double y = p1.y + (distance * Math.sin(angle));

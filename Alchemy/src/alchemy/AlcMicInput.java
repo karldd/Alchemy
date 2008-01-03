@@ -54,9 +54,8 @@ public class AlcMicInput extends Thread {
             
         } catch (Exception e) {
             
-            System.out.println(e);
-            //System.exit(0);
-            
+            System.out.println("startMicInput: " + e);
+                        
         }
     }
     
@@ -76,7 +75,7 @@ public class AlcMicInput extends Thread {
                 
                 // When the buffer is full
                 if(cnt > 0){
-                    // Call back to the parent if it implements the 
+                    // Call back to the parent if it implements the AlcMicInterface
                     if(parent != null){
                         parent.bufferFull();
                     }
@@ -85,7 +84,7 @@ public class AlcMicInput extends Thread {
             }
             
         }catch (Exception e) {
-            System.out.println(e);
+            System.out.println("run: " + e);
             //System.exit(0);
         }
     }
@@ -111,6 +110,8 @@ public class AlcMicInput extends Thread {
     // allowable parameter values, which
     // are shown in comments following
     // the declarations.
+    
+    // TODO - Check the compatibility of this across machines
     private AudioFormat getAudioFormat(){
         float sampleRate = 44100.0F;
         //8000,11025,16000,22050,44100

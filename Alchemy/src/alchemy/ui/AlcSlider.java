@@ -39,7 +39,7 @@ public class AlcSlider extends JPanel {
         this.parent = parent;
 
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(4, 8, 6, 4));
+        //this.setBorder(BorderFactory.createEmptyBorder(4, 8, 6, 4));
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
@@ -55,7 +55,7 @@ public class AlcSlider extends JPanel {
         slider.setOpaque(false);
         //alphaSlider.setBackground(Color.black);
         //alphaSlider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(100, 28));
+        slider.setPreferredSize(new Dimension(85, 28));
         slider.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         this.add(slider);
