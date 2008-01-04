@@ -156,7 +156,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         window.setVisible(true);
     }
 
-    private void exitAlchemy() {
+    public void exitAlchemy() {
         System.out.println("Closing");
         // Turn off recording if on
         if (session.isRecording()) {
