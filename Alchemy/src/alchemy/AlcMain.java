@@ -158,6 +158,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     public void exitAlchemy() {
         System.out.println("Closing");
+        // TODO - prompt to save the drawing on exit
         // Turn off recording if on
         if (session.isRecording()) {
             session.setRecording(false);
@@ -165,7 +166,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Save changes to the preferences
         prefs.writeChanges();
         dispose();
-        System.exit(0); //calling the method is a must
+        System.exit(0); //calling this method is a must
     }
 
     private void loadInterface() {

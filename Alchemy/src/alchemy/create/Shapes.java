@@ -33,7 +33,7 @@ public class Shapes extends AlcModule {
         // Need to test if it null incase the shape has been auto-cleared
         if (canvas.getCurrentShape() != null) {
             canvas.getCurrentShape().addCurvePoint(p);
-            canvas.applyAffects();
+            canvas.redraw();
         }
 
     }
@@ -44,7 +44,7 @@ public class Shapes extends AlcModule {
         // Need to test if it null incase the shape has been auto-cleared
         if (canvas.getCurrentShape() != null) {
             canvas.getCurrentShape().addLastPoint(p);
-            canvas.applyAffects();
+            canvas.redraw();
         }
     }
 

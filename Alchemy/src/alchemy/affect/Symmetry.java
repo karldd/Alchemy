@@ -9,8 +9,10 @@
 package alchemy.affect;
 
 import alchemy.*;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 
 public class Symmetry extends AlcModule implements AlcConstants {
@@ -23,19 +25,18 @@ public class Symmetry extends AlcModule implements AlcConstants {
     protected void setup() {
     }
 
-    /*
     @Override
     public AlcShape processShape(AlcShape shape) {
-    GeneralPath rawShape = shape.getShape();    // Get the raw shape fromt the custom class
-    Area shapeArea = new Area(rawShape);        // Make this into an area
-    AffineTransform reflection = horizontalReflect();   // Get a horizontal transform
-    Area reflectShape = shapeArea.createTransformedArea(reflection);   // Apply the transform
-    shapeArea.add(reflectShape);    // Union the two together
-    GeneralPath processedShape = new GeneralPath((Shape) shapeArea);
-    shape.setShape(processedShape);
-    return shape;
+        GeneralPath rawShape = shape.getShape();    // Get the raw shape fromt the custom class
+        Area shapeArea = new Area(rawShape);        // Make this into an area
+        AffineTransform reflection = horizontalReflect();   // Get a horizontal transform
+        Area reflectShape = shapeArea.createTransformedArea(reflection);   // Apply the transform
+        shapeArea.add(reflectShape);    // Union the two together
+        GeneralPath processedShape = new GeneralPath((Shape) shapeArea);
+        shape.setShape(processedShape);
+        return shape;
     }
-     */
+
     @Override
     protected void incrementShape(AlcShape shape) {
 
@@ -62,11 +63,14 @@ public class Symmetry extends AlcModule implements AlcConstants {
 //        canvas.getTempShape().getShape().closePath();
 //        canvas.getTempShape().getShape().setWindingRule(GeneralPath.WIND_NON_ZERO);
 
-        if (canvas.getTempShape().getStyle() == SOLID) {
+        if (canvas.getStyle() == SOLID) {
             //canvas.getCurrentShape().getShape().setWindingRule(GeneralPath.WIND_NON_ZERO);
             //canvas.appendTempShape(false);
             // TODO - Find a way to deal with merging or appending with a SOLID shape and transparency on
-            canvas.mergeTempShape();
+            if (canvas.getTempShape() != null) {
+                System.out.println("temp shape not null");
+                canvas.mergeTempShape();
+            }
         } else {
             // Join this shape to the current one (no connecting)
             canvas.appendTempShape(false);

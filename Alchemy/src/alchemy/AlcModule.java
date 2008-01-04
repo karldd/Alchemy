@@ -63,11 +63,10 @@ public abstract class AlcModule {
      *  Used to process whole shapes, typically those generated from create modules.
      *  Get the shape, processShape it in some way and return and replace the original.
      */
-    /*
-    public AlcShape processShape(AlcShape shape){
-    return shape;
+    public AlcShape processShape(AlcShape shape) {
+        return shape;
     }
-     * /
+
     /**
      * Affect - Increment an AlcShape.
      *  Used to increment a shape, typically for drawn lines etc...

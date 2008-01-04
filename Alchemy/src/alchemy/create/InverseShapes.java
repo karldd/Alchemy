@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 
 public class InverseShapes extends AlcModule {
 
-    private AlcShape tempShape;
     private boolean moveTo = true;
     private boolean mouseUp = true;
 
@@ -26,24 +25,24 @@ public class InverseShapes extends AlcModule {
     }
 
     @Override
-    public void setup() {
+    protected void setup() {
         canvas.setShapeCreation(false);
     }
 
     @Override
-    public void reselect() {
+    protected void reselect() {
         mouseUp = true;
         moveTo = true;
     }
 
     @Override
-    public void deselect() {
+    protected void deselect() {
         canvas.setShapeCreation(true);
-        canvas.commitTempShape();
+        //canvas.commitTempShape();
     }
 
     @Override
-    public void cleared() {
+    protected void cleared() {
         moveTo = true;
     }
 
@@ -63,7 +62,7 @@ public class InverseShapes extends AlcModule {
                 // Need to test if it is null incase the shape has been auto-cleared
                 if (canvas.getCurrentShape() != null) {
                     canvas.getCurrentShape().addCurvePoint(p);
-                    canvas.applyAffects();
+                    canvas.redraw();
                 }
             }
         }

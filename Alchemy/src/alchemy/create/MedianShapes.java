@@ -33,8 +33,6 @@ import java.util.ArrayList;
  */
 public class MedianShapes extends AlcModule {
 
-    /** Start time to time the gesture */
-    private long startTime;
     /** Capture a gesture or not */
     private boolean captureControlGesture = true;
     /** Array list to store the points of the control shape */
@@ -49,11 +47,11 @@ public class MedianShapes extends AlcModule {
     int pointCount = 0;
 
     public MedianShapes() {
-        // TODO - Change name, implement so it works with other affects
+    // TODO - Change name, implement so it works with other affects
     }
 
     @Override
-    public void cleared() {
+    protected void cleared() {
         captureControlGesture = true;
     }
 
@@ -105,7 +103,7 @@ public class MedianShapes extends AlcModule {
             if (captureControlGesture) {
 
                 canvas.getCurrentShape().addCurvePoint(p);
-                canvas.applyAffects();
+                canvas.redraw();
 
                 controlShapePoints.add(p);
 
@@ -131,7 +129,7 @@ public class MedianShapes extends AlcModule {
                 controlShapePointsBuffer.add(pointCount, p);
 
                 canvas.getTempShape().addCurvePoint(p);
-                canvas.applyAffects();
+                canvas.redraw();
             }
 
 
@@ -149,7 +147,7 @@ public class MedianShapes extends AlcModule {
                 captureControlGesture = false;
 
                 canvas.getCurrentShape().addLastPoint(p);
-                canvas.applyAffects();
+                canvas.redraw();
 
                 controlShapePoints.add(p);
 
@@ -161,7 +159,7 @@ public class MedianShapes extends AlcModule {
 
                 canvas.getTempShape().addLastPoint(p);
                 canvas.commitTempShape();
-                canvas.applyAffects();
+                canvas.redraw();
             //controlShapePoints.removeRange(pointCount, 100);
             }
 

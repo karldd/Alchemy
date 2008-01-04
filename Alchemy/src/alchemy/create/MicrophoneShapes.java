@@ -61,7 +61,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         // Need to test if it is null incase the shape has been auto-cleared
         if (canvas.getCurrentShape() != null) {
             canvas.getCurrentShape().addCurvePoint(pt);
-            canvas.applyAffects();
+            canvas.redraw();
             oldP = p;
         }
     }
@@ -72,7 +72,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         // Need to test if it is null incase the shape has been auto-cleared
         if (canvas.getCurrentShape() != null) {
             canvas.getCurrentShape().addLastPoint(p);
-            canvas.applyAffects();
+            canvas.redraw();
         }
     }
 

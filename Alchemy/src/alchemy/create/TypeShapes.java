@@ -66,6 +66,11 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         toolBar.addSubToolBarSection(createSubToolBarSection());
     }
 
+    @Override
+    protected void deselect() {
+        canvas.commitTempShape();
+    }
+
     public AlcSubToolBarSection createSubToolBarSection() {
         AlcSubToolBarSection subToolBarSection = new AlcSubToolBarSection(this);
 
@@ -95,8 +100,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         // Set the number of points
         shape.setTotalPoints(pointTally);
         canvas.setTempShape(shape);
-        // Apply affects and update the canvas
-        canvas.applyAffects();
+        canvas.redraw();
     }
 
     /** Load all available system fonts into an array */
