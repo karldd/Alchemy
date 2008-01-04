@@ -24,7 +24,6 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.Rectangle;
 
-
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
@@ -55,6 +54,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private boolean shapeCreation = true;
     /** Boolean used by the timer to determin if there has been canvas activity */
     private boolean canvasChanged = false;
+    /** Number of shapes from the shapes array to have affects applied to them */
+    private int numberOfActiveShapes = 1;
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
@@ -96,6 +97,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
         shapes = new ArrayList<AlcShape>(100);
         shapes.ensureCapacity(100);
+
+        tempShape = null;
 
     }
 
@@ -175,6 +178,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Redraw the canvas */
     public void redraw() {
         if (redraw) {
+            applyAffects();
+            // Something has happened on the canvas and the user is still active
+            canvasChanged = true;
             this.repaint();
         }
     }
@@ -221,13 +227,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         if (root.hasCurrentAffects()) {
             for (int i = 0; i < root.currentAffects.length; i++) {
                 if (root.currentAffects[i]) {
-                    root.affects[i].incrementShape(getCurrentShape());
+                    if (tempShape != null) {
+                        tempShape = root.affects[i].processShape(tempShape);
+                        System.out.println("TEMP:" + tempShape.getTotalPoints());
+                    } else {
+                        System.out.println("Current");
+                        root.affects[i].incrementShape(getCurrentShape());
+                    }
                 }
             }
         }
-        // Something has happened on the canvas and the user is still active
-        canvasChanged = true;
-        redraw();
     }
 
     /** A temporary shape stored seperately.
@@ -288,6 +297,25 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             // Remove the temp shape
             tempShape = null;
         }
+    }
+    
+    /** Sets the number of shapes from the shapes array
+     *  to be actively have affects applied to them.
+     *  Default value is 1.  
+     *  
+     * @param numberOfActiveShapes  The number of shapes to have affects applied
+     */
+    public void setActiveShapes(int numberOfActiveShapes){
+        this.numberOfActiveShapes = numberOfActiveShapes;
+    }
+    
+    /** Get the number of shapes that are having affects
+     *  actively applied to them
+     * 
+     *  @return     The number of active shapes
+     */
+    public int getActiveShapes() {
+        return numberOfActiveShapes;
     }
 
     /** Returns the most recently added shape
