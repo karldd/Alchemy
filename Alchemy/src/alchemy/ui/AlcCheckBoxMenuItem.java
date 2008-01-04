@@ -10,31 +10,31 @@ package alchemy.ui;
 
 import alchemy.AlcConstants;
 import alchemy.AlcModule;
+import alchemy.AlcUtil;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
 public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
 
-    private AlcToolBar parent;
     private int index,  moduleType;
 
-    public AlcCheckBoxMenuItem(AlcToolBar parent, String title) {
-        setup(parent, title);
+    public AlcCheckBoxMenuItem(String title) {
+        setup(title);
 
     }
 
-    public AlcCheckBoxMenuItem(AlcToolBar parent, String title, int accelerator) {
-        setup(parent, title);
+    public AlcCheckBoxMenuItem(String title, int accelerator) {
+        setup(title);
         if (accelerator > 0) {
             this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
         }
 
     }
 
-    public AlcCheckBoxMenuItem(AlcToolBar parent, AlcModule module) {
+    public AlcCheckBoxMenuItem(AlcModule module) {
 
-        setup(parent, module.getName());
+        setup(module.getName());
         this.index = module.getIndex();
         this.moduleType = module.getModuleType();
 
@@ -42,11 +42,10 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
         //this.setState(true);
 
         // Set the main Icon
-        this.setIcon(parent.createImageIcon(module.getIconUrl()));
+        this.setIcon(AlcUtil.createImageIcon(module.getIconUrl()));
     }
 
-    private void setup(AlcToolBar parent, String title) {
-        this.parent = parent;
+    private void setup(String title) {
         this.setText(title);
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));

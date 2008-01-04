@@ -37,7 +37,7 @@ import javax.imageio.ImageIO;
 public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener, Printable {
 
     /** Reference to the root **/
-    private AlcMain root;
+    private final AlcMain root;
     //////////////////////////////////////////////////////////////
     // GLOBAL SETTINGS
     ////////////////////////////////////////////////////////////// 
@@ -74,7 +74,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Temporary Shape */
     private AlcShape tempShape;
     /** Graphics */
-    Graphics2D g2;
+    private Graphics2D g2;
     //////////////////////////////////////////////////////////////
     // PDF
     //////////////////////////////////////////////////////////////

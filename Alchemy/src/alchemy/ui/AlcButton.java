@@ -9,27 +9,22 @@
 package alchemy.ui;
 
 import alchemy.AlcUtil;
-import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
 public class AlcButton extends JToggleButton {
 
-    AlcToolBar parent;
-
     /**
      * Creates a new instance of AlcButton
      */
-    public AlcButton(AlcToolBar parent, String text, String toolTip, URL iconUrl) {
-
-        this.parent = parent;
+    public AlcButton(String text, String toolTip, URL iconUrl) {
 
         if (iconUrl != null) {
             // Set the main icon
-            this.setIcon(parent.createImageIcon(iconUrl));
+            this.setIcon(AlcUtil.createImageIcon(iconUrl));
             // Set the rollover icon
             URL rolloverIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-over");
-            this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
+            this.setRolloverIcon(AlcUtil.createImageIcon(rolloverIconUrl));
         }
 
         this.setFont(AlcToolBar.toolBarFont);

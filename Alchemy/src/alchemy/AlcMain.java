@@ -103,7 +103,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         prefs = new AlcPreferences();
 
         // LOAD PLUGINS
-        plugins = new AlcPlugin();
+        plugins = new AlcPlugin(this);
         System.out.println("Number of Plugins: " + getNumberOfPlugins());
 
         // Initialise the on/off array for current affects
@@ -179,7 +179,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         toolBar = new AlcToolBar(this);
 
         // Menu Bar
-        menuBar = new AlcMenuBar(toolBar, this);
+        menuBar = new AlcMenuBar(this);
         this.setJMenuBar(menuBar);
 
 

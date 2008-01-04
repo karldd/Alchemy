@@ -51,7 +51,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         quarterHeight = root.getWindowSize().height / 4;
 
         // Add this modules toolbar to the main ui
-        root.toolBar.addSubToolBar(createSubToolBar());
+        toolBar.addSubToolBarSection(createSubToolBarSection());
 
         loadFonts();
 
@@ -63,14 +63,15 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     @Override
     protected void reselect() {
         // Add this modules toolbar to the main ui
-        root.toolBar.addSubToolBar(createSubToolBar());
+        toolBar.addSubToolBarSection(createSubToolBarSection());
     }
 
-    public AlcSubToolBar createSubToolBar() {
-        AlcSubToolBar subToolBar = new AlcSubToolBar(root, this, getName(), getIconUrl(), getDescription());
+    public AlcSubToolBarSection createSubToolBarSection() {
+        AlcSubToolBarSection subToolBarSection = new AlcSubToolBarSection(this);
 
         // Buttons
-        AlcSubButton runButton = new AlcSubButton(toolBar, "Create", getIconUrl());
+        AlcSubButton runButton = new AlcSubButton("Create", AlcUtil.getUrlPath("run.png", getClassLoader()));
+        //System.out.println(getClassLoader());
         runButton.setToolTipText("Create Type Shapes (Space)");
 
         runButton.addActionListener(
@@ -82,8 +83,8 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                 });
 
 
-        subToolBar.add(runButton);
-        return subToolBar;
+        subToolBarSection.add(runButton);
+        return subToolBarSection;
     }
 
     private void generate() {

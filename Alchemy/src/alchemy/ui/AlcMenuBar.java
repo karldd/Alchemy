@@ -18,8 +18,7 @@ import javax.swing.*;
 
 public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener {
 
-    private AlcToolBar parent;
-    private AlcMain root;
+    private final AlcMain root;
     private AlcMenu fileMenu,  sessionMenu,  viewMenu,  intervalMenu,  switchMenu;
     private AlcMenuItem newItem,  printItem,  exportItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
@@ -30,9 +29,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private PageFormat page = null;
 
     /** Creates a new instance of AlcMenuBar */
-    public AlcMenuBar(AlcToolBar parent, AlcMain root) {
+    public AlcMenuBar(AlcMain root) {
 
-        this.parent = parent;
         this.root = root;
 
         this.setBackground(AlcToolBar.toolBarHighlightColour);
@@ -52,23 +50,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // FILE MENU
         //////////////////////////////////////////////////////////////
-        fileMenu = new AlcMenu(parent, "File");
+        fileMenu = new AlcMenu("File");
         // New
-        newItem = new AlcMenuItem(parent, "New...", KeyEvent.VK_N);
+        newItem = new AlcMenuItem("New...", KeyEvent.VK_N);
         newItem.addActionListener(this);
         fileMenu.add(newItem);
         
         fileMenu.add(new JSeparator());
         
         // Export
-        exportItem = new AlcMenuItem(parent, "Export...", KeyEvent.VK_E);
+        exportItem = new AlcMenuItem("Export...", KeyEvent.VK_E);
         exportItem.addActionListener(this);
 
 
         fileMenu.add(exportItem);
         fileMenu.add(new JSeparator());
         // Print
-        printItem = new AlcMenuItem(parent, "Print...", KeyEvent.VK_P);
+        printItem = new AlcMenuItem("Print...", KeyEvent.VK_P);
         printItem.addActionListener(this);
         fileMenu.add(printItem);
         //
@@ -77,9 +75,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // VIEW MENU
         //////////////////////////////////////////////////////////////
-        viewMenu = new AlcMenu(parent, "View");
+        viewMenu = new AlcMenu("View");
         // Fullscreen
-        fullScreenItem = new AlcMenuItem(parent, "Fullscreen", KeyEvent.VK_F);
+        fullScreenItem = new AlcMenuItem("Fullscreen", KeyEvent.VK_F);
         fullScreenItem.addActionListener(this);
         viewMenu.add(fullScreenItem);
         this.add(viewMenu);
@@ -87,9 +85,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // SESSION MENU
         //////////////////////////////////////////////////////////////
-        sessionMenu = new AlcMenu(parent, "Session");
+        sessionMenu = new AlcMenu("Session");
         // Toggle Recording
-        recordingItem = new AlcCheckBoxMenuItem(parent, "Toggle Recording", KeyEvent.VK_R);
+        recordingItem = new AlcCheckBoxMenuItem("Toggle Recording", KeyEvent.VK_R);
         recordingItem.setState(root.prefs.getRecordingState());
         if (root.prefs.getRecordingState()) {
             root.session.setRecording(true);
@@ -98,15 +96,15 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         sessionMenu.add(recordingItem);
         sessionMenu.add(new JSeparator());
         // Default Recording
-        defaultRecordingItem = new AlcCheckBoxMenuItem(parent, "Record on Startup", KeyEvent.VK_R);
+        defaultRecordingItem = new AlcCheckBoxMenuItem("Record on Startup", KeyEvent.VK_R);
         defaultRecordingItem.setState(root.prefs.getRecordingState());
         defaultRecordingItem.addActionListener(this);
         sessionMenu.add(defaultRecordingItem);
         // Interval submenu
-        intervalMenu = new AlcMenu(parent, "Record Interval");
+        intervalMenu = new AlcMenu("Record Interval");
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < root.session.recordingIntervalString.length; i++) {
-            intervalItem = new AlcRadioButtonMenuItem(parent, root.session.recordingInterval[i], root.session.recordingIntervalString[i]);
+            intervalItem = new AlcRadioButtonMenuItem(root.session.recordingInterval[i], root.session.recordingIntervalString[i]);
             // Set the default value to selected
             if (root.prefs.getRecordingInterval() == root.session.recordingInterval[i]) {
                 intervalItem.setSelected(true);
@@ -120,13 +118,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         intervalMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
         sessionMenu.add(intervalMenu);
         // Auto Clear
-        autoClearItem = new AlcCheckBoxMenuItem(parent, "Auto Clear Canvas");
+        autoClearItem = new AlcCheckBoxMenuItem("Auto Clear Canvas");
         autoClearItem.setState(root.prefs.getAutoClear());
         autoClearItem.addActionListener(this);
         sessionMenu.add(autoClearItem);
         sessionMenu.add(new JSeparator());
         // Default Directory
-        directoryItem = new AlcMenuItem(parent, "Set Session Directory...");
+        directoryItem = new AlcMenuItem("Set Session Directory...");
         directoryItem.addActionListener(this);
         sessionMenu.add(directoryItem);
         this.add(sessionMenu);
@@ -135,22 +133,22 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // SWITCH MENU
         //////////////////////////////////////////////////////////////
-        switchMenu = new AlcMenu(parent, "Switch");
+        switchMenu = new AlcMenu("Switch");
         // Switch Vector
-        switchVectorItem = new AlcMenuItem(parent, "Switch Vector", KeyEvent.VK_V);
+        switchVectorItem = new AlcMenuItem("Switch Vector", KeyEvent.VK_V);
         switchVectorItem.addActionListener(this);
         switchMenu.add(switchVectorItem);
         // Switch Bitmaps
-        switchBitmapItem = new AlcMenuItem(parent, "Switch Bitmap", KeyEvent.VK_B);
+        switchBitmapItem = new AlcMenuItem("Switch Bitmap", KeyEvent.VK_B);
         switchBitmapItem.addActionListener(this);
         switchMenu.add(switchBitmapItem);
         switchMenu.add(new JSeparator());
         // Switch Vector
-        switchVectorAppItem = new AlcMenuItem(parent, "Set Vector Application...");
+        switchVectorAppItem = new AlcMenuItem("Set Vector Application...");
         switchVectorAppItem.addActionListener(this);
         switchMenu.add(switchVectorAppItem);
         // Switch Bitmaps
-        switchBitmapAppItem = new AlcMenuItem(parent, "Set Bitmap Application...");
+        switchBitmapAppItem = new AlcMenuItem("Set Bitmap Application...");
         switchBitmapAppItem.addActionListener(this);
         switchMenu.add(switchBitmapAppItem);
         this.add(switchMenu);

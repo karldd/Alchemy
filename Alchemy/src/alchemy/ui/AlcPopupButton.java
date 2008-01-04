@@ -15,13 +15,13 @@ import java.net.URL;
 
 public class AlcPopupButton extends AlcButton {
 
-    private final int uiPopupMenuY = parent.getToolBarHeight() - 10;
+    private final static int uiPopupMenuY = AlcToolBar.toolBarHeight - 10;
     private AlcPopupMenu popup;
 
     /** Creates a new instance of AlcPopupButton */
-    public AlcPopupButton(AlcToolBar parent, String text, String toolTip, URL iconUrl) {
-        super(parent, text, toolTip, iconUrl);
-        popup = new AlcPopupMenu(parent);
+    public AlcPopupButton(String text, String toolTip, URL iconUrl) {
+        super(text, toolTip, iconUrl);
+        popup = new AlcPopupMenu();
 
         // Add a mouse listener to detect when the button is pressed and display the popup menu
         this.addMouseListener(new MouseAdapter() {

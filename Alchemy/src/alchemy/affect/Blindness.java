@@ -6,7 +6,6 @@
  * @author  Karl D.D. Willis
  * @version 1.0
  */
-
 package alchemy.affect;
 
 import alchemy.*;
@@ -16,117 +15,115 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class Blindness extends AlcModule implements AlcConstants{
-    
+public class Blindness extends AlcModule implements AlcConstants {
+
     private boolean blindShapes = false;
-    
+    private AlcSubToolBarSection subToolBarSection;
+
     /** Creates a new instance of Blindness */
     public Blindness() {
     }
-    
+
     @Override
-    public void setup(){
+    public void setup() {
         canvas.setRedraw(false);
-        
-        // Add this modules toolbar to the main ui
-        root.toolBar.addSubToolBar(createSubToolBar());
-        
+
+        // Create the toolbar section
+        createSubToolBarSection();
+        // Add the toolbar section to the main toolbar
+        toolBar.addSubToolBarSection(subToolBarSection);
+
     }
-    
+
     @Override
-    public void reselect(){
+    public void reselect() {
+        // Readd the toolbar section
+        toolBar.addSubToolBarSection(subToolBarSection);
         canvas.setRedraw(false);
     }
-    
+
     @Override
-    public void deselect(){
+    public void deselect() {
         // Turn drawing back on and show what is underneath
         canvas.setRedraw(true);
         canvas.redraw();
     }
-    
-    private void redrawOnce(){
-        deselect();
-        reselect();
+
+    private void redrawOnce() {
+        canvas.setRedraw(true);
+        canvas.redraw();
+        canvas.setRedraw(false);
     }
-    
-    public AlcSubToolBar createSubToolBar(){
-        AlcSubToolBar subToolBar = new AlcSubToolBar(root, this, getName(), getIconUrl(), getDescription());
-        
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
         // Buttons
-        AlcSubButton redrawButton = new AlcSubButton(root.toolBar, "Redraw", getIconUrl());
+        AlcSubButton redrawButton = new AlcSubButton("Redraw", AlcUtil.getUrlPath("redraw.png", getClassLoader()));
         redrawButton.setToolTipText("Redraw the screen (b)");
-        
+
         redrawButton.addActionListener(
                 new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                redrawOnce();
-            }
-        }
-        );
-        subToolBar.add(redrawButton);
-        
-        AlcSubToggleButton blindShapeButton = new AlcSubToggleButton(root.toolBar, "Blind Shapes", getIconUrl());
+
+                    public void actionPerformed(ActionEvent e) {
+                        redrawOnce();
+                    }
+                });
+        subToolBarSection.add(redrawButton);
+
+        AlcSubToggleButton blindShapeButton = new AlcSubToggleButton("Blind Shapes", AlcUtil.getUrlPath("redraw.png", getClassLoader()));
         blindShapeButton.setToolTipText("Redraw the screen after each shape");
-        
+
         blindShapeButton.addActionListener(
                 new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                toggleBlindShapes();
-            }
-        }
-        );
-        subToolBar.add(blindShapeButton);
-        
-        return subToolBar;
+
+                    public void actionPerformed(ActionEvent e) {
+                        toggleBlindShapes();
+                    }
+                });
+        subToolBarSection.add(blindShapeButton);
     }
-    
-    private void toggleBlindShapes(){
-        if(blindShapes){
+
+    private void toggleBlindShapes() {
+        if (blindShapes) {
             blindShapes = false;
         } else {
             blindShapes = true;
         }
     }
-    
+
     // MOUSE EVENTS
-    
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(blindShapes){
+        if (blindShapes) {
             redrawOnce();
         }
     }
-    
+
     // KEY EVENTS
     @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
         char keyChar = e.getKeyChar();
-        
+
         //System.out.println(keyChar);
-        switch(keyChar){
+        switch (keyChar) {
             case 'b':
                 redrawOnce();
                 break;
         }
-        
-        /*
-        switch(keyCode){
-            case BACKSPACE:
-            case DELETE:
-         
-                //System.out.println("DELETE");
-                //canvas.clear();
-                break;
-         
-            case SPACE:
-         
-                //System.out.println("SPACE");
-                break;
-         
-        }
-         */
+
+    /*
+    switch(keyCode){
+    case BACKSPACE:
+    case DELETE:
+    //System.out.println("DELETE");
+    //canvas.clear();
+    break;
+    case SPACE:
+    //System.out.println("SPACE");
+    break;
     }
-    
+     */
+    }
 }

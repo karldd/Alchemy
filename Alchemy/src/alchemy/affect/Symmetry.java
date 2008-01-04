@@ -15,14 +15,12 @@ import java.awt.geom.GeneralPath;
 
 public class Symmetry extends AlcModule implements AlcConstants {
 
-    private AlcShape tempShape;
-
     /** Creates a new instance of Symmetry */
     public Symmetry() {
     }
 
     @Override
-    public void setup() {
+    protected void setup() {
     }
 
     /*
@@ -39,7 +37,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
     }
      */
     @Override
-    public void incrementShape(AlcShape shape) {
+    protected void incrementShape(AlcShape shape) {
 
         GeneralPath rawShape = shape.getShape();    // Get the raw shape from the custom class
         AffineTransform reflection = horizontalReflect();  // Get a horizontal transform
@@ -65,6 +63,9 @@ public class Symmetry extends AlcModule implements AlcConstants {
 //        canvas.getTempShape().getShape().setWindingRule(GeneralPath.WIND_NON_ZERO);
 
         if (canvas.getTempShape().getStyle() == SOLID) {
+            //canvas.getCurrentShape().getShape().setWindingRule(GeneralPath.WIND_NON_ZERO);
+            //canvas.appendTempShape(false);
+            // TODO - Find a way to deal with merging or appending with a SOLID shape and transparency on
             canvas.mergeTempShape();
         } else {
             // Join this shape to the current one (no connecting)

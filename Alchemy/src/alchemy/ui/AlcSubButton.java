@@ -15,27 +15,23 @@ import javax.swing.*;
 
 public class AlcSubButton extends JButton {
 
-    AlcToolBar parent;
-
     /**
      * Creates a new instance of AlcMainButton
      */
-    public AlcSubButton(AlcToolBar parent, String text, URL iconUrl) {
-
-        this.parent = parent;
+    public AlcSubButton(String text, URL iconUrl) {
 
         if (iconUrl != null) {
             // Set the main icon
-            this.setIcon(parent.createImageIcon(iconUrl));
+            this.setIcon(AlcUtil.createImageIcon(iconUrl));
             // Set the rollover icon
             URL rolloverIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-over");
-            this.setRolloverIcon(parent.createImageIcon(rolloverIconUrl));
+            this.setRolloverIcon(AlcUtil.createImageIcon(rolloverIconUrl));
         }
 
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(AlcToolBar.subToolBarFont);
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
-        //this.setMargin(new Insets(4, 8, 8, 4));
+        this.setMargin(new Insets(0, 0, 0, 0));
 
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button

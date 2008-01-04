@@ -29,11 +29,11 @@ import javax.swing.JLabel;
  * 
  * 
  */
-public class AlcSeparator extends JLabel {
+public class AlcSubSeparator extends JLabel {
 
-    public AlcSeparator() {
+    public AlcSubSeparator() {
         
-        this.setIcon(AlcUtil.createImageIcon("data/separator.png"));
+        this.setIcon(AlcUtil.createImageIcon("data/sub-separator.png"));
         this.setAlignmentY(Component.TOP_ALIGNMENT);
         
         // Top Left Bottom Right

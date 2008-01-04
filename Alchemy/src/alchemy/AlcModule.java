@@ -34,9 +34,9 @@ public abstract class AlcModule {
     }
 
     // STRUCTURE
-    /** Called by the plugin manager once the module is found
+    /** Called by the module is found
      *  Sets global references to the root, canvas, and toolbar */
-    final void setGlobals(AlcMain root, AlcCanvas canvas, AlcToolBar toolBar) {
+    void setGlobals(AlcMain root, AlcCanvas canvas, AlcToolBar toolBar) {
         this.root = root;
         this.canvas = canvas;
         this.toolBar = toolBar;
@@ -107,6 +107,16 @@ public abstract class AlcModule {
 
     protected void setLoaded(boolean l) {
         loaded = l;
+    }
+
+    /** Returns the classloader to load resources from the plugin .zip */
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /** Set the classloader for loading resources from the plugin .zip */
+    protected void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
     public String getIconName() {

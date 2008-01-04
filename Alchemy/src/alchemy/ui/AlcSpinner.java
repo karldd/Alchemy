@@ -32,11 +32,9 @@ import javax.swing.*;
 public class AlcSpinner extends JPanel {
 
     protected JSpinner spinner;
-    AlcToolBar parent;
 
-    public AlcSpinner(AlcToolBar parent, String name, SpinnerNumberModel numberModel) {
+    public AlcSpinner(String name, SpinnerNumberModel numberModel) {
 
-        this.parent = parent;
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(2, 8, 6, 4));
         this.setOpaque(false);

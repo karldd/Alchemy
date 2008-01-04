@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.ImageIcon;
 
 /**
  * AlcUtil
@@ -38,6 +39,9 @@ import java.util.Date;
  */
 public class AlcUtil {
 
+    //////////////////////////////////////////////////////////////
+    // STRING FUNCTIONS
+    //////////////////////////////////////////////////////////////
     /** Checks a path for a file extension and adds one if not present */
     public static File addFileExtension(File file, String ext) {
         String fileName = file.getName();
@@ -114,6 +118,78 @@ public class AlcUtil {
         }
     }
 
+    //////////////////////////////////////////////////////////////
+    // IMAGE LOADING FUNCTIONS
+    //////////////////////////////////////////////////////////////
+    /** Returns a URL from a String, or null if the path was invalid.
+     * 
+     * @param path  The path to the resource
+     * @return      URL to the resource or null if invalid
+     */
+    public static URL getUrlPath(String path) {
+        return getUrlPath(path, null);
+    }
+
+    /** Returns a URL from a String, or null if the path was invalid.
+     * 
+     * @param path          The path to the resource
+     * @param classLoader   The classloader
+     * @return              URL to the resource or null if invalid
+     */
+    public static URL getUrlPath(String path, ClassLoader classLoader) {
+
+        URL resourceUrl = null;
+        if (classLoader == null) {
+            // If unspecified look from the main class
+            resourceUrl = AlcMain.class.getResource(path);
+        } else {
+            resourceUrl = classLoader.getResource(path);
+        }
+
+        if (resourceUrl != null) {
+            return resourceUrl;
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
+
+    /** Returns an ImageIcon from a String, or null if the path was invalid.
+     * 
+     * @param path  The path to the image
+     * @return      ImageIcon or null if invalid
+     */
+    public static ImageIcon createImageIcon(String path) {
+
+        URL imgUrl = AlcMain.class.getResource(path);
+        if (imgUrl != null) {
+            return createImageIcon(imgUrl);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
+
+    /** Returns an ImageIcon from a URL, or null if the path was invalid.
+     * 
+     * @param imgUrl    The URL to the image
+     * @return          ImageIcon or null if invalid
+     */
+    public static ImageIcon createImageIcon(URL imgUrl) {
+        if (imgUrl != null) {
+            ImageIcon icon = new ImageIcon(imgUrl);
+            // Check the icon actually exists - bit of a hack!
+            if (icon.getIconWidth() > 0) {
+                return icon;
+            }
+        }
+        //System.err.println("Couldn't find file: " + resourceUrl.toString());
+        return null;
+    }
+
+    //////////////////////////////////////////////////////////////
+    // UI FUNCTIONS
+    //////////////////////////////////////////////////////////////
     /** Calculate the centre of the screen with multiple monitors for the JFileChooser
      *  From: http://www.juixe.com/techknow/index.php/2007/06/20/multiscreen-dialogs-and-the-jfilechooser/
      */
