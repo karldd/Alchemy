@@ -20,7 +20,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
     private final AlcMain root;
     private AlcMenu fileMenu,  sessionMenu,  viewMenu,  intervalMenu,  switchMenu;
-    private AlcMenuItem newItem,  printItem,  exportItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
+    private AlcMenuItem newItem,  printItem,  exportItem,  exitItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
     private File platformAppDir;
@@ -55,21 +55,30 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         newItem = new AlcMenuItem("New...", KeyEvent.VK_N);
         newItem.addActionListener(this);
         fileMenu.add(newItem);
-        
+
         fileMenu.add(new JSeparator());
-        
+
         // Export
         exportItem = new AlcMenuItem("Export...", KeyEvent.VK_E);
         exportItem.addActionListener(this);
-
-
         fileMenu.add(exportItem);
+
         fileMenu.add(new JSeparator());
+
         // Print
         printItem = new AlcMenuItem("Print...", KeyEvent.VK_P);
         printItem.addActionListener(this);
         fileMenu.add(printItem);
-        //
+
+        // Exit - not included on a MAC
+        if (AlcMain.PLATFORM != MACOSX) {
+            fileMenu.add(new JSeparator());
+
+            exitItem = new AlcMenuItem("Exit", KeyEvent.VK_P);
+            exitItem.addActionListener(this);
+            fileMenu.add(exitItem);
+        }
+
         this.add(fileMenu);
 
         //////////////////////////////////////////////////////////////
@@ -325,6 +334,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
         } else if (e.getSource() == printItem) {
             this.print();
+
+        } else if (e.getSource() == exitItem) {
+            root.exitAlchemy();
 
         } else if (e.getSource() == fullScreenItem) {
             //System.out.println("Fullscreen to " + !root.isFullscreen());
