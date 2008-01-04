@@ -8,35 +8,30 @@
  */
 package alchemy.ui;
 
+import alchemy.AlcUtil;
 import java.net.URL;
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 public class AlcLabel extends JLabel {
 
-    AlcToolBar parent;
-
     /** Creates a new instance of AlcLabel */
-    public AlcLabel(AlcToolBar parent, String text, URL iconUrl, String description) {
+    public AlcLabel(String text, URL iconUrl) {
 
         //this.setVerticalAlignment(SwingConstants.TOP);
 
         if (iconUrl != null) {
             // Set the sub toolbars' Icon
-            this.setIcon(parent.createImageIcon(iconUrl));
+            this.setIcon(AlcUtil.createImageIcon(iconUrl));
         }
 
         this.setFont(AlcToolBar.subToolBarFont);
         this.setText(text);
-        this.setToolTipText(description);
+        
         //this.setVerticalTextPosition(SwingConstants.BOTTOM);
-
-        // Insets(int top, int left, int bottom, int right)
-        //this.setMargin(new Insets(4, 8, 8, 4));
 
         // Cant set the margins so make an empty border to adjust the spacing
         // EmptyBorder(int top, int left, int bottom, int right) 
-        //this.setBorder(BorderFactory.createEmptyBorder(4, 8, 8, 4));
+        //this.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 
     //this.setIconTextGap(10);
 

@@ -11,7 +11,6 @@ package alchemy.ui;
 import alchemy.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URL;
 import javax.swing.*;
 
 import javax.swing.event.ChangeEvent;
@@ -24,28 +23,32 @@ public class AlcToolBar extends JComponent implements AlcConstants {
     /** Visibility of the ToolBar */
     private boolean toolBarVisible = true;
     /** Height of the ToolBar */
-    private final static int toolBarHeight = 60;
+    public static final int toolBarHeight = 60;
     /** Total height of all tool bars */
     private int totalHeight = toolBarHeight;
     /** Keep track of the windowSize */
     public Dimension windowSize;
     /** ToolBar Background Colour */
-    public final static Color toolBarBgColour = new Color(225, 225, 225);
-    public final static Color toolBarBgStartColour = new Color(235, 235, 235, 235);
-    public final static Color toolBarBgEndColour = new Color(215, 215, 215, 235);
-    public final static Color toolBarLineColour = new Color(140, 140, 140);
-    public final static Color toolBarHighlightColour = new Color(231, 231, 231);
+    public static final Color toolBarBgColour = new Color(225, 225, 225);
+    public static final Color toolBarBgStartColour = new Color(235, 235, 235, 235);
+    public static final Color toolBarBgEndColour = new Color(215, 215, 215, 235);
+    public static final Color toolBarLineColour = new Color(140, 140, 140);
+    public static final Color toolBarHighlightColour = new Color(231, 231, 231);
     /** ToolBar Font */
-    public final static Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
-    public final static Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
+    public static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
+    public static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
     /** The main tool bar inside the toolbar */
     private AlcMainToolBar mainToolBar;
-    /** The sub toolbars inside the toolbar */
-    private AlcSubToolBar[] subToolBars;
-    /** The number of subtoolbars modules currently loaded */
-    private int numberOfCurrentSubToolBars = 0;
+    /** The sub toolbar below the main toolbar */
+    private AlcSubToolBar subToolBar;
+    /** Sections within the sub toolbar - either loaded or not */
+    private AlcSubToolBarSection[] affectSubToolBarSections;
+    /** The create section within the sub toolbar - index of the loaded section */
+    private AlcSubToolBarSection createSubToolBarSection;
+    /** Number of current sub toolbar sections loaded */
+    private int currentSubToolBarSections = 0;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -56,11 +59,9 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         this.root = root;
         // Make this a Box Layout so all submenus are stacked below
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        
-        // Intialise the array of subToolBars - maximum size is that off all the affect modules plus one (create module)
-        subToolBars = new AlcSubToolBar[root.getNumberOfAffectModules() + 1];
 
         loadToolBar();
+        loadSubToolBar();
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
@@ -80,7 +81,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
-        AlcToggleButton lineButton = new AlcToggleButton(this, "Style", "Make marks as a lines or solid shapes", getUrlPath("data/style.png"));
+        AlcToggleButton lineButton = new AlcToggleButton("Style", "Make marks as a lines or solid shapes", AlcUtil.getUrlPath("data/style.png"));
         lineButton.addActionListener(
                 new ActionListener() {
 
@@ -93,7 +94,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
         //////////////////////////////////////////////////////////////
-        AlcButton clearButton = new AlcButton(this, "Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", getUrlPath("data/clear.png"));
+        AlcButton clearButton = new AlcButton("Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", AlcUtil.getUrlPath("data/clear.png"));
         clearButton.addActionListener(
                 new ActionListener() {
 
@@ -108,7 +109,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // currentValue, min, max, stepsize
         SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel(root.canvas.getLineWidth(), 0, 100, 1);
-        AlcSpinner lineWidthSpinner = new AlcSpinner(this, "Line Weight", lineWidthNumberModel);
+        AlcSpinner lineWidthSpinner = new AlcSpinner("Line Weight", lineWidthNumberModel);
         lineWidthSpinner.spinner.addChangeListener(
                 new ChangeListener() {
 
@@ -128,7 +129,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // BLACK WHITE BUTTON
         //////////////////////////////////////////////////////////////
-        AlcToggleButton bwButton = new AlcToggleButton(this, "Black/White", "Make marks in black or white", getUrlPath("data/style.png"));
+        AlcToggleButton bwButton = new AlcToggleButton("Black/White", "Make marks in black or white", AlcUtil.getUrlPath("data/style.png"));
         bwButton.addActionListener(
                 new ActionListener() {
 
@@ -142,7 +143,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        AlcSlider alphaSlider = new AlcSlider(this, "Transparency", 0, 255, 255);
+        AlcSlider alphaSlider = new AlcSlider("Transparency", 0, 255, 255);
         alphaSlider.slider.addChangeListener(
                 new ChangeListener() {
 
@@ -162,20 +163,20 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
-        mainToolBar.add(new AlcSeparator(this));
+        mainToolBar.add(new AlcSeparator());
 
 
         //////////////////////////////////////////////////////////////
         // CREATE
         //////////////////////////////////////////////////////////////
-        createButton = new AlcPopupButton(this, "Create", "Create Shapes", getUrlPath("data/create.png"));
+        createButton = new AlcPopupButton("Create", "Create Shapes", AlcUtil.getUrlPath("data/create.png"));
         // Button group for the radio buttons
         ButtonGroup group = new ButtonGroup();
         // Populate the Popup Menu
         for (int i = 0; i < root.creates.length; i++) {
             // The current module
             AlcModule currentModule = root.creates[i];
-            AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem(this, currentModule);
+            AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem(currentModule);
             createMenuItem.setToolTipText(currentModule.getDescription());
             //menuItem.
 
@@ -188,7 +189,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
                             // Check that the module is not already selected
                             if (root.currentCreate != source.getIndex()) {
                                 // Remove the subtoolbar of the create module
-                                removeSubToolBar(0);
+                                removeSubToolBarSection(0);
                                 root.setCurrentCreate(source.getIndex());
                             }
 
@@ -209,12 +210,12 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // AFFECT
         //////////////////////////////////////////////////////////////
-        affectButton = new AlcPopupButton(this, "Affect", "Affect Shapes", getUrlPath("data/create.png"));
+        affectButton = new AlcPopupButton("Affect", "Affect Shapes", AlcUtil.getUrlPath("data/create.png"));
         for (int i = 0; i < root.affects.length; i++) {
             // The current module
             AlcModule currentModule = root.affects[i];
 
-            AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(this, currentModule);
+            AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(currentModule);
             affectMenuItem.setToolTipText(currentModule.getDescription());
             affectMenuItem.addItemListener(
                     new ItemListener() {
@@ -232,14 +233,10 @@ public class AlcToolBar extends JComponent implements AlcConstants {
 
                             // DESELECTED
                             } else {
-
                                 root.removeAffect(source.getIndex());
                                 // Index is offset to allow for the create module to always be first
-                                removeSubToolBar(source.getIndex() + 1);
-
+                                removeSubToolBarSection(source.getIndex() + 1);
                             }
-
-
                         }
                     });
 
@@ -250,19 +247,32 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
-        mainToolBar.add(new AlcSeparator(this));
+        mainToolBar.add(new AlcSeparator());
 
-        this.add(mainToolBar);
+        this.add(mainToolBar, 0);
 
     }
 
+    private void loadSubToolBar() {
+        // Initialise the references to the sub toolbar sections
+        affectSubToolBarSections = new AlcSubToolBarSection[root.getNumberOfAffectModules()];
+        // Set to a negative value to indicate no initially loaded sections
+        createSubToolBarSection = null;
+
+        // Add the SubToolBar
+        subToolBar = new AlcSubToolBar(root);
+        this.add(subToolBar, 1);
+        // Make it invisible until it gets some content
+        subToolBar.setVisible(false);
+    }
+
     public void resizeToolBar() {
-        Dimension toolBarWindowSize = new Dimension(this.windowSize.width, getTotalHeight());
+        Dimension toolBarWindowSize = new Dimension(this.windowSize.width, totalHeight);
         resizeToolBar(toolBarWindowSize);
     }
 
     public void resizeToolBar(Dimension windowSize) {
-        this.setBounds(0, 0, windowSize.width, getTotalHeight());
+        this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
         this.revalidate();
     }
@@ -290,46 +300,76 @@ public class AlcToolBar extends JComponent implements AlcConstants {
     }
 
     /** Add a Create Module sub-toolbar */
-    public void addSubToolBar(AlcSubToolBar subToolBar) {
+    public void addSubToolBarSection(AlcSubToolBarSection subToolBarSection) {
 
-        numberOfCurrentSubToolBars++;
+        if (subToolBarSection.getModuleType() == CREATE) {
+            createSubToolBarSection = subToolBarSection;
 
-        // Retrive the subtoolbars module index and add one to offset for the create toolbar
-        int index = subToolBar.getIndex() + 1;
-        int type = subToolBar.getModuleType();
-
-        switch (type) {
-
-            case CREATE:
-                subToolBars[0] = subToolBar;
-                subToolBars[0].setLocation(0, getToolBarHeight());
-                this.add(subToolBars[0]);
-                break;
-
-            case AFFECT:
-                if (subToolBars[index] != null) {
-                    this.remove(subToolBars[index]);
-                    subToolBars[index] = null;
-                }
-                subToolBars[index] = subToolBar;
-                subToolBars[index].setLocation(0, totalHeight);
-                this.add(subToolBars[index]);
-                break;
+        // AFFECT
+        } else {
+            affectSubToolBarSections[subToolBarSection.getIndex()] = subToolBarSection;
         }
 
-        // Refresh the toolbar with the new contents
-        refreshToolBar();
+        currentSubToolBarSections++;
+        // Refresh the sub toolbar with the new contents
+        refreshSubToolBar();
     }
 
-    public void removeSubToolBar(int index) {
-        // If there there is a subtool bar loaded
-        if (subToolBars[index] != null) {
-            this.remove(subToolBars[index]);
-            subToolBars[index] = null;
-            numberOfCurrentSubToolBars--;
-            // Refresh the toolbar with the new contents
-            refreshToolBar();
+    public void removeSubToolBarSection(int index) {
+
+        // If the index is 0 then it is a create section
+        if (index == 0) {
+            // If not null then remove it and increment the count down
+            if (createSubToolBarSection != null) {
+                createSubToolBarSection = null;
+                currentSubToolBarSections--;
+            }
+
+        // Otherwise it is an affect and we take away 1 for the offset
+        } else {
+            int offsetIndex = index - 1;
+            // If not null then remove it and increment the count down
+            if (affectSubToolBarSections[offsetIndex] != null) {
+                affectSubToolBarSections[offsetIndex] = null;
+                currentSubToolBarSections--;
+            }
         }
+        // Refresh the sub toolbar
+        refreshSubToolBar();
+    }
+
+    private void refreshSubToolBar() {
+        //System.out.println("Sections:" + currentSubToolBarSections);
+        // Remove everything
+        subToolBar.removeAll();
+        // If there is a create section add that first
+        if (createSubToolBarSection != null) {
+            subToolBar.add(createSubToolBarSection);
+        }
+        // Add the affect sections
+        for (int i = 0; i < affectSubToolBarSections.length; i++) {
+
+            if (affectSubToolBarSections[i] != null) {
+                // If there is odd number of components then add a separator
+                if ((subToolBar.getComponentCount() % 2) != 0) {
+                    subToolBar.add(new AlcSubSeparator());
+                }
+                // Then add the section
+                subToolBar.add(affectSubToolBarSections[i]);
+            }
+        }
+        // TODO - why doesn't the subtoolbar section display immediately when reloaded?
+        
+        //System.out.println("Count: " + subToolBar.getComponentCount());
+
+        if (currentSubToolBarSections > 0) {
+            //subToolBar.revalidate();
+            subToolBar.setVisible(true);
+        } else {
+            subToolBar.setVisible(false);
+        }
+
+        refreshToolBar();
     }
 
     // GETTERS
@@ -343,58 +383,13 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         return toolBarHeight;
     }
 
-    // IMAGE LOADING FUNCTIONS
-    /** Returns a URL from a String, or null if the path was invalid. */
-    public URL getUrlPath(String path) {
-        // Path to the file from the main class
-        URL imgUrl = AlcMain.class.getResource(path);
-        if (imgUrl != null) {
-            return imgUrl;
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
-
-    /** Returns an ImageIcon from a String, or null if the path was invalid. */
-    public ImageIcon createImageIcon(String path) {
-
-        URL imgUrl = AlcMain.class.getResource(path);
-        if (imgUrl != null) {
-            return createImageIcon(imgUrl);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
-
-    /** Returns an ImageIcon from a URL, or null if the path was invalid. */
-    public ImageIcon createImageIcon(URL imgUrl) {
-        if (imgUrl != null) {
-            ImageIcon icon = new ImageIcon(imgUrl);
-            // Check the icon actually exists - bit of a hack!
-            if (icon.getIconWidth() > 0) {
-                return icon;
-            }
-        }
-        //System.err.println("Couldn't find file: " + imgUrl.toString());
-        return null;
-    }
-
     /** Calculate the total height of the toolbar and its subtoolbars */
     public void calculateTotalHeight() {
         // Start with the main toolbar height
         int newTotalHeight = mainToolBar.getHeight();
-
-        // Only run the loop if there are subtoolbars loaded
-        if (numberOfCurrentSubToolBars > 0) {
-            for (int i = 0; i < subToolBars.length; i++) {
-                if (subToolBars[i] != null) {
-                    newTotalHeight += subToolBars[i].getHeight();
-                }
-            }
+        if (subToolBar.isVisible()) {
+            newTotalHeight += subToolBar.getHeight();
         }
-
         this.totalHeight = newTotalHeight;
     }
 

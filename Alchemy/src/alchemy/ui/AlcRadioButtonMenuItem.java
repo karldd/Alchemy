@@ -10,6 +10,7 @@ package alchemy.ui;
 
 import alchemy.AlcConstants;
 import alchemy.AlcModule;
+import alchemy.AlcUtil;
 import javax.swing.BorderFactory;
 import javax.swing.JRadioButtonMenuItem;
 //import javax.swing.plaf.basic.BasicMenuItemUI;
@@ -19,36 +20,34 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
 
     // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here:
     // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
-    private AlcToolBar parent;
     private int index,  moduleType;
 
-    public AlcRadioButtonMenuItem(AlcToolBar parent, int index, String title) {
-        setup(parent, index, title);
+    public AlcRadioButtonMenuItem(int index, String title) {
+        setup(index, title);
 
     }
 
-    public AlcRadioButtonMenuItem(AlcToolBar parent, int index, String title, int accelerator) {
-        setup(parent, index, title);
+    public AlcRadioButtonMenuItem(int index, String title, int accelerator) {
+        setup(index, title);
         if (accelerator > 0) {
             this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
         }
 
     }
 
-    public AlcRadioButtonMenuItem(AlcToolBar parent, AlcModule module) {
+    public AlcRadioButtonMenuItem(AlcModule module) {
 
-        setup(parent, module.getIndex(), module.getName());
+        setup(module.getIndex(), module.getName());
         this.moduleType = module.getModuleType();
 
         // Set the intial state to false
         //this.setState(true);
 
         // Set the main Icon
-        this.setIcon(parent.createImageIcon(module.getIconUrl()));
+        this.setIcon(AlcUtil.createImageIcon(module.getIconUrl()));
     }
 
-    private void setup(AlcToolBar parent, int index, String title) {
-        this.parent = parent;
+    private void setup(int index, String title) {
         this.index = index;
         this.setText(title);
         // Top Left Bottom Right

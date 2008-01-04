@@ -32,11 +32,8 @@ import javax.swing.*;
 public class AlcSlider extends JPanel {
 
     protected JSlider slider;
-    AlcToolBar parent;
 
-    public AlcSlider(AlcToolBar parent, String name, int minValue, int maxValue, int startValue) {
-
-        this.parent = parent;
+    public AlcSlider(String name, int minValue, int maxValue, int startValue) {
 
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(4, 8, 6, 4));

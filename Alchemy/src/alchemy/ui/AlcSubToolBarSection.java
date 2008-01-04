@@ -20,25 +20,34 @@
  */
 package alchemy.ui;
 
-import alchemy.AlcUtil;
-import java.awt.Component;
-import javax.swing.JLabel;
+import alchemy.AlcModule;
+import java.awt.FlowLayout;
+import javax.swing.JPanel;
 
 /**
- * AlcSeparator
+ * AlcSubToolBarSection
  * 
  * 
  */
-public class AlcSeparator extends JLabel {
+public class AlcSubToolBarSection extends JPanel {
 
-    public AlcSeparator() {
-        
-        this.setIcon(AlcUtil.createImageIcon("data/separator.png"));
-        this.setAlignmentY(Component.TOP_ALIGNMENT);
-        
-        // Top Left Bottom Right
-        //this.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
-        //this.setLocation(this.getX(), this.getY()-10);
+    private final AlcModule module;
+
+    public AlcSubToolBarSection(AlcModule module) {
+
+        this.module = module;
+        this.setOpaque(false);
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        this.add(new AlcLabel(module.getName(), null));
+
+
+    }
+
+    protected int getIndex() {
+        return module.getIndex();
+    }
+
+    protected int getModuleType() {
+        return module.getModuleType();
     }
 }
-

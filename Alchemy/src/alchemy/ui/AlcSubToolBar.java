@@ -10,31 +10,28 @@ package alchemy.ui;
 
 import alchemy.*;
 import java.awt.*;
-import java.net.URL;
 import javax.swing.*;
 
 public class AlcSubToolBar extends JComponent {
 
     private AlcMain root;
-    private AlcToolBar parent;
-    private AlcModule module;
+    //private AlcToolBar parent;
     private int height = 26;
 
     /** Creates a new instance of AlcSubToolBar */
-    public AlcSubToolBar(AlcMain root, AlcModule module, String title, URL iconUrl, String description) {
+    public AlcSubToolBar(AlcMain root) {
 
         this.root = root;
-        this.parent = root.toolBar;
-        this.module = module;
+        //this.parent = root.toolBar;
         // Allow Transparency
         this.setOpaque(false);
 
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
 
-        this.add(new AlcLabel(parent, title, null, description));
+        //this.add(new AlcLabel(parent, title, null, description));
 
         //this.setAlignmentY(Component.TOP_ALIGNMENT);
 
@@ -70,13 +67,5 @@ public class AlcSubToolBar extends JComponent {
     @Override
     public int getHeight() {
         return this.height;
-    }
-
-    public int getIndex() {
-        return module.getIndex();
-    }
-
-    public int getModuleType() {
-        return module.getModuleType();
     }
 }

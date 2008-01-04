@@ -11,15 +11,9 @@ import javax.swing.JMenu;
  */
 public class AlcMenu extends JMenu implements AlcConstants {
 
-    private AlcToolBar parent;
-
-    public AlcMenu(AlcToolBar parent, String title) {
-
-        this.parent = parent;
+    public AlcMenu(String title) {
 
         this.setText(title);
-
-
         this.setContentAreaFilled(false);
         //this.setMnemonic(KeyEvent.VK_A);
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");

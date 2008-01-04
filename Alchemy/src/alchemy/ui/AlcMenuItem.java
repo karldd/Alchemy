@@ -12,18 +12,15 @@ import javax.swing.KeyStroke;
  */
 public class AlcMenuItem extends JMenuItem implements AlcConstants {
 
-    private AlcToolBar parent;
-
-    public AlcMenuItem(AlcToolBar parent, String title) {
-        setup(parent, title, -1);
+    public AlcMenuItem(String title) {
+        setup(title, -1);
     }
 
-    public AlcMenuItem(AlcToolBar parent, String title, int accelerator) {
-        setup(parent, title, accelerator);
+    public AlcMenuItem(String title, int accelerator) {
+        setup(title, accelerator);
     }
 
-    private void setup(AlcToolBar parent, String title, int accelerator) {
-        this.parent = parent;
+    private void setup(String title, int accelerator) {
 
         this.setText(title);
         if (accelerator > 0) {

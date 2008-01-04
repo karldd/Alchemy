@@ -205,7 +205,6 @@ public class AlcShape implements AlcConstants, Cloneable {
             count.next();
         }
         this.totalPoints = numberOfPoints;
-        System.out.println(numberOfPoints);
     }
 
     /** Return the last point
