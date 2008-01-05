@@ -37,6 +37,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
+    int tempShapeIndex;
 
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
@@ -55,6 +56,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         loadFonts();
 
+        tempShapeIndex = canvas.getTempShapesSize();
         // Call the canvas to preview the returned random shape
         generate();
 
@@ -64,11 +66,12 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     protected void reselect() {
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(createSubToolBarSection());
+        tempShapeIndex = canvas.getTempShapesSize();
     }
 
     @Override
     protected void deselect() {
-        canvas.commitTempShape();
+    //canvas.commitTempShape();
     }
 
     public AlcSubToolBarSection createSubToolBarSection() {
@@ -99,7 +102,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
         // Set the number of points
         shape.setTotalPoints(pointTally);
-        canvas.setTempShape(shape);
+        canvas.setTempShape(tempShapeIndex, shape);
         canvas.redraw();
     }
 
@@ -259,7 +262,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     @Override
     public void mousePressed(MouseEvent e) {
         // Commit the shape when the mouse is pressed
-        canvas.commitTempShape();
+        canvas.commitTempShape(tempShapeIndex);
     }
 
     // KEY EVENTS
