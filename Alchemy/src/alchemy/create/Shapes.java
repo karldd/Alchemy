@@ -15,8 +15,6 @@ import java.awt.event.MouseEvent;
 
 public class Shapes extends AlcModule {
 
-    int tempShapeIndex;
-    
     /**
      * Creates a new instance of Shapes
      */
@@ -26,16 +24,16 @@ public class Shapes extends AlcModule {
     @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
-        tempShapeIndex = canvas.getTempShapesSize();
-        canvas.addTempShape(makeShape(p));
+        canvas.createShapes.add(makeShape(p));
+        canvas.redraw();
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getTempShape(tempShapeIndex) != null) {
-            canvas.getTempShape(tempShapeIndex).addCurvePoint(p);
+        if (canvas.getCurrentCreateShape() != null) {
+            canvas.getCurrentCreateShape().addCurvePoint(p);
             canvas.redraw();
         }
 
@@ -45,9 +43,10 @@ public class Shapes extends AlcModule {
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getTempShape(tempShapeIndex) != null) {
-            canvas.getTempShape(tempShapeIndex).addLastPoint(p);
+        if (canvas.getCurrentCreateShape() != null) {
+            canvas.getCurrentCreateShape().addLastPoint(p);
             canvas.redraw();
+            canvas.commitShapes();
         }
     }
 

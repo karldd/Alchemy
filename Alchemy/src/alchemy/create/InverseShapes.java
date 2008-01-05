@@ -46,6 +46,8 @@ public class InverseShapes extends AlcModule {
     @Override
     public void mousePressed(MouseEvent e) {
         mouseUp = false;
+        canvas.redraw();
+        canvas.commitShapes();
     }
 
     @Override
@@ -53,12 +55,12 @@ public class InverseShapes extends AlcModule {
         if (mouseUp) {
             Point p = e.getPoint();
             if (moveTo) {
-                canvas.addShape(makeShape(p));
+                canvas.createShapes.add(makeShape(p));
                 moveTo = false;
             } else {
                 // Need to test if it is null incase the shape has been auto-cleared
-                if (canvas.getCurrentShape() != null) {
-                    canvas.getCurrentShape().addCurvePoint(p);
+                if (canvas.getCurrentCreateShape() != null) {
+                    canvas.getCurrentCreateShape().addCurvePoint(p);
                     canvas.redraw();
                 }
             }

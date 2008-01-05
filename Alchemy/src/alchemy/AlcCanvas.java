@@ -64,10 +64,12 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // DRAWING
     //////////////////////////////////////////////////////////////
-    /** Array list containing shapes that have been committed */
-    private ArrayList<AlcShape> shapes;
-    /** Array list to contain the shapes created */
-    private ArrayList<AlcShape> createShapes;
+    /** Array list containing shapes that have been archived */
+    public ArrayList<AlcShape> shapes;
+    /** Array list containing shapes made by create modules */
+    public ArrayList<AlcShape> createShapes;
+    /** Array list containing shapes made by affect modules */
+    public ArrayList<AlcShape> affectShapes;
     /** Graphics */
     private Graphics2D g2;
     //////////////////////////////////////////////////////////////
@@ -91,9 +93,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
         shapes = new ArrayList<AlcShape>(100);
         shapes.ensureCapacity(100);
-
         createShapes = new ArrayList<AlcShape>(25);
         createShapes.ensureCapacity(25);
+        affectShapes = new ArrayList<AlcShape>(25);
+        affectShapes.ensureCapacity(25);
 
     }
 
@@ -119,7 +122,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
 
         // Draw both lots of shapes
-        ArrayList[] theShapes = {shapes, createShapes};
+        ArrayList[] theShapes = {shapes, createShapes, affectShapes};
 
         for (int j = 0; j < theShapes.length; j++) {
 
@@ -177,10 +180,20 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void clear() {
         shapes.clear();
         createShapes.clear();
+        affectShapes.clear();
 
         // Pass this on to the currently selected modules
         // Does this need to be passed to all of the modules? Even if not selected?
-        passEvent("cleared");
+        if (root.currentCreate >= 0) {
+            root.creates[root.currentCreate].cleared();
+        }
+        if (root.hasCurrentAffects()) {
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if (root.currentAffects[i]) {
+                    root.affects[i].cleared();
+                }
+            }
+        }
 
         // Redraw to clear the screen even if redrawing is off
         if (redraw) {
@@ -197,134 +210,29 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         if (root.hasCurrentAffects()) {
             for (int i = 0; i < root.currentAffects.length; i++) {
                 if (root.currentAffects[i]) {
-                    createShapes = root.affects[i].incrementShape(createShapes);
+                    root.affects[i].incrementShape();
                 }
             }
         }
     }
 
-    //////////////////////////////////////////////////////////////
-    // TEMP SHAPES
-    //////////////////////////////////////////////////////////////
-    /** Returns the most recently added temp shape
-     * @return The current temp shape
-     */
-    public AlcShape getCurrentTempShape() {
-        if (createShapes.size() > 0) {
-            return createShapes.get(createShapes.size() - 1);
-        } else {
-            return null;
-        }
-    }
-
-    /** Sets the most recently added temp shape
-     * @param shape Shape to become the current temp shape
-     */
-    public void setCurrentTempShape(AlcShape shape) {
-        if (createShapes.size() > 0) {
-            createShapes.set(createShapes.size() - 1, shape);
-        }
-    }
-
-    /** Returns the temp shape at index */
-    public AlcShape getTempShape(int index) {
-        // Check that the index is not out of bounds
-        if (index < 0 || index > (createShapes.size() - 1)) {
-            return null;
-        } else {
-            return createShapes.get(index);
-        }
-    }
-
-    /** Sets the temp shape at index */
-    public void setTempShape(int index, AlcShape shape) {
-        // Check that the index is not out of bounds
-        if (index >= 0 || index <= (createShapes.size() - 1)) {
-            createShapes.set(index, shape);
-        }
-    }
-
-    /** Remove a temp shape at the specified index */
-    public void clearTempShape(int index) {
-        if (index >= 0 || index <= (createShapes.size() - 1)) {
-            createShapes.remove(index);
-        }
-    }
-
-    /** Returns the most recently added temp shape
-     *  counting back from the end of the index
-     * 
-     * @param index     An index value counting back from the end
-     * @return          The shape n positions from the end, index 0 is the most recent shape
-     */
-    public AlcShape getRecentTempShape(int index) {
-        // Check that the index is not out of bounds
-        if (index < 0 || index > (createShapes.size() - 1)) {
-            return null;
-        } else {
-            return createShapes.get(createShapes.size() - (index + 1));
-        }
-    }
-
-    /** Returns the size of the temp shapes arraylist*/
-    public int getTempShapesSize() {
-        return createShapes.size();
-    }
-
-    /** Adds a temp shape into the temp shape array */
-    public void addTempShape(AlcShape shape) {
-        createShapes.add(shape);
-    }
-
-    /** Commit the temporary shape to the main shapes array */
-    public void commitTempShape(int index) {
-        if (createShapes.get(index) != null) {
-            shapes.add(createShapes.get(index));
-            createShapes.remove(index);
-        }
-    }
-
-    /** Commit all temporary shapes to the main shapes array */
-    public void commitTempShapes() {
-        for (int i = 0; i < createShapes.size(); i++) {
-            shapes.add(createShapes.get(i));
-        }
-        createShapes.clear();
+    /** Commit all shapes to the main shapes array */
+    public void commitShapes() {
+        commitCreateShapes();
+        commitAffectShapes();
 
         // Tell the modules the shapes have been commited
-        passEvent("commited");
+        if (root.currentCreate >= 0) {
+            root.creates[root.currentCreate].commited();
+        }
+        if (root.hasCurrentAffects()) {
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if (root.currentAffects[i]) {
+                    root.affects[i].commited();
+                }
+            }
+        }
     }
-
-//    /** Appends the temp shape to the most recent shape in the shapes array 
-//     *  and sets the temp shape to null.
-//     *  @param connect  connect the two shapes or not
-//     */
-//    public void appendTempShape(boolean connect) {
-//        if (tempShape != null && shapes.size() > 0) {
-//            AlcShape currentShape = getCurrentShape();
-//            int combinedPoints = currentShape.getTotalPoints() + tempShape.getTotalPoints();
-//            currentShape.setTotalPoints(combinedPoints);
-//            currentShape.getShape().append(tempShape.getShape(), connect);
-//            tempShape = null;
-//        }
-//    }
-//
-//    /** Merges the temp shape with the current shape */
-//    public void mergeTempShape() {
-//        if (tempShape != null && shapes.size() > 0) {
-//            AlcShape currentShape = getCurrentShape();
-//            Area union = new Area(currentShape.getShape());
-//            Area tempArea = new Area(tempShape.getShape());
-//            // Merge the two
-//            union.add(tempArea);
-//            // Set the shape
-//            currentShape.setShape(new GeneralPath((Shape) union));
-//            // Recalculate the number of points
-//            currentShape.recalculateTotalPoints();
-//            // Remove the temp shape
-//            tempShape = null;
-//        }
-//    }
 
     //////////////////////////////////////////////////////////////
     // SHAPES
@@ -349,54 +257,87 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    /** Returns the shape at index */
-    public AlcShape getShape(int index) {
-        // Check that the index is not out of bounds
-        if (index < 0 || index > (shapes.size() - 1)) {
-            return null;
-        } else {
-            return shapes.get(index);
+    /** Removes the most recently added shape */
+    public void removeCurrentShape() {
+        if (shapes.size() > 0) {
+            shapes.remove(shapes.size() - 1);
         }
     }
 
-    /** Sets the shape at index */
-    public void setShape(int index, AlcShape shape) {
-        // Check that the index is not out of bounds
-        if (index >= 0 || index <= (shapes.size() - 1)) {
-            shapes.set(index, shape);
-        }
-    }
-
-    /** Returns the most recently added shape
-     *  counting back from the end of the index
-     * 
-     * @param index     An index value counting back from the end
-     * @return          The shape n positions from the end, index 0 is the most recent shape
+    //////////////////////////////////////////////////////////////
+    // CREATE SHAPES
+    //////////////////////////////////////////////////////////////
+    /** Returns the most recently added create shape
+     * @return The current create shape
      */
-    public AlcShape getRecentShape(int index) {
-        // Check that the index is not out of bounds
-        if (index < 0 || index > (shapes.size() - 1)) {
-            return null;
+    public AlcShape getCurrentCreateShape() {
+        if (createShapes.size() > 0) {
+            return createShapes.get(createShapes.size() - 1);
         } else {
-            return shapes.get(shapes.size() - (index + 1));
+            return null;
         }
     }
 
-    /** Returns the size of the shapes arraylist*/
-    public int getShapesSize() {
-        return shapes.size();
-    }
-
-    /** Adds a shape into the shape array */
-    public void addShape(AlcShape newShape) {
-        shapes.add(newShape);
-    }
-
-    /** Remove a shape at the specified index */
-    public void clearShape(int index) {
-        if (index >= 0 || index <= (shapes.size() - 1)) {
-            shapes.remove(index);
+    /** Sets the most recently added create shape
+     * @param shape     Shape to become the current create shape
+     */
+    public void setCurrentCreateShape(AlcShape shape) {
+        if (createShapes.size() > 0) {
+            createShapes.set(createShapes.size() - 1, shape);
         }
+    }
+
+    /** Removes the most recently added create shape */
+    public void removeCurrentCreateShape() {
+        if (createShapes.size() > 0) {
+            createShapes.remove(createShapes.size() - 1);
+        }
+    }
+
+    /** Commit all create shapes to the main shapes array */
+    private void commitCreateShapes() {
+        for (int i = 0; i < createShapes.size(); i++) {
+            shapes.add(createShapes.get(i));
+        }
+        createShapes.clear();
+    }
+
+    //////////////////////////////////////////////////////////////
+    // AFFECT SHAPES
+    //////////////////////////////////////////////////////////////
+    /** Returns the most recently added affect shape
+     * @return The current create shape
+     */
+    public AlcShape getCurrentAffectShape() {
+        if (affectShapes.size() > 0) {
+            return affectShapes.get(affectShapes.size() - 1);
+        } else {
+            return null;
+        }
+    }
+
+    /** Sets the most recently added affect shape
+     * @param shape     Shape to become the current affect shape
+     */
+    public void setCurrentAffectShape(AlcShape shape) {
+        if (affectShapes.size() > 0) {
+            affectShapes.set(affectShapes.size() - 1, shape);
+        }
+    }
+
+    /** Removes the most recently added affect shape */
+    public void removeCurrentAffectShape() {
+        if (affectShapes.size() > 0) {
+            affectShapes.remove(affectShapes.size() - 1);
+        }
+    }
+
+    /** Commit all affect shapes to the main shapes array */
+    private void commitAffectShapes() {
+        for (int i = 0; i < affectShapes.size(); i++) {
+            shapes.add(affectShapes.get(i));
+        }
+        affectShapes.clear();
     }
 
     //////////////////////////////////////////////////////////////
@@ -722,27 +663,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             } catch (Throwable e) {
                 System.err.println("passMouseEvent: " + e + " " + eventType);
             }
-        }
-    }
-
-    /** Calls a given method (without any arguements) in each active module */
-    private void passEvent(String methodName) {
-        // Reflection is used here to simplify passing events to each module
-        try {
-            // Pass to the current create module
-            if (root.currentCreate >= 0) {
-                Method method = root.creates[root.currentCreate].getClass().getMethod(methodName);
-                method.invoke(root.creates[root.currentCreate]);
-            }
-            // Pass to all active affect modules
-            for (int i = 0; i < root.currentAffects.length; i++) {
-                if (root.currentAffects[i]) {
-                    Method method = root.affects[i].getClass().getMethod(methodName);
-                    method.invoke(root.affects[i]);
-                }
-            }
-        } catch (Throwable e) {
-            System.err.println("passEvent: " + e + " " + methodName);
         }
     }
 

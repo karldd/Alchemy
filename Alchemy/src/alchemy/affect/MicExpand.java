@@ -34,8 +34,8 @@ import java.awt.geom.PathIterator;
  */
 public class MicExpand extends AlcModule implements AlcMicInterface {
 
-    AlcMicInput micIn;
-    AlcShape currentShape;
+    private AlcMicInput micIn;
+    private AlcShape currentShape;
     private int centreX,  centreY;
     private byte[] buffer;
     private boolean spaceDown = false;
@@ -64,7 +64,17 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     }
 
     private void captureSound() {
-        currentShape = root.canvas.getCurrentShape();
+        if (canvas.createShapes.size() == 0) {
+            if (canvas.shapes.size() > 0) {
+                // Clone the shape then remove the original
+                currentShape = (AlcShape) canvas.getCurrentShape().clone();
+                canvas.removeCurrentShape();
+            }
+        } else {
+            currentShape = canvas.getCurrentCreateShape();
+        }
+
+
         if (currentShape != null) {
 
             // Calculate the centre of the shape
@@ -92,19 +102,18 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private void alterShape() {
         //System.out.println("Alter Shape Called");
         if (currentShape != null) {
+            System.out.println(currentShape);
             GeneralPath expandedPath = expand(currentShape.getShape());
             //AlcShape tempShape = new AlcShape(expandedShape, currentShape.getColour(), currentShape.getAlpha(), currentShape.getStyle(), currentShape.getLineWidth());
             //tempShape.setShape(expandedShape);
             //currentShape.setShape(expandedShape);
-            canvas.setCurrentShape(currentShape.customClone(expandedPath));
+            currentShape.setShape(expandedPath);
+            canvas.setCurrentCreateShape(currentShape);
             canvas.redraw();
         }
     }
 
     private GeneralPath expand(GeneralPath shape) {
-
-
-
         buffer = micIn.getBuffer();
         //float distance = buffer[(int) root.math.random(0, buffer.length)];
         //float distance = (float) micIn.getMicLevel();
@@ -119,7 +128,6 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
         while (!path.isDone()) {
             pathType = path.currentSegment(pathPts);
-
             switch (pathType) {
                 case PathIterator.SEG_MOVETO:
                     float[] expandMove = expandPoint(pathPts, buffer[pathCount]);
@@ -202,6 +210,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             spaceDown = false;
+            canvas.commitShapes();
         }
     }
 

@@ -37,7 +37,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
-    int tempShapeIndex;
+    boolean addShape = true;
 
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
@@ -56,7 +56,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         loadFonts();
 
-        tempShapeIndex = canvas.getTempShapesSize();
         // Call the canvas to preview the returned random shape
         generate();
 
@@ -66,7 +65,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     protected void reselect() {
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(createSubToolBarSection());
-        tempShapeIndex = canvas.getTempShapesSize();
     }
 
     @Override
@@ -74,14 +72,17 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     //canvas.commitTempShape();
     }
 
+    @Override
+    protected void cleared() {
+        addShape = true;
+    }
+
     public AlcSubToolBarSection createSubToolBarSection() {
         AlcSubToolBarSection subToolBarSection = new AlcSubToolBarSection(this);
 
-        // Buttons
+        // Run Button
         AlcSubButton runButton = new AlcSubButton("Create", AlcUtil.getUrlPath("run.png", getClassLoader()));
-        //System.out.println(getClassLoader());
         runButton.setToolTipText("Create Type Shapes (Space)");
-
         runButton.addActionListener(
                 new ActionListener() {
 
@@ -89,10 +90,44 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                         generate();
                     }
                 });
-
-
         subToolBarSection.add(runButton);
+
+        // Add Button
+        AlcSubButton addButton = new AlcSubButton("Add", AlcUtil.getUrlPath("add.png", getClassLoader()));
+        addButton.setToolTipText("Add the current shape (Enter/Return)");
+        addButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        add();
+                    }
+                });
+        subToolBarSection.add(addButton);
+
+        // Remove Button
+        AlcSubButton removeButton = new AlcSubButton("Remove", AlcUtil.getUrlPath("remove.png", getClassLoader()));
+        removeButton.setToolTipText("Remove the current shape (Delete/Backspace)");
+        removeButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        remove();
+                    }
+                });
+        subToolBarSection.add(removeButton);
         return subToolBarSection;
+    }
+
+    private void add() {
+        // Commit the shape
+        canvas.commitShapes();
+        addShape = true;
+    }
+
+    private void remove() {
+        canvas.removeCurrentCreateShape();
+        addShape = true;
+        canvas.redraw();
     }
 
     private void generate() {
@@ -102,7 +137,12 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
         // Set the number of points
         shape.setTotalPoints(pointTally);
-        canvas.setTempShape(tempShapeIndex, shape);
+        if (addShape) {
+            canvas.createShapes.add(shape);
+            addShape = false;
+        } else {
+            canvas.setCurrentCreateShape(shape);
+        }
         canvas.redraw();
     }
 
@@ -237,7 +277,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             cut.next();
 
         }
-        // Keep track of how many points in the shape
+        // Add track of how many points in the shape
         pointTally += pointCount;
 
         // Move the shape to the middle of the screen
@@ -261,8 +301,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        // Commit the shape when the mouse is pressed
-        canvas.commitTempShape(tempShapeIndex);
+        add();
     }
 
     // KEY EVENTS
@@ -272,9 +311,16 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         switch (keyCode) {
             case KeyEvent.VK_SPACE:
-
-                //System.out.println("SPACE");
                 generate();
+                break;
+
+            case KeyEvent.VK_ENTER:
+                add();
+                break;
+
+            case KeyEvent.VK_DELETE:
+            case KeyEvent.VK_BACK_SPACE:
+                remove();
                 break;
 
         }
