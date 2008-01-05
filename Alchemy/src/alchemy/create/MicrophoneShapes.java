@@ -10,7 +10,6 @@ package alchemy.create;
 
 import alchemy.*;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class MicrophoneShapes extends AlcModule implements AlcConstants {
@@ -44,7 +43,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
-        canvas.addShape(makeShape(p));
+        canvas.createShapes.add(makeShape(p));
         oldP = p;
     }
 
@@ -59,8 +58,8 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         Point pt = rightAngle(p, oldP, buffer[0]);
 
         // Need to test if it is null incase the shape has been auto-cleared
-        if (canvas.getCurrentShape() != null) {
-            canvas.getCurrentShape().addCurvePoint(pt);
+        if (canvas.getCurrentCreateShape() != null) {
+            canvas.getCurrentCreateShape().addCurvePoint(pt);
             canvas.redraw();
             oldP = p;
         }
@@ -70,9 +69,10 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it is null incase the shape has been auto-cleared
-        if (canvas.getCurrentShape() != null) {
-            canvas.getCurrentShape().addLastPoint(p);
+        if (canvas.getCurrentCreateShape() != null) {
+            canvas.getCurrentCreateShape().addLastPoint(p);
             canvas.redraw();
+            canvas.commitShapes();
         }
     }
 
@@ -92,27 +92,26 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     }
 
     // KEY EVENTS
-    @Override
-    public void keyReleased(KeyEvent e) {
-        int keyCode = e.getKeyCode();
-        char keyChar = e.getKeyChar();
-
-        //System.out.println(keyChar);
-        switch (keyChar) {
-            case '[':
-                System.out.println("[");
-
-
-                break;
-
-            case ']':
-
-                System.out.println("]");
-
-                break;
-            case 'p':
-                System.out.println(micIn.getMicLevel());
-                break;
-        }
-    }
+//    @Override
+//    public void keyReleased(KeyEvent e) {
+//        char keyChar = e.getKeyChar();
+//
+//        //System.out.println(keyChar);
+//        switch (keyChar) {
+//            case '[':
+//                System.out.println("[");
+//
+//
+//                break;
+//
+//            case ']':
+//
+//                System.out.println("]");
+//
+//                break;
+//            case 'p':
+//                System.out.println(micIn.getMicLevel());
+//                break;
+//        }
+//    }
 }

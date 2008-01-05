@@ -77,8 +77,8 @@ public abstract class AlcModule {
      *  Used to increment a shape, typically for drawn lines etc...
      *  Typically store the temp shape in a canvas buffer until it gets added on mouse up.
      */
-    protected ArrayList<AlcShape> incrementShape(ArrayList<AlcShape> shapes) {
-        return shapes;
+    protected void incrementShape() {
+        //return shapes;
     }
 
     // MODULE DATA
