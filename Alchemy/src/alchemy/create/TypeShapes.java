@@ -26,18 +26,18 @@ import java.awt.event.MouseEvent;
 public class TypeShapes extends AlcModule implements AlcConstants {
 
     // SHAPE GENERATION
-    Font fonts[];
-    FontRenderContext fontRenderContext;
-    Area union;
-    int inc, scale, doubleScale, randX, randY, halfWidth, halfHeight, quarterWidth, quarterHeight, explode;
-    int pointTally = 0;
-    float noisiness;
-    float noiseScale = 0.0F;
+    private Font fonts[];
+    private FontRenderContext fontRenderContext;
+    private Area union;
+    private int scale,  doubleScale,  randX,  randY,  halfWidth,  halfHeight,  quarterWidth,  quarterHeight,  explode;
+    private float noisiness;
+    private float noiseScale = 0.0F;
     // All ASCII characters, sorted according to their visual density
-    String letters =
+    private String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
-    boolean addShape = true;
+    private boolean addShape = true;
+    private AlcSubToolBarSection subToolBarSection;
 
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
@@ -51,20 +51,20 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         quarterWidth = root.getWindowSize().width / 4;
         quarterHeight = root.getWindowSize().height / 4;
 
-        // Add this modules toolbar to the main ui
-        toolBar.addSubToolBarSection(createSubToolBarSection());
-
         loadFonts();
 
         // Call the canvas to preview the returned random shape
         generate();
+
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
 
     }
 
     @Override
     protected void reselect() {
         // Add this modules toolbar to the main ui
-        toolBar.addSubToolBarSection(createSubToolBarSection());
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     @Override
@@ -77,8 +77,8 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         addShape = true;
     }
 
-    public AlcSubToolBarSection createSubToolBarSection() {
-        AlcSubToolBarSection subToolBarSection = new AlcSubToolBarSection(this);
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
 
         // Run Button
         AlcSubButton runButton = new AlcSubButton("Create", AlcUtil.getUrlPath("run.png", getClassLoader()));
@@ -115,7 +115,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                     }
                 });
         subToolBarSection.add(removeButton);
-        return subToolBarSection;
     }
 
     private void add() {
@@ -131,12 +130,10 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     private void generate() {
-        // Reset the point tally for the new shape
-        pointTally = 0;
         // Create a new shape with default properties
         AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
         // Set the number of points
-        shape.setTotalPoints(pointTally);
+        shape.recalculateTotalPoints();
         if (addShape) {
             canvas.createShapes.add(shape);
             addShape = false;
@@ -161,7 +158,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         randX = quarterWidth + (int) root.math.random(halfWidth);
         randY = quarterHeight + (int) root.math.random(halfHeight);
 
-        inc = 0;
         scale = (int) root.math.random(2, 8);
         doubleScale = scale << 1;
 
@@ -243,7 +239,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             // TODO - review this code to see what causes the: "java.lang.InternalError: Odd number of new curves!" error
             // Only add the first segment
             if (segCount == 1) {
-                if (pointCount < 20) {
+                if (pointCount < 15) {
                     switch (cutType) {
                         case PathIterator.SEG_MOVETO:
                             newShape.moveTo(cutPts[0], cutPts[1]);
@@ -277,8 +273,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             cut.next();
 
         }
-        // Add track of how many points in the shape
-        pointTally += pointCount;
 
         // Move the shape to the middle of the screen
         AffineTransform newTr = new AffineTransform();

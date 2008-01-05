@@ -20,46 +20,42 @@
  */
 package alchemy.ui;
 
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import javax.swing.*;
 
 /**
- * AlcSlider
+ * AlcSubSlider
  * 
  * 
  */
-public class AlcSlider extends JPanel {
+public class AlcSubSlider extends JPanel {
 
-    protected JSlider slider;
+    public JSlider slider;
 
-    public AlcSlider(String name, int minValue, int maxValue, int startValue) {
+    public AlcSubSlider(String name, int minValue, int maxValue, int startValue) {
 
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(4, 8, 6, 4));
         this.setOpaque(false);
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
         slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, startValue);
-        //alphaSlider.setMajorTickSpacing(75); // sets numbers for biggest tick marks
-        slider.setMinorTickSpacing(25);  // smaller tick marks
-        slider.setPaintTicks(true);     // display the ticks
-
-        // TODO - customise this slider?  or set to number box? http://www.java2s.com/Code/Java/Swing-Components/ThumbSliderExample1.htm
-        // or make a popupmenu with a slider inside?
+        //slider.setMajorTickSpacing(85); // sets numbers for biggest tick marks
+        slider.setMinorTickSpacing(10);  // smaller tick marks
+        //slider.setPaintTicks(true);     // display the ticks
 
         //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
         slider.setOpaque(false);
         //alphaSlider.setBackground(Color.black);
         //alphaSlider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(85, 28));
-        slider.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        slider.setPreferredSize(new Dimension(85, 20));
+        slider.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         this.add(slider);
 
         JLabel label = new JLabel(name);
-        label.setFont(AlcToolBar.toolBarFont);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setFont(AlcToolBar.subToolBarFont);
+        label.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
         //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(label);
 

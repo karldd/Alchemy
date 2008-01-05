@@ -16,12 +16,14 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class AlcToolBar extends JComponent implements AlcConstants {
+public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener {
 
     /** Reference to the root */
     private final AlcMain root;
     /** Visibility of the ToolBar */
     private boolean toolBarVisible = true;
+    /** Toolbar attached or not */
+    private boolean toolBarAttached = true;
     /** Height of the ToolBar */
     public static final int toolBarHeight = 60;
     /** Total height of all tool bars */
@@ -57,6 +59,11 @@ public class AlcToolBar extends JComponent implements AlcConstants {
 
         // General Toolbar settings
         this.root = root;
+        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        this.setOpaque(false);
+        this.setName("Toolbar");
+        this.setVisible(false);
+        this.addMouseListener(this);
         // Make this a Box Layout so all submenus are stacked below
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -277,26 +284,70 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         this.revalidate();
     }
 
-    /** Set the visibility of the UI Toolbar */
-    public void setToolBarVisible(boolean b) {
-        this.setVisible(b);
-        // Turn off the popup(s) when we leave the toolbar area
-        if (!b) {
-            if (createButton != null) {
-                createButton.hidePopup();
-            }
-            if (affectButton != null) {
-                affectButton.hidePopup();
-            }
-        }
-        toolBarVisible = b;
-    }
-
     private void refreshToolBar() {
         // Recalculate the total height of the tool bar
         calculateTotalHeight();
         // Then resize it
         resizeToolBar();
+    }
+
+    /** Set the visibility of the UI Toolbar */
+    public void setToolBarVisible(boolean b) {
+        if (toolBarAttached) {
+            System.out.println("Set visibility " + this.isVisible());
+            this.setVisible(b);
+            // Turn off the popup(s) when we leave the toolbar area
+            if (!b) {
+                if (createButton != null) {
+                    createButton.hidePopup();
+                }
+                if (affectButton != null) {
+                    affectButton.hidePopup();
+                }
+            }
+            toolBarVisible = b;
+        }
+    }
+
+    private void checkParentWindow() {
+        System.out.println("Check Parent");
+        Container container = this.getTopLevelAncestor();
+        if (container != null) {
+            if (!container.getClass().getName().startsWith("alchemy")) {
+                if (toolBarAttached) {
+                    // JUST DETACHED
+                    System.out.println("JUST DETACHED");
+                    toolBarAttached = false;
+                    System.out.println(container.getClass().getName());
+
+                    Window window = (Window) container;
+                    window.setAlwaysOnTop(true);
+                    window.addWindowListener(new WindowAdapter() {
+
+                        @Override
+                        public void windowClosing(WindowEvent e) {
+                            System.out.println("Close button clicked");
+                            toolBarAttached = true;
+                            //setVisible(false);
+                            //System.out.println("ToolBar " + JLayeredPane.getLayer(root.toolBar));
+                            //System.out.println("Canvas " + JLayeredPane.getLayer(root.canvas));
+                            //root.validate();
+                            //root.setComponentZOrder(root.toolBar, 1);
+                            //root.setComponentZOrder(root.canvas, 0);
+                            // TODO - find out why the toolbar disappears                            
+                            System.out.println("ToolBar " + root.getComponentZOrder(root.toolBar));
+                            System.out.println("Canvas " + root.getComponentZOrder(root.canvas));
+                            //root.canvas.setVisible(false);
+                            //root.canvas.setVisible(true);
+                            //setVisible(true);
+                        }
+                    });
+                }
+            } else {
+                toolBarAttached = true;
+            }
+
+        }
     }
 
     /** Add a Create Module sub-toolbar */
@@ -323,6 +374,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
             if (createSubToolBarSection != null) {
                 createSubToolBarSection = null;
                 currentSubToolBarSections--;
+
             }
 
         // Otherwise it is an affect and we take away 1 for the offset
@@ -347,7 +399,8 @@ public class AlcToolBar extends JComponent implements AlcConstants {
             subToolBar.add(createSubToolBarSection);
         }
         // Add the affect sections
-        for (int i = 0; i < affectSubToolBarSections.length; i++) {
+        for (int i = 0; i <
+                affectSubToolBarSections.length; i++) {
 
             if (affectSubToolBarSections[i] != null) {
                 // If there is odd number of components then add a separator
@@ -357,9 +410,10 @@ public class AlcToolBar extends JComponent implements AlcConstants {
                 // Then add the section
                 subToolBar.add(affectSubToolBarSections[i]);
             }
+
         }
         // TODO - why doesn't the subtoolbar section display immediately when reloaded?
-        
+
         //System.out.println("Count: " + subToolBar.getComponentCount());
 
         if (currentSubToolBarSections > 0) {
@@ -390,6 +444,7 @@ public class AlcToolBar extends JComponent implements AlcConstants {
         if (subToolBar.isVisible()) {
             newTotalHeight += subToolBar.getHeight();
         }
+
         this.totalHeight = newTotalHeight;
     }
 
@@ -400,5 +455,21 @@ public class AlcToolBar extends JComponent implements AlcConstants {
 
     public void loadCreate(int index) {
         root.setCurrentCreate(index);
+    }
+
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    public void mousePressed(MouseEvent e) {
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        checkParentWindow();
+    }
+
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    public void mouseExited(MouseEvent e) {
     }
 }

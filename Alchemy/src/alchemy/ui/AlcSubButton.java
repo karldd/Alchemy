@@ -31,7 +31,7 @@ public class AlcSubButton extends JButton {
         this.setFont(AlcToolBar.subToolBarFont);
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
-        this.setMargin(new Insets(0, 0, 0, 0));
+        this.setMargin(new Insets(4, 0, 0, 0));
 
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button

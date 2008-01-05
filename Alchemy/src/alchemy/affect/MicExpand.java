@@ -21,11 +21,15 @@
 package alchemy.affect;
 
 import alchemy.*;
+import alchemy.ui.*;
+import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * MicExpand
@@ -36,13 +40,22 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     private AlcMicInput micIn;
     private AlcShape currentShape;
+    private int activeShape = -1;
     private int centreX,  centreY;
     private byte[] buffer;
-    private boolean spaceDown = false;
+    private boolean running = false;
     // Timing
+    private long delayGap = 10;
     private boolean firstRun = true;
-    private long delayGap = 40;
     private long delayTime;
+    private long mouseDelayGap = 500;
+    private boolean mouseFirstRun = true;
+    private long mouseDelayTime;
+    //
+    private boolean mouseDown = false;
+    private AlcSubToolBarSection subToolBarSection;
+    //
+    private float volume = 0.25F;
 
     public MicExpand() {
 
@@ -50,30 +63,58 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     @Override
     public void setup() {
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     @Override
     public void deselect() {
-        micIn.stopMicInput();
-    //micIn = null;
+        stopExpand();
     }
 
     @Override
     public void reselect() {
-        setup();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+        // Volume Slider
+        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, 25);
+        volumeSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            int value = source.getValue();
+                            volume = value * 0.01F;
+                            System.out.println(volume);
+                        }
+                    }
+                });
+        subToolBarSection.add(volumeSlider);
+
+
+    // Run Button
+    //        AlcSubButton runButton = new AlcSubButton("Create", AlcUtil.getUrlPath("run.png", getClassLoader()));
+    //        runButton.setToolTipText("Create Type Shapes (Space)");
+    //        runButton.addActionListener(
+    //                new ActionListener() {
+    //
+    //                    public void actionPerformed(ActionEvent e) {
+    //                    //generate();
+    //                    }
+    //                });
+    //        subToolBarSection.add(runButton);
+
+
     }
 
     private void captureSound() {
-        if (canvas.createShapes.size() == 0) {
-            if (canvas.shapes.size() > 0) {
-                // Clone the shape then remove the original
-                currentShape = (AlcShape) canvas.getCurrentShape().clone();
-                canvas.removeCurrentShape();
-            }
-        } else {
-            currentShape = canvas.getCurrentCreateShape();
-        }
 
+        currentShape = canvas.shapes.get(activeShape);
 
         if (currentShape != null) {
 
@@ -85,15 +126,16 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             //System.out.println("Centres: " + centreX + " " + centreY);
 
             int totalPoints = currentShape.getTotalPoints();
-            // TotalPoints has to be an even number
+            //int totalPoints = 100000;
+            //TotalPoints has to be an even number
             if (totalPoints % 2 != 0) {
                 totalPoints += 1;
-                System.out.println("One Added to totalPoints");
+            // For some reason it likes having a few more points???
             } else {
                 totalPoints += 2;
             }
             // Create a new MicInput Object with a buffer equal to the number of points
-
+            running = true;
             micIn = new AlcMicInput(this, totalPoints);
             micIn.startMicInput();
         }
@@ -102,13 +144,12 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private void alterShape() {
         //System.out.println("Alter Shape Called");
         if (currentShape != null) {
-            System.out.println(currentShape);
             GeneralPath expandedPath = expand(currentShape.getShape());
             //AlcShape tempShape = new AlcShape(expandedShape, currentShape.getColour(), currentShape.getAlpha(), currentShape.getStyle(), currentShape.getLineWidth());
             //tempShape.setShape(expandedShape);
             //currentShape.setShape(expandedShape);
             currentShape.setShape(expandedPath);
-            canvas.setCurrentCreateShape(currentShape);
+            //canvas.setCurrentCreateShape(currentShape);
             canvas.redraw();
         }
     }
@@ -140,26 +181,27 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                 case PathIterator.SEG_QUADTO:
                     float[] expandQuad = expandPoint(pathPts, buffer[pathCount]);
                     newShape.quadTo(expandQuad[0], expandQuad[1], expandQuad[2], expandQuad[3]);
+                    //newShape.quadTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3]);
                     break;
                 case PathIterator.SEG_CUBICTO:
-                    float[] expandCubic = expandPoint(pathPts, buffer[pathCount]);
-                    newShape.curveTo(expandCubic[0], expandCubic[1], expandCubic[2], expandCubic[3], expandCubic[4], expandCubic[5]);
+                    // Curves tend to go crazy when processed so leave em out
+                    //float[] expandCubic = expandPoint(pathPts, buffer[pathCount]);
+                    //newShape.curveTo(expandCubic[0], expandCubic[1], expandCubic[2], expandCubic[3], expandCubic[4], expandCubic[5]);
+                    newShape.curveTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3], pathPts[4], pathPts[5]);
                     break;
                 case PathIterator.SEG_CLOSE:
                     newShape.closePath();
                     break;
             }
-
             pathCount++;
             path.next();
         }
-
         return newShape;
-
     }
 
     private float[] expandPoint(float[] pts, float distance) {
         float[] expandedPts = new float[pts.length];
+        float adjustedDistance = distance * volume;
         //System.out.println(distance);
         //distance = distance/10;
         // Points come in multiples of 2, either 2, 4 or 6
@@ -168,8 +210,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             //double angle = Math.atan2(centreX - pts[i], centreY - pts[i + 1]);
             double angle = Math.atan2(centreY - pts[i + 1], centreX - pts[i]);
             // Convert the polar coordinates to cartesian
-            double offsetX = distance * Math.cos(angle);
-            double offsetY = distance * Math.sin(angle);
+            double offsetX = adjustedDistance * Math.cos(angle);
+            double offsetY = adjustedDistance * Math.sin(angle);
 
             //System.out.println("Offsets: "+ offsetX + " " + offsetY);
 
@@ -179,9 +221,60 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         return expandedPts;
     }
 
+    private void mouseInside(Point p) {
+        int currentActiveShape = -1;
+        for (int i = 0; i < canvas.shapes.size(); i++) {
+            GeneralPath currentPath = canvas.shapes.get(i).getShape();
+            if (currentPath.contains(p)) {
+                currentActiveShape = i;
+            }
+        }
+        // Inside a shape
+        if (currentActiveShape >= 0) {
+            // Filter out repeat calls
+            if (currentActiveShape != activeShape) {
+                activeShape = currentActiveShape;
+                captureSound();
+            }
+        // Outside a shape
+        } else {
+            stopExpand();
+        }
+    }
+
+    private void stopExpand() {
+        activeShape = -1;
+        if (running) {
+            micIn.stopMicInput();
+            running = false;
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        mouseDown = true;
+    }
+
     @Override
     public void mouseReleased(MouseEvent e) {
-    //captureSound();
+        mouseDown = false;
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        if (!mouseDown) {
+            // Dispatch checking for intersection at a slow rate
+            if (mouseFirstRun) {
+                mouseDelayTime = System.currentTimeMillis();
+                mouseInside(e.getPoint());
+                mouseFirstRun = false;
+            } else {
+                if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
+                    mouseDelayTime = System.currentTimeMillis();
+                    mouseInside(e.getPoint());
+                }
+            }
+        }
     }
 
     public void bufferFull() {
@@ -191,9 +284,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             alterShape();
             firstRun = false;
         } else {
-            // If the spacebar comes up
-            if (!spaceDown) {
-                deselect();
+            if (!running) {
+                stopExpand();
             // If the spacebar is down
             } else {
                 // If there has been enough delay
@@ -201,28 +293,6 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                     delayTime = System.currentTimeMillis();
                     alterShape();
                 }
-            }
-        }
-    }
-
-    // KEY EVENTS
-    @Override
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            spaceDown = false;
-            canvas.commitShapes();
-        }
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            // Filter out the Key repeats
-            if (!spaceDown) {
-                System.out.println("SPACE BAR");
-                spaceDown = true;
-                firstRun = true;
-                captureSound();
             }
         }
     }
