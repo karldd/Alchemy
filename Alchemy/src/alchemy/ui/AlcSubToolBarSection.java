@@ -37,8 +37,8 @@ public class AlcSubToolBarSection extends JPanel {
 
         this.module = module;
         this.setOpaque(false);
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        this.add(new AlcLabel(module.getName(), null));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        this.add(new AlcSubLabel(module.getName()));
 
 
     }

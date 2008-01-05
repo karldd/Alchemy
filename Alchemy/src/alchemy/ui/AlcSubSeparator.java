@@ -21,7 +21,7 @@
 package alchemy.ui;
 
 import alchemy.AlcUtil;
-import java.awt.Component;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 /**
@@ -32,13 +32,12 @@ import javax.swing.JLabel;
 public class AlcSubSeparator extends JLabel {
 
     public AlcSubSeparator() {
-        
+
         this.setIcon(AlcUtil.createImageIcon("data/sub-separator.png"));
-        this.setAlignmentY(Component.TOP_ALIGNMENT);
-        
+        //this.setVerticalAlignment(SwingConstants.BOTTOM);
         // Top Left Bottom Right
-        //this.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
-        //this.setLocation(this.getX(), this.getY()-10);
+        this.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+    //this.setLocation(this.getX(), this.getY()-10);
     }
 }
 

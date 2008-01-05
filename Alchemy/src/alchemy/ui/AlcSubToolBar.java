@@ -12,7 +12,7 @@ import alchemy.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class AlcSubToolBar extends JComponent {
+public class AlcSubToolBar extends JPanel {
 
     private AlcMain root;
     //private AlcToolBar parent;
@@ -25,15 +25,17 @@ public class AlcSubToolBar extends JComponent {
         //this.parent = root.toolBar;
         // Allow Transparency
         this.setOpaque(false);
-
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        //this.setBorderPainted(false);
+        //this.setFloatable(false); 
+        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
 
-        //this.add(new AlcLabel(parent, title, null, description));
+    //this.add(new AlcLabel(parent, title, null, description));
 
-        //this.setAlignmentY(Component.TOP_ALIGNMENT);
+    // this.setAlignmentY(Component.TOP_ALIGNMENT);
 
     //this.setBackground(Color.BLACK);
     //this.setLocation(0, parent.getToolBarHeight());

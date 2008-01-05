@@ -70,6 +70,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcMenuBar menuBar;
     /** About Box */
     //protected AlcAboutBox aboutBox;
+    /** Layered pane in which the canvas and toolbar sit */
+    public JLayeredPane layeredPane;
     //
     //////////////////////////////////////////////////////////////
     // ALCHEMY STATUS
@@ -185,7 +187,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
 
         // LAYERED PANE
-        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane = new JLayeredPane();
         // Add the UI on top of the canvas
         layeredPane.add(canvas, new Integer(1));
         // LOAD SESSION
@@ -193,7 +195,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         layeredPane.add(toolBar, new Integer(2));
 
         // FRAME
-        this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
+        this.setLayeredPane(layeredPane);           // Set the layered pane as the main content pane
         this.setPreferredSize(windowSize);          // Set the window size
         this.addComponentListener(this);            // Add a component listener to detect window resizing
         //this.addWindowStateListener(this);          // Add a window state listener to detect window maximising

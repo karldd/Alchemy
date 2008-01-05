@@ -11,9 +11,9 @@ package alchemy.ui;
 import alchemy.*;
 import java.awt.*;
 import javax.swing.BorderFactory;
-import javax.swing.JToolBar;
+import javax.swing.JPanel;
 
-public class AlcMainToolBar extends JToolBar {
+public class AlcMainToolBar extends JPanel {
 
     AlcMain root;
     AlcToolBar parent;
@@ -29,16 +29,16 @@ public class AlcMainToolBar extends JToolBar {
 
         // Allow a transparent background
         this.setOpaque(false);
-        this.setName("Toolbar");
+        //this.setName("Toolbar");
         //this.setBackground(AlcToolBar.toolBarBgColour);
         //this.setBorderPainted(false);
-        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         // Insets(int top, int left, int bottom, int right)
         //this.setMargin(new Insets(0, 0, 0, 0));
 
         //this.setBounds(0, 0, root.getWindowSize().width, this.height);
         // Set to true to allow button rollovers in the toolbar
-        this.setRollover(true);
+        //this.setRollover(true);
         
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 6));
         //this.setLayout(new BorderLayout());
