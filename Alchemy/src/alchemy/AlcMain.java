@@ -517,26 +517,21 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     private void passKeyEvent(KeyEvent event, String eventType) {
         // Reflection is used here to simplify passing events to each module
-
-        // Pass to the current create module
-        if (currentCreate >= 0) {
-            try {
+        try {
+            // Pass to the current create module
+            if (currentCreate >= 0) {
                 Method method = creates[currentCreate].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
                 method.invoke(creates[currentCreate], new Object[]{event});
-            } catch (Throwable e) {
-                System.err.println(e);
             }
-        }
-        // Pass to all active affect modules
-        for (int i = 0; i < currentAffects.length; i++) {
-            if (currentAffects[i]) {
-                try {
+            // Pass to all active affect modules
+            for (int i = 0; i < currentAffects.length; i++) {
+                if (currentAffects[i]) {
                     Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
                     method.invoke(affects[i], new Object[]{event});
-                } catch (Throwable e) {
-                    System.err.println(e);
                 }
             }
+        } catch (Throwable e) {
+            System.err.println("passKeyEvent: " + e + " " + eventType);
         }
 
     }

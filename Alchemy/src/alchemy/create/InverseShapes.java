@@ -26,7 +26,6 @@ public class InverseShapes extends AlcModule {
 
     @Override
     protected void setup() {
-        canvas.setShapeCreation(false);
     }
 
     @Override
@@ -37,8 +36,6 @@ public class InverseShapes extends AlcModule {
 
     @Override
     protected void deselect() {
-        canvas.setShapeCreation(true);
-        //canvas.commitTempShape();
     }
 
     @Override

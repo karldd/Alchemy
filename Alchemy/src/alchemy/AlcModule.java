@@ -4,6 +4,7 @@ import alchemy.ui.AlcToolBar;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.ArrayList;
 
 public abstract class AlcModule {
 
@@ -58,12 +59,16 @@ public abstract class AlcModule {
     protected void cleared() {
     }
 
+    /** Called after all temp shapes are commited */
+    protected void commited() {
+    }
+
     /**
      *  Affect - Process an AlcShape.
      *  Used to process whole shapes, typically those generated from create modules.
      *  Get the shape, processShape it in some way and return and replace the original.
      */
-    public AlcShape processShape(AlcShape shape) {
+    protected AlcShape processShape(AlcShape shape) {
         return shape;
     }
 
@@ -72,7 +77,8 @@ public abstract class AlcModule {
      *  Used to increment a shape, typically for drawn lines etc...
      *  Typically store the temp shape in a canvas buffer until it gets added on mouse up.
      */
-    protected void incrementShape(AlcShape shape) {
+    protected ArrayList<AlcShape> incrementShape(ArrayList<AlcShape> shapes) {
+        return shapes;
     }
 
     // MODULE DATA

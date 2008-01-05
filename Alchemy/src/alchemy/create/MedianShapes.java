@@ -45,6 +45,7 @@ public class MedianShapes extends AlcModule {
     Point originDifference;
     /** Counter for the points made when redrawing */
     int pointCount = 0;
+    int tempShapeIndex1, tempShapeIndex2;
 
     public MedianShapes() {
     // TODO - Change name, implement so it works with other affects
@@ -70,8 +71,8 @@ public class MedianShapes extends AlcModule {
                 controlShapePoints.clear();
             }
             //startTime = System.currentTimeMillis();
-
-            canvas.addShape(makeShape(p));
+            tempShapeIndex1 = canvas.getTempShapesSize();
+            canvas.addTempShape(makeShape(p));
 
             controlShapePoints.add(p);
 
@@ -89,7 +90,8 @@ public class MedianShapes extends AlcModule {
             // Set the current point into memory for nexttime
             controlShapePointsBuffer.add(pointCount, p);
 
-            canvas.setTempShape(makeShape(p));
+            tempShapeIndex2 = canvas.getTempShapesSize();
+            canvas.addTempShape(makeShape(p));
         }
 
     }
@@ -121,14 +123,14 @@ public class MedianShapes extends AlcModule {
                     Point tempPoint = new Point(xOffset, yOffset);
                     //controlPoint.x += p.x + xOffset;
                     //controlPoint.y += p.y + yOffset;
-                    canvas.getCurrentShape().addCurvePoint(tempPoint);
+                    canvas.getTempShape(tempShapeIndex1).addCurvePoint(tempPoint);
 
                 } else {
                 //canvas.getCurrentShape().addCurvePoint(p);
                 }
                 controlShapePointsBuffer.add(pointCount, p);
 
-                canvas.getTempShape().addCurvePoint(p);
+                canvas.getTempShape(tempShapeIndex2).addCurvePoint(p);
                 canvas.redraw();
             }
 
@@ -146,7 +148,8 @@ public class MedianShapes extends AlcModule {
             if (captureControlGesture) {
                 captureControlGesture = false;
 
-                canvas.getCurrentShape().addLastPoint(p);
+                canvas.getTempShape(tempShapeIndex1).addLastPoint(p);
+                canvas.commitTempShape(tempShapeIndex1);
                 canvas.redraw();
 
                 controlShapePoints.add(p);
@@ -157,8 +160,8 @@ public class MedianShapes extends AlcModule {
                 //canvas.getCurrentShape().addLastPoint(p);
 
 
-                canvas.getTempShape().addLastPoint(p);
-                canvas.commitTempShape();
+                canvas.getTempShape(tempShapeIndex2).addLastPoint(p);
+                canvas.commitTempShape(tempShapeIndex2);
                 canvas.redraw();
             //controlShapePoints.removeRange(pointCount, 100);
             }
