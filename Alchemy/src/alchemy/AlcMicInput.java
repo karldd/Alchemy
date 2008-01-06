@@ -111,7 +111,7 @@ public class AlcMicInput extends Thread {
     // are shown in comments following
     // the declarations.
     
-    // TODO - Check the compatibility of this across machines
+    // TODO - Check the compatibility of getAudioFormat() across machines
     private AudioFormat getAudioFormat(){
         float sampleRate = 44100.0F;
         //8000,11025,16000,22050,44100

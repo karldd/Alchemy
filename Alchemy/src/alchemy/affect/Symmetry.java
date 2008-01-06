@@ -9,10 +9,7 @@
 package alchemy.affect;
 
 import alchemy.*;
-import java.awt.Shape;
-import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 
 public class Symmetry extends AlcModule implements AlcConstants {

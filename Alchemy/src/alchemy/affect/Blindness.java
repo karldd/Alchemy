@@ -71,17 +71,17 @@ public class Blindness extends AlcModule implements AlcConstants {
                 });
         subToolBarSection.add(redrawButton);
 
-        AlcSubToggleButton blindShapeButton = new AlcSubToggleButton("Blind Shapes", AlcUtil.getUrlPath("redraw.png", getClassLoader()));
-        blindShapeButton.setToolTipText("Redraw the screen after each shape");
+        AlcSubToggleButton autoRedrawButton = new AlcSubToggleButton("Autoredraw", AlcUtil.getUrlPath("autoredraw.png", getClassLoader()));
+        autoRedrawButton.setToolTipText("Redraw the screen after each shape");
 
-        blindShapeButton.addActionListener(
+        autoRedrawButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
                         toggleBlindShapes();
                     }
                 });
-        subToolBarSection.add(blindShapeButton);
+        subToolBarSection.add(autoRedrawButton);
     }
 
     private void toggleBlindShapes() {

@@ -22,9 +22,13 @@ package alchemy.affect;
 
 import alchemy.*;
 import alchemy.ui.*;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import javax.swing.JSlider;
@@ -54,8 +58,10 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     //
     private boolean mouseDown = false;
     private AlcSubToolBarSection subToolBarSection;
-    //
-    private float volume = 0.25F;
+    // UI settings
+    private float waveVolume = 0.1F;
+    private float levelVolume = 0.1F;
+    private boolean wave = true;
 
     public MicExpand() {
 
@@ -81,7 +87,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Volume Slider
-        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, 25);
+        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, 10);
         volumeSlider.slider.addChangeListener(
                 new ChangeListener() {
 
@@ -89,27 +95,36 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                         JSlider source = (JSlider) e.getSource();
                         if (!source.getValueIsAdjusting()) {
                             int value = source.getValue();
-                            volume = value * 0.01F;
-                            System.out.println(volume);
+                            waveVolume = value * 0.01F;
+                            levelVolume = value * 0.01F;
+                        //System.out.println(volume);
                         }
                     }
                 });
         subToolBarSection.add(volumeSlider);
 
+        // Level/Wave button
+        AlcSubToggleButton levelWaveButton = new AlcSubToggleButton("Level/Wave", AlcUtil.getUrlPath("levelwave.png", getClassLoader()));
+        levelWaveButton.setToolTipText("Redraw the screen after each shape");
 
-    // Run Button
-    //        AlcSubButton runButton = new AlcSubButton("Create", AlcUtil.getUrlPath("run.png", getClassLoader()));
-    //        runButton.setToolTipText("Create Type Shapes (Space)");
-    //        runButton.addActionListener(
-    //                new ActionListener() {
-    //
-    //                    public void actionPerformed(ActionEvent e) {
-    //                    //generate();
-    //                    }
-    //                });
-    //        subToolBarSection.add(runButton);
+        levelWaveButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        toggleLevelWave();
+                    }
+                });
+        subToolBarSection.add(levelWaveButton);
 
 
+    }
+
+    private void toggleLevelWave() {
+        if (wave) {
+            wave = false;
+        } else {
+            wave = true;
+        }
     }
 
     private void captureSound() {
@@ -123,8 +138,11 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             centreX = size.width / 2 + size.x;
             centreY = size.height / 2 + size.y;
 
-            //System.out.println("Centres: " + centreX + " " + centreY);
+            // Default value
+            //int totalPoints = 100;
 
+            //System.out.println("Centres: " + centreX + " " + centreY);
+            //if (wave) {
             int totalPoints = currentShape.getTotalPoints();
             //int totalPoints = 100000;
             //TotalPoints has to be an even number
@@ -134,6 +152,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             } else {
                 totalPoints += 2;
             }
+            //}
             // Create a new MicInput Object with a buffer equal to the number of points
             running = true;
             micIn = new AlcMicInput(this, totalPoints);
@@ -144,18 +163,58 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private void alterShape() {
         //System.out.println("Alter Shape Called");
         if (currentShape != null) {
-            GeneralPath expandedPath = expand(currentShape.getShape());
-            //AlcShape tempShape = new AlcShape(expandedShape, currentShape.getColour(), currentShape.getAlpha(), currentShape.getStyle(), currentShape.getLineWidth());
-            //tempShape.setShape(expandedShape);
-            //currentShape.setShape(expandedShape);
-            currentShape.setShape(expandedPath);
-            //canvas.setCurrentCreateShape(currentShape);
-            canvas.redraw();
+
+            GeneralPath currentPath = currentShape.getShape();
+            Rectangle rect = currentPath.getBounds();
+            Dimension windowSize = root.getWindowSize();
+            if (rect.contains(0, 0, windowSize.width, windowSize.height)) {
+                if (activeShape >= 0) {
+                    canvas.shapes.remove(activeShape);
+                    activeShape = -1;
+                    currentShape = null;
+                    canvas.redraw();
+                }
+                stopExpand();
+                //System.out.println("CONTAINED");
+
+            } else {
+
+                GeneralPath expandedPath = null;
+                if (wave) {
+                    expandedPath = expand(currentShape.getShape());
+                } else {
+                    double adjustedLevel = (micIn.getMicLevel() / 2) * levelVolume;
+                    //System.out.println(adjustedLevel);
+
+                    expandedPath = (GeneralPath) currentPath.createTransformedShape(getScaleTransform(adjustedLevel, rect));
+                }
+                currentShape.setShape(expandedPath);
+                //canvas.setCurrentCreateShape(currentShape);
+                canvas.redraw();
+            }
         }
     }
 
+    /* Gets a scale transform based on the sound level */
+    private AffineTransform getScaleTransform(double level, Rectangle rect) {
+        AffineTransform scaleTransform = new AffineTransform();
+
+        double offsetX = rect.x + (rect.width / 2);
+        double offsetY = rect.y + (rect.height / 2);
+
+        scaleTransform.translate(offsetX, offsetY);
+        scaleTransform.scale(level, level);
+        scaleTransform.translate(-offsetX, -offsetY);
+
+        return scaleTransform;
+    }
+
     private GeneralPath expand(GeneralPath shape) {
+        //if (wave) {
         buffer = micIn.getBuffer();
+        //} else {
+        //  dist = (float) micIn.getMicLevel();
+        //}
         //float distance = buffer[(int) root.math.random(0, buffer.length)];
         //float distance = (float) micIn.getMicLevel();
         //System.out.println(distance);
@@ -168,26 +227,30 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         int pathCount = 0;
 
         while (!path.isDone()) {
+
+            float dist = buffer[pathCount];
+
             pathType = path.currentSegment(pathPts);
             switch (pathType) {
                 case PathIterator.SEG_MOVETO:
-                    float[] expandMove = expandPoint(pathPts, buffer[pathCount]);
+                    float[] expandMove = expandPoint(pathPts, dist);
                     newShape.moveTo(expandMove[0], expandMove[1]);
                     break;
                 case PathIterator.SEG_LINETO:
-                    float[] expandLine = expandPoint(pathPts, buffer[pathCount]);
+                    float[] expandLine = expandPoint(pathPts, dist);
                     newShape.lineTo(expandLine[0], expandLine[1]);
                     break;
                 case PathIterator.SEG_QUADTO:
-                    float[] expandQuad = expandPoint(pathPts, buffer[pathCount]);
+                    float[] expandQuad = expandPoint(pathPts, dist);
                     newShape.quadTo(expandQuad[0], expandQuad[1], expandQuad[2], expandQuad[3]);
                     //newShape.quadTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3]);
                     break;
                 case PathIterator.SEG_CUBICTO:
                     // Curves tend to go crazy when processed so leave em out
+                    newShape.curveTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3], pathPts[4], pathPts[5]);
                     //float[] expandCubic = expandPoint(pathPts, buffer[pathCount]);
                     //newShape.curveTo(expandCubic[0], expandCubic[1], expandCubic[2], expandCubic[3], expandCubic[4], expandCubic[5]);
-                    newShape.curveTo(pathPts[0], pathPts[1], pathPts[2], pathPts[3], pathPts[4], pathPts[5]);
+
                     break;
                 case PathIterator.SEG_CLOSE:
                     newShape.closePath();
@@ -201,22 +264,27 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     private float[] expandPoint(float[] pts, float distance) {
         float[] expandedPts = new float[pts.length];
-        float adjustedDistance = distance * volume;
+        float adjustedDistance = distance * waveVolume;
+
         //System.out.println(distance);
         //distance = distance/10;
         // Points come in multiples of 2, either 2, 4 or 6
         for (int i = 0; i < pts.length / 2; i += 2) {
+
+            float p1 = pts[i];
+            float p2 = pts[i + 1];
+
             // Calculate the angle in radians between the centre and the point
             //double angle = Math.atan2(centreX - pts[i], centreY - pts[i + 1]);
-            double angle = Math.atan2(centreY - pts[i + 1], centreX - pts[i]);
+            double angle = Math.atan2(centreY - p2, centreX - p1);
             // Convert the polar coordinates to cartesian
             double offsetX = adjustedDistance * Math.cos(angle);
             double offsetY = adjustedDistance * Math.sin(angle);
 
             //System.out.println("Offsets: "+ offsetX + " " + offsetY);
 
-            expandedPts[i] = (float) (pts[i] + offsetX);
-            expandedPts[i + 1] = (float) (pts[i + 1] + offsetY);
+            expandedPts[i] = (float) (p1 + offsetX);
+            expandedPts[i + 1] = (float) (p2 + offsetY);
         }
         return expandedPts;
     }
