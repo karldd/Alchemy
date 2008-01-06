@@ -64,6 +64,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         this.setName("Toolbar");
         this.setVisible(false);
         this.addMouseListener(this);
+        this.setFloatable(false);
         // Make this a Box Layout so all submenus are stacked below
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -294,7 +295,6 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean b) {
         if (toolBarAttached) {
-            System.out.println("Set visibility " + this.isVisible());
             this.setVisible(b);
             // Turn off the popup(s) when we leave the toolbar area
             if (!b) {
@@ -310,13 +310,13 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     }
 
     private void checkParentWindow() {
-        System.out.println("Check Parent");
+        //System.out.println("Check Parent");
         Container container = this.getTopLevelAncestor();
         if (container != null) {
             if (!container.getClass().getName().startsWith("alchemy")) {
                 if (toolBarAttached) {
                     // JUST DETACHED
-                    System.out.println("JUST DETACHED");
+                    //System.out.println("JUST DETACHED");
                     toolBarAttached = false;
                     System.out.println(container.getClass().getName());
 
@@ -326,20 +326,9 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
                         @Override
                         public void windowClosing(WindowEvent e) {
-                            System.out.println("Close button clicked");
+                            //System.out.println("Close button clicked");
                             toolBarAttached = true;
-                            //setVisible(false);
-                            //System.out.println("ToolBar " + JLayeredPane.getLayer(root.toolBar));
-                            //System.out.println("Canvas " + JLayeredPane.getLayer(root.canvas));
-                            //root.validate();
-                            //root.setComponentZOrder(root.toolBar, 1);
-                            //root.setComponentZOrder(root.canvas, 0);
-                            // TODO - find out why the toolbar disappears                            
-                            System.out.println("ToolBar " + root.getComponentZOrder(root.toolBar));
-                            System.out.println("Canvas " + root.getComponentZOrder(root.canvas));
-                            //root.canvas.setVisible(false);
-                            //root.canvas.setVisible(true);
-                            //setVisible(true);
+                            // TODO - Debug the disappearing toolbar on a mac bug
                         }
                     });
                 }
