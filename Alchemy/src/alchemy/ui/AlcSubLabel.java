@@ -16,14 +16,14 @@ public class AlcSubLabel extends JLabel {
     /** Creates a new instance of AlcSubLabel */
     public AlcSubLabel(String text) {
 
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(AlcToolBar.subToolBarBoldFont);
         this.setText(text);
 
         //this.setVerticalTextPosition(SwingConstants.BOTTOM);
 
         // Cant set the margins so make an empty border to adjust the spacing
         // EmptyBorder(int top, int left, int bottom, int right) 
-        this.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
 
     //this.setIconTextGap(10);
 

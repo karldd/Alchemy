@@ -39,6 +39,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /** ToolBar Font */
     public static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
     public static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
+    public static final Font subToolBarBoldFont = new Font("sansserif", Font.BOLD, 11);
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
     /** The main tool bar inside the toolbar */
