@@ -45,7 +45,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 break;
         }
 
-        System.out.println(System.getProperty("user.dir"));
+        //System.out.println(System.getProperty("user.dir"));
 
         //////////////////////////////////////////////////////////////
         // FILE MENU
