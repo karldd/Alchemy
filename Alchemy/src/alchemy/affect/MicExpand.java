@@ -88,6 +88,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
         // Volume Slider
         AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, 10);
+        volumeSlider.setToolTipText("Adjust the microphone input volume");
         volumeSlider.slider.addChangeListener(
                 new ChangeListener() {
 
@@ -105,7 +106,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
         // Level/Wave button
         AlcSubToggleButton levelWaveButton = new AlcSubToggleButton("Level/Wave", AlcUtil.getUrlPath("levelwave.png", getClassLoader()));
-        levelWaveButton.setToolTipText("Redraw the screen after each shape");
+        levelWaveButton.setToolTipText("Toggle between level and wave mode");
 
         levelWaveButton.addActionListener(
                 new ActionListener() {
@@ -115,8 +116,6 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                     }
                 });
         subToolBarSection.add(levelWaveButton);
-
-
     }
 
     private void toggleLevelWave() {
