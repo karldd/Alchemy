@@ -660,7 +660,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                         method.invoke(root.affects[i], new Object[]{event});
                     }
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 System.err.println("passMouseEvent: " + e + " " + eventType);
             }
         }

@@ -22,6 +22,8 @@ package alchemy.affect;
 
 import alchemy.AlcModule;
 import alchemy.AlcShape;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
@@ -36,6 +38,14 @@ public class Random extends AlcModule {
     private float noisiness = 0.1F;
     private float noiseScale = 0.0F;
     private float scale,  halfScale;
+    // Timing
+    private long mouseDelayGap = 250;
+    private boolean mouseFirstRun = true;
+    private long mouseDelayTime;
+    private boolean mouseDown = false;
+    //
+    private int activeShape = -1;
+    private int proximity = 5;
 
     public Random() {
 
@@ -56,20 +66,21 @@ public class Random extends AlcModule {
 
     }
 
-    public AlcShape randomiseShape(AlcShape shape) {
+    private void randomiseShape(Point currentLoc) {
         //noisiness = root.math.random(-0.01F, 0.1F);
 
         scale = 100F;
         halfScale = scale / 2;
+        AlcShape shape = canvas.shapes.get(activeShape);
+        GeneralPath randomisedShape = randomise(shape.getShape(), currentLoc);
+        shape.setShape(randomisedShape);
+        canvas.redraw();
 
-        GeneralPath randomisedShape = randomise(shape.getShape());
-
-        // Clone the shape adding the new random GeneralPath
-        return shape.customClone(randomisedShape);
+        //return shape;
 
     }
 
-    private GeneralPath randomise(GeneralPath shape) {
+    private GeneralPath randomise(GeneralPath shape, Point p) {
 
         GeneralPath newShape = new GeneralPath();
         PathIterator cut = shape.getPathIterator(null);
@@ -84,17 +95,26 @@ public class Random extends AlcModule {
                     newShape.moveTo(cutPts[0], cutPts[1]);
                     break;
                 case PathIterator.SEG_LINETO:
-                    newShape.lineTo(mess(cutPts[0]), mess(cutPts[1]));
-                    //newShape.lineTo(cutPts[0], cutPts[1]);
+                    if (closeBy(p.x, p.y, (int) cutPts[0], (int) cutPts[1])) {
+                        newShape.lineTo(mess(cutPts[0]), mess(cutPts[1]));
+                    } else {
+                        newShape.lineTo(cutPts[0], cutPts[1]);
+                    }
                     break;
                 case PathIterator.SEG_QUADTO:
-                    newShape.quadTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]));
-                    //newShape.quadTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3]);
+                    if (closeBy(p.x, p.y, (int) cutPts[2], (int) cutPts[3])) {
+                        newShape.quadTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]));
+                    } else {
+                        newShape.quadTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3]);
+                    }
                     break;
                 case PathIterator.SEG_CUBICTO:
                     // Randomising the curves tends to generate errors and unresposiveness
-                    newShape.curveTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]), mess(cutPts[4]), mess(cutPts[5]));
-                    //newShape.curveTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3], cutPts[4], cutPts[5]);
+                    if (closeBy(p.x, p.y, (int) cutPts[2], (int) cutPts[3])) {
+                        newShape.curveTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]), mess(cutPts[4]), mess(cutPts[5]));
+                    } else {
+                        newShape.curveTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3], cutPts[4], cutPts[5]);
+                    }
                     break;
                 case PathIterator.SEG_CLOSE:
                     newShape.closePath();
@@ -107,10 +127,30 @@ public class Random extends AlcModule {
 
     }
 
+    private void printArray(float[] array) {
+        for (int i = 0; i < array.length; i++) {
+            System.out.println("Array [" + String.valueOf(i) + "] = " + String.valueOf(array[i]));
+        }
+    }
+
+    /** Find out if the two points are closeby */
+    private boolean closeBy(int x1, int y1, int x2, int y2) {
+        int xgap = Math.abs(x1 - x2);
+        if (xgap < proximity) {
+            return true;
+        }
+        int ygap = Math.abs(y1 - y2);
+        if (ygap < proximity) {
+            return true;
+        }
+        return false;
+    }
+
     /** Apply Perlin noise to the given float */
-    public float mess(float f) {
-        noiseScale += noisiness;
-        float n = (root.math.noise(noiseScale) * scale) - halfScale;
+    private float mess(float f) {
+        //noiseScale += noisiness;
+        //float n = (root.math.noise(noiseScale) * scale) - halfScale;
+        float n = root.math.random(-10F, 10F);
         //n = n * 0.5F;
         //System.out.println(n);
         return n + f;
@@ -118,22 +158,64 @@ public class Random extends AlcModule {
 
     // TODO - make an interface to allow setting of noisines and scale
     /** Set the level of variation */
-    public void setNoisiness(float f) {
+    private void setNoisiness(float f) {
         noisiness = f;
     }
 
     /** Set the scale on which to apply the noise */
-    public void setScale(float f) {
+    private void setScale(float f) {
         scale = f;
         halfScale = scale / 2;
     }
 
+    private void mouseInside(Point p) {
+        int currentActiveShape = -1;
+        for (int i = 0; i < canvas.shapes.size(); i++) {
+            GeneralPath currentPath = canvas.shapes.get(i).getShape();
+            Rectangle bounds = currentPath.getBounds();
+            if (bounds.contains(p)) {
+                currentActiveShape = i;
+            }
+        }
+        // Inside a shape
+        if (currentActiveShape >= 0) {
+            // Filter out repeat calls
+            //if (currentActiveShape != activeShape) {
+            activeShape = currentActiveShape;
+            randomiseShape(p);
+        //}
+        // Outside a shape
+        } else {
+            activeShape = -1;
+        //stopExpand();
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        mouseDown = true;
+    }
+
     @Override
     public void mouseReleased(MouseEvent e) {
-        AlcShape currentShape = root.canvas.getCurrentShape();
-        if (currentShape != null) {
-            // TODO - look at how randomness is applied on mouseUp or otherwise
-            canvas.setCurrentShape(randomiseShape(currentShape));
+        mouseDown = false;
+    //            canvas.setCurrentShape(randomiseShape(currentShape));
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        if (!mouseDown) {
+            // Dispatch checking for intersection at a slow rate
+            if (mouseFirstRun) {
+                mouseDelayTime = System.currentTimeMillis();
+                mouseInside(e.getPoint());
+                mouseFirstRun = false;
+            } else {
+                if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
+                    mouseDelayTime = System.currentTimeMillis();
+                    mouseInside(e.getPoint());
+                }
+            }
         }
     }
 }
