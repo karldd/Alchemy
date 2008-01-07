@@ -35,9 +35,9 @@ public class Symmetry extends AlcModule implements AlcConstants {
     @Override
     protected void setup() {
         // Add a default reflection
-        //xReflections.add(new Integer(root.getWindowSize().width/2));
-        xReflections.add(new Integer(100));
-        xReflections.add(new Integer(200));
+        xReflections.add(new Integer(root.getWindowSize().width/2));
+        //xReflections.add(new Integer(100));
+        //xReflections.add(new Integer(200));
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -94,7 +94,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
 
     @Override
     protected void incrementShape() {
-        System.out.println(canvas.affectShapes.size());
+        //System.out.println(canvas.affectShapes.size());
         int xAffectSize = canvas.createShapes.size() + (xReflections.size()* canvas.createShapes.size());
         //System.out.println(xAffectSize);
         for (int i = 0; i < canvas.createShapes.size(); i++) {
@@ -144,7 +144,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
     /* Updates the horizontal reflection transform based on the current window width */
     private AffineTransform getHorizontalReflection(int axis) {
         AffineTransform horizontalReflection = new AffineTransform();
-        horizontalReflection.translate(axis / 2, 0);
+        horizontalReflection.translate(axis, 0);
         // Reflect it using a negative scale
         horizontalReflection.scale(-1, 1);
         // Move the reflection into place

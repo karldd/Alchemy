@@ -17,7 +17,7 @@ import java.awt.event.MouseEvent;
 
 public class Blindness extends AlcModule implements AlcConstants {
 
-    private boolean blindShapes = false;
+    private boolean autoRedraw = false;
     private AlcSubToolBarSection subToolBarSection;
 
     /** Creates a new instance of Blindness */
@@ -78,24 +78,24 @@ public class Blindness extends AlcModule implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        toggleBlindShapes();
+                        toggleAutoRedraw();
                     }
                 });
         subToolBarSection.add(autoRedrawButton);
     }
 
-    private void toggleBlindShapes() {
-        if (blindShapes) {
-            blindShapes = false;
+    private void toggleAutoRedraw() {
+        if (autoRedraw) {
+            autoRedraw = false;
         } else {
-            blindShapes = true;
+            autoRedraw = true;
         }
     }
 
     // MOUSE EVENTS
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (blindShapes) {
+        if (autoRedraw) {
             redrawOnce();
         }
     }
@@ -103,7 +103,6 @@ public class Blindness extends AlcModule implements AlcConstants {
     // KEY EVENTS
     @Override
     public void keyReleased(KeyEvent e) {
-        int keyCode = e.getKeyCode();
         char keyChar = e.getKeyChar();
 
         //System.out.println(keyChar);

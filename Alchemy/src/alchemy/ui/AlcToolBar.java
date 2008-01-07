@@ -137,7 +137,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // BLACK WHITE BUTTON
         //////////////////////////////////////////////////////////////
-        AlcToggleButton bwButton = new AlcToggleButton("Black/White", "Make marks in black or white", AlcUtil.getUrlPath("data/style.png"));
+        AlcToggleButton bwButton = new AlcToggleButton("Black/White", "Make marks in black or white", AlcUtil.getUrlPath("data/blackwhite.png"));
         bwButton.addActionListener(
                 new ActionListener() {
 
