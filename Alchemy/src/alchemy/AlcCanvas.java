@@ -158,8 +158,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     /** Redraw the canvas */
     public void redraw() {
+        applyAffects();
         if (redraw) {
-            applyAffects();
+
             // Something has happened on the canvas and the user is still active
             canvasChanged = true;
             this.repaint();

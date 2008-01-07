@@ -125,6 +125,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     private void remove() {
         canvas.removeCurrentCreateShape();
+        canvas.removeCurrentAffectShape();
         addShape = true;
         canvas.redraw();
     }
@@ -138,6 +139,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             canvas.createShapes.add(shape);
             addShape = false;
         } else {
+            canvas.removeCurrentAffectShape();
             canvas.setCurrentCreateShape(shape);
         }
         canvas.redraw();

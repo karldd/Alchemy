@@ -9,14 +9,20 @@
 package alchemy.create;
 
 import alchemy.*;
+import alchemy.ui.AlcSubSlider;
+import alchemy.ui.AlcSubToolBarSection;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class MicrophoneShapes extends AlcModule implements AlcConstants {
 
-    AlcMicInput micIn;
-    AlcShape tempShape;
-    Point oldP;
+    private AlcMicInput micIn;
+    private Point oldP;
+    private float volume = 10F;
+    private AlcSubToolBarSection subToolBarSection;
 
     /** Creates a new instance of MicrophoneShapes */
     public MicrophoneShapes() {
@@ -27,6 +33,8 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         // Create a new MicInput Object with a buffer of 10
         micIn = new AlcMicInput(2);
         micIn.startMicInput();
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     @Override
@@ -37,7 +45,30 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
 
     @Override
     public void reselect() {
-        setup();
+        //micIn = new AlcMicInput(2);
+        micIn.startMicInput();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+        // Volume Slider
+        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, 10);
+        volumeSlider.setToolTipText("Adjust the microphone input volume");
+        volumeSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            int value = source.getValue();
+                            volume = value;
+                        //System.out.println(volume);
+                        }
+                    }
+                });
+        subToolBarSection.add(volumeSlider);
     }
 
     @Override
@@ -77,11 +108,12 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     }
 
     private Point rightAngle(Point p1, Point p2, double distance) {
+        double adjustedDistance = distance * volume;
         // Calculate the angle between the last point and the new point
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
         // Conver the polar coordinates to cartesian
-        double x = p1.x + (distance * Math.cos(angle));
-        double y = p1.y + (distance * Math.sin(angle));
+        double x = p1.x + (volume * Math.cos(angle));
+        double y = p1.y + (volume * Math.sin(angle));
 
         return new Point((int) x, (int) y);
     }
