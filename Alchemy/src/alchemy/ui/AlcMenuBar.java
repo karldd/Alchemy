@@ -34,8 +34,8 @@ import javax.swing.*;
 public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener {
 
     private final AlcMain root;
-    private AlcMenu fileMenu,  sessionMenu,  viewMenu,  intervalMenu,  switchMenu;
-    private AlcMenuItem newItem,  printItem,  exportItem,  exitItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem;
+    private AlcMenu fileMenu,  sessionMenu,  viewMenu,  intervalMenu,  switchMenu,  helpMenu;
+    private AlcMenuItem newItem,  printItem,  exportItem,  exitItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem,  aboutItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
     private File platformAppDir;
@@ -176,6 +176,19 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         switchBitmapAppItem.addActionListener(this);
         switchMenu.add(switchBitmapAppItem);
         this.add(switchMenu);
+
+        //////////////////////////////////////////////////////////////
+        // HELP MENU
+        //////////////////////////////////////////////////////////////
+        // About menuitem not included on a MAC
+        //if (AlcMain.PLATFORM != MACOSX) {
+        helpMenu = new AlcMenu("Help");
+        aboutItem = new AlcMenuItem("About");
+        aboutItem.addActionListener(this);
+        helpMenu.add(aboutItem);
+        this.add(helpMenu);
+    //}
+
     }
 
     /*
@@ -340,6 +353,43 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
     }
 
+    /**
+     * Show the About box.
+     * 
+     */
+    public void showAboutBox() {
+        final Image image = AlcUtil.getImage("data/about.png", root);
+        final Dimension size = new Dimension(image.getWidth(root), image.getHeight(root));
+        final Window window = new Window(root) {
+
+            @Override
+            public void paint(Graphics g) {
+                g.drawImage(image, 0, 0, null);
+
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+
+                g.setFont(AlcToolBar.subToolBarFont);
+                g.setColor(Color.white);
+                g.drawString("COPYRIGHT © 2007-2008 KARL D.D. WILLIS", size.width / 2, 50);
+                g.drawString("ALPHA VERSION " + ALCHEMY_VERSION, size.width / 2, 65);
+            }
+        };
+        window.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                window.setVisible(false);
+                window.dispose();
+            }
+        });
+
+        window.setSize(size);
+        Point loc = AlcUtil.calculateCenter(window);
+        window.setBounds(loc.x, loc.y, size.width, size.height);
+        window.setVisible(true);
+    }
+
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == newItem) {
             root.canvas.clear();
@@ -392,7 +442,6 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 System.out.println(file.toString());
                 root.prefs.setSwitchVectorApp(file.toString());
             }
-        //
 
         } else if (e.getSource() == switchBitmapAppItem) {
             File file = askLocation("Select Bitmap Application", platformAppDir);
@@ -401,7 +450,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 root.prefs.setSwitchBitmapApp(file.toString());
             }
 
+        } else if (e.getSource() == aboutItem) {
+            //final AlcAbout about = new AlcAbout(root, "About Alchemy");
+            showAboutBox();
         }
+
 
     }
 }

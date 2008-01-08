@@ -205,7 +205,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         layeredPane.add(toolBar, new Integer(2));
 
         // FRAME
-        this.setLayeredPane(layeredPane);           // Set the layered pane as the main content pane
+        this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
         this.setPreferredSize(windowSize);          // Set the window size
         this.addComponentListener(this);            // Add a component listener to detect window resizing
         //this.addWindowStateListener(this);          // Add a window state listener to detect window maximising
