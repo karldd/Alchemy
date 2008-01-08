@@ -1,10 +1,21 @@
-/**
- * AlcPlugin.java
- *
- * Created on November 22, 2007, 6:38 PM
- *
- * @author  Karl D.D. Willis
- * @version 1.0
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
 package alchemy;
 
@@ -12,21 +23,21 @@ import alchemy.ui.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-//////////////////////////////////////////////////////////////
 // MAC SPECIFIC
-//////////////////////////////////////////////////////////////
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationEvent;
 import java.lang.reflect.Method;
 
+/**
+ * Main class for Alchemy
+ * Handles all and everything - the meta 'root' reference
+ */
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
-    /**
-     * Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER.
-     */
-    static public int PLATFORM;
+    /** Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER. */
+    public static int PLATFORM;
     /** Modifier Key to show for tool tips */
-    static public String MODIFIER_KEY;
+    public static String MODIFIER_KEY;
 
     static {
         if (PLATFORM_NAME.indexOf("Mac") != -1) {
@@ -47,7 +58,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             MODIFIER_KEY = "Modifier";
         }
     }
-    //
     //////////////////////////////////////////////////////////////
     // ALCHEMY CLASSES AND MODULES
     //////////////////////////////////////////////////////////////
@@ -223,7 +233,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         creates[currentCreate].setup();
     }
 
-    // GLOBAL GETTER INFO
+    //////////////////////////////////////////////////////////////
+    // ROOT GETTER METHODS
+    //////////////////////////////////////////////////////////////
     /** Get the Window Size as a Dimension */
     public Dimension getWindowSize() {
         return windowSize;
@@ -258,7 +270,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         }
     }
 
-    // SETTER FUNCTIONS
+    //////////////////////////////////////////////////////////////
+    // ROOT SETTER METHODS
+    //////////////////////////////////////////////////////////////
     /** Set the current create function */
     public void setCurrentCreate(int i) {
 

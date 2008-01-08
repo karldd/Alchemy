@@ -1,22 +1,31 @@
-/**
- * AlcMainToolBar.java
- *
- * Created on November 28, 2007, 9:29 PM
- *
- * @author  Karl D.D. Willis
- * @version 1.0
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
 package alchemy.ui;
 
 import alchemy.*;
 import java.awt.*;
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class AlcMainToolBar extends JPanel {
 
-    AlcMain root;
-    AlcToolBar parent;
+    private final AlcMain root;
     private int height = 60;
 
     /** Creates a new instance of AlcMainToolBar
@@ -25,27 +34,13 @@ public class AlcMainToolBar extends JPanel {
     public AlcMainToolBar(AlcMain root) {
 
         this.root = root;
-        this.parent = root.toolBar;
-
         // Allow a transparent background
         this.setOpaque(false);
         //this.setName("Toolbar");
         //this.setBackground(AlcToolBar.toolBarBgColour);
         //this.setBorderPainted(false);
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        // Insets(int top, int left, int bottom, int right)
-        //this.setMargin(new Insets(0, 0, 0, 0));
-
-        //this.setBounds(0, 0, root.getWindowSize().width, this.height);
-        // Set to true to allow button rollovers in the toolbar
-        //this.setRollover(true);
-        
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 6));
-        //this.setLayout(new BorderLayout());
-
-        //this.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //this.setAlignmentY(Component.TOP_ALIGNMENT);
-
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
 
 

@@ -1,3 +1,22 @@
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 package alchemy.create;
 
 import java.awt.Image;
@@ -19,9 +38,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 /**
  * Return an Icon for the first Flickr photo that matches a query string.
+ * Based on code from:
+ * http://wiki.netbeans.info/wiki/view/NBDemoFlickr
  * Typical usage:
  * <pre>
  * Icon image = Flickr.getInstance().search("face");
@@ -29,42 +49,39 @@ import org.xml.sax.SAXException;
  * </pre>
  *
  */
-
 public class Flickr {
-    
+
     private static Flickr theInstance = null;
     private final Logger logger;
     private final DocumentBuilder xmlParser;
-    
-   /* URL format string that specifies a single "medium" sized photo on
-    * the Flickr server.  Based on the URL syntax documented here:
-    * http://www.flickr.com/services/api/misc.urls.html, i.e.
-    * http://farm{farm-id}.static.flickr.com/{server-id}/{id}_{secret}_[mstb].jpg"
-    */
+    /* URL format string that specifies a single "medium" sized photo on
+     * the Flickr server.  Based on the URL syntax documented here:
+     * http://www.flickr.com/services/api/misc.urls.html, i.e.
+     * http://farm{farm-id}.static.flickr.com/{server-id}/{id}_{secret}_[mstb].jpg"
+     */
     private final String photoURLFormat =
             "http://farm%s.static.flickr.com/%s/%s_%s.jpg";
-    
-   /* An HTTP get format string for looking up a single "Photo" that matches
-    * a query string.  This request is documented on the Yahoo/Flickr
-    * site here: http://www.flickr.com/services/api/flickr.photos.search.html
-    */
+    /* An HTTP get format string for looking up a single "Photo" that matches
+     * a query string.  This request is documented on the Yahoo/Flickr
+     * site here: http://www.flickr.com/services/api/flickr.photos.search.html
+     */
     private final String searchMethodFormat =
             "http://www.flickr.com/services/rest/?method=flickr.photos.search" +
             "&format=rest" +
             "&api_key=3f44e4e680a2a1b89af1b4bb803057ac" +
-            "&per_page=1" +        // just send one match back
+            "&per_page=1" + // just send one match back
             //"&sort=interestingness-desc" +
             "&sort=date-posted-asc" +
             "&page=%s" +
             "&text=%s";
-    
+
     public Flickr() throws ParserConfigurationException {
-        
+
         logger = Logger.getLogger(Flickr.class.getName());
         DocumentBuilderFactory dcb = DocumentBuilderFactory.newInstance();
         this.xmlParser = dcb.newDocumentBuilder();
     }
-    
+
     public static Flickr getInstance() {
         if (theInstance == null) {
             try {
@@ -75,7 +92,7 @@ public class Flickr {
         }
         return theInstance;
     }
-    
+
     private URL newURL(String s) {
         try {
             return new URL(s);
@@ -84,7 +101,7 @@ public class Flickr {
             return null;
         }
     }
-    
+
     private Document getPage(URL url) {
         Document doc = null;
         try {
@@ -96,13 +113,13 @@ public class Flickr {
         }
         return doc;
     }
-    
+
     private List<Element> elementsWithTag(Document doc, String tag) {
         NodeList nodes = doc.getElementsByTagName(tag);
         if ((nodes != null) && (nodes.getLength() > 0)) {
             List<Element> elements = new ArrayList<Element>(nodes.getLength());
-            for(int i = 0; i < nodes.getLength(); i++) {
-                elements.add((Element)(nodes.item(i)));
+            for (int i = 0; i < nodes.getLength(); i++) {
+                elements.add((Element) (nodes.item(i)));
             }
             return elements;
         } else {
@@ -110,13 +127,12 @@ public class Flickr {
             return null;
         }
     }
-    
+
     private String elementAttribute(Element elt, String attribute) {
         String s = elt.getAttribute(attribute);
         return (s.length() == 0) ? null : s;
     }
-    
-    
+
     public Image search(String keyword, String page) {
         URL searchURL = newURL(String.format(searchMethodFormat, page, keyword));
         if (searchURL == null) {
@@ -152,7 +168,7 @@ public class Flickr {
                 }
             }
         }
-        
+
         //return image != null ? new ImageIcon(image) : null;
         //return image;
         return image != null ? image : null;

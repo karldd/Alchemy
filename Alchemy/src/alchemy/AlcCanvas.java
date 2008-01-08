@@ -1,10 +1,21 @@
-/**
- * AlcCanvas.java
- *
- * Created on November 16, 2007, 4:09 PM
- *
- * @author  Karl D.D. Willis
- * @version 1.0
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
 package alchemy;
 
@@ -30,6 +41,12 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+
+/** 
+ * The Alchemy canvas
+ * Stores all shapes created and handles all graphics related stuff
+ * Think saving pdfs, printing, and of course displaying! 
+ */
 
 public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener, Printable {
 
@@ -211,7 +228,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         if (root.hasCurrentAffects()) {
             for (int i = 0; i < root.currentAffects.length; i++) {
                 if (root.currentAffects[i]) {
-                    root.affects[i].incrementShape();
+                    root.affects[i].affectShape();
                 }
             }
         }
