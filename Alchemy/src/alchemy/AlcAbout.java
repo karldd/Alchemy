@@ -17,29 +17,44 @@
  *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package alchemy;
 
-import java.awt.Color;
+import alchemy.ui.AlcToolBar;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
+import javax.swing.*;
 /**
  *  About Window 
  */
 public class AlcAbout extends JDialog implements ActionListener {
 
-    JPanel aboutPanel;
-    
-    public AlcAbout() {
-        
-        aboutPanel = new JPanel();
-        aboutPanel.setBackground(new Color(100, 100, 0));
-        this.getContentPane().add(aboutPanel);
-        this.setResizable(false);
+    private final JPanel aboutPanel;
 
+    public AlcAbout(AlcMain root, String title) {
+
+        super(root, title);
+        aboutPanel = new JPanel();
+        aboutPanel.setBackground(AlcToolBar.toolBarBgColour);
+
+        JButton closeButton = new JButton("Close");
+        closeButton.setFocusPainted(false);
+        closeButton.setOpaque(false);
+        closeButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                dispose();
+            }
+        });
+        aboutPanel.add(closeButton);
+        this.setPreferredSize(new Dimension(400, 300));
+
+        this.setContentPane(aboutPanel);
+        this.setResizable(false);
+        this.pack();
+        this.setLocationRelativeTo(root);
+        this.setVisible(true);
 
     }
 

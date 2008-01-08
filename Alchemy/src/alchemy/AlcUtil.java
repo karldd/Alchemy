@@ -19,10 +19,14 @@
  */
 package alchemy;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.KeyboardFocusManager;
+import java.awt.MediaTracker;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -185,10 +189,25 @@ public class AlcUtil {
         return null;
     }
 
+    public static Image getImage(String name, Component who) {
+        Image image = null;
+        Toolkit tk = Toolkit.getDefaultToolkit();
+
+        image = tk.getImage(getUrlPath(name));
+        MediaTracker tracker = new MediaTracker(who);
+        tracker.addImage(image, 0);
+        try {
+            tracker.waitForAll();
+        } catch (InterruptedException e) {
+        }
+        return image;
+    }
+
     //////////////////////////////////////////////////////////////
     // UI FUNCTIONS
     //////////////////////////////////////////////////////////////
-    /** Calculate the centre of the screen with multiple monitors for the JFileChooser
+    /** 
+     *  Calculate the centre of the screen with multiple monitors
      *  From: http://www.juixe.com/techknow/index.php/2007/06/20/multiscreen-dialogs-and-the-jfilechooser/
      */
     public static Point calculateCenter(Container popupFrame) {
