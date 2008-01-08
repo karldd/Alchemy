@@ -1,11 +1,34 @@
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
 package alchemy;
 
 import alchemy.ui.AlcToolBar;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
-import java.util.ArrayList;
 
+/**
+ * Alchemy module
+ * This is an 'abstract class' which must be extended to make an Alchemy plugin
+ * 
+ */
 public abstract class AlcModule {
 
     /** Access to the root */
@@ -34,16 +57,17 @@ public abstract class AlcModule {
     public AlcModule() {
     }
 
+    //////////////////////////////////////////////////////////////
     // STRUCTURE
-    /** Called by the module is found
-     *  Sets global references to the root, canvas, and toolbar */
+    //////////////////////////////////////////////////////////////
+    /** Sets global references to the root, canvas, and toolbar */
     void setGlobals(AlcMain root, AlcCanvas canvas, AlcToolBar toolBar) {
         this.root = root;
         this.canvas = canvas;
         this.toolBar = toolBar;
     }
 
-    /* Called to load the module when first run */
+    /** Called to load the module when first run */
     protected void setup() {
     }
 
@@ -59,103 +83,136 @@ public abstract class AlcModule {
     protected void cleared() {
     }
 
-    /** Called after all temp shapes are commited */
+    /** Called after all shapes are commited */
     protected void commited() {
     }
 
     /**
-     *  Affect - Process an AlcShape.
-     *  Used to process whole shapes, typically those generated from create modules.
-     *  Get the shape, processShape it in some way and return and replace the original.
+     *  Affect an AlcShape
+     *  Called by the canvas for every affect module, after the shapes have been added to the canvas
+     *  This is used by affect modules to 'affect' a shape, apply some sort of change to it
+     *  Typically the affect module will work with all shapes in the canvas.createShapes array
+     *  then either replace them or add new shapes to the canvas.affectShapes array
      */
-    protected AlcShape processShape(AlcShape shape) {
-        return shape;
+    protected void affectShape() {
     }
 
-    /**
-     * Affect - Increment an AlcShape.
-     *  Used to increment a shape, typically for drawn lines etc...
-     *  Typically store the temp shape in a canvas buffer until it gets added on mouse up.
-     */
-    protected void incrementShape() {
-        //return shapes;
-    }
-
+    //////////////////////////////////////////////////////////////
     // MODULE DATA
+    //////////////////////////////////////////////////////////////
+    /** 
+     *  Get the name of this module
+     *  @return The modules name
+     */
     public String getName() {
         return moduleName;
     }
 
-    protected void setName(String m) {
-        moduleName = m;
+    void setName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
+    /**
+     * Get the index of this module in either the 'creates' or 'affects' arraylist
+     * @return The index of the module
+     */
     public int getIndex() {
         return index;
     }
 
-    public void setIndex(int i) {
+    void setIndex(int i) {
         index = i;
     }
 
+    /** 
+     * Get the type of module
+     * @return  The type of module - either "CREATE" (0) or "AFFECT" (1)
+     */
     public int getModuleType() {
         return moduleType;
     }
 
-    protected void setModuleType(int moduleType) {
+    void setModuleType(int moduleType) {
         this.moduleType = moduleType;
     }
 
+    /** 
+     * Loaded state of this module
+     * @return  If the module  has been loaded or not
+     */
     public boolean getLoaded() {
         return loaded;
     }
 
-    protected void setLoaded(boolean l) {
+    void setLoaded(boolean l) {
         loaded = l;
     }
 
-    /** Returns the classloader to load resources from the plugin .zip */
+    /** 
+     * Returns the classloader to load resources from the plugin .zip
+     * @return  ClassLoader reference to this modules .zip
+     */
     public ClassLoader getClassLoader() {
         return classLoader;
     }
 
-    /** Set the classloader for loading resources from the plugin .zip */
-    protected void setClassLoader(ClassLoader classLoader) {
+    void setClassLoader(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
+    /**
+     * Get the icon name
+     * @return  This modules icon name
+     */
     public String getIconName() {
         return iconName;
     }
 
-    protected void setIconName(String n) {
+    void setIconName(String n) {
         iconName = n;
     }
 
-    /** Get the Icon URL from within the modules .zip file */
+    /** 
+     * Get the Icon URL from within the modules .zip file
+     * @return URL linking to this modules icon file
+     */
     public URL getIconUrl() {
         return iconUrl;
     }
 
-    /** Set the Icon URL within the modules .zip file */
-    protected void setIconUrl(URL url) {
+    void setIconUrl(URL url) {
         iconUrl = url;
     }
 
+    /**
+     * Get the description of this module as defined in it's plugin.xml file
+     * @return Text description of this module
+     */
     public String getDescription() {
         return description;
     }
 
-    protected void setDescription(String n) {
+    void setDescription(String n) {
         description = n;
     }
 
+    //////////////////////////////////////////////////////////////
     // MOUSE EVENTS
-    // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/MouseEvent.html
+    //////////////////////////////////////////////////////////////
+    /**
+     * The below mouse events are called when the modules is active (selected by the user)
+     * The full MouseEvent is passed in, as described here:
+     * <p/>
+     * http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/MouseEvent.html
+     * <p/>
+     * Useful things you can do with this MouseEvent:
+     * <pre>
+     * int x = e.getX();
+     * int y = e.getY();
+     * Point p = e.getPoint();
+     * </pre>
+     */
     public void mousePressed(MouseEvent e) {
-    //int x = e.getX();
-    //int y = e.getY();
-    //Point p = e.getPoint();
     }
 
     public void mouseMoved(MouseEvent e) {
@@ -176,12 +233,23 @@ public abstract class AlcModule {
     public void mouseExited(MouseEvent e) {
     }
 
+    //////////////////////////////////////////////////////////////
     // KEY EVENTS
-    // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/KeyEvent.html
+    //////////////////////////////////////////////////////////////
+    /**
+     * The below key events are called when the modules is active (selected by the user)
+     * The full KeyEvent is passed in, as described here:
+     * <p/>
+     * http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/KeyEvent.html
+     * <p/>
+     * Useful things you can do with this KeyEvent:
+     * <pre>
+     *  char keyChar = e.getKeyChar();
+     *  int keyCode = e.getKeyCode();
+     *  String keyText = e.getKeyText(keyCode);
+     * </pre>
+     */
     public void keyPressed(KeyEvent e) {
-    //char keyChar = e.getKeyChar();
-    //int keyCode = e.getKeyCode();
-    //String keyText = e.getKeyText(keyCode);
     }
 
     public void keyReleased(KeyEvent e) {

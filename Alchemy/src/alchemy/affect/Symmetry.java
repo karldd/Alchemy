@@ -1,10 +1,21 @@
-/**
- * Symmetry.java
- *
- * Created on December 2, 2007, 9:55 AM
- *
- * @author  Karl D.D. Willis
- * @version 1.0
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
 package alchemy.affect;
 
@@ -16,6 +27,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+
+/**
+ * Symmetry Module
+ * @author Karl D.D. Willis
+ */
 
 public class Symmetry extends AlcModule implements AlcConstants {
 
@@ -93,7 +109,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
     }
 
     @Override
-    protected void incrementShape() {
+    protected void affectShape() {
         //System.out.println(canvas.affectShapes.size());
         int xAffectSize = canvas.createShapes.size() + (xReflections.size()* canvas.createShapes.size());
         //System.out.println(xAffectSize);

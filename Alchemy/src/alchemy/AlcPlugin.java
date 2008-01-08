@@ -1,19 +1,28 @@
-/**
- * AlcPlugin.java
- *
- * Created on November 22, 2007, 6:38 PM
- *
- * @author  Karl D.D. Willis
- * @version 1.0
+/*
+ *  This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ *  Copyright (c) 2007 Karl D.D. Willis
+ * 
+ *  Alchemy is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Alchemy is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ * 
  */
 package alchemy;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.net.URL;
-
 // JAVA PLUGIN FRAMEWORK
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
@@ -23,6 +32,10 @@ import org.java.plugin.registry.ExtensionPoint;
 import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
 
+/**
+ * Handles the loading of Alchemy 'modules' from the plugins/ folder
+ * Interacts with the Java Plugin Framework
+ */
 public class AlcPlugin implements AlcConstants {
 
     // PLUGIN
