@@ -30,20 +30,20 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * MicrophoneShapes.java
+ * MicShapes.java
  * @author  Karl D.D. Willis
  */
 
 
-public class MicrophoneShapes extends AlcModule implements AlcConstants {
+public class MicShapes extends AlcModule implements AlcConstants {
 
     private AlcMicInput micIn;
     private Point oldP;
     private float volume = 10F;
     private AlcSubToolBarSection subToolBarSection;
 
-    /** Creates a new instance of MicrophoneShapes */
-    public MicrophoneShapes() {
+    /** Creates a new instance of MicShapes */
+    public MicShapes() {
     }
 
     

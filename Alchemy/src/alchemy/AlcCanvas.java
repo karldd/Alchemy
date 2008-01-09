@@ -47,7 +47,6 @@ import javax.imageio.ImageIO;
  * Stores all shapes created and handles all graphics related stuff
  * Think saving pdfs, printing, and of course displaying! 
  */
-
 public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener, Printable {
 
     /** Reference to the root **/
@@ -87,6 +86,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public ArrayList createShapes;
     /** Array list containing shapes made by affect modules */
     public ArrayList affectShapes;
+    /** Array list containing shapes used as visual guides - not actual geometry */
+    public ArrayList guideShapes;
     /** Graphics */
     private Graphics2D g2;
     //////////////////////////////////////////////////////////////
@@ -114,10 +115,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         createShapes.ensureCapacity(25);
         affectShapes = new ArrayList(25);
         affectShapes.ensureCapacity(25);
+        guideShapes = new ArrayList(25);
+        guideShapes.ensureCapacity(25);
 
     }
 
-    
     public void paintComponent(Graphics g) {
         int w = this.getWidth();
         int h = this.getHeight();
@@ -139,7 +141,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
 
         // Draw both lots of shapes
-        ArrayList[] theShapes = {shapes, createShapes, affectShapes};
+        ArrayList[] theShapes = {shapes, createShapes, affectShapes, guideShapes};
 
         for (int j = 0; j < theShapes.length; j++) {
 
@@ -260,7 +262,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public AlcShape getCurrentShape() {
         if (shapes.size() > 0) {
-            return (AlcShape)shapes.get(shapes.size() - 1);
+            return (AlcShape) shapes.get(shapes.size() - 1);
         } else {
             return null;
         }
@@ -290,7 +292,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public AlcShape getCurrentCreateShape() {
         if (createShapes.size() > 0) {
-            return (AlcShape)createShapes.get(createShapes.size() - 1);
+            return (AlcShape) createShapes.get(createShapes.size() - 1);
         } else {
             return null;
         }
@@ -328,7 +330,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public AlcShape getCurrentAffectShape() {
         if (affectShapes.size() > 0) {
-            return (AlcShape)affectShapes.get(affectShapes.size() - 1);
+            return (AlcShape) affectShapes.get(affectShapes.size() - 1);
         } else {
             return null;
         }
@@ -356,6 +358,36 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             shapes.add(affectShapes.get(i));
         }
         affectShapes.clear();
+    }
+    
+    //////////////////////////////////////////////////////////////
+    // GUIDE SHAPES
+    //////////////////////////////////////////////////////////////
+    /** Returns the most recently added guide shape
+     * @return The current guide shape
+     */
+    public AlcShape getCurrentGuideShape() {
+        if (guideShapes.size() > 0) {
+            return (AlcShape) guideShapes.get(guideShapes.size() - 1);
+        } else {
+            return null;
+        }
+    }
+
+    /** Sets the most recently added guide shape
+     * @param shape     Shape to become the current guide shape
+     */
+    public void setCurrentGuideShape(AlcShape shape) {
+        if (guideShapes.size() > 0) {
+            guideShapes.set(guideShapes.size() - 1, shape);
+        }
+    }
+
+    /** Removes the most recently added guide shape */
+    public void removeCurrentGuideShape() {
+        if (guideShapes.size() > 0) {
+            guideShapes.remove(guideShapes.size() - 1);
+        }
     }
 
     //////////////////////////////////////////////////////////////
@@ -409,7 +441,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 // Turn drawing off while in the toolbar
                 mouseEvents = false;
             }
-        } else if (y > root.toolBar.getTotalHeight()) {
+        } else if (y > root.toolBar.getTotalHeight() + 5) {
             if (root.toolBar.getToolBarVisible()) {
                 root.toolBar.setToolBarVisible(false);
                 // Turn drawing on once out of the UI

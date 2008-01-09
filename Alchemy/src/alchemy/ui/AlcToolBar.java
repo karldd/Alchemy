@@ -134,7 +134,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         // LINE WIDTH SPINNER
         //////////////////////////////////////////////////////////////
         // currentValue, min, max, stepsize
-        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel(root.canvas.getLineWidth(), 0, 100, 1);
+        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel(root.canvas.getLineWidth(), 1, 50, 1);
         AlcSpinner lineWidthSpinner = new AlcSpinner("Line Weight", lineWidthNumberModel);
         lineWidthSpinner.spinner.addChangeListener(
                 new ChangeListener() {

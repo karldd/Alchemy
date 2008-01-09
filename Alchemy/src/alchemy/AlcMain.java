@@ -123,8 +123,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Add each type of plugin
         if (plugins.getNumberOfPlugins() > 0) {
-            String[] createsOrder = {"Shapes", "Inverse Shapes", "Type Shapes", "Microphone Shapes"};
-            String[] affectsOrder = {"Symmetry", "Blindness", "Random"};
+            String[] createsOrder = {"Shapes", "Inverse Shapes", "Type Shapes", "Mic Shapes"};
+            String[] affectsOrder = {"Mirror", "Blindness", "Random"};
             // Extension Point Name, Array Size, Module Type
             creates = plugins.addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
             affects = plugins.addPlugins("Affect", getNumberOfAffectModules(), AFFECT, affectsOrder);

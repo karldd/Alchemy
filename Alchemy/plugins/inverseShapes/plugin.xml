@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.create.InverseShapes"/> 
         <parameter id="name" value="Inverse Shapes"/> 
         <parameter id="description" value="Inverse Drawing" />
-        <parameter id="icon" value="icon.png" />
+        <parameter id="icon" value="tab.gif" />
     </extension>
     
 </plugin>

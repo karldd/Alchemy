@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.affect.Random"/> 
         <parameter id="name" value="Random"/> 
         <parameter id="description" value="Random shape distortion" />
-        <parameter id="icon" value="icon.png" />
+        <parameter id="icon" value="tab.gif" />
     </extension>
     
 </plugin>

@@ -99,9 +99,9 @@
             </fileset>
         </copy>
         <!-- Microphone Shapes -->
-        <copy todir="${basedir}/plugins/microphoneShapes/alchemy/create">
+        <copy todir="${basedir}/plugins/micShapes/alchemy/create">
             <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
-                <contains text="MicrophoneShapes" casesensitive="no"/>
+                <contains text="MicShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Median Shapes -->
@@ -112,10 +112,10 @@
         </copy>
         
         <!-- AFFECTS -->
-        <!-- Symmetry -->
-        <copy todir="${basedir}/plugins/symmetry/alchemy/affect">
+        <!-- Mirror -->
+        <copy todir="${basedir}/plugins/mirror/alchemy/affect">
             <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
-                <contains text="Symmetry" casesensitive="no"/>
+                <contains text="Mirror" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Blindness -->
