@@ -730,7 +730,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      * 
      **/
     public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
-
+        // TODO - Test the print function to correct scaling
         // We are only one page long; reject any other page numbers
         if (pageIndex > 0) {
             return Printable.NO_SUCH_PAGE;
