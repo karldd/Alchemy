@@ -49,17 +49,17 @@ public class Random extends AlcModule {
 
     }
 
-    @Override
+    
     public void setup() {
 
     }
 
-    @Override
+    
     public void deselect() {
 
     }
 
-    @Override
+    
     public void reselect() {
 
     }
@@ -69,7 +69,7 @@ public class Random extends AlcModule {
 
         scale = 100F;
         halfScale = scale / 2;
-        AlcShape shape = canvas.shapes.get(activeShape);
+        AlcShape shape = (AlcShape)canvas.shapes.get(activeShape);
         GeneralPath randomisedShape = randomise(shape.getShape(), currentLoc);
         shape.setShape(randomisedShape);
         canvas.redraw();
@@ -169,7 +169,8 @@ public class Random extends AlcModule {
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
         for (int i = 0; i < canvas.shapes.size(); i++) {
-            GeneralPath currentPath = canvas.shapes.get(i).getShape();
+            AlcShape thisShape = (AlcShape)canvas.shapes.get(i);
+            GeneralPath currentPath = thisShape.getShape();
             Rectangle bounds = currentPath.getBounds();
             if (bounds.contains(p)) {
                 currentActiveShape = i;
@@ -189,18 +190,18 @@ public class Random extends AlcModule {
         }
     }
 
-    @Override
+    
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
     }
 
-    @Override
+    
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     //            canvas.setCurrentShape(randomiseShape(currentShape));
     }
 
-    @Override
+    
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
             // Dispatch checking for intersection at a slow rate

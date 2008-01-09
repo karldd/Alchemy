@@ -24,8 +24,8 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 // MAC SPECIFIC
-import com.apple.eawt.Application;
-import com.apple.eawt.ApplicationEvent;
+//import com.apple.eawt.Application;
+//import com.apple.eawt.ApplicationEvent;
 import java.lang.reflect.Method;
 
 /**
@@ -140,7 +140,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Exit Function
         addWindowListener(new WindowAdapter() {
 
-            @Override
+            
             public void windowClosing(WindowEvent e) {
                 exitAlchemy();
             }
@@ -205,8 +205,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         layeredPane.add(toolBar, new Integer(2));
 
         // FRAME
+        layeredPane.setPreferredSize(windowSize);          // Set the window size
         this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
-        this.setPreferredSize(windowSize);          // Set the window size
         this.addComponentListener(this);            // Add a component listener to detect window resizing
         //this.addWindowStateListener(this);          // Add a window state listener to detect window maximising
         this.addKeyListener(this);                  // Key Listener
@@ -352,7 +352,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     //DEVICE.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
                     setSize(oldWindowSize);             //make sure the size of the window is correct.
                     setLocation(oldLocation);           //reset location of the window
-                    setAlwaysOnTop(false);
+                    //setAlwaysOnTop(false);
 
                     macMenuBarVisible = true;
                     menuBar.setVisible(true);          // make the menubar visible
@@ -371,7 +371,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                         setUndecorated(true);               //remove borders around the frame
                         setSize(DISPLAY_MODE.getWidth(), DISPLAY_MODE.getHeight());   // set the size to maximum
                         setLocation(0, 0);
-                        setAlwaysOnTop(true);
+                        //setAlwaysOnTop(true);
                         //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
                         macMenuBarVisible = false;
                         menuBar.setVisible(false);          // make the menubar invisible
@@ -404,39 +404,39 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     //////////////////////////////////////////////////////////////
     /** Handle how the mac menubar is managed */
     private void setupMacMenuBar() {
-        Application.getApplication().setEnabledPreferencesMenu(true);
-        Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
-
-            //private Object aboutBox;
-            @Override
-            public void handleAbout(ApplicationEvent e) {
-                System.out.println("ABOUT CALLED");
-            //if (aboutBox == null) {
-            //AlcAbout aboutDialog = new AlcAbout();
-            //}
-            //about(e);
-            //e.setHandled(true);
-            }
-
-            /*
-            public void handleOpenApplication(ApplicationEvent e) {
-            }
-            public void handleOpenFile(ApplicationEvent e) {
-            }
-            public void handlePreferences(ApplicationEvent e) {
-            if (prefs == null) {
-            prefs = new PrefPane();
-            }
-            preferences(e);
-            }
-            public void handlePrintFile(ApplicationEvent e) {
-            }
-             */
-            @Override
-            public void handleQuit(ApplicationEvent e) {
-                exitAlchemy();
-            }
-        });
+//        Application.getApplication().setEnabledPreferencesMenu(true);
+//        Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
+//
+//            //private Object aboutBox;
+//            
+//            public void handleAbout(ApplicationEvent e) {
+//                System.out.println("ABOUT CALLED");
+//            //if (aboutBox == null) {
+//            //AlcAbout aboutDialog = new AlcAbout();
+//            //}
+//            //about(e);
+//            //e.setHandled(true);
+//            }
+//
+//            
+//            public void handleOpenApplication(ApplicationEvent e) {
+//            }
+//            public void handleOpenFile(ApplicationEvent e) {
+//            }
+//            public void handlePreferences(ApplicationEvent e) {
+//            if (prefs == null) {
+//            prefs = new PrefPane();
+//            }
+//            preferences(e);
+//            }
+//            public void handlePrintFile(ApplicationEvent e) {
+//            }
+//             
+//            
+//            public void handleQuit(ApplicationEvent e) {
+//                exitAlchemy();
+//            }
+//        });
     }
 
     /** 
@@ -465,7 +465,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      * @param visible true for visible, otherwise false
      */
     /*
-    @Override
+    
     public void setVisible(final boolean visible) {
     // Only 
     if (PLATFORM == MACOSX) {

@@ -354,7 +354,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      * 'Deep' Clone this object using the existing style/colour etc.. values
      * @return An new cloned object of this shape
      */
-    @Override
+    
     public Object clone() {
         //Deep copy
         AlcShape tempShape = new AlcShape(this.shape, this.colour, this.alpha, this.style, this.lineWidth);

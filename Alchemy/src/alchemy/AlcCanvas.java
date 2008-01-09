@@ -82,11 +82,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // DRAWING
     //////////////////////////////////////////////////////////////
     /** Array list containing shapes that have been archived */
-    public ArrayList<AlcShape> shapes;
+    public ArrayList shapes;
     /** Array list containing shapes made by create modules */
-    public ArrayList<AlcShape> createShapes;
+    public ArrayList createShapes;
     /** Array list containing shapes made by affect modules */
-    public ArrayList<AlcShape> affectShapes;
+    public ArrayList affectShapes;
     /** Graphics */
     private Graphics2D g2;
     //////////////////////////////////////////////////////////////
@@ -108,16 +108,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         addMouseMotionListener(this);
         this.setBounds(0, 0, root.getWindowSize().width, root.getWindowSize().height);
 
-        shapes = new ArrayList<AlcShape>(100);
+        shapes = new ArrayList(100);
         shapes.ensureCapacity(100);
-        createShapes = new ArrayList<AlcShape>(25);
+        createShapes = new ArrayList(25);
         createShapes.ensureCapacity(25);
-        affectShapes = new ArrayList<AlcShape>(25);
+        affectShapes = new ArrayList(25);
         affectShapes.ensureCapacity(25);
 
     }
 
-    @Override
+    
     public void paintComponent(Graphics g) {
         int w = this.getWidth();
         int h = this.getHeight();
@@ -260,7 +260,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public AlcShape getCurrentShape() {
         if (shapes.size() > 0) {
-            return shapes.get(shapes.size() - 1);
+            return (AlcShape)shapes.get(shapes.size() - 1);
         } else {
             return null;
         }
@@ -290,7 +290,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public AlcShape getCurrentCreateShape() {
         if (createShapes.size() > 0) {
-            return createShapes.get(createShapes.size() - 1);
+            return (AlcShape)createShapes.get(createShapes.size() - 1);
         } else {
             return null;
         }
@@ -328,7 +328,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public AlcShape getCurrentAffectShape() {
         if (affectShapes.size() > 0) {
-            return affectShapes.get(affectShapes.size() - 1);
+            return (AlcShape)affectShapes.get(affectShapes.size() - 1);
         } else {
             return null;
         }

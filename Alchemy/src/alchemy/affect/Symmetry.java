@@ -32,7 +32,6 @@ import java.util.ArrayList;
  * Symmetry Module
  * @author Karl D.D. Willis
  */
-
 public class Symmetry extends AlcModule implements AlcConstants {
 
     private AlcSubToolBarSection subToolBarSection;
@@ -41,24 +40,22 @@ public class Symmetry extends AlcModule implements AlcConstants {
     private boolean defaultReflection = true;
     private boolean selectAxis = false;
     private boolean firstSelect = false;
-    private ArrayList<Integer> xReflections = new ArrayList<Integer>(20);
-    private ArrayList<Integer> yReflections = new ArrayList<Integer>(20);
+    private ArrayList xReflections = new ArrayList(20);
+    private ArrayList yReflections = new ArrayList(20);
 
     /** Creates a new instance of Symmetry */
     public Symmetry() {
     }
 
-    @Override
     protected void setup() {
         // Add a default reflection
-        xReflections.add(new Integer(root.getWindowSize().width/2));
+        xReflections.add(new Integer(root.getWindowSize().width / 2));
         //xReflections.add(new Integer(100));
         //xReflections.add(new Integer(200));
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    @Override
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -108,17 +105,16 @@ public class Symmetry extends AlcModule implements AlcConstants {
 
     }
 
-    @Override
     protected void affectShape() {
         //System.out.println(canvas.affectShapes.size());
-        int xAffectSize = canvas.createShapes.size() + (xReflections.size()* canvas.createShapes.size());
+        int xAffectSize = canvas.createShapes.size() + (xReflections.size() * canvas.createShapes.size());
         //System.out.println(xAffectSize);
         for (int i = 0; i < canvas.createShapes.size(); i++) {
-            AlcShape shape = canvas.createShapes.get(i);
+            AlcShape shape = (AlcShape) canvas.createShapes.get(i);
             GeneralPath offsetPath = shape.getShape();
             // For every x axis
             for (int j = 0; j < xReflections.size(); j++) {
-                int xValue = xReflections.get(j).intValue();
+                int xValue = ((Integer)xReflections.get(j)).intValue();
                 if (j > 0) {
                     // Get the latest reflected path
                     offsetPath = canvas.getCurrentAffectShape().getShape();
@@ -133,7 +129,7 @@ public class Symmetry extends AlcModule implements AlcConstants {
                 //System.out.println(j);
                 } else {
                     int index = i + j;
-                    AlcShape thisAffectShape = canvas.affectShapes.get(index);
+                    AlcShape thisAffectShape = (AlcShape)canvas.affectShapes.get(index);
                     //System.out.println(i + " " + j + " " + canvas.affectShapes.size());
                     thisAffectShape.setShape(reflectedPath);
                 //canvas.affectShapes.set(i + j, shape.setShape(reflectedPath));
@@ -178,7 +174,6 @@ public class Symmetry extends AlcModule implements AlcConstants {
         return verticalReflection;
     }
 
-    @Override
     public void mouseMoved(MouseEvent e) {
         if (selectAxis) {
             GeneralPath line = null;
@@ -199,7 +194,6 @@ public class Symmetry extends AlcModule implements AlcConstants {
         }
     }
 
-    @Override
     public void mouseReleased(MouseEvent e) {
         if (selectAxis) {
             canvas.removeCurrentAffectShape();

@@ -47,7 +47,7 @@ public class AlcMainToolBar extends JPanel {
     }
 
     // Override the paint component to draw the gradient bg
-    @Override
+    
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
@@ -64,7 +64,7 @@ public class AlcMainToolBar extends JPanel {
         }
     }
 
-    @Override
+    
     public int getHeight() {
         return this.height;
     }

@@ -339,10 +339,10 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                     System.out.println(container.getClass().getName());
 
                     Window window = (Window) container;
-                    window.setAlwaysOnTop(true);
+                    //window.setAlwaysOnTop(true);
                     window.addWindowListener(new WindowAdapter() {
 
-                        @Override
+                        
                         public void windowClosing(WindowEvent e) {
                             //System.out.println("Close button clicked");
                             toolBarAttached = true;
