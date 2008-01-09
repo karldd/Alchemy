@@ -45,10 +45,10 @@ import java.awt.event.MouseEvent;
 public class TypeShapes extends AlcModule implements AlcConstants {
 
     // SHAPE GENERATION
-    private Font fonts[];
+    private String fonts[];
     private FontRenderContext fontRenderContext;
     private Area union;
-    private int scale,  doubleScale,  randX,  randY,  halfWidth,  halfHeight,  quarterWidth,  quarterHeight,  explode;
+    private int scale,  doubleScale,  explode;
     private float noisiness;
     private float noiseScale = 0.0F;
     // All ASCII characters, sorted according to their visual density
@@ -65,10 +65,10 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     
     protected void setup() {
 
-        halfWidth = root.getWindowSize().width / 2;
-        halfHeight = root.getWindowSize().height / 2;
-        quarterWidth = root.getWindowSize().width / 4;
-        quarterHeight = root.getWindowSize().height / 4;
+//        halfWidth = root.getWindowSize().width / 2;
+//        halfHeight = root.getWindowSize().height / 2;
+//        quarterWidth = root.getWindowSize().width / 4;
+//        quarterHeight = root.getWindowSize().height / 4;
 
         loadFonts();
 
@@ -167,17 +167,18 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     /** Load all available system fonts into an array */
     public void loadFonts() {
         GraphicsEnvironment graphicsenvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        fonts = graphicsenvironment.getAllFonts();
+        //fonts = graphicsenvironment.getAllFonts(); // Slow
+        fonts = graphicsenvironment.getAvailableFontFamilyNames();
     }
 
     /** Returns a random font from the list */
     public Font randomFont() {
-        return new Font(fonts[(int) root.math.random(0, fonts.length)].getName(), Font.PLAIN, (int) root.math.random(100, 300));
+        return new Font(fonts[(int) root.math.random(0, fonts.length)], Font.PLAIN, (int) root.math.random(100, 300));
     }
 
     public GeneralPath randomShape() {
-        randX = quarterWidth + (int) root.math.random(halfWidth);
-        randY = quarterHeight + (int) root.math.random(halfHeight);
+        //randX = quarterWidth + (int) root.math.random(halfWidth);
+        //randY = quarterHeight + (int) root.math.random(halfHeight);
 
         scale = (int) root.math.random(2, 8);
         doubleScale = scale << 1;

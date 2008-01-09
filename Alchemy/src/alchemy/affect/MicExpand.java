@@ -65,18 +65,15 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     }
 
-    
     public void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    
     public void deselect() {
         stopExpand();
     }
 
-    
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -126,7 +123,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     private void captureSound() {
 
-        currentShape = (AlcShape)canvas.shapes.get(activeShape);
+        currentShape = (AlcShape) canvas.shapes.get(activeShape);
 
         if (currentShape != null) {
 
@@ -172,7 +169,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                     canvas.redraw();
                 }
                 stopExpand();
-                //System.out.println("CONTAINED");
+            //System.out.println("CONTAINED");
 
             } else {
 
@@ -289,7 +286,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
         for (int i = 0; i < canvas.shapes.size(); i++) {
-            AlcShape thisShape = (AlcShape)(AlcShape)canvas.shapes.get(i);
+            AlcShape thisShape = (AlcShape) (AlcShape) canvas.shapes.get(i);
             GeneralPath currentPath = thisShape.getShape();
             if (currentPath.contains(p)) {
                 currentActiveShape = i;
@@ -316,17 +313,14 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         }
     }
 
-    
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
     }
 
-    
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     }
 
-    
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
             // Dispatch checking for intersection at a slow rate
