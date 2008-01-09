@@ -46,7 +46,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     public MicrophoneShapes() {
     }
 
-    @Override
+    
     public void setup() {
         // Create a new MicInput Object with a buffer of 10
         micIn = new AlcMicInput(2);
@@ -55,13 +55,13 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    @Override
+    
     public void deselect() {
         micIn.stopMicInput();
         micIn = null;
     }
 
-    @Override
+    
     public void reselect() {
         //micIn = new AlcMicInput(2);
         micIn.startMicInput();
@@ -89,14 +89,14 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(volumeSlider);
     }
 
-    @Override
+    
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.createShapes.add(makeShape(p));
         oldP = p;
     }
 
-    @Override
+    
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
 
@@ -114,7 +114,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
         }
     }
 
-    @Override
+    
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it is null incase the shape has been auto-cleared
@@ -142,7 +142,7 @@ public class MicrophoneShapes extends AlcModule implements AlcConstants {
     }
 
     // KEY EVENTS
-//    @Override
+//    
 //    public void keyReleased(KeyEvent e) {
 //        char keyChar = e.getKeyChar();
 //

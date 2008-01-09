@@ -38,14 +38,14 @@ public class Shapes extends AlcModule {
     public Shapes() {
     }
 
-    @Override
+    
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.createShapes.add(makeShape(p));
         canvas.redraw();
     }
 
-    @Override
+    
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
@@ -56,7 +56,7 @@ public class Shapes extends AlcModule {
 
     }
 
-    @Override
+    
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared

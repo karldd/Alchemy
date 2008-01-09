@@ -37,7 +37,7 @@ public class AlcPopupButton extends AlcButton {
         // Add a mouse listener to detect when the button is pressed and display the popup menu
         this.addMouseListener(new MouseAdapter() {
 
-            @Override
+            
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
             }

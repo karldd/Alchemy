@@ -48,7 +48,7 @@ public class AlcAbout extends JDialog implements ActionListener {
             }
         });
         aboutPanel.add(closeButton);
-        this.setPreferredSize(new Dimension(400, 300));
+        aboutPanel.setPreferredSize(new Dimension(400, 300));
 
         this.setContentPane(aboutPanel);
         this.setResizable(false);

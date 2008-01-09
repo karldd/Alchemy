@@ -76,7 +76,7 @@ public class AlcMicInput extends Thread {
         stopMicInput = true;
     }
 
-    @Override
+    
     public void run() {
         stopMicInput = false;
 

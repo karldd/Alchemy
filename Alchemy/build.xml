@@ -67,10 +67,20 @@
 
     -->    
     
+    <!-- Copy the required libraries into the build file -->
+    <target name="-pre-jar"> 
+        <unjar src="${file.reference.commons-logging.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.itext-2.0.6.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/> 
+    </target> 
+    
+    
     <target name="-post-jar">
         
         <!-- Copy the compiled Plugin classes  - Need to find a better way to do this! -->
+        <!--
         <copy file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/plugins/core/alchemy"/>
+        -->
         
         <!-- CREATES -->
         <!-- Shapes -->
@@ -130,7 +140,7 @@
         <!--
         <move file="${build.classes.dir}/alchemy/create/ImageShapes.class" todir="${basedir}/plugins/imageShapes/alchemy/create"/>
         -->
-        
+
         <!-- Copy the Data folder to the Dist directory -->
         <!--
         <copy todir="${dist.dir}/data">
@@ -138,11 +148,11 @@
         </copy>
          -->
          
-        <!-- Copy the lib folder to the Dist directory -->
+        <!-- Copy the lib folder to the Dist directory
         <copy todir="${dist.dir}/lib">
             <fileset dir="${basedir}/lib"/>
         </copy>
-        
+         -->
         
         <!-- Define custom JPF specific Ant tasks -->
         <path id="classpath">
@@ -163,7 +173,32 @@
         
         <copy todir="${dist.dir}/plugins">
             <fileset dir="${basedir}/plugins" includes="**/*.zip"/>
-        </copy>
+        </copy>     
+        
+        
+        
+        <!-- Unzip and remove the plugin class files from the Alchemy Jar -->
+        <unzip src="${dist.jar}" dest="${dist.dir}/Alchemy" />
+        <delete includeemptydirs="true">
+            <fileset dir="${dist.dir}/Alchemy/alchemy/affect" includes="**/*"/>
+            <fileset dir="${dist.dir}/Alchemy/alchemy/create" includes="**/*"/>
+        </delete>
+        <!-- Delete the original jar -->
+        <delete dir="${dist.jar}"/>
+        <!-- 
+        Unless we zip up the contents to a directory other than 'dist', 
+        the .class files get automatically included.
+        To get around this we make the zip in the main directory than move it.
+        Hacky I know...
+        -->
+        <zip destfile="Alchemy.jar" basedir="${dist.dir}/Alchemy"/>
+        <move file="Alchemy.jar" todir="${dist.dir}"/>
+        
+        <!-- Delete the extracted zip folder and other Netbeans crap while we are at it -->
+        <delete dir="${dist.dir}/Alchemy"/>
+        <delete dir="${dist.dir}/lib"/>
+        <delete file="${dist.dir}/README.TXT"/>
+        
         
     </target>	
     

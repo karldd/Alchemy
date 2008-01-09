@@ -193,7 +193,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
     /*
     // Override the paint component to draw the gradient bg
-    @Override
+    
     protected void paintComponent(Graphics g) {
     super.paintComponent(g);
     //int panelWidth = getWidth();
@@ -362,7 +362,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         final Dimension size = new Dimension(image.getWidth(root), image.getHeight(root));
         final Window window = new Window(root) {
 
-            @Override
+            
             public void paint(Graphics g) {
                 g.drawImage(image, 0, 0, null);
 
@@ -377,7 +377,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         };
         window.addMouseListener(new MouseAdapter() {
 
-            @Override
+            
             public void mousePressed(MouseEvent e) {
                 window.setVisible(false);
                 window.dispose();
