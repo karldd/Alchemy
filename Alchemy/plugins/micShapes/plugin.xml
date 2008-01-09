@@ -1,22 +1,22 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<plugin id="alchemy.create.microphoneShapes" version="1.0.0">
+<plugin id="alchemy.create.micShapes" version="1.0.0">
     
     <requires> 
         <import plugin-id="alchemy.core"/> 
     </requires> 
     
     <runtime>
-        <library id="microphoneShapes" path="/" type="code">
+        <library id="micShapes" path="/" type="code">
             <export prefix="*" /> 
         </library>
         <library type="resources" path="data/" id="data" />
     </runtime>
     
-    <extension plugin-id="alchemy.core" point-id="Create" id="microphoneShapesCreate"> 
-        <parameter id="class" value="alchemy.create.MicrophoneShapes"/> 
-        <parameter id="name" value="Microphone Shapes"/> 
+    <extension plugin-id="alchemy.core" point-id="Create" id="micShapesCreate"> 
+        <parameter id="class" value="alchemy.create.MicShapes"/> 
+        <parameter id="name" value="Mic Shapes"/> 
         <parameter id="description" value="Create shapes based on Microphone Input" />
         <parameter id="icon" value="icon.png" />
     </extension>
