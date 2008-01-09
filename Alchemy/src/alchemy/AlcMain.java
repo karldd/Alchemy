@@ -140,7 +140,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Exit Function
         addWindowListener(new WindowAdapter() {
 
-            
             public void windowClosing(WindowEvent e) {
                 exitAlchemy();
             }
@@ -196,6 +195,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         this.setJMenuBar(menuBar);
 
 
+
         // LAYERED PANE
         layeredPane = new JLayeredPane();
         // Add the UI on top of the canvas
@@ -208,6 +208,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         layeredPane.setPreferredSize(windowSize);          // Set the window size
         this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
         this.addComponentListener(this);            // Add a component listener to detect window resizing
+
+        Image titleBarIcon = AlcUtil.createImageIcon("data/titlebar.png").getImage();
+        if (titleBarIcon != null) {
+            this.setIconImage(titleBarIcon);
+        }
+
+
         //this.addWindowStateListener(this);          // Add a window state listener to detect window maximising
         this.addKeyListener(this);                  // Key Listener
         this.setFocusable(true);                    // Make the key listener focusable so we can get key events
@@ -465,7 +472,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      * @param visible true for visible, otherwise false
      */
     /*
-    
     public void setVisible(final boolean visible) {
     // Only 
     if (PLATFORM == MACOSX) {
