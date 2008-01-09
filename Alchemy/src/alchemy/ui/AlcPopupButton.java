@@ -26,7 +26,7 @@ import java.net.URL;
 
 public class AlcPopupButton extends AlcButton {
 
-    private final static int uiPopupMenuY = AlcToolBar.toolBarHeight - 10;
+    private final static int uiPopupMenuY = AlcToolBar.toolBarHeight - 13;
     private AlcPopupMenu popup;
 
     /** Creates a new instance of AlcPopupButton */

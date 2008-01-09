@@ -48,7 +48,7 @@ public class AlcSubSlider extends JPanel {
         slider.setOpaque(false);
         //alphaSlider.setBackground(Color.black);
         //alphaSlider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(85, 20));
+        slider.setPreferredSize(new Dimension(85, 22));
         slider.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         this.add(slider);
 
