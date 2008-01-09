@@ -19,6 +19,7 @@
  */
 package alchemy.ui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import javax.swing.*;
@@ -43,14 +44,15 @@ public class AlcSlider extends JPanel {
         //alphaSlider.setMajorTickSpacing(75); // sets numbers for biggest tick marks
         slider.setMinorTickSpacing(25);  // smaller tick marks
         slider.setPaintTicks(true);     // display the ticks
-
+        //slider.setPaintLabels(false);
         // TODO - customise this slider?  or set to number box? http://www.java2s.com/Code/Java/Swing-Components/ThumbSliderExample1.htm
         // or make a popupmenu with a slider inside?
 
         //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
         slider.setOpaque(false);
-        //alphaSlider.setBackground(Color.black);
-        //alphaSlider.setForeground(Color.black);
+        // This has to be set to avoid the ticks bg being default coloured
+        slider.setBackground(new Color(225,225,225));
+        //slider.setForeground(Color.black);
         slider.setPreferredSize(new Dimension(85, 28));
         slider.setAlignmentX(Component.CENTER_ALIGNMENT);
 
