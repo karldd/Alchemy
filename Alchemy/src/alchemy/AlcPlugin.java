@@ -19,15 +19,12 @@
  */
 package alchemy;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Iterator;
 import java.net.URL;
 // JAVA PLUGIN FRAMEWORK
+import java.util.Arrays;
+import java.util.Comparator;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
@@ -89,12 +86,12 @@ public class AlcPlugin implements AlcConstants {
             if (!tempCore.exists()) {
                 System.err.println("ERROR - Core plugin could not be copied to the temp dir: " + TEMP_DIR);
             }
-            
+
         } catch (IOException e) {
             System.err.println(e);
         }
 
-        System.out.println(tempCore.toString());
+        //System.out.println(tempCore.toString());
 
         // Folder of the plugins
         File pluginsDir = new File("plugins");
@@ -152,6 +149,7 @@ public class AlcPlugin implements AlcConstants {
     public AlcModule[] addPlugins(String pointName, int numberOfModules, int moduleType, String[] order) {
 
         AlcModule[] plugins = new AlcModule[numberOfModules];
+        int index = 0;
         int noMatchCount = 0;
 
         try {
@@ -182,26 +180,22 @@ public class AlcPlugin implements AlcConstants {
                 String iconParam = ext.getParameter("icon").valueAsString();
                 String nameParam = ext.getParameter("name").valueAsString();
 
-                // Set the index to negative so we can test if it has been set later
-                int index = -1;
-                // Loop through the order list given - somewhat inefficient?
+
+
+                int sortIndex = -1;
+                // Assign a sort index to each matching plugin
                 for (int i = 0; i < order.length; i++) {
-                    // Check if this one matches
-                    if (order[i].equals(nameParam)) {
-                        plugins[i] = currentPlugin;
-                        index = i;
+                    if (nameParam.equals(order[i])) {
+                        sortIndex = i;
                     }
                 }
-
-                // If there was no match, then add the module on to the end
-                if (index < 0) {
-                    index = order.length + noMatchCount;
-                    //System.out.println(nameParam);
-                    //System.out.println("Plugins: " + index + " / " + numberOfPlugins + " No Match: " + noMatchCount);
-                    plugins[index] = currentPlugin;
-                    // Keep track of how many non-matches
+                // If there were no matches
+                if (sortIndex == -1) {
                     noMatchCount++;
+                    sortIndex = 100 + noMatchCount;
                 }
+
+                plugins[index] = currentPlugin;
 
                 URL iconUrl = null;
 
@@ -214,14 +208,22 @@ public class AlcPlugin implements AlcConstants {
                 plugins[index].setName(nameParam);
                 plugins[index].setIconName(iconParam);
                 plugins[index].setDescription(descriptionParam);
-                plugins[index].setIndex(index);
+                plugins[index].setSortOrderIndex(sortIndex);
                 plugins[index].setClassLoader(classLoader);
-
+                index++;
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Arrays.sort(plugins, new PluginComparator());
+
+        // Loop through once again and set the index
+        for (int i = 0; i < plugins.length; i++) {
+            plugins[i].setIndex(i);
+        }
+
 
         return plugins;
     }
@@ -252,5 +254,17 @@ public class AlcPlugin implements AlcConstants {
 
     public int getNumberOfAffectModules() {
         return numberOfAffectModules;
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// COMPARATOR
+//////////////////////////////////////////////////////////////
+class PluginComparator implements Comparator {
+
+    public int compare(Object o1, Object o2) {
+        Integer int1 = new Integer(((AlcModule) o1).getSortOrderIndex());
+        Integer int2 = new Integer(((AlcModule) o2).getSortOrderIndex());
+        return int1.compareTo(int2);
     }
 }

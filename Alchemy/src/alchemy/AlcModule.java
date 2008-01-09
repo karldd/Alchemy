@@ -53,6 +53,8 @@ public abstract class AlcModule {
     private int index;
     /** The loaded state of this module - set to true when the module is first selected */
     private boolean loaded = false;
+    /** Sort order variable determines the order of display in the popup menu */
+    private int sortIndex = -1;
 
     public AlcModule() {
     }
@@ -105,7 +107,7 @@ public abstract class AlcModule {
      *  @return The modules name
      */
     public String getName() {
-        return moduleName;
+        return this.moduleName;
     }
 
     void setName(String moduleName) {
@@ -117,11 +119,11 @@ public abstract class AlcModule {
      * @return The index of the module
      */
     public int getIndex() {
-        return index;
+        return this.index;
     }
 
     void setIndex(int i) {
-        index = i;
+        this.index = i;
     }
 
     /** 
@@ -129,7 +131,7 @@ public abstract class AlcModule {
      * @return  The type of module - either "CREATE" (0) or "AFFECT" (1)
      */
     public int getModuleType() {
-        return moduleType;
+        return this.moduleType;
     }
 
     void setModuleType(int moduleType) {
@@ -141,11 +143,11 @@ public abstract class AlcModule {
      * @return  If the module  has been loaded or not
      */
     public boolean getLoaded() {
-        return loaded;
+        return this.loaded;
     }
 
     void setLoaded(boolean l) {
-        loaded = l;
+        this.loaded = l;
     }
 
     /** 
@@ -153,7 +155,7 @@ public abstract class AlcModule {
      * @return  ClassLoader reference to this modules .zip
      */
     public ClassLoader getClassLoader() {
-        return classLoader;
+        return this.classLoader;
     }
 
     void setClassLoader(ClassLoader classLoader) {
@@ -165,11 +167,11 @@ public abstract class AlcModule {
      * @return  This modules icon name
      */
     public String getIconName() {
-        return iconName;
+        return this.iconName;
     }
 
     void setIconName(String n) {
-        iconName = n;
+        this.iconName = n;
     }
 
     /** 
@@ -177,11 +179,11 @@ public abstract class AlcModule {
      * @return URL linking to this modules icon file
      */
     public URL getIconUrl() {
-        return iconUrl;
+        return this.iconUrl;
     }
 
     void setIconUrl(URL url) {
-        iconUrl = url;
+        this.iconUrl = url;
     }
 
     /**
@@ -189,12 +191,25 @@ public abstract class AlcModule {
      * @return Text description of this module
      */
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     void setDescription(String n) {
-        description = n;
+        this.description = n;
     }
+
+    /**
+     * Get the sort index to determine the display order of the module
+     * @retun The sort index
+     */
+    int getSortOrderIndex() {
+        return this.sortIndex;
+    }
+
+    void setSortOrderIndex(int i) {
+        this.sortIndex = i;
+    }
+
 
     //////////////////////////////////////////////////////////////
     // MOUSE EVENTS
