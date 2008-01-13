@@ -19,51 +19,176 @@
  */
 package alchemy.create;
 
-import alchemy.AlcModule;
-import alchemy.AlcShape;
+import alchemy.*;
+import alchemy.ui.*;
+import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
 
 /**
  * Shape.java
  * @author  Karl D.D. Willis
  */
+public class Shapes extends AlcModule implements AlcConstants {
 
+    private boolean straightShapes = false;
+    private boolean firstClick = true;
+    private AlcSubToolBarSection subToolBarSection;
+    private boolean secondClick;
+    private Point lastPt;
+    private int guideSize = -1;
+    private GeneralPath secondPath = null;
 
-public class Shapes extends AlcModule {
-
-    /**
-     * Creates a new instance of Shapes
-     */
     public Shapes() {
     }
 
-    
-    public void mousePressed(MouseEvent e) {
-        Point p = e.getPoint();
-        canvas.createShapes.add(makeShape(p));
-        canvas.redraw();
+    public void setup() {
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    
-    public void mouseDragged(MouseEvent e) {
-        Point p = e.getPoint();
-        // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
-            canvas.getCurrentCreateShape().addCurvePoint(p);
-            canvas.redraw();
+    public void cleared() {
+        reset();
+    }
+
+    public void reselect() {
+        reset();
+    }
+
+    private void reset() {
+        lastPt = null;
+        firstClick = true;
+        if (guideSize > 0) {
+            canvas.guideShapes.remove(guideSize - 1);
         }
+        guideSize = -1;
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+        // Freeform Button
+        AlcSubToggleButton freeformButton = new AlcSubToggleButton("Freeform/Straight", AlcUtil.getUrlPath("freeform.png", getClassLoader()));
+        freeformButton.setToolTipText("Change the drawing mode to freeform or straight lines");
+        freeformButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        straightShapes = !straightShapes;
+                        firstClick = true;
+                    }
+                });
+        subToolBarSection.add(freeformButton);
 
     }
 
-    
-    public void mouseReleased(MouseEvent e) {
-        Point p = e.getPoint();
-        // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
-            canvas.getCurrentCreateShape().addLastPoint(p);
+    public void mousePressed(MouseEvent e) {
+        if (e.getClickCount() == 1) {
+            if (!straightShapes) {
+                Point p = e.getPoint();
+                canvas.createShapes.add(makeShape(p));
+                canvas.redraw();
+            }
+        }
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        // Detect a doubleclick
+        if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
+            reset();
             canvas.redraw();
             canvas.commitShapes();
+            e.consume();
+        }
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        // If in freeform mode, not on the first click and if there is a valid lastPoint
+        // then draw a guide line
+        if (straightShapes && !firstClick && lastPt != null) {
+
+            GeneralPath line = new GeneralPath(new Line2D.Float(lastPt.x, lastPt.y, e.getX(), e.getY()));
+            AlcShape guide = new AlcShape(line, new Color(0, 255, 255), 100, LINE, 1);
+
+            if (guideSize == canvas.guideShapes.size()) {
+                if (secondPath != null) {
+                    // If there is a secondPath defined then append it to the new shape
+                    guide.getShape().append(secondPath, false);
+                }
+                canvas.setCurrentGuideShape(guide);
+            } else if (guideSize == -1) {
+                canvas.guideShapes.add(guide);
+                guideSize = canvas.guideShapes.size();
+            } else {
+                // Clause here to determine if the guideshape array has increased 
+                // i.e. it is being used by another module
+                reset();
+            }
+            canvas.redraw();
+        }
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        if (!straightShapes) {
+            Point p = e.getPoint();
+            // Need to test if it is null incase the shape has been auto-cleared
+            if (canvas.getCurrentCreateShape() != null) {
+                canvas.getCurrentCreateShape().addCurvePoint(p);
+                canvas.redraw();
+            }
+        } else {
+            // If in freeform shape mode then draw the guide line using the mousemoved method
+            mouseMoved(e);
+        }
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        Point p = e.getPoint();
+        // Only if this is a single click
+        if (e.getClickCount() == 1) {
+            if (straightShapes) {
+                if (firstClick) {
+                    canvas.createShapes.add(makeShape(p));
+                    firstClick = false;
+                    // If the style is solid we need to initially keep two guides
+                    if (canvas.getStyle() == SOLID) {
+                        secondClick = true;
+                    }
+                } else if (secondClick) {
+                    // Only if is is not the same as the last point
+                    if (!p.equals(lastPt)) {
+                        secondClick = false;
+                        AlcShape secondShape = ((AlcShape) canvas.guideShapes.get(guideSize - 1));
+                        if (secondShape != null) {
+                            secondShape.addLinePoint(p);
+                        }
+                        // Get the current shape and keep it as secondPath
+                        secondPath = new GeneralPath(canvas.getCurrentGuideShape().getShape());
+                        if (canvas.getCurrentCreateShape() != null) {
+                            canvas.getCurrentCreateShape().addLinePoint(p);
+                        }
+                    }
+                } else {
+                    secondPath = null;
+                    if (canvas.getCurrentCreateShape() != null) {
+                        canvas.getCurrentCreateShape().addLinePoint(p);
+                    }
+                }
+                lastPt = p;
+            } else {
+                // Need to test if it is null incase the shape has been auto-cleared
+                if (canvas.getCurrentCreateShape() != null) {
+                    canvas.getCurrentCreateShape().addLastPoint(p);
+                }
+            }
+            canvas.redraw();
+            if (!straightShapes) {
+                canvas.commitShapes();
+            }
         }
     }
 
