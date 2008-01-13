@@ -193,6 +193,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Menu Bar
         menuBar = new AlcMenuBar(this);
         this.setJMenuBar(menuBar);
+        //toolBar.add(menuBar);
 
 
 
@@ -526,6 +527,20 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     break;
             }
         }
+
+        // Shortcut keys without a modifier
+        switch (keyCode) {
+            // Toggle Style
+            case KeyEvent.VK_S:
+                canvas.toggleStyle();
+                toolBar.lineButton.setSelected(!toolBar.lineButton.isSelected());
+                break;
+            case KeyEvent.VK_X:
+                canvas.toggleBlackWhite();
+                toolBar.bwButton.setSelected(!toolBar.bwButton.isSelected());
+                break;
+        }
+
         passKeyEvent(event, "keyPressed");
     }
 

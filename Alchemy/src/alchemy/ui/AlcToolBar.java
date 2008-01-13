@@ -32,7 +32,6 @@ import javax.swing.event.ChangeListener;
  * The disappearing toolbar
  * Housing access to all modules and their sub toolbars
  */
-
 public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener {
 
     /** Reference to the root */
@@ -69,6 +68,8 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     private AlcSubToolBarSection createSubToolBarSection;
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
+    // Buttons that we acces with keyboard shortcuts
+    public AlcToggleButton lineButton,  bwButton;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -107,7 +108,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
-        AlcToggleButton lineButton = new AlcToggleButton("Style", "Make marks as a lines or solid shapes", AlcUtil.getUrlPath("data/style.png"));
+        lineButton = new AlcToggleButton("Style", "Make marks as a lines or solid shapes (s)", AlcUtil.getUrlPath("data/style.png"));
         lineButton.addActionListener(
                 new ActionListener() {
 
@@ -155,7 +156,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // BLACK WHITE BUTTON
         //////////////////////////////////////////////////////////////
-        AlcToggleButton bwButton = new AlcToggleButton("Black/White", "Make marks in black or white", AlcUtil.getUrlPath("data/blackwhite.png"));
+        bwButton = new AlcToggleButton("Black/White", "Make marks in black or white (x)", AlcUtil.getUrlPath("data/blackwhite.png"));
         bwButton.addActionListener(
                 new ActionListener() {
 
@@ -342,7 +343,6 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                     //window.setAlwaysOnTop(true);
                     window.addWindowListener(new WindowAdapter() {
 
-                        
                         public void windowClosing(WindowEvent e) {
                             //System.out.println("Close button clicked");
                             toolBarAttached = true;
