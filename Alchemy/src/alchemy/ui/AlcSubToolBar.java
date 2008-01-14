@@ -25,9 +25,9 @@ import javax.swing.*;
 
 public class AlcSubToolBar extends JPanel {
 
-    private AlcMain root;
+    private final AlcMain root;
     //private AlcToolBar parent;
-    private int height = 26;
+    private static final int height = 26;
 
     /** Creates a new instance of AlcSubToolBar */
     public AlcSubToolBar(AlcMain root) {
@@ -57,28 +57,27 @@ public class AlcSubToolBar extends JPanel {
     }
 
     // Override the paint component to draw the gradient bg
-    
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         //int panelWidth = getWidth();
 
-        GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(215, 215, 215, 235), 0, this.height, new Color(207, 207, 207, 235), true);
+        GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(215, 215, 215, 235), 0, height, new Color(207, 207, 207, 235), true);
         if (g instanceof Graphics2D) {
             Graphics2D g2 = (Graphics2D) g;
             // Turn on text antialias - windows does not use it by default
             //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint(gradientPaint);
-            g2.fillRect(0, 0, root.getWindowSize().width, this.height);
+            g2.fillRect(0, 0, root.getWindowSize().width, height);
             g2.setPaint(AlcToolBar.toolBarHighlightColour);
             g2.drawLine(0, 0, root.getWindowSize().width, 0);
             g2.setPaint(AlcToolBar.toolBarLineColour);
-            g2.drawLine(0, this.height - 1, root.getWindowSize().width, this.height - 1);
+            g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
         }
     }
 
-    
+    /** Return the height of the sub toolbar */
     public int getHeight() {
-        return this.height;
+        return height;
     }
 }

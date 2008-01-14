@@ -41,9 +41,9 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /** Toolbar attached or not */
     private boolean toolBarAttached = true;
     /** Height of the ToolBar */
-    public static final int toolBarHeight = 60;
+    private static int toolBarHeight = 60;
     /** Total height of all tool bars */
-    private int totalHeight = toolBarHeight;
+    private int totalHeight = 60;
     /** Keep track of the windowSize */
     public Dimension windowSize;
     /** ToolBar Background Colour */
@@ -52,6 +52,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     public static final Color toolBarBgEndColour = new Color(215, 215, 215, 235);
     public static final Color toolBarLineColour = new Color(140, 140, 140);
     public static final Color toolBarHighlightColour = new Color(231, 231, 231);
+    public static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 235);
     /** ToolBar Font */
     public static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
     public static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
@@ -85,7 +86,8 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         this.addMouseListener(this);
         this.setFloatable(false);
         // Make this a Box Layout so all submenus are stacked below
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setLayout(new BorderLayout());
 
         loadToolBar();
         loadSubToolBar();
@@ -276,7 +278,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         mainToolBar.add(new AlcSeparator());
 
-        this.add(mainToolBar, 0);
+        this.add("Center", mainToolBar);
 
     }
 
@@ -288,7 +290,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
         // Add the SubToolBar
         subToolBar = new AlcSubToolBar(root);
-        this.add(subToolBar, 1);
+        this.add("South", subToolBar);
         // Make it invisible until it gets some content
         subToolBar.setVisible(false);
     }
@@ -451,7 +453,11 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         if (subToolBar.isVisible()) {
             newTotalHeight += subToolBar.getHeight();
         }
-
+        //if(AlcMain.PLATFORM == MACOSX){
+        // Add the height of the menubar too
+        System.out.println("MENUBAR height " + root.menuBar.getHeight());
+        newTotalHeight += root.menuBar.getHeight();
+        //}
         this.totalHeight = newTotalHeight;
     }
 

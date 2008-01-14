@@ -19,14 +19,24 @@
  */
 package alchemy.ui;
 
+import alchemy.AlcConstants;
+import alchemy.AlcMain;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 
-public class AlcPopupButton extends AlcButton {
+public class AlcPopupButton extends AlcButton implements AlcConstants {
 
-    private final static int uiPopupMenuY = AlcToolBar.toolBarHeight - 13;
+    private static int uiPopupMenuY;
+
+    static {
+        if (AlcMain.PLATFORM == MACOSX) {
+            uiPopupMenuY = 47;
+        } else {
+            uiPopupMenuY = 71;
+        }
+    }
     private AlcPopupMenu popup;
 
     /** Creates a new instance of AlcPopupButton */
@@ -34,10 +44,11 @@ public class AlcPopupButton extends AlcButton {
         super(text, toolTip, iconUrl);
         popup = new AlcPopupMenu();
 
+
+
         // Add a mouse listener to detect when the button is pressed and display the popup menu
         this.addMouseListener(new MouseAdapter() {
 
-            
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
             }

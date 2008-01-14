@@ -192,8 +192,18 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Menu Bar
         menuBar = new AlcMenuBar(this);
-        this.setJMenuBar(menuBar);
-        //toolBar.add(menuBar);
+
+        //if (PLATFORM == MACOSX) {
+        // Add normally if on MacOSX as the menu is listed above
+        //this.setJMenuBar(menuBar);
+        //} else {
+        // Otherwise add it to the toolbar area
+        toolBar.add("North", menuBar);
+        toolBar.calculateTotalHeight();
+        //toolBar.resizeToolBar();
+        //}
+
+
 
 
 
