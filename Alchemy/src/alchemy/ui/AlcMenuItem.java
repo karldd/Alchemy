@@ -36,6 +36,11 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
 
     private void setup(String title, int accelerator) {
 
+        //this.setUI(new AlcMenuItemUI());
+        //System.out.println(this.getUI());
+        //this.setOpaque(false);
+        
+
         this.setText(title);
         if (accelerator > 0) {
             this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
@@ -47,6 +52,7 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);
 
     }

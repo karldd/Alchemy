@@ -156,9 +156,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if (PLATFORM == MACOSX) {
             setupMacSystemProperties();
         }
+
         // Set system look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            // Custom class to set the drop down menus to be transparent
+            //UIManager.put("PopupMenuUI", "alchemy.ui.AlcPopupMenuUI");
+            //UIManager.put("MenuItemUI", "alchemy.ui.AlcMenuItemUI");
         } catch (Exception e) {
             e.printStackTrace();
         }

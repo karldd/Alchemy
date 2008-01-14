@@ -20,6 +20,7 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
+import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 
@@ -28,14 +29,33 @@ public class AlcMenu extends JMenu implements AlcConstants {
     public AlcMenu(String title) {
 
         this.setText(title);
-        this.setContentAreaFilled(false);
+        //this.setContentAreaFilled(false);
+        this.setOpaque(false);
         //this.setMnemonic(KeyEvent.VK_A);
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
         //this.setOpaque(false);
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
-        this.setBackground(AlcToolBar.toolBarHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        
+        // Hacky work around - because the JMenu is layered on top of the JMenuBar - doubling the opacity  
+        this.setBackground(new Color(0, 0, 0, 0));
         this.setFont(AlcToolBar.toolBarFont);
 
     }
+    
+    
+    /*
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (g instanceof Graphics2D) {
+            Graphics2D g2 = (Graphics2D) g;
+          
+            g2.setPaint(AlcToolBar.toolBarAlphaHighlightColour);
+            g2.fillRect(0, 0, getWidth(), getHeight());
+
+        }
+    }*/
+    
 }

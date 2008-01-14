@@ -20,7 +20,6 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
-import alchemy.AlcMain;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,15 +27,7 @@ import java.net.URL;
 
 public class AlcPopupButton extends AlcButton implements AlcConstants {
 
-    private static int uiPopupMenuY;
-
-    static {
-        if (AlcMain.PLATFORM == MACOSX) {
-            uiPopupMenuY = 47;
-        } else {
-            uiPopupMenuY = 71;
-        }
-    }
+    private final static int uiPopupMenuY = 47;
     private AlcPopupMenu popup;
 
     /** Creates a new instance of AlcPopupButton */
