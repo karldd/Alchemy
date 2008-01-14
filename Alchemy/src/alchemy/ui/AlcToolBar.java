@@ -453,10 +453,10 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         if (subToolBar.isVisible()) {
             newTotalHeight += subToolBar.getHeight();
         }
-        //if(AlcMain.PLATFORM == MACOSX){
-        // Add the height of the menubar too
-        newTotalHeight += root.menuBar.getHeight();
-        //}
+        if (AlcMain.PLATFORM != MACOSX) {
+            // Add the height of the menubar if this is not a mac
+            newTotalHeight += root.menuBar.getHeight();
+        }
         this.totalHeight = newTotalHeight;
     }
 

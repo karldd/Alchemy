@@ -160,9 +160,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Set system look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // Custom class to set the drop down menus to be transparent
-            //UIManager.put("PopupMenuUI", "alchemy.ui.AlcPopupMenuUI");
-            //UIManager.put("MenuItemUI", "alchemy.ui.AlcMenuItemUI");
+        // Custom class to set the drop down menus to be transparent
+        //UIManager.put("PopupMenuUI", "alchemy.ui.AlcPopupMenuUI");
+        //UIManager.put("MenuItemUI", "alchemy.ui.AlcMenuItemUI");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -197,15 +197,16 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Menu Bar
         menuBar = new AlcMenuBar(this);
 
-        //if (PLATFORM == MACOSX) {
-        // Add normally if on MacOSX as the menu is listed above
-        //this.setJMenuBar(menuBar);
-        //} else {
-        // Otherwise add it to the toolbar area
-        toolBar.add("North", menuBar);
-        toolBar.calculateTotalHeight();
-        //toolBar.resizeToolBar();
-        //}
+        if (PLATFORM == MACOSX) {
+            // Add normally if on MacOSX as the menu is listed above
+            this.setJMenuBar(menuBar);
+            menuBar.setVisible(false);
+        } else {
+            // Otherwise add it to the toolbar area
+            toolBar.add("North", menuBar);
+            toolBar.calculateTotalHeight();
+
+        }
 
 
 
@@ -377,7 +378,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     //setAlwaysOnTop(false);
 
                     macMenuBarVisible = true;
-                    menuBar.setVisible(true);          // make the menubar visible
+                    //menuBar.setVisible(true);          // make the menubar visible
                     setVisible(true);
 
                 //change to fullscreen.
@@ -396,7 +397,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                         //setAlwaysOnTop(true);
                         //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
                         macMenuBarVisible = false;
-                        menuBar.setVisible(false);          // make the menubar invisible
+                        //menuBar.setVisible(false);          // make the menubar invisible
                         setVisible(true);                   //show the frame
 
                     } catch (Exception e) {
