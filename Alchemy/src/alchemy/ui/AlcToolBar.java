@@ -82,7 +82,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.setOpaque(false);
         this.setName("Toolbar");
-        this.setVisible(false);
+        //this.setVisible(false);
         this.addMouseListener(this);
         this.setFloatable(false);
         // Make this a Box Layout so all submenus are stacked below
@@ -316,9 +316,19 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean b) {
         if (toolBarAttached) {
-            this.setVisible(b);
-            // Turn off the popup(s) when we leave the toolbar area
-            if (!b) {
+            //this.setVisible(b);
+            
+            // This is very hacky but...
+            // To make sure the menubars shortcuts still work
+            // we move the toolbar off the top of the scren rather
+            // than making it invisible (which disables the shortcuts)
+            // TODO - implement a better system to handle keyboard shortcuts
+            
+            if (b) {
+                this.setLocation(0, 0);
+            } else {
+                this.setLocation(0, -1000);
+                // Turn off the popup(s) when we leave the toolbar area
                 if (createButton != null) {
                     createButton.hidePopup();
                 }

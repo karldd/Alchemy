@@ -359,7 +359,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
         affectShapes.clear();
     }
-    
+
     //////////////////////////////////////////////////////////////
     // GUIDE SHAPES
     //////////////////////////////////////////////////////////////
@@ -436,13 +436,17 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private void toggleToolBar(MouseEvent event) {
         int y = event.getY();
         if (y < 10) {
-            if (!root.toolBar.getToolBarVisible()) {
+            // This is a very hacky way to avoid turning the menubar visibility off
+            // Allowing keyboard shortcuts set in the menu to keep working
+            //if (!root.toolBar.getToolBarVisible()) {
+            if (root.toolBar.getY() < 0) {
                 root.toolBar.setToolBarVisible(true);
                 // Turn drawing off while in the toolbar
                 mouseEvents = false;
             }
         } else if (y > root.toolBar.getTotalHeight() + 5) {
-            if (root.toolBar.getToolBarVisible()) {
+            //if (root.toolBar.getToolBarVisible()) {
+            if (root.toolBar.getY() == 0) {
                 root.toolBar.setToolBarVisible(false);
                 // Turn drawing on once out of the UI
                 mouseEvents = true;
