@@ -186,15 +186,15 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // HELP MENU
         //////////////////////////////////////////////////////////////
         // About menuitem not included on a MAC
-        //if (AlcMain.PLATFORM != MACOSX) {
-        helpMenu = new AlcMenu("Help");
-        aboutItem = new AlcMenuItem("About");
-        aboutItem.addActionListener(this);
-        helpMenu.add(aboutItem);
-        this.add(helpMenu);
+        if (AlcMain.PLATFORM != MACOSX) {
+            helpMenu = new AlcMenu("Help");
+            aboutItem = new AlcMenuItem("About");
+            aboutItem.addActionListener(this);
+            helpMenu.add(aboutItem);
+            this.add(helpMenu);
+        }
     }
 
-    
     // Override the paint component to draw the gradient bg
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -207,10 +207,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             //g2.setPaint(gradientPaint);
             g2.setPaint(AlcToolBar.toolBarAlphaHighlightColour);
             g2.fillRect(0, 0, root.getWindowSize().width, height);
-            //g2.setPaint(AlcToolBar.toolBarHighlightColour);
-            //g2.drawLine(0, 0, root.getWindowSize().width, 0);
-            //g2.setPaint(AlcToolBar.toolBarLineColour);
-            //g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
+        //g2.setPaint(AlcToolBar.toolBarHighlightColour);
+        //g2.drawLine(0, 0, root.getWindowSize().width, 0);
+        //g2.setPaint(AlcToolBar.toolBarLineColour);
+        //g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
         }
     }
 
