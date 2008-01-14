@@ -34,7 +34,7 @@ import javax.swing.*;
 public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener {
 
     private final AlcMain root;
-    private final static int height = 24;
+    private final static int height = 27;
     private AlcMenu fileMenu,  sessionMenu,  viewMenu,  intervalMenu,  switchMenu,  helpMenu;
     private AlcMenuItem newItem,  printItem,  exportItem,  exitItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem,  aboutItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
@@ -50,7 +50,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         this.root = root;
         this.setOpaque(false);
 
-        //this.setBackground(AlcToolBar.toolBarHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
 
         // Default applications directory depending on the platform
         switch (AlcMain.PLATFORM) {
@@ -91,7 +91,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         if (AlcMain.PLATFORM != MACOSX) {
             fileMenu.add(new JSeparator());
 
-            exitItem = new AlcMenuItem("Exit", KeyEvent.VK_P);
+            exitItem = new AlcMenuItem("Exit");
             exitItem.addActionListener(this);
             fileMenu.add(exitItem);
         }
@@ -128,6 +128,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         sessionMenu.add(defaultRecordingItem);
         // Interval submenu
         intervalMenu = new AlcMenu("Record Interval");
+        // Set the opacity and colour of this to overide the defaults used for the top menus
+        intervalMenu.setOpaque(true);
+        intervalMenu.setBackground(AlcToolBar.toolBarHighlightColour);
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < root.session.recordingIntervalString.length; i++) {
             intervalItem = new AlcRadioButtonMenuItem(root.session.recordingInterval[i], root.session.recordingIntervalString[i]);
@@ -191,6 +194,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         this.add(helpMenu);
     }
 
+    
     // Override the paint component to draw the gradient bg
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -205,8 +209,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             g2.fillRect(0, 0, root.getWindowSize().width, height);
             //g2.setPaint(AlcToolBar.toolBarHighlightColour);
             //g2.drawLine(0, 0, root.getWindowSize().width, 0);
-            g2.setPaint(AlcToolBar.toolBarLineColour);
-            g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
+            //g2.setPaint(AlcToolBar.toolBarLineColour);
+            //g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
         }
     }
 

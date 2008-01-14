@@ -28,8 +28,10 @@ public class AlcPopupMenu extends JPopupMenu {
     /** Creates a new instance of AlcPopupMenu */
     public AlcPopupMenu() {
 
+        //this.setUI(new AlcPopupMenuUI());
         //this.setLightWeightPopupEnabled(false);
         //this.setUI(new BasicPopupMenuUI());
+        //this.setOpaque(false);
         // Set the colour for the bg
         this.setBackground(AlcToolBar.toolBarHighlightColour);
 

@@ -48,11 +48,11 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     public Dimension windowSize;
     /** ToolBar Background Colour */
     public static final Color toolBarBgColour = new Color(225, 225, 225);
-    public static final Color toolBarBgStartColour = new Color(235, 235, 235, 235);
-    public static final Color toolBarBgEndColour = new Color(215, 215, 215, 235);
+    public static final Color toolBarBgStartColour = new Color(235, 235, 235, 240);
+    public static final Color toolBarBgEndColour = new Color(215, 215, 215, 240);
     public static final Color toolBarLineColour = new Color(140, 140, 140);
     public static final Color toolBarHighlightColour = new Color(231, 231, 231);
-    public static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 235);
+    public static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
     /** ToolBar Font */
     public static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
     public static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
@@ -455,7 +455,6 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         }
         //if(AlcMain.PLATFORM == MACOSX){
         // Add the height of the menubar too
-        System.out.println("MENUBAR height " + root.menuBar.getHeight());
         newTotalHeight += root.menuBar.getHeight();
         //}
         this.totalHeight = newTotalHeight;
