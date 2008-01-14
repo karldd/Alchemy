@@ -48,9 +48,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     public AlcMenuBar(AlcMain root) {
 
         this.root = root;
-        this.setOpaque(false);
+        //this.setOpaque(true);
 
-        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
 
         // Default applications directory depending on the platform
         switch (AlcMain.PLATFORM) {
@@ -195,6 +195,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
     }
 
+    /*
     // Override the paint component to draw the gradient bg
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -212,7 +213,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //g2.setPaint(AlcToolBar.toolBarLineColour);
         //g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
         }
-    }
+    }*/
 
     /** Return the height of the menubar */
     public int getHeight() {
