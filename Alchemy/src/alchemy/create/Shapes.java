@@ -48,7 +48,7 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     public void setup() {
         createSubToolBarSection();
-        toolBar.addSubToolBarSection(subToolBarSection);
+        //toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     public void cleared() {
