@@ -160,9 +160,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Set system look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        // Custom class to set the drop down menus to be transparent
-        //UIManager.put("PopupMenuUI", "alchemy.ui.AlcPopupMenuUI");
-        //UIManager.put("MenuItemUI", "alchemy.ui.AlcMenuItemUI");
+            // Custom class to set the drop down menus to be transparent
+            //UIManager.put("PopupMenuUI", "alchemy.ui.AlcPopupMenuUI");
+            //UIManager.put("MenuItemUI", "alchemy.ui.AlcMenuItemUI");
+            RepaintManager.setCurrentManager(new AlcRepaintManager());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

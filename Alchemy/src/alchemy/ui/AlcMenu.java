@@ -30,32 +30,50 @@ public class AlcMenu extends JMenu implements AlcConstants {
 
         this.setText(title);
         //this.setContentAreaFilled(false);
-        this.setOpaque(false);
+        //this.setOpaque(true);
         //this.setMnemonic(KeyEvent.VK_A);
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
-        //this.setOpaque(false);
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
-        
+
         // Hacky work around - because the JMenu is layered on top of the JMenuBar - doubling the opacity  
         this.setBackground(new Color(0, 0, 0, 0));
+        //this.setBackground(new Color(231, 231, 231, 150));
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);
 
+    //JPopupMenu popup = super.getPopupMenu();
+
+    //popup.setOpaque(false);
+    //popup.setBackground(new Color(0, 0, 0, 0));
+
     }
-    
-    
+
     /*
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if (g instanceof Graphics2D) {
-            Graphics2D g2 = (Graphics2D) g;
-          
-            g2.setPaint(AlcToolBar.toolBarAlphaHighlightColour);
-            g2.fillRect(0, 0, getWidth(), getHeight());
-
-        }
+    super.paintComponent(g);
+    if (g instanceof Graphics2D) {
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setPaint(AlcToolBar.toolBarAlphaHighlightColour);
+    g2.fillRect(0, 0, getWidth(), getHeight());
+    }
     }*/
-    
+    /*
+    public void paintComponent(Graphics g) {
+    BufferedImage bufimg = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+    //super.paintComponent(buf.getGraphics());
+    //Image img = op.filter(buf, null);
+    //g.drawImage(buf, 0, 0, null);
+    Graphics2D g2 = bufimg.createGraphics();        
+    // restore the foreground color in case the super class needs it
+    g2.setColor(g.getColor());
+    super.paintComponent(g2);
+    // do an alpha composite
+    Graphics2D gx = (Graphics2D) g;
+    gx.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,0.8f));
+    gx.drawImage(bufimg,0,0,null);
+    }
+     */
 }
