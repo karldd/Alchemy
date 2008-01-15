@@ -76,7 +76,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
     private int style = LINE;
     /** Line Weight if the style is line */
-    private int lineWidth = 1;
+    private float lineWidth = 1F;
     //////////////////////////////////////////////////////////////
     // DRAWING
     //////////////////////////////////////////////////////////////
@@ -154,7 +154,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                     // LINE
                     if (currentShape.getStyle() == LINE) {
 
-                        g2.setStroke(new BasicStroke((float) currentShape.getLineWidth(), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                        //g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                        g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setPaint(currentShape.getColour());
                         g2.draw(currentShape.getShape());
 
@@ -201,6 +202,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         shapes.clear();
         createShapes.clear();
         affectShapes.clear();
+        guideShapes.clear();
 
         // Pass this on to the currently selected modules
         // Does this need to be passed to all of the modules? Even if not selected?
@@ -511,11 +513,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    public int getLineWidth() {
+    public float getLineWidth() {
         return lineWidth;
     }
 
-    public void setLineWidth(int lineWidth) {
+    public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
 
