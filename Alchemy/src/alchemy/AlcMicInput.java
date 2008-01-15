@@ -145,7 +145,7 @@ public class AlcMicInput extends Thread {
         for (int i = 0; i < audioBytes.length; i++) {
             sum += Math.abs(audioBytes[i]);
         }
-        return sum / audioBytes.length;
+        return sum / (double)audioBytes.length;
     }
 
     /** Get the raw buffer */

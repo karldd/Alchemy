@@ -41,7 +41,7 @@ public class AlcShape implements AlcConstants, Cloneable {
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
     private int style = LINE;
     /** Line Weight if the style is line */
-    private int lineWidth = 1;
+    private float lineWidth = 1F;
     /** Store the last point */
     private Point lastPt;
     /** For drawing smaller marks - draw lines until x points have been made */
@@ -68,7 +68,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public AlcShape(Point p, Color colour, int alpha, int style, int lineWidth) {
+    public AlcShape(Point p, Color colour, int alpha, int style, float lineWidth) {
         setupPoint(p);
         setupAttributes(colour, alpha, style, lineWidth);
     }
@@ -98,7 +98,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public AlcShape(GeneralPath gp, Color colour, int alpha, int style, int lineWidth) {
+    public AlcShape(GeneralPath gp, Color colour, int alpha, int style, float lineWidth) {
         setupShape(gp);
         setupAttributes(colour, alpha, style, lineWidth);
     }
@@ -124,7 +124,7 @@ public class AlcShape implements AlcConstants, Cloneable {
         shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
 
-    private void setupAttributes(Color colour, int alpha, int style, int lineWidth) {
+    private void setupAttributes(Color colour, int alpha, int style, float lineWidth) {
         this.alpha = alpha;
         setColour(colour);
         this.style = style;
@@ -237,6 +237,19 @@ public class AlcShape implements AlcConstants, Cloneable {
         this.shape = shape;
     }
 
+    /**
+     * Set (or reset perhaps) the shape with a single Point
+     * @param point
+     */
+    public void setPoint(Point p) {
+        shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+        //shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
+        //shape.setWindingRule(GeneralPath.WIND_EVEN_ODD);
+
+        shape.moveTo(p.x, p.y);
+        totalPoints = 1;
+    }
+
     /** 
      * Return the total number of points in this shape
      * @return Total number of points
@@ -338,7 +351,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      * Get the line width of this shape
      * @return  The line width
      */
-    public int getLineWidth() {
+    public float getLineWidth() {
         return lineWidth;
     }
 
@@ -346,7 +359,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      * 
      * @param lineWidth The line width
      */
-    public void setLineWidth(int lineWidth) {
+    public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
 
@@ -354,7 +367,6 @@ public class AlcShape implements AlcConstants, Cloneable {
      * 'Deep' Clone this object using the existing style/colour etc.. values
      * @return An new cloned object of this shape
      */
-    
     public Object clone() {
         //Deep copy
         AlcShape tempShape = new AlcShape(this.shape, this.colour, this.alpha, this.style, this.lineWidth);

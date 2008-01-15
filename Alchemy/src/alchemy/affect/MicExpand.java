@@ -43,8 +43,9 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private AlcMicInput micIn;
     private AlcShape currentShape;
     private int activeShape = -1;
-    private int centreX,  centreY;
-    private byte[] buffer;
+    //private int centreX,  centreY;
+    private Point currentPt;
+    //private byte[] buffer;
     private int[] samples;
     private boolean running = false;
     // Timing
@@ -58,8 +59,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private boolean mouseDown = false;
     private AlcSubToolBarSection subToolBarSection;
     // UI settings
-    private float waveVolume = 0.1F;
-    private float levelVolume = 0.1F;
+    private float waveVolume;
+    private float levelVolume;
     private boolean wave = true;
 
     public MicExpand() {
@@ -83,7 +84,12 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Volume Slider
-        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, 10);
+        int initialSliderValue = 50;
+        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
+        final float waveOffset = 0.0003F;
+        final float levelOffset = 0.0001F;
+        waveVolume = initialSliderValue * waveOffset;
+        levelVolume = initialSliderValue * levelOffset;
         volumeSlider.setToolTipText("Adjust the microphone input volume");
         volumeSlider.slider.addChangeListener(
                 new ChangeListener() {
@@ -92,8 +98,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                         JSlider source = (JSlider) e.getSource();
                         if (!source.getValueIsAdjusting()) {
                             int value = source.getValue();
-                            waveVolume = value * 0.001F;
-                            levelVolume = value * 0.01F;
+                            waveVolume = value * waveOffset;
+                            levelVolume = value * levelOffset;
                         //System.out.println(volume);
                         }
                     }
@@ -108,18 +114,10 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        toggleLevelWave();
+                        wave = !wave;
                     }
                 });
         subToolBarSection.add(levelWaveButton);
-    }
-
-    private void toggleLevelWave() {
-        if (wave) {
-            wave = false;
-        } else {
-            wave = true;
-        }
     }
 
     private void captureSound() {
@@ -129,9 +127,9 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         if (currentShape != null) {
 
             // Calculate the centre of the shape
-            Rectangle size = currentShape.getShape().getBounds();
-            centreX = size.width / 2 + size.x;
-            centreY = size.height / 2 + size.y;
+//            Rectangle size = currentShape.getShape().getBounds();
+//            centreX = size.width / 2 + size.x;
+//            centreY = size.height / 2 + size.y;
 
             // Default value
             //int totalPoints = 100;
@@ -147,8 +145,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             } else {
                 totalPoints += 2;
             }
-            
-            totalPoints *=2;
+
+            totalPoints *= 2;
             //}
             // Create a new MicInput Object with a buffer equal to the number of points
             running = true;
@@ -180,7 +178,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                 if (wave) {
                     expandedPath = expand(currentShape.getShape());
                 } else {
-                    double adjustedLevel = (micIn.getMicLevel() / 2) * levelVolume;
+                    double adjustedLevel = 0.9 + (micIn.getMicLevel() * levelVolume);
                     //System.out.println(adjustedLevel);
 
                     expandedPath = (GeneralPath) currentPath.createTransformedShape(getScaleTransform(adjustedLevel, rect));
@@ -275,7 +273,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
             // Calculate the angle in radians between the centre and the point
             //double angle = Math.atan2(centreX - pts[i], centreY - pts[i + 1]);
-            double angle = Math.atan2(centreY - p2, centreX - p1);
+            //double angle = Math.atan2(centreY - p2, centreX - p1);
+            double angle = Math.atan2(currentPt.y - p2, currentPt.x - p1);
             // Convert the polar coordinates to cartesian
             double offsetX = adjustedDistance * Math.cos(angle);
             double offsetY = adjustedDistance * Math.sin(angle);
@@ -299,6 +298,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         }
         // Inside a shape
         if (currentActiveShape >= 0) {
+            currentPt = p;
             // Filter out repeat calls
             if (currentActiveShape != activeShape) {
                 activeShape = currentActiveShape;
