@@ -45,6 +45,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private int activeShape = -1;
     private int centreX,  centreY;
     private byte[] buffer;
+    private int[] samples;
     private boolean running = false;
     // Timing
     private long delayGap = 10;
@@ -91,7 +92,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                         JSlider source = (JSlider) e.getSource();
                         if (!source.getValueIsAdjusting()) {
                             int value = source.getValue();
-                            waveVolume = value * 0.01F;
+                            waveVolume = value * 0.001F;
                             levelVolume = value * 0.01F;
                         //System.out.println(volume);
                         }
@@ -146,6 +147,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             } else {
                 totalPoints += 2;
             }
+            
+            totalPoints *=2;
             //}
             // Create a new MicInput Object with a buffer equal to the number of points
             running = true;
@@ -205,7 +208,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     private GeneralPath expand(GeneralPath shape) {
         //if (wave) {
-        buffer = micIn.getBuffer();
+        //buffer = micIn.getBuffer();
+        samples = micIn.getSamples();
         //} else {
         //  dist = (float) micIn.getMicLevel();
         //}
@@ -222,7 +226,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
         while (!path.isDone()) {
 
-            float dist = buffer[pathCount];
+            float dist = samples[pathCount];
+            //System.out.println(dist);
 
             pathType = path.currentSegment(pathPts);
             switch (pathType) {
@@ -286,7 +291,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
         for (int i = 0; i < canvas.shapes.size(); i++) {
-            AlcShape thisShape = (AlcShape) (AlcShape) canvas.shapes.get(i);
+            AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
             GeneralPath currentPath = thisShape.getShape();
             if (currentPath.contains(p)) {
                 currentActiveShape = i;
@@ -323,6 +328,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
+
             // Dispatch checking for intersection at a slow rate
             if (mouseFirstRun) {
                 mouseDelayTime = System.currentTimeMillis();

@@ -69,8 +69,8 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     private AlcSubToolBarSection createSubToolBarSection;
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
-    // Buttons that we acces with keyboard shortcuts
-    public AlcToggleButton lineButton,  bwButton;
+    /** Actions used in the toolbar */
+    public Action clearAction,  styleAction,  bwAction;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -110,27 +110,40 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
-        lineButton = new AlcToggleButton("Style", "Make marks as a lines or solid shapes (s)", AlcUtil.getUrlPath("data/style.png"));
-        lineButton.addActionListener(
-                new ActionListener() {
+        String styleTitle = "Style";
+        final AlcToggleButton styleButton = new AlcToggleButton();
+        styleAction = new AbstractAction() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        root.canvas.toggleStyle();
-                    }
-                });
-        mainToolBar.add(lineButton);
+            public void actionPerformed(ActionEvent e) {
+                root.canvas.toggleStyle();
+                styleButton.setSelected(!styleButton.isSelected());
+            }
+        };
+
+        styleButton.setAction(styleAction);
+        styleButton.setup("Style", "Make marks as a lines or solid shapes (s)", AlcUtil.getUrlPath("data/style.png"));
+        // Shortcut - s
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
+        root.canvas.getActionMap().put(styleTitle, styleAction);
+
+        mainToolBar.add(styleButton);
 
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
         //////////////////////////////////////////////////////////////
-        AlcButton clearButton = new AlcButton("Clear", "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", AlcUtil.getUrlPath("data/clear.png"));
-        clearButton.addActionListener(
-                new ActionListener() {
+        String clearTitle = "Clear";
+        clearAction = new AbstractAction() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        root.canvas.clear();
-                    }
-                });
+            public void actionPerformed(ActionEvent e) {
+                root.canvas.clear();
+            }
+        };
+        AlcButton clearButton = new AlcButton(clearAction);
+        clearButton.setup(clearTitle, "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", AlcUtil.getUrlPath("data/clear.png"));
+        // Shortcuts - Modifier Delete/Backspace
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MENU_SHORTCUT), clearTitle);
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MENU_SHORTCUT), clearTitle);
+        root.canvas.getActionMap().put(clearTitle, clearAction);
         mainToolBar.add(clearButton);
 
         //////////////////////////////////////////////////////////////
@@ -158,16 +171,22 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // BLACK WHITE BUTTON
         //////////////////////////////////////////////////////////////
-        bwButton = new AlcToggleButton("Black/White", "Make marks in black or white (x)", AlcUtil.getUrlPath("data/blackwhite.png"));
-        bwButton.addActionListener(
-                new ActionListener() {
+        String bwTitle = "Black/White";
+        final AlcToggleButton bwButton = new AlcToggleButton();
+        bwAction = new AbstractAction() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        root.canvas.toggleBlackWhite();
-                    }
-                });
+            public void actionPerformed(ActionEvent e) {
+                root.canvas.toggleBlackWhite();
+                bwButton.setSelected(!bwButton.isSelected());
+            }
+        };
+        bwButton.setAction(bwAction);
+        bwButton.setup("Black/White", "Make marks in black or white (x)", AlcUtil.getUrlPath("data/blackwhite.png"));
+        // Shortcut - x
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), bwTitle);
+        root.canvas.getActionMap().put(bwTitle, bwAction);
+
         mainToolBar.add(bwButton);
-
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -317,17 +336,20 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     public void setToolBarVisible(boolean b) {
         if (toolBarAttached) {
             //this.setVisible(b);
-            
+
             // This is very hacky but...
             // To make sure the menubars shortcuts still work
             // we move the toolbar off the top of the scren rather
             // than making it invisible (which disables the shortcuts)
             // TODO - implement a better system to handle keyboard shortcuts
-            
+            // SEE: http://java.sun.com/docs/books/tutorial/uiswing/examples/misc/ActionDemoProject/src/misc/ActionDemo.java
+
             if (b) {
-                this.setLocation(0, 0);
+                //this.setLocation(0, 0);
+                this.setVisible(true);
             } else {
-                this.setLocation(0, -1000);
+                //this.setLocation(0, -1000);
+                this.setVisible(false);
                 // Turn off the popup(s) when we leave the toolbar area
                 if (createButton != null) {
                     createButton.hidePopup();
@@ -494,4 +516,21 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
     public void mouseExited(MouseEvent e) {
     }
+
+    /*
+    public class ClearAction extends AbstractAction {
+    public ClearAction() {
+    //super("Clear", AlcUtil.getUrlPath("data/clear.png"));
+    //putValue(SHORT_DESCRIPTION, "Description goes here");
+    //putValue(NAME, "Clear");
+    //putValue(SMALL_ICON, "data/clear.png");
+    //putValue(MNEMONIC_KEY, mnemonic);
+    //putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MENU_SHORTCUT));
+    putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MENU_SHORTCUT));
+    }
+    public void actionPerformed(ActionEvent e) {
+    System.out.println("CLEAR ACTION CALLED");
+    root.canvas.clear();
+    }
+    }*/
 }

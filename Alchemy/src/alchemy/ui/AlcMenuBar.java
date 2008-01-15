@@ -39,6 +39,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private AlcMenuItem newItem,  printItem,  exportItem,  exitItem,  fullScreenItem,  directoryItem,  switchVectorItem,  switchBitmapItem,  switchVectorAppItem,  switchBitmapAppItem,  aboutItem;
     private AlcCheckBoxMenuItem recordingItem,  defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
+    public Action exportAction;
     private File platformAppDir;
     //
     private PrinterJob printer = null;
@@ -67,15 +68,25 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         fileMenu = new AlcMenu("File");
         // New
-        newItem = new AlcMenuItem("New", KeyEvent.VK_N);
-        newItem.addActionListener(this);
+        newItem = new AlcMenuItem(root.toolBar.clearAction);
+        newItem.setup("New", KeyEvent.VK_N);
         fileMenu.add(newItem);
 
         fileMenu.add(new JSeparator());
 
         // Export
-        exportItem = new AlcMenuItem("Export...", KeyEvent.VK_E);
-        exportItem.addActionListener(this);
+        String exportTitle = "Export...";
+        exportAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                askExportPath();
+            }
+        };
+        exportItem = new AlcMenuItem(exportAction);
+        exportItem.setup(exportTitle, KeyEvent.VK_E);
+        // Shortcut - Modifier e
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, MENU_SHORTCUT), exportTitle);
+        root.canvas.getActionMap().put(exportTitle, exportAction);
         fileMenu.add(exportItem);
 
         fileMenu.add(new JSeparator());
@@ -394,13 +405,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == newItem) {
-            root.canvas.clear();
-
-        } else if (e.getSource() == exportItem) {
-            askExportPath();
-
-        } else if (e.getSource() == printItem) {
+        if (e.getSource() == printItem) {
             this.print();
 
         } else if (e.getSource() == exitItem) {

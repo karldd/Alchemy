@@ -48,7 +48,7 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     public void setup() {
         createSubToolBarSection();
-        //toolBar.addSubToolBarSection(subToolBarSection);
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     public void cleared() {
@@ -149,7 +149,8 @@ public class Shapes extends AlcModule implements AlcConstants {
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Only if this is a single click
-        if (e.getClickCount() == 1) {
+        if (e.getClickCount() <= 1) {
+
             if (straightShapes) {
                 if (firstClick) {
                     canvas.createShapes.add(makeShape(p));
