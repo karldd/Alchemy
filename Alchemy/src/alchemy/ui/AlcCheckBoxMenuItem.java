@@ -17,11 +17,12 @@
  *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package alchemy.ui;
+
 import alchemy.AlcConstants;
 import alchemy.AlcModule;
 import alchemy.AlcUtil;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
@@ -30,22 +31,26 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     private int index,  moduleType;
 
-    public AlcCheckBoxMenuItem(String title) {
-        setup(title);
+    public AlcCheckBoxMenuItem() {
+    }
 
+    public AlcCheckBoxMenuItem(Action action) {
+        this.setAction(action);
+    }
+
+    public AlcCheckBoxMenuItem(String title) {
+        setup(title, -1);
     }
 
     public AlcCheckBoxMenuItem(String title, int accelerator) {
-        setup(title);
-        if (accelerator > 0) {
-            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
-        }
+        setup(title, accelerator);
+
 
     }
 
     public AlcCheckBoxMenuItem(AlcModule module) {
 
-        setup(module.getName());
+        setup(module.getName(), -1);
         this.index = module.getIndex();
         this.moduleType = module.getModuleType();
 
@@ -56,12 +61,16 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
         this.setIcon(AlcUtil.createImageIcon(module.getIconUrl()));
     }
 
-    private void setup(String title) {
+    public void setup(String title, int accelerator) {
         this.setText(title);
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);
+
+        if (accelerator > 0) {
+            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
+        }
     }
 
     public int getIndex() {

@@ -526,30 +526,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         }
 
-//        // GLOBAL KEYS - when the Modifier is down
-//        if (event.getModifiers() == MENU_SHORTCUT) {
-//
-//            switch (keyCode) {
-//                // Clear the Canvas
-//                case KeyEvent.VK_BACK_SPACE:
-//                case KeyEvent.VK_DELETE:
-//                    //canvas.clear();
-//                    //System.out.println("CLEAR");
-//                    break;
-//
-//                case KeyEvent.VK_F:
-//                    // While in fullscreen the menubar is invisible
-//                    // this obscures the shortcut key, so to come out of fullscreen
-//                    // we set the menubar to visible again and it then picks up the 
-//                    // key event immediately by itself - a bit hacky but...
-//                    if (isFullscreen()) {
-//                        menuBar.setVisible(true);
-//                    }
-//                    break;
-//            }
-//        }
-
-
         passKeyEvent(event, "keyPressed");
     }
 
@@ -600,6 +576,4 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     //resizeWindow(e);
     }
      */
-
-
 }
