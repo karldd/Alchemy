@@ -49,7 +49,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
     
     public void setup() {
         // Create a new MicInput Object with a buffer of 10
-        micIn = new AlcMicInput(2);
+        micIn = new AlcMicInput(100);
         micIn.startMicInput();
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);

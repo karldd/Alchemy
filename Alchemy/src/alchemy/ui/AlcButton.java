@@ -17,7 +17,6 @@
  *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package alchemy.ui;
 
 import alchemy.AlcUtil;
@@ -25,13 +24,21 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-public class AlcButton extends JToggleButton {
+public class AlcButton extends JButton {
 
-    /**
-     * Creates a new instance of AlcButton
-     */
+    public AlcButton(Action action) {
+        this.setAction(action);
+    }
+
+    public AlcButton(String text, String toolTip) {
+        setup(text, toolTip, null);
+    }
+
     public AlcButton(String text, String toolTip, URL iconUrl) {
+        setup(text, toolTip, iconUrl);
+    }
 
+    public void setup(String text, String toolTip, URL iconUrl) {
         if (iconUrl != null) {
             // Set the main icon
             this.setIcon(AlcUtil.createImageIcon(iconUrl));

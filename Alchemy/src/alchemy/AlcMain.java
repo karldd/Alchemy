@@ -152,6 +152,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     }
 
+    // TODO - Check into making the UI thread safe
+    // SEE: http://mindprod.com/jgloss/threadsafe.html
     public static void main(String[] args) {
         if (PLATFORM == MACOSX) {
             setupMacSystemProperties();
@@ -524,40 +526,29 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         }
 
-        // GLOBAL KEYS - when the Modifier is down
-        if (event.getModifiers() == MENU_SHORTCUT) {
+//        // GLOBAL KEYS - when the Modifier is down
+//        if (event.getModifiers() == MENU_SHORTCUT) {
+//
+//            switch (keyCode) {
+//                // Clear the Canvas
+//                case KeyEvent.VK_BACK_SPACE:
+//                case KeyEvent.VK_DELETE:
+//                    //canvas.clear();
+//                    //System.out.println("CLEAR");
+//                    break;
+//
+//                case KeyEvent.VK_F:
+//                    // While in fullscreen the menubar is invisible
+//                    // this obscures the shortcut key, so to come out of fullscreen
+//                    // we set the menubar to visible again and it then picks up the 
+//                    // key event immediately by itself - a bit hacky but...
+//                    if (isFullscreen()) {
+//                        menuBar.setVisible(true);
+//                    }
+//                    break;
+//            }
+//        }
 
-            switch (keyCode) {
-                // Clear the Canvas
-                case KeyEvent.VK_BACK_SPACE:
-                case KeyEvent.VK_DELETE:
-                    canvas.clear();
-                    break;
-
-                case KeyEvent.VK_F:
-                    // While in fullscreen the menubar is invisible
-                    // this obscures the shortcut key, so to come out of fullscreen
-                    // we set the menubar to visible again and it then picks up the 
-                    // key event immediately by itself - a bit hacky but...
-                    if (isFullscreen()) {
-                        menuBar.setVisible(true);
-                    }
-                    break;
-            }
-        }
-
-        // Shortcut keys without a modifier
-        switch (keyCode) {
-            // Toggle Style
-            case KeyEvent.VK_S:
-                canvas.toggleStyle();
-                toolBar.lineButton.setSelected(!toolBar.lineButton.isSelected());
-                break;
-            case KeyEvent.VK_X:
-                canvas.toggleBlackWhite();
-                toolBar.bwButton.setSelected(!toolBar.bwButton.isSelected());
-                break;
-        }
 
         passKeyEvent(event, "keyPressed");
     }
@@ -609,4 +600,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     //resizeWindow(e);
     }
      */
+
+
 }

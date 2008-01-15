@@ -20,12 +20,17 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 public class AlcMenuItem extends JMenuItem implements AlcConstants {
 
+    public AlcMenuItem(Action action) {
+        this.setAction(action);
+    }
+    
     public AlcMenuItem(String title) {
         setup(title, -1);
     }
@@ -34,7 +39,7 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
         setup(title, accelerator);
     }
 
-    private void setup(String title, int accelerator) {
+    public void setup(String title, int accelerator) {
 
         //this.setUI(new AlcMenuItemUI());
         //System.out.println(this.getUI());

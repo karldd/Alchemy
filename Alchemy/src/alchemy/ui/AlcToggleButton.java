@@ -26,11 +26,18 @@ import javax.swing.*;
 
 public class AlcToggleButton extends JToggleButton {
 
-    /**
-     * Creates a new instance of AlcButton
-     */
-    public AlcToggleButton(String text, String toolTip, URL iconUrl) {
+    public AlcToggleButton() {
+    }
 
+    public AlcToggleButton(Action action) {
+        this.setAction(action);
+    }
+
+    public AlcToggleButton(String text, String toolTip, URL iconUrl) {
+        setup(text, toolTip, iconUrl);
+    }
+
+    public void setup(String text, String toolTip, URL iconUrl) {
         if (iconUrl != null) {
             // Set the main icon
             this.setIcon(AlcUtil.createImageIcon(iconUrl));
@@ -44,7 +51,6 @@ public class AlcToggleButton extends JToggleButton {
             URL rolloverSelectedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-on-over");
             this.setRolloverSelectedIcon(AlcUtil.createImageIcon(rolloverSelectedIconUrl));
         }
-
 
         this.setFont(AlcToolBar.toolBarFont);
         this.setVerticalTextPosition(SwingConstants.BOTTOM);

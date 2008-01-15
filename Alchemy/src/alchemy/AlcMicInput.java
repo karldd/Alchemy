@@ -29,7 +29,9 @@ import javax.sound.sampled.*;
 public class AlcMicInput extends Thread {
 
     //An arbitrary-size temporary holding buffer
-    private byte tempBuffer[];
+    private byte audioBytes[];
+    private int[] audioSamples;
+    private int lengthInSamples;
     private boolean stopMicInput = false;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
@@ -37,7 +39,9 @@ public class AlcMicInput extends Thread {
 
     /** Creates a new instance of AlcMicInput */
     public AlcMicInput(int bufferSize) {
-        tempBuffer = new byte[bufferSize];
+        audioBytes = new byte[bufferSize];
+        lengthInSamples = bufferSize / 2;
+        audioSamples = new int[lengthInSamples];
     }
 
     /** Creates a new instance of AlcMicInput
@@ -47,7 +51,9 @@ public class AlcMicInput extends Thread {
      */
     public AlcMicInput(AlcMicInterface parent, int bufferSize) {
         this.parent = parent;
-        tempBuffer = new byte[bufferSize];
+        audioBytes = new byte[bufferSize];
+        lengthInSamples = bufferSize / 2;
+        audioSamples = new int[lengthInSamples];
     }
 
     /** Starts Microphone Input */
@@ -71,12 +77,14 @@ public class AlcMicInput extends Thread {
         }
     }
 
+//    private int getSixteenBitSample(int high, int low) {
+//        return (high << 8) + (low & 0x00ff);
+//    }
     /** Stops Microphone Input */
     public void stopMicInput() {
         stopMicInput = true;
     }
 
-    
     public void run() {
         stopMicInput = false;
 
@@ -84,12 +92,26 @@ public class AlcMicInput extends Thread {
             //Loop until stopMicInput is turned off
             while (!stopMicInput) {
                 //Read data from the internal buffer of the data line.
-                int cnt = targetDataLine.read(tempBuffer, 0, tempBuffer.length);
+                int cnt = targetDataLine.read(audioBytes, 0, audioBytes.length);
 
                 // When the buffer is full
                 if (cnt > 0) {
                     // Call back to the parent if it implements the AlcMicInterface
                     if (parent != null) {
+
+//                        int sampleIndex = 0;
+//
+//                        for (int t = 0; t < tempBuffer.length;) {
+//                            int low = (int) tempBuffer[t];
+//                            t++;
+//                            int high = (int) tempBuffer[t];
+//                            t++;
+//                            int sample = getSixteenBitSample(high, low);
+//                            sampleArray[sampleIndex] = sample;
+//                            sampleIndex++;
+//                        }
+
+                        convertToSamples();
                         parent.bufferFull();
                     }
 
@@ -102,21 +124,38 @@ public class AlcMicInput extends Thread {
         }
     }
 
+    private void convertToSamples() {
+        //System.out.println(lengthInSamples);
+
+        for (int i = 0; i < audioSamples.length; i++) {
+            /* First byte is LSB (low order) */
+            int LSB = (int) audioBytes[2 * i];
+            /* Second byte is MSB (high order) */
+            int MSB = (int) audioBytes[2 * i + 1];
+            audioSamples[i] = MSB << 8 | (255 & LSB);
+        }
+    }
+
     /** Get the current Microphone Level
      *  Based on an average value of the buffer
      *  @return     Current Microphone Level
      */
     public double getMicLevel() {
         double sum = 0;
-        for (int i = 0; i < tempBuffer.length; i++) {
-            sum += Math.abs(tempBuffer[i]);
+        for (int i = 0; i < audioBytes.length; i++) {
+            sum += Math.abs(audioBytes[i]);
         }
-        return sum / tempBuffer.length;
+        return sum / audioBytes.length;
     }
 
     /** Get the raw buffer */
     public byte[] getBuffer() {
-        return tempBuffer;
+        return audioBytes;
+    }
+
+    /** Get the Samples */
+    public int[] getSamples() {
+        return audioSamples;
     }
 
     //This method creates and returns an
