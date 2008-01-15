@@ -75,7 +75,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /**
      * Creates a new instance of AlcToolBar
      */
-    public AlcToolBar(AlcMain root) {
+    public AlcToolBar(final AlcMain root) {
 
         // General Toolbar settings
         this.root = root;
