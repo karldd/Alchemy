@@ -129,7 +129,7 @@ public class Mirror extends AlcModule implements AlcConstants {
             AlcShape shape = (AlcShape) canvas.createShapes.get(i);
 
             // Original Path with which we reflect
-            GeneralPath originalPath = shape.getShape();
+            GeneralPath originalPath = shape.getPath();
 
             GeneralPath[] paths = new GeneralPath[3];
             int pathCount = 0;
@@ -156,7 +156,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     } else {
                         AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(j));
                         // Make sure the points tally is up to date
-                        thisShape.setShape(paths[j]);
+                        thisShape.setPath(paths[j]);
                         thisShape.setTotalPoints(shape.getTotalPoints());
                     }
                 }
@@ -218,7 +218,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                 AlcShape axis = new AlcShape(line, new Color(0, 255, 255), 100, LINE, 1);
                 canvas.guideShapes.add(axis);
             } else {
-                canvas.getCurrentGuideShape().setShape(line);
+                canvas.getCurrentGuideShape().setPath(line);
             }
             canvas.redraw();
         }

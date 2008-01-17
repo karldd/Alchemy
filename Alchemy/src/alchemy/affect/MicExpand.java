@@ -159,7 +159,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         //System.out.println("Alter Shape Called");
         if (currentShape != null) {
 
-            GeneralPath currentPath = currentShape.getShape();
+            GeneralPath currentPath = currentShape.getPath();
             Rectangle rect = currentPath.getBounds();
             Dimension windowSize = root.getWindowSize();
             if (rect.contains(0, 0, windowSize.width, windowSize.height)) {
@@ -176,14 +176,14 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
                 GeneralPath expandedPath = null;
                 if (wave) {
-                    expandedPath = expand(currentShape.getShape());
+                    expandedPath = expand(currentShape.getPath());
                 } else {
                     double adjustedLevel = 0.9 + (micIn.getMicLevel() * levelVolume);
                     //System.out.println(adjustedLevel);
 
                     expandedPath = (GeneralPath) currentPath.createTransformedShape(getScaleTransform(adjustedLevel, rect));
                 }
-                currentShape.setShape(expandedPath);
+                currentShape.setPath(expandedPath);
                 //canvas.setCurrentCreateShape(currentShape);
                 canvas.redraw();
             }
@@ -291,7 +291,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         int currentActiveShape = -1;
         for (int i = 0; i < canvas.shapes.size(); i++) {
             AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
-            GeneralPath currentPath = thisShape.getShape();
+            GeneralPath currentPath = thisShape.getPath();
             if (currentPath.contains(p)) {
                 currentActiveShape = i;
             }

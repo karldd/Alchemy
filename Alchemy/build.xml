@@ -85,6 +85,7 @@
         <!-- CREATES -->
         <!-- Shapes -->
         <copy file="${build.classes.dir}/alchemy/create/Shapes.class" todir="${basedir}/plugins/shapes/alchemy/create"/>
+        <copy file="${build.classes.dir}/alchemy/create/Shapes$1.class" todir="${basedir}/plugins/shapes/alchemy/create"/>
         
         <!-- Type Shapes -->
         <copy todir="${basedir}/plugins/typeShapes/alchemy/create">
@@ -134,6 +135,13 @@
         <copy todir="${basedir}/plugins/micExpand/alchemy/affect">
             <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
                 <contains text="MicExpand" casesensitive="no"/>
+            </fileset>
+        </copy>
+        
+        <!-- Repeat -->
+        <copy todir="${basedir}/plugins/repeat/alchemy/affect">
+            <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
+                <contains text="Repeat" casesensitive="no"/>
             </fileset>
         </copy>
         

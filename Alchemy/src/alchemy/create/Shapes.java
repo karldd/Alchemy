@@ -117,7 +117,7 @@ public class Shapes extends AlcModule implements AlcConstants {
             if (guideSize == canvas.guideShapes.size()) {
                 if (secondPath != null) {
                     // If there is a secondPath defined then append it to the new shape
-                    guide.getShape().append(secondPath, false);
+                    guide.getPath().append(secondPath, false);
                 }
                 canvas.setCurrentGuideShape(guide);
             } else if (guideSize == -1) {
@@ -168,7 +168,7 @@ public class Shapes extends AlcModule implements AlcConstants {
                             secondShape.addLinePoint(p);
                         }
                         // Get the current shape and keep it as secondPath
-                        secondPath = new GeneralPath(canvas.getCurrentGuideShape().getShape());
+                        secondPath = new GeneralPath(canvas.getCurrentGuideShape().getPath());
                         if (canvas.getCurrentCreateShape() != null) {
                             canvas.getCurrentCreateShape().addLinePoint(p);
                         }
