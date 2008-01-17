@@ -222,4 +222,13 @@ public class AlcUtil {
         Point center = new Point(x, y);
         return center;
     }
+
+    //////////////////////////////////////////////////////////////
+    // DEBUGGING
+    //////////////////////////////////////////////////////////////
+    public static void printArray(float[] array) {
+        for (int i = 0; i < array.length; i++) {
+            System.out.println("Array [" + String.valueOf(i) + "] = " + String.valueOf(array[i]));
+        }
+    }
 }

@@ -49,17 +49,14 @@ public class Random extends AlcModule {
 
     }
 
-    
     public void setup() {
 
     }
 
-    
     public void deselect() {
 
     }
 
-    
     public void reselect() {
 
     }
@@ -69,12 +66,12 @@ public class Random extends AlcModule {
 
         scale = 100F;
         halfScale = scale / 2;
-        AlcShape shape = (AlcShape)canvas.shapes.get(activeShape);
-        GeneralPath randomisedShape = randomise(shape.getShape(), currentLoc);
-        shape.setShape(randomisedShape);
+        AlcShape shape = (AlcShape) canvas.shapes.get(activeShape);
+        GeneralPath randomisedShape = randomise(shape.getPath(), currentLoc);
+        shape.setPath(randomisedShape);
         canvas.redraw();
 
-        //return shape;
+    //return shape;
 
     }
 
@@ -125,12 +122,6 @@ public class Random extends AlcModule {
 
     }
 
-    private void printArray(float[] array) {
-        for (int i = 0; i < array.length; i++) {
-            System.out.println("Array [" + String.valueOf(i) + "] = " + String.valueOf(array[i]));
-        }
-    }
-
     /** Find out if the two points are closeby */
     private boolean closeBy(int x1, int y1, int x2, int y2) {
         int xgap = Math.abs(x1 - x2);
@@ -169,8 +160,8 @@ public class Random extends AlcModule {
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
         for (int i = 0; i < canvas.shapes.size(); i++) {
-            AlcShape thisShape = (AlcShape)canvas.shapes.get(i);
-            GeneralPath currentPath = thisShape.getShape();
+            AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
+            GeneralPath currentPath = thisShape.getPath();
             Rectangle bounds = currentPath.getBounds();
             if (bounds.contains(p)) {
                 currentActiveShape = i;
@@ -190,18 +181,15 @@ public class Random extends AlcModule {
         }
     }
 
-    
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
     }
 
-    
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     //            canvas.setCurrentShape(randomiseShape(currentShape));
     }
 
-    
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
             // Dispatch checking for intersection at a slow rate

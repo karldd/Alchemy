@@ -32,8 +32,8 @@ import java.awt.geom.PathIterator;
  */
 public class AlcShape implements AlcConstants, Cloneable {
 
-    /** The main shape stored as a GeneralPath */
-    private GeneralPath shape;
+    /** The main path stored as a GeneralPath */
+    private GeneralPath path;
     /** Colour of this shape */
     private Color colour = Color.BLACK;
     /** Alpha of this shape */
@@ -83,45 +83,45 @@ public class AlcShape implements AlcConstants, Cloneable {
 
     /**
      * Creates a new instance of AlcShape with the default values
-     * @param gp    GeneralPath shape
+     * @param gp    GeneralPath path
      */
-    public AlcShape(GeneralPath gp) {
-        setupShape(gp);
+    public AlcShape(GeneralPath path) {
+        setupShape(path);
         setupAttributes(colour, alpha, style, lineWidth);
     }
 
     /**
      * Creates a new instance of AlcShape with defined values
-     * @param gp        GeneralPath shape
+     * @param gp        GeneralPath path
      * @param colour    Colour of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public AlcShape(GeneralPath gp, Color colour, int alpha, int style, float lineWidth) {
-        setupShape(gp);
+    public AlcShape(GeneralPath path, Color colour, int alpha, int style, float lineWidth) {
+        setupShape(path);
         setupAttributes(colour, alpha, style, lineWidth);
     }
 
     private void setupBlank() {
         // Create an empty shape
-        shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+        path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
     }
 
     private void setupPoint(Point p) {
-        // Create the shape and move to the first point
-        shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+        // Create the path and move to the first point
+        path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
         //shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
         //shape.setWindingRule(GeneralPath.WIND_EVEN_ODD);
 
-        shape.moveTo(p.x, p.y);
+        path.moveTo(p.x, p.y);
         totalPoints++;
     }
 
-    private void setupShape(GeneralPath gp) {
-        // Add the shape
-        this.shape = gp;
-        shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
+    private void setupShape(GeneralPath path) {
+        // Add the path
+        this.path = path;
+        path.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
 
     private void setupAttributes(Color colour, int alpha, int style, float lineWidth) {
@@ -141,7 +141,7 @@ public class AlcShape implements AlcConstants, Cloneable {
         // At the start just draw lines so smaller marks can be made
         if (totalPoints < startPoints) {
 
-            shape.lineTo(p.x, p.y);
+            path.lineTo(p.x, p.y);
             savePoints(p);
 
         } else {
@@ -162,7 +162,7 @@ public class AlcShape implements AlcConstants, Cloneable {
                 //System.out.println("Last Point: " + lastPt.x + " " + lastPt.y + " - Edited Point: " + pt.x + " " + pt.y + " - Original Point: " + p.x + " " + p.y);
 
                 // Add the Quadratic curve - control point x1, y1 and actual point x2, y2
-                shape.quadTo(lastPt.x, lastPt.y, pt.x, pt.y);
+                path.quadTo(lastPt.x, lastPt.y, pt.x, pt.y);
                 savePoints(p);
 
             }
@@ -178,7 +178,7 @@ public class AlcShape implements AlcConstants, Cloneable {
         // At the start just draw lines so smaller marks can be made
         if (totalPoints < startPoints) {
 
-            shape.lineTo(p.x, p.y);
+            path.lineTo(p.x, p.y);
             savePoints(p);
 
         } else {
@@ -189,7 +189,7 @@ public class AlcShape implements AlcConstants, Cloneable {
             // Test to see if this point has moved far enough
             if (movement > minMovement) {
 
-                shape.lineTo(p.x, p.y);
+                path.lineTo(p.x, p.y);
                 savePoints(p);
 
             }
@@ -215,26 +215,26 @@ public class AlcShape implements AlcConstants, Cloneable {
      * @param p Point to draw a line to
      */
     public void addLastPoint(Point p) {
-        shape.lineTo(p.x, p.y);
+        path.lineTo(p.x, p.y);
     }
 
     //////////////////////////////////////////////////////////////
     // ALCSHAPE GETTERS/SETTERS
     //////////////////////////////////////////////////////////////
     /** 
-     * Return the GeneralPath shape
-     * @return GeneralPath shape
+     * Return the GeneralPath path
+     * @return GeneralPath path
      */
-    public GeneralPath getShape() {
-        return shape;
+    public GeneralPath getPath() {
+        return path;
     }
 
     /**
-     * Set the shape using a GeneralPath
-     * @param shape
+     * Set the path using a GeneralPath
+     * @param path
      */
-    public void setShape(GeneralPath shape) {
-        this.shape = shape;
+    public void setPath(GeneralPath path) {
+        this.path = path;
     }
 
     /**
@@ -242,11 +242,11 @@ public class AlcShape implements AlcConstants, Cloneable {
      * @param point
      */
     public void setPoint(Point p) {
-        shape = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+        path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
         //shape.setWindingRule(GeneralPath.WIND_NON_ZERO);
         //shape.setWindingRule(GeneralPath.WIND_EVEN_ODD);
 
-        shape.moveTo(p.x, p.y);
+        path.moveTo(p.x, p.y);
         totalPoints = 1;
     }
 
@@ -272,7 +272,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      * Useful when shapes have been merged together
      */
     public void recalculateTotalPoints() {
-        PathIterator count = shape.getPathIterator(null);
+        PathIterator count = path.getPathIterator(null);
         int numberOfPoints = 0;
         while (!count.isDone()) {
             numberOfPoints++;
@@ -369,7 +369,7 @@ public class AlcShape implements AlcConstants, Cloneable {
      */
     public Object clone() {
         //Deep copy
-        AlcShape tempShape = new AlcShape(this.shape, this.colour, this.alpha, this.style, this.lineWidth);
+        AlcShape tempShape = new AlcShape(this.path, this.colour, this.alpha, this.style, this.lineWidth);
         tempShape.setTotalPoints(this.totalPoints);
         tempShape.setLastPoint(this.lastPt);
         return tempShape;

@@ -116,7 +116,10 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
             public void actionPerformed(ActionEvent e) {
                 root.canvas.toggleStyle();
-                styleButton.setSelected(!styleButton.isSelected());
+                // Only toogle the button manually if it is triggered by a key
+                if (e.getActionCommand().equals("s")) {
+                    styleButton.setSelected(!styleButton.isSelected());
+                }
             }
         };
 
@@ -150,7 +153,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         // LINE WIDTH SPINNER
         //////////////////////////////////////////////////////////////
         // currentValue, min, max, stepsize
-        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int)root.canvas.getLineWidth(), 1, 50, 1);
+        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int) root.canvas.getLineWidth(), 1, 50, 1);
         AlcSpinner lineWidthSpinner = new AlcSpinner("Line Weight", lineWidthNumberModel);
         lineWidthSpinner.spinner.addChangeListener(
                 new ChangeListener() {
@@ -177,7 +180,10 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
             public void actionPerformed(ActionEvent e) {
                 root.canvas.toggleBlackWhite();
-                bwButton.setSelected(!bwButton.isSelected());
+                // Only toogle the button manually if it is triggered by a key
+                if (e.getActionCommand().equals("x")) {
+                    bwButton.setSelected(!bwButton.isSelected());
+                }
             }
         };
         bwButton.setAction(bwAction);

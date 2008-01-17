@@ -123,17 +123,17 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                 });
         subToolBarSection.add(addButton);
 
-        // Remove Button
-        AlcSubButton removeButton = new AlcSubButton("Remove", AlcUtil.getUrlPath("remove.png", getClassLoader()));
-        removeButton.setToolTipText("Remove the current shape (Delete/Backspace)");
-        removeButton.addActionListener(
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        remove();
-                    }
-                });
-        subToolBarSection.add(removeButton);
+//        // Remove Button
+//        AlcSubButton removeButton = new AlcSubButton("Remove", AlcUtil.getUrlPath("remove.png", getClassLoader()));
+//        removeButton.setToolTipText("Remove the current shape (Delete/Backspace)");
+//        removeButton.addActionListener(
+//                new ActionListener() {
+//
+//                    public void actionPerformed(ActionEvent e) {
+//                        remove();
+//                    }
+//                });
+//        subToolBarSection.add(removeButton);
     }
 
     private void add() {
@@ -316,39 +316,39 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     
-    public void mousePressed(MouseEvent e) {
-        add();
-        Point p = e.getPoint();
-        canvas.createShapes.add(makeShape(p));
-        canvas.redraw();
-    }
+//    public void mousePressed(MouseEvent e) {
+//        add();
+//        Point p = e.getPoint();
+//        canvas.createShapes.add(makeShape(p));
+//        canvas.redraw();
+//    }
 
     
-    public void mouseDragged(MouseEvent e) {
-        Point p = e.getPoint();
-        // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
-            canvas.getCurrentCreateShape().addCurvePoint(p);
-            canvas.redraw();
-        }
-
-    }
+//    public void mouseDragged(MouseEvent e) {
+//        Point p = e.getPoint();
+//        // Need to test if it null incase the shape has been auto-cleared
+//        if (canvas.getCurrentCreateShape() != null) {
+//            canvas.getCurrentCreateShape().addCurvePoint(p);
+//            canvas.redraw();
+//        }
+//
+//    }
 
     
-    public void mouseReleased(MouseEvent e) {
-        Point p = e.getPoint();
-        // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
-            canvas.getCurrentCreateShape().addLastPoint(p);
-            canvas.redraw();
-            canvas.commitShapes();
-        }
-    }
+//    public void mouseReleased(MouseEvent e) {
+//        Point p = e.getPoint();
+//        // Need to test if it null incase the shape has been auto-cleared
+//        if (canvas.getCurrentCreateShape() != null) {
+//            canvas.getCurrentCreateShape().addLastPoint(p);
+//            canvas.redraw();
+//            canvas.commitShapes();
+//        }
+//    }
 
-    private AlcShape makeShape(Point p) {
-        // Make a new shape with the globally defined style etc...
-        return new AlcShape(p, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
-    }
+//    private AlcShape makeShape(Point p) {
+//        // Make a new shape with the globally defined style etc...
+//        return new AlcShape(p, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+//    }
 
     // KEY EVENTS
     

@@ -157,13 +157,13 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                         //g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setPaint(currentShape.getColour());
-                        g2.draw(currentShape.getShape());
+                        g2.draw(currentShape.getPath());
 
                     // SOLID
                     } else {
 
                         g2.setPaint(currentShape.getColour());
-                        g2.fill(currentShape.getShape());
+                        g2.fill(currentShape.getPath());
 
                     }
 
