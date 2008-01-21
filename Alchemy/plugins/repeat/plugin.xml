@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.affect.Repeat"/> 
         <parameter id="name" value="Repeat"/> 
         <parameter id="description" value="Repeat existing shapes" />
-        <parameter id="icon" value="tab.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>

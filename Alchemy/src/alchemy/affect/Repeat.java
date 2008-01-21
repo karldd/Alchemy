@@ -18,13 +18,15 @@
  */
 package alchemy.affect;
 
-import alchemy.AlcModule;
-import alchemy.AlcShape;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
+import alchemy.*;
+import java.awt.*;
+import java.awt.event.*;
+import alchemy.ui.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Repeat a given shape on the canvas at a given rate
@@ -38,12 +40,23 @@ public class Repeat extends AlcModule {
     private long mouseDelayTime;
     private boolean mouseDown = false;
     //
+    private Dimension shapeSize = null;
+    private Point shapeOffset = null;
+    private int outside = 0;
+    private boolean update = false;
+    private boolean repeat = true;
+    private AlcSubToolBarSection subToolBarSection;
+    // Margin before the mouse falls outside of the shape once inside
+    private int margin = 10;
+
     //private int activeShape = -1;
     public Repeat() {
 
     }
 
     public void setup() {
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
 
     }
 
@@ -52,6 +65,44 @@ public class Repeat extends AlcModule {
     }
 
     public void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+        // Repeat button
+        AlcSubToggleButton repeatButton = new AlcSubToggleButton("Repeat", AlcUtil.getUrlPath("repeat.png", getClassLoader()));
+        repeatButton.setSelected(true);
+        repeatButton.setToolTipText("Toggle repeat on/off (Press and hold the b key)");
+
+        repeatButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        repeat = !repeat;
+                    }
+                });
+        subToolBarSection.add(repeatButton);
+
+
+        // Repeat Speed Slider
+        int initialSliderValue = 50;
+        AlcSubSlider speedSlider = new AlcSubSlider("Repeat Speed", 0, 100, initialSliderValue);
+        speedSlider.setToolTipText("Adjust the repeat speed");
+        speedSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            int value = source.getValue();
+                            mouseDelayGap = value * 2 + 50;
+                        //System.out.println(volume);
+                        }
+                    }
+                });
+        subToolBarSection.add(speedSlider);
 
     }
 
@@ -61,16 +112,31 @@ public class Repeat extends AlcModule {
         AlcShape shape = (AlcShape) originalShape.clone();
         GeneralPath path = shape.getPath();
         Rectangle bounds = path.getBounds();
+
+        // If null or a different sized shape - reset the offset
+        if (shapeSize == null || !similarSize(bounds.getSize()) || update) {
+            shapeSize = bounds.getSize();
+            //shapeBounds = bounds;
+            shapeOffset = new Point(pt.x - bounds.x, pt.y - bounds.y);
+            if (update) {
+                update = false;
+            }
+            //System.out.println("Changed");
+        }
+
+        Point offset = new Point(pt.x - (bounds.x + shapeOffset.x), pt.y - (bounds.y + shapeOffset.y));
         //Point centre = new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-        
-        Point offset = new Point(pt.x - bounds.x, pt.y - bounds.y);
+        //Point thisOffset = new Point(pt.x - offset.x, pt.y - offset.y);
+
         //System.out.println(offset);
-        //Point finalOffset = new Point(offset.x - bounds.width, offset.y - bounds.height);
-        Point finalOffset = new Point(offset.x - bounds.width/2, offset.y - bounds.height/2);
+
+        //System.out.println(offset);
+        //
+        //Point finalOffset = new Point(offset.x - bounds.width/2, offset.y - bounds.height/2);
         // TODO - Adjust the offset so the shape repeats correctly
 
         AffineTransform moveTransform = new AffineTransform();
-        moveTransform.translate(finalOffset.x, finalOffset.y);
+        moveTransform.translate(offset.x, offset.y);
         GeneralPath movedPath = (GeneralPath) path.createTransformedShape(moveTransform);
         shape.setPath(movedPath);
         canvas.shapes.add(shape);
@@ -80,22 +146,49 @@ public class Repeat extends AlcModule {
         canvas.redraw();
     }
 
+    /** Check if the current shape is a similar size to the old one */
+    private boolean similarSize(Dimension newSize) {
+        int difference = Math.abs(newSize.width - shapeSize.width) + Math.abs(newSize.height - shapeSize.height);
+        // Give a margin of 10 pixels else it is a 'new shape' and return false
+        if (difference > 10) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
         for (int i = 0; i < canvas.shapes.size(); i++) {
             AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
             GeneralPath currentPath = thisShape.getPath();
-            Rectangle bounds = currentPath.getBounds();
+            Rectangle bounds = new Rectangle(currentPath.getBounds());
+            // If already repeating a shape
+            if (outside == 0) {
+                // Check that it is still within X pixels of the original
+                bounds.grow(margin, margin);
+                //System.out.println("GROW");
+            }
             if (bounds.contains(p)) {
                 currentActiveShape = i;
             }
         }
         // Inside a shape
         if (currentActiveShape >= 0) {
+            outside = 0;
 
-            repeatShape(p, currentActiveShape);
+            if (repeat) {
+                repeatShape(p, currentActiveShape);
+            }
 
         // Outside a shape
+        } else {
+            outside++;
+            // if outside the shape for a certain period then update the offset next time
+            if (outside > 2) {
+                update = true;
+            }
+        //System.out.println(outside);
         }
     }
 
@@ -122,6 +215,18 @@ public class Repeat extends AlcModule {
                     mouseInside(e.getPoint());
                 }
             }
+        }
+    }
+
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_R) {
+            repeat = false;
+        }
+    }
+
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_R) {
+            repeat = true;
         }
     }
 }

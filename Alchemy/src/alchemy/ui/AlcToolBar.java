@@ -264,7 +264,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // AFFECT
         //////////////////////////////////////////////////////////////
-        affectButton = new AlcPopupButton("Affect", "Affect Shapes", AlcUtil.getUrlPath("data/create.png"));
+        affectButton = new AlcPopupButton("Affect", "Affect Shapes", AlcUtil.getUrlPath("data/affect.png"));
         for (int i = 0; i < root.affects.length; i++) {
             // The current module
             AlcModule currentModule = root.affects[i];
