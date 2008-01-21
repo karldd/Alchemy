@@ -93,7 +93,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** The number of affect modules currently selected */
     private int numberOfCurrentAffects = 0;
     /** Preferred size of the window */
-    private Dimension windowSize = new Dimension(1024, 640);
+    //private Dimension windowSize = new Dimension(1024, 640);
+    private Dimension windowSize = new Dimension(800, 500);
     //
     //////////////////////////////////////////////////////////////
     // FULLSCREEN
