@@ -19,9 +19,6 @@
  */
 package alchemy;
 
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
 /**
@@ -34,7 +31,7 @@ public interface AlcConstants {
     //////////////////////////////////////////////////////////////
     // ALCHEMY INFO
     //////////////////////////////////////////////////////////////
-    static final String ALCHEMY_VERSION = "003";
+    static final String ALCHEMY_VERSION = "001 (ALPHA RELEASE)";
     //////////////////////////////////////////////////////////////
     // PLATFORM INFO
     //////////////////////////////////////////////////////////////

@@ -441,34 +441,37 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
      * 
      */
     public void showAboutBox() {
-        final Image image = AlcUtil.getImage("data/about.png", root);
-        final Dimension size = new Dimension(image.getWidth(root), image.getHeight(root));
-        final Window window = new Window(root) {
-
-            public void paint(Graphics g) {
-                g.drawImage(image, 0, 0, null);
-
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-
-                g.setFont(AlcToolBar.subToolBarFont);
-                g.setColor(Color.white);
-                g.drawString("COPYRIGHT © 2007-2008 KARL D.D. WILLIS", size.width / 2, 50);
-                g.drawString("ALPHA VERSION " + ALCHEMY_VERSION, size.width / 2, 65);
-            }
-        };
-        window.addMouseListener(new MouseAdapter() {
-
-            public void mousePressed(MouseEvent e) {
-                window.setVisible(false);
-                window.dispose();
-            }
-        });
-
-        window.setSize(size);
-        Point loc = AlcUtil.calculateCenter(window);
-        window.setBounds(loc.x, loc.y, size.width, size.height);
-        window.setVisible(true);
+        
+        final AlcAbout aboutWindow = new AlcAbout(root);
+        
+//        final Image image = AlcUtil.getImage("data/about.png", root);
+//        final Dimension size = new Dimension(image.getWidth(root), image.getHeight(root));
+//        final Window window = new Window(root) {
+//
+//            public void paint(Graphics g) {
+//                g.drawImage(image, 0, 0, null);
+//
+//                Graphics2D g2 = (Graphics2D) g;
+//                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+//
+//                g.setFont(AlcToolBar.subToolBarFont);
+//                g.setColor(Color.white);
+//                g.drawString("COPYRIGHT © 2007-2008 KARL D.D. WILLIS", size.width / 2, 50);
+//                g.drawString("ALPHA VERSION " + ALCHEMY_VERSION, size.width / 2, 65);
+//            }
+//        };
+//        window.addMouseListener(new MouseAdapter() {
+//
+//            public void mousePressed(MouseEvent e) {
+//                window.setVisible(false);
+//                window.dispose();
+//            }
+//        });
+//
+//        window.setSize(size);
+//        Point loc = AlcUtil.calculateCenter(window);
+//        window.setBounds(loc.x, loc.y, size.width, size.height);
+//        window.setVisible(true);
     }
 
     public void actionPerformed(ActionEvent e) {

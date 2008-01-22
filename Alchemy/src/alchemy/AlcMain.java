@@ -148,7 +148,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     }
 
-    // TODO - Check into making the UI thread safe
+    // TODO - Look into making the UI thread safe
     // SEE: http://mindprod.com/jgloss/threadsafe.html
     public static void main(String[] args) {
         if (PLATFORM == MACOSX) {
@@ -158,9 +158,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Set system look and feel
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // Custom class to set the drop down menus to be transparent
-            //UIManager.put("PopupMenuUI", "alchemy.ui.AlcPopupMenuUI");
-            //UIManager.put("MenuItemUI", "alchemy.ui.AlcMenuItemUI");
+            // Custom repaint class to manage transparency and redraw better
             RepaintManager.setCurrentManager(new AlcRepaintManager());
 
         } catch (Exception e) {
@@ -443,7 +441,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             try {
                 // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
                 // use as delegates for various com.apple.eawt.ApplicationListener methods
-                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
+                //OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
+                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("exitAlchemy", (Class[]) null));
                 OSXAdapter.setAboutHandler(this, getClass().getDeclaredMethod("about", (Class[]) null));
                 OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", (Class[]) null));
             //OSXAdapter.setFileHandler(this, getClass().getDeclaredMethod("loadFile", new Class[]{String.class}));
@@ -476,10 +475,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      * General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
      * A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out 
      */
-    public boolean quit() {
-        int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
-        return (option == JOptionPane.YES_OPTION);
-    }
+//    public boolean quit() {
+//        int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+//        return (option == JOptionPane.YES_OPTION);
+//    }
 
     /** 
      * General load file handler; fed to the OSXAdapter as the method to call when a file is dragged into the dock icon
