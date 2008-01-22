@@ -23,9 +23,6 @@ import alchemy.ui.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-// MAC SPECIFIC
-//import com.apple.eawt.Application;
-//import com.apple.eawt.ApplicationEvent;
 import java.lang.reflect.Method;
 
 /**
@@ -110,7 +107,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     public AlcMain() {
 
-        // TODO - Sort out the build.xml - copy correctly etc...
+        super("OSXAdapter");
 
         // LOAD PREFERENCES
         prefs = new AlcPreferences();
@@ -146,10 +143,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         });
 
-        // Run mac specific code
-        if (PLATFORM == MACOSX) {
-            setupMacMenuBar();
-        }
+        // Set up our application to respond to the Mac OS X application menu
+        registerForMacOSXEvents();
 
     }
 
@@ -365,7 +360,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      *                   false = change to windowed
      */
     public void setFullscreen(boolean fullscreen) {
-        if (FULLSCREEN_SUPPORTED) {
+
+        // TODO - Create a blank window to black out the other screen
+        //devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
+        Rectangle bounds = grapConfig.getBounds();
+        //System.out.println(bounds);
+        //displayMode = device.getDisplayMode();
+
             if (this.fullscreen != fullscreen) {        //are we actually changing modes.
 
                 this.fullscreen = fullscreen;           //change modes.
@@ -383,6 +385,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     setLocation(oldLocation);           //reset location of the window
                     //setAlwaysOnTop(false);
 
+                    //System.out.println(DISPLAY_MODE.toString());
+
                     macMenuBarVisible = true;
                     //menuBar.setVisible(true);          // make the menubar visible
                     setVisible(true);
@@ -398,8 +402,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                         dispose();                          //remove the frame from being displayable.
 
                         setUndecorated(true);               //remove borders around the frame
-                        setSize(DISPLAY_MODE.getWidth(), DISPLAY_MODE.getHeight());   // set the size to maximum
-                        setLocation(0, 0);
+                        setSize(bounds.getSize());   // set the size to maximum
+                        setLocation(bounds.getLocation());
                         //setAlwaysOnTop(true);
                         //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
                         macMenuBarVisible = false;
@@ -412,7 +416,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 }
 
                 repaint();  //make sure that the screen is refreshed.
-            }
         }
     }
 
@@ -429,52 +432,76 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     //////////////////////////////////////////////////////////////
     // MAC SPECIFIC
     // For the moment this code is all grouped together here
-    // TODO - look into how the mac code should be seperated ie, in its own class/file
     //////////////////////////////////////////////////////////////
-    /** Handle how the mac menubar is managed */
-    private void setupMacMenuBar() {
-//        Application.getApplication().setEnabledPreferencesMenu(true);
-//        Application.getApplication().addApplicationListener(new com.apple.eawt.ApplicationAdapter() {
-//
-//            //private Object aboutBox;
-//            
-//            public void handleAbout(ApplicationEvent e) {
-//                System.out.println("ABOUT CALLED");
-//            //if (aboutBox == null) {
-//            //AlcAbout aboutDialog = new AlcAbout();
-//            //}
-//            //about(e);
-//            //e.setHandled(true);
-//            }
-//
-//            
-//            public void handleOpenApplication(ApplicationEvent e) {
-//            }
-//            public void handleOpenFile(ApplicationEvent e) {
-//            }
-//            public void handlePreferences(ApplicationEvent e) {
-//            if (prefs == null) {
-//            prefs = new PrefPane();
-//            }
-//            preferences(e);
-//            }
-//            public void handlePrintFile(ApplicationEvent e) {
-//            }
-//             
-//            
-//            public void handleQuit(ApplicationEvent e) {
-//                exitAlchemy();
-//            }
-//        });
+    /**
+     * Generic registration with the Mac OS X application menu
+     * Checks the platform, then attempts to register with the Apple EAWT
+     * See OSXAdapter.java to see how this is done without directly referencing any Apple APIs
+     */
+    public void registerForMacOSXEvents() {
+        if (PLATFORM == MACOSX) {
+            try {
+                // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
+                // use as delegates for various com.apple.eawt.ApplicationListener methods
+                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
+                OSXAdapter.setAboutHandler(this, getClass().getDeclaredMethod("about", (Class[]) null));
+                OSXAdapter.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", (Class[]) null));
+            //OSXAdapter.setFileHandler(this, getClass().getDeclaredMethod("loadFile", new Class[]{String.class}));
+            } catch (Exception e) {
+                System.err.println("Error while loading the OSXAdapter:");
+                e.printStackTrace();
+            }
+        }
     }
 
+    /**
+     * General info dialog; fed to the OSXAdapter as the method to call when 
+     * "About OSXAdapter" is selected from the application menu
+     */
+    public void about() {
+        menuBar.showAboutBox();
+    }
+
+    /** 
+     * General preferences dialog; fed to the OSXAdapter as the method to call when
+     * "Preferences..." is selected from the application menu
+     */
+    public void preferences() {
+        Point loc = AlcUtil.calculateCenter(prefs);
+        prefs.setLocation(loc.x, loc.y);
+        prefs.setVisible(true);
+    }
+
+    /** 
+     * General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
+     * A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out 
+     */
+    public boolean quit() {
+        int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+        return (option == JOptionPane.YES_OPTION);
+    }
+
+    /** 
+     * General load file handler; fed to the OSXAdapter as the method to call when a file is dragged into the dock icon
+     */
+//    public void loadFile(String path) {
+//        try {
+//            currentImage = ImageIO.read(new File(path));
+//            imageLabel.setIcon(new ImageIcon(currentImage));
+//            imageLabel.setBackground((Color) colors[colorComboBox.getSelectedIndex()]);
+//            imageLabel.setText("");
+//        } catch (IOException ioe) {
+//            System.out.println("Could not load image " + path);
+//        }
+//        repaint();
+//    }
     /** 
      * Set the system properties - called before the interface is built 
      * This should eventually be removed once jar-builder is implemented
      */
     private static void setupMacSystemProperties() {
         // Mac Java 1.3
-        System.setProperty("com.apple.macos.useScreenMenuBar", "true");
+        //System.setProperty("com.apple.macos.useScreenMenuBar", "true");
         //System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
         //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
         //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
@@ -482,6 +509,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Mac Java 1.4
         //System.setProperty("apple.awt.showGrowBox", "true");
         System.setProperty("apple.laf.useScreenMenuBar", "true");
+    //System.setProperty("apple.awt.fullscreencapturealldisplays", "true");
 
     }
 
@@ -491,28 +519,29 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      * Unfortunately using setFullScreenWindow() on a mac causes very buggy behaviour 
      * ie. PopupMenus do not appear at all
      * 
+     * This should really be done using JNI and the [NSMenu setMenuBarVisible:NO] call
+     * But can look at that later
+     * 
      * @param visible true for visible, otherwise false
      */
-    /*
     public void setVisible(final boolean visible) {
-    // Only 
-    if (PLATFORM == MACOSX) {
-    // Turn on
-    if (macMenuBarVisible) {
-    //call it when already not visible and it crashes, so check first
-    if (!NSMenu.menuBarVisible()) {
-    NSMenu.setMenuBarVisible(true);
+        if (PLATFORM == MACOSX) {
+            // Turn on
+            if (macMenuBarVisible) {
+                //call it when already not visible and it crashes, so check first
+                if (!com.apple.cocoa.application.NSMenu.menuBarVisible()) {
+                    com.apple.cocoa.application.NSMenu.setMenuBarVisible(true);
+                }
+            // Turn off
+            } else {
+                if (com.apple.cocoa.application.NSMenu.menuBarVisible()) {
+                    com.apple.cocoa.application.NSMenu.setMenuBarVisible(false);
+                }
+            }
+        }
+        super.setVisible(visible);
     }
-    // Turn off
-    } else {
-    if (NSMenu.menuBarVisible()) {
-    NSMenu.setMenuBarVisible(false);
-    }
-    }
-    }
-    super.setVisible(visible);
-    }
-     */
+
     //////////////////////////////////////////////////////////////
     // KEY EVENTS
     //////////////////////////////////////////////////////////////
