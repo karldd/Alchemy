@@ -30,7 +30,7 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
     public AlcMenuItem(Action action) {
         this.setAction(action);
     }
-    
+
     public AlcMenuItem(String title) {
         setup(title, -1);
     }
@@ -39,12 +39,16 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
         setup(title, accelerator);
     }
 
+    public void setup(String title) {
+        setup(title, -1);
+    }
+
     public void setup(String title, int accelerator) {
 
         //this.setUI(new AlcMenuItemUI());
         //System.out.println(this.getUI());
         //this.setOpaque(false);
-        
+
 
         this.setText(title);
         if (accelerator > 0) {

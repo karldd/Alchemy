@@ -90,8 +90,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** The number of affect modules currently selected */
     private int numberOfCurrentAffects = 0;
     /** Preferred size of the window */
-    //private Dimension windowSize = new Dimension(1024, 640);
-    private Dimension windowSize = new Dimension(800, 500);
+    private Dimension windowSize = null;
     //
     //////////////////////////////////////////////////////////////
     // FULLSCREEN
@@ -183,6 +182,15 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
 
     private void loadInterface() {
+    
+        // Find out how big the parent screen is
+        GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
+        Rectangle bounds = grapConfig.getBounds();
+        if(bounds.width < 1000){
+            windowSize = new Dimension(800, 500);
+        } else {
+            windowSize =  new Dimension(1024, 640);
+        }      
 
         // The canvas to draw on
         canvas = new AlcCanvas(this);
@@ -366,54 +374,54 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         //System.out.println(bounds);
         //displayMode = device.getDisplayMode();
 
-            if (this.fullscreen != fullscreen) {        //are we actually changing modes.
+        if (this.fullscreen != fullscreen) {        //are we actually changing modes.
 
-                this.fullscreen = fullscreen;           //change modes.
+            this.fullscreen = fullscreen;           //change modes.
 
-                //change to windowed mode.
-                if (!fullscreen) {
+            //change to windowed mode.
+            if (!fullscreen) {
 
-                    //System.out.println(System.getProperty("user.name"));
+                //System.out.println(System.getProperty("user.name"));
 
-                    //setVisible(false);                //hide the frame so we can change it.
+                //setVisible(false);                //hide the frame so we can change it.
+                dispose();                          //remove the frame from being displayable.
+                setUndecorated(false);              //put the borders back on the frame.
+                //DEVICE.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
+                setSize(oldWindowSize);             //make sure the size of the window is correct.
+                setLocation(oldLocation);           //reset location of the window
+                //setAlwaysOnTop(false);
+
+                //System.out.println(DISPLAY_MODE.toString());
+
+                macMenuBarVisible = true;
+                //menuBar.setVisible(true);          // make the menubar visible
+                setVisible(true);
+
+            //change to fullscreen.
+            } else {
+
+                oldWindowSize = windowSize;          //save the old window size and location
+                oldLocation = getLocation();
+
+                try {
+                    setVisible(false);                  //hide everything
                     dispose();                          //remove the frame from being displayable.
-                    setUndecorated(false);              //put the borders back on the frame.
-                    //DEVICE.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
-                    setSize(oldWindowSize);             //make sure the size of the window is correct.
-                    setLocation(oldLocation);           //reset location of the window
-                    //setAlwaysOnTop(false);
 
-                    //System.out.println(DISPLAY_MODE.toString());
+                    setUndecorated(true);               //remove borders around the frame
+                    setSize(bounds.getSize());   // set the size to maximum
+                    setLocation(bounds.getLocation());
+                    //setAlwaysOnTop(true);
+                    //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
+                    macMenuBarVisible = false;
+                    //menuBar.setVisible(false);          // make the menubar invisible
+                    setVisible(true);                   //show the frame
 
-                    macMenuBarVisible = true;
-                    //menuBar.setVisible(true);          // make the menubar visible
-                    setVisible(true);
-
-                //change to fullscreen.
-                } else {
-
-                    oldWindowSize = windowSize;          //save the old window size and location
-                    oldLocation = getLocation();
-
-                    try {
-                        setVisible(false);                  //hide everything
-                        dispose();                          //remove the frame from being displayable.
-
-                        setUndecorated(true);               //remove borders around the frame
-                        setSize(bounds.getSize());   // set the size to maximum
-                        setLocation(bounds.getLocation());
-                        //setAlwaysOnTop(true);
-                        //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
-                        macMenuBarVisible = false;
-                        //menuBar.setVisible(false);          // make the menubar invisible
-                        setVisible(true);                   //show the frame
-
-                    } catch (Exception e) {
-                        System.err.println(e);
-                    }
+                } catch (Exception e) {
+                    System.err.println(e);
                 }
+            }
 
-                repaint();  //make sure that the screen is refreshed.
+            repaint();  //make sure that the screen is refreshed.
         }
     }
 
@@ -479,7 +487,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 //        int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
 //        return (option == JOptionPane.YES_OPTION);
 //    }
-
     /** 
      * General load file handler; fed to the OSXAdapter as the method to call when a file is dragged into the dock icon
      */

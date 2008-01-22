@@ -17,39 +17,34 @@
  *  along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-
 package alchemy.create;
 
 import alchemy.*;
 import alchemy.AlcShape;
 import alchemy.ui.*;
-
-import java.awt.geom.*;
-import java.awt.Shape;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.GraphicsEnvironment;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
+import java.awt.geom.*;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * TypeShapes.java
  * @author  Karl D.D. Willis
  */
-
-
 public class TypeShapes extends AlcModule implements AlcConstants {
 
     // SHAPE GENERATION
     private String fonts[];
     private FontRenderContext fontRenderContext;
-    private Area union;
     private int scale,  doubleScale,  explode;
-    private float noisiness;
+    private float noisiness,  distortion;
     private float noiseScale = 0.0F;
     // All ASCII characters, sorted according to their visual density
     private String letters =
@@ -62,13 +57,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     public TypeShapes() {
     }
 
-    
     protected void setup() {
-
-//        halfWidth = root.getWindowSize().width / 2;
-//        halfHeight = root.getWindowSize().height / 2;
-//        quarterWidth = root.getWindowSize().width / 4;
-//        quarterHeight = root.getWindowSize().height / 4;
 
         loadFonts();
 
@@ -80,18 +69,15 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     }
 
-    
     protected void reselect() {
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    
     protected void deselect() {
     //canvas.commitTempShape();
     }
 
-    
     protected void cleared() {
         addShape = true;
     }
@@ -122,6 +108,27 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                     }
                 });
         subToolBarSection.add(addButton);
+
+        // Distortion Slider
+        int initialSliderValue = 50;
+        final float levelOffset = 0.1F;
+        distortion = initialSliderValue * levelOffset;
+        System.out.println(distortion);
+        AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 1, 100, initialSliderValue);
+        distortionSlider.setToolTipText("Adjust the amount of shape distortion");
+        distortionSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            int value = source.getValue();
+                            distortion = value * levelOffset;
+                            System.out.println(distortion);
+                        }
+                    }
+                });
+        subToolBarSection.add(distortionSlider);
 
 //        // Remove Button
 //        AlcSubButton removeButton = new AlcSubButton("Remove", AlcUtil.getUrlPath("remove.png", getClassLoader()));
@@ -158,7 +165,9 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             canvas.createShapes.add(shape);
             addShape = false;
         } else {
-            canvas.removeCurrentAffectShape();
+            //canvas.removeCurrentAffectShape();
+            // Clear any affect shapes that may be floating around, then replace the current shape
+            canvas.affectShapes.clear();
             canvas.setCurrentCreateShape(shape);
         }
         canvas.redraw();
@@ -180,11 +189,11 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         //randX = quarterWidth + (int) root.math.random(halfWidth);
         //randY = quarterHeight + (int) root.math.random(halfHeight);
 
-        scale = (int) root.math.random(2, 8);
+        scale = (int) root.math.random(2, 6);
         doubleScale = scale << 1;
 
         explode = (int) root.math.random(1, 5);
-        noisiness = root.math.random(0.0001F, 0.5F);
+        noisiness = root.math.random(0.00001F, distortion);
         //System.out.println(noisiness);
 
         //f = new Font("Helvetica", Font.PLAIN, 150);
@@ -193,19 +202,35 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         AffineTransform affineTransform = f.getTransform();
         fontRenderContext = new FontRenderContext(affineTransform, false, false);
 
-        union = makeShape(f);
+        //Area union = new Area(makeShape(f));
+        GeneralPath union = new GeneralPath(makeShape(f));
 
-        int iterations = (int) root.math.random(5, 15);
+        int iterations = (int) root.math.random(5, 12);
         System.out.println("Iterations: " + iterations + " Scale: " + scale);
 
+        // There is a bug here when using union causing OutofMemory Errors: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4667078
+        // Need to find some hack to stop causing this
+        // Allocating more memory using [-ms50m -mx100m] does nothing
         for (int i = 0; i < iterations; i++) {
-            Area a = makeShape(f);
-            union.add(a);
+            GeneralPath shape = makeShape(f);
+            //Area a = new Area(shape);
+
+            if (shape.intersects(union.getBounds2D())) {
+                Area mainArea = new Area(union);
+                Area newArea = new Area(shape);
+                mainArea.add(newArea);
+                union = new GeneralPath((Shape) mainArea);
+
+            } else {
+                union.append(shape, false);
+            }
+
+
         }
 
         AffineTransform centre = new AffineTransform();
         centre.translate(root.math.random(root.getWindowSize().width), root.math.random(root.getWindowSize().height));
-        union = union.createTransformedArea(centre);
+        union = (GeneralPath) union.createTransformedShape(centre);
 
         // Convert the random shape into a general path
         GeneralPath gp = new GeneralPath((Shape) union);
@@ -214,7 +239,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         return gp;
     }
 
-    public Area makeShape(Font font) {
+    public GeneralPath makeShape(Font font) {
         // Make a string from one random char from the letters string
         String randomLetter = Character.toString(letters.charAt((int) root.math.random(letters.length())));
 
@@ -248,7 +273,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         int cutType;
         int segCount = 0;
         int pointCount = 0;
-        boolean close = true;
+//        boolean close = true;
 
         while (!cut.isDone()) {
             cutType = cut.currentSegment(cutPts);
@@ -258,10 +283,9 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                 segCount++;
             }
 
-            // TODO - review this code to see what causes the: "java.lang.InternalError: Odd number of new curves!" error
             // Only add the first segment
             if (segCount == 1) {
-                if (pointCount < 15) {
+                if (pointCount < 20) {
                     switch (cutType) {
                         case PathIterator.SEG_MOVETO:
                             newShape.moveTo(cutPts[0], cutPts[1]);
@@ -276,6 +300,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                             break;
                         case PathIterator.SEG_CUBICTO:
                             // Randomising the curves tends to generate errors and unresposiveness
+                            //System.out.println("CUBIC " + pointCount);
                             //newShape.curveTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]), mess(cutPts[4]), mess(cutPts[5]));
                             newShape.curveTo(cutPts[0], cutPts[1], cutPts[2], cutPts[3], cutPts[4], cutPts[5]);
                             break;
@@ -285,10 +310,8 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                     }
                     pointCount++;
                 } else {
-                    if (close) {
-                        newShape.closePath();
-                        close = false;
-                    }
+                    //System.out.println("BROKE");
+                    break;
                 }
 
             }
@@ -302,10 +325,11 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         int offsetY = root.getWindowSize().width >> explode;
         newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
 
-        // Rotate the shape randomly
-        newTr.rotate(root.math.random(TWO_PI));
-        Area newA = new Area(newShape);
-        return newA.createTransformedArea(newTr);
+        // Rotate the shape randomly - this would normall be 360deg
+        // i.e. TWO_PI but we want to make sure it is not in the same position
+        newTr.rotate(root.math.random(0.3F, 6.0F));
+        //Area newA = new Area(newShape);
+        return (GeneralPath) newShape.createTransformedShape(newTr);
 
     }
 
@@ -315,15 +339,12 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         return n * f;
     }
 
-    
 //    public void mousePressed(MouseEvent e) {
 //        add();
 //        Point p = e.getPoint();
 //        canvas.createShapes.add(makeShape(p));
 //        canvas.redraw();
 //    }
-
-    
 //    public void mouseDragged(MouseEvent e) {
 //        Point p = e.getPoint();
 //        // Need to test if it null incase the shape has been auto-cleared
@@ -333,8 +354,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 //        }
 //
 //    }
-
-    
 //    public void mouseReleased(MouseEvent e) {
 //        Point p = e.getPoint();
 //        // Need to test if it null incase the shape has been auto-cleared
@@ -351,7 +370,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 //    }
 
     // KEY EVENTS
-    
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
 

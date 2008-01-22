@@ -227,6 +227,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     public void mousePressed(MouseEvent e) {
         if (selectAxis) {
             canvas.removeCurrentGuideShape();
+             canvas.redraw();
         }
     }
 

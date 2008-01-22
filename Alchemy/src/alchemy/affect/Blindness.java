@@ -39,7 +39,6 @@ public class Blindness extends AlcModule implements AlcConstants {
     public Blindness() {
     }
 
-    
     public void setup() {
         canvas.setRedraw(false);
 
@@ -50,14 +49,12 @@ public class Blindness extends AlcModule implements AlcConstants {
 
     }
 
-    
     public void reselect() {
         // Readd the toolbar section
         toolBar.addSubToolBarSection(subToolBarSection);
         canvas.setRedraw(false);
     }
 
-    
     public void deselect() {
         // Turn drawing back on and show what is underneath
         canvas.setRedraw(true);
@@ -75,7 +72,7 @@ public class Blindness extends AlcModule implements AlcConstants {
 
         // Buttons
         AlcSubButton redrawButton = new AlcSubButton("Redraw", AlcUtil.getUrlPath("redraw.png", getClassLoader()));
-        redrawButton.setToolTipText("Redraw the screen (b)");
+        redrawButton.setToolTipText("Redraw the screen (r)");
 
         redrawButton.addActionListener(
                 new ActionListener() {
@@ -108,7 +105,6 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     // MOUSE EVENTS
-    
     public void mouseReleased(MouseEvent e) {
         if (autoRedraw) {
             redrawOnce();
@@ -116,28 +112,9 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     // KEY EVENTS
-    
     public void keyReleased(KeyEvent e) {
-        char keyChar = e.getKeyChar();
-
-        //System.out.println(keyChar);
-        switch (keyChar) {
-            case 'b':
-                redrawOnce();
-                break;
+        if (e.getKeyCode() == KeyEvent.VK_R) {
+            redrawOnce();
         }
-
-    /*
-    switch(keyCode){
-    case BACKSPACE:
-    case DELETE:
-    //System.out.println("DELETE");
-    //canvas.clear();
-    break;
-    case SPACE:
-    //System.out.println("SPACE");
-    break;
-    }
-     */
     }
 }
