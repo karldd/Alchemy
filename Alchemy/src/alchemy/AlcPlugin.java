@@ -34,7 +34,7 @@ import org.java.plugin.registry.PluginDescriptor;
 import org.java.plugin.standard.StandardPluginLocation;
 
 /**
- * Handles the loading of Alchemy 'modules' from the plugins/ folder
+ * Handles the loading of Alchemy 'modules' from the modules/ folder
  * Interacts with the Java Plugin Framework
  */
 public class AlcPlugin implements AlcConstants {
@@ -94,7 +94,7 @@ public class AlcPlugin implements AlcConstants {
         //System.out.println(tempCore.toString());
 
         // Folder of the plugins
-        File pluginsDir = new File("plugins");
+        File pluginsDir = new File("modules");
 
         // Get all plugins that end with .zip
         File[] externalPlugins = pluginsDir.listFiles(new FilenameFilter() {

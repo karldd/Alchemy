@@ -88,8 +88,8 @@ public class Repeat extends AlcModule {
 
         // Repeat Speed Slider
         int initialSliderValue = 50;
-        AlcSubSlider speedSlider = new AlcSubSlider("Repeat Speed", 0, 100, initialSliderValue);
-        speedSlider.setToolTipText("Adjust the repeat speed");
+        AlcSubSlider speedSlider = new AlcSubSlider("Repeat Interval", 0, 100, initialSliderValue);
+        speedSlider.setToolTipText("Adjust the repeat interval");
         speedSlider.slider.addChangeListener(
                 new ChangeListener() {
 
@@ -219,13 +219,13 @@ public class Repeat extends AlcModule {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_R) {
+        if (e.getKeyCode() == KeyEvent.VK_B) {
             repeat = false;
         }
     }
 
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_R) {
+        if (e.getKeyCode() == KeyEvent.VK_B) {
             repeat = true;
         }
     }

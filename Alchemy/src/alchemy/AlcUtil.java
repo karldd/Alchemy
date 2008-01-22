@@ -19,16 +19,9 @@
  */
 package alchemy;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.KeyboardFocusManager;
-import java.awt.MediaTracker;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.Window;
+import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -39,7 +32,7 @@ import javax.swing.ImageIcon;
  * Static utility methods used in Alchemy
  * Used to manipulate strings, load images, and general stuff
  */
-public class AlcUtil {
+public class AlcUtil implements AlcConstants{
 
     //////////////////////////////////////////////////////////////
     // STRING FUNCTIONS
@@ -222,10 +215,52 @@ public class AlcUtil {
         Point center = new Point(x, y);
         return center;
     }
+    
+    /**
+     * Launch a url in the default browser
+     * Adapted from: http://www.centerkey.com/java/browser/
+     * @param url   The url to be launched
+     */
+    public static void openURL(String url) {
+        final String errMsg = "Error attempting to launch web browser";
+        //String osName = System.getProperty("os.name");
+        try {
+            if (AlcMain.PLATFORM == MACOSX) {
+                Class fileMgr = Class.forName("com.apple.eio.FileManager");
+                Method openURL = fileMgr.getDeclaredMethod("openURL",
+                        new Class[]{String.class});
+                openURL.invoke(null, new Object[]{url});
+                
+            } else if (AlcMain.PLATFORM == WINDOWS) {
+                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+                
+            } else if (AlcMain.PLATFORM == LINUX){ 
+                String[] browsers = {
+                    "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape"
+                };
+                String browser = null;
+                for (int count = 0; count < browsers.length && browser == null; count++) {
+                    if (Runtime.getRuntime().exec(
+                            new String[]{"which", browsers[count]}).waitFor() == 0) {
+                        browser = browsers[count];
+                    }
+                }
+                if (browser == null) {
+                    throw new Exception("Could not find web browser");
+                } else {
+                    Runtime.getRuntime().exec(new String[]{browser, url});
+                }
+            }
+        } catch (Exception e) {
+            System.err.println(errMsg + ":\n" + e.getLocalizedMessage());
+        }
+    }
+
 
     //////////////////////////////////////////////////////////////
     // DEBUGGING
     //////////////////////////////////////////////////////////////
+    /** Print an array */
     public static void printArray(float[] array) {
         for (int i = 0; i < array.length; i++) {
             System.out.println("Array [" + String.valueOf(i) + "] = " + String.valueOf(array[i]));
