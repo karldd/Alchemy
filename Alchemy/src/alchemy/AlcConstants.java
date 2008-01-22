@@ -44,12 +44,6 @@ public interface AlcConstants {
     static final int OTHER = 0;
     /** Modifier flags for the shortcut key used to trigger menus. (Cmd on Mac OS X, Ctrl on Linux and Windows) */
     static final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-    /** Graphics Device */
-    static final GraphicsDevice DEVICE = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-    /** Display Mode */
-    static final DisplayMode DISPLAY_MODE = DEVICE.getDisplayMode();
-    /** Fullscreen mode supported or not */
-    static final boolean FULLSCREEN_SUPPORTED = DEVICE.isFullScreenSupported();
     /** Full name of the Java version (i.e. 1.5.0_11). */
     public static final String JAVA_VERSION_NAME = System.getProperty("java.version");
     /** Version of Java that's in use, whether 1.1 or 1.3 or whatever stored as a float */

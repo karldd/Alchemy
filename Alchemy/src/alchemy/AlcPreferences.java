@@ -19,12 +19,15 @@
  */
 package alchemy;
 
+import alchemy.ui.AlcToolBar;
 import java.util.prefs.Preferences;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 
 /**
  * Preference class used to store preferences.
  */
-public class AlcPreferences implements AlcConstants {
+public class AlcPreferences extends JDialog implements AlcConstants {
 
     private final Preferences prefs = Preferences.userNodeForPackage(getClass());
     /** Recording on or off at startup */
@@ -49,8 +52,21 @@ public class AlcPreferences implements AlcConstants {
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
 
-        System.out.println("PREFS SAYS:" + switchVectorApp + " " + switchBitmapApp);
-    //System.out.println(prefs);
+        //System.out.println("PREFS SAYS:" + switchVectorApp + " " + switchBitmapApp);
+        //System.out.println(prefs);
+
+
+        JPanel masterPanel = new JPanel();
+        masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        this.getContentPane().add(masterPanel);
+        this.setSize(320, 240);
+        String title = "Alchemy Options";
+        if (AlcMain.PLATFORM == MACOSX) {
+            title = "Alchemy Preferences";
+        }
+        this.setTitle(title);
+        this.setResizable(false);
+
     }
 
     /** Save the changes on exit */
