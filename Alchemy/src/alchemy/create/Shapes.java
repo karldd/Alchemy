@@ -80,9 +80,8 @@ public class Shapes extends AlcModule implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         straightShapes = !straightShapes;
-                        root.canvas.guideShapes.clear();
+                        reset();
                         root.canvas.redraw();
-                        firstClick = true;
                     }
                 });
         subToolBarSection.add(freeformButton);
