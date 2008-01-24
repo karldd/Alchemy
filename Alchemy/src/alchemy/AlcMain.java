@@ -189,7 +189,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if(bounds.width < 1000){
             windowSize = new Dimension(800, 500);
         } else {
-            windowSize =  new Dimension(1024, 640);
+            //windowSize =  new Dimension(1024, 640);
+            windowSize = new Dimension(800, 500);
         }      
 
         // The canvas to draw on

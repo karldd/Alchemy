@@ -25,6 +25,8 @@ import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.*;
 
 /** 
@@ -44,6 +46,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     //
     private PrinterJob printer = null;
     private PageFormat page = null;
+    private PrintRequestAttributeSet aset = null;
+    private PageFormat defaultPage = null;
 
     /** Creates a new instance of AlcMenuBar */
     public AlcMenuBar(final AlcMain root) {
@@ -91,6 +95,17 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
         fileMenu.add(new JSeparator());
 
+        // Page Setup
+        AbstractAction pageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                pageSetup();
+            }
+        };
+        AlcMenuItem pageItem = new AlcMenuItem(pageAction);
+        pageItem.setup("Page Setup...");
+        fileMenu.add(pageItem);
+
         // Print
         String printTitle = "Print...";
         printAction = new AbstractAction() {
@@ -99,12 +114,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 print();
             }
         };
-        AlcMenuItem printItem = new AlcMenuItem(printTitle);
+        AlcMenuItem printItem = new AlcMenuItem(printAction);
         printItem.setup(printTitle, KeyEvent.VK_P);
         // Shortcut - Modifier p
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_P, MENU_SHORTCUT), printTitle);
         root.canvas.getActionMap().put(printTitle, printAction);
         fileMenu.add(printItem);
+
 
         // Exit - not included on a MAC
         if (AlcMain.PLATFORM != MACOSX) {
@@ -325,8 +341,12 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private void print() {
         if (printer == null) {
             printer = PrinterJob.getPrinterJob();
-            page = printer.defaultPage();
         }
+        if (page == null) {
+            page = printer.defaultPage();
+            page.setOrientation(PageFormat.LANDSCAPE);
+        }
+
         printer.setPrintable(root.canvas, page);
 
         if (printer.printDialog()) {
@@ -336,6 +356,22 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 System.err.println(e);
             }
         }
+
+    }
+
+    private void pageSetup() {
+        if (printer == null) {
+            printer = PrinterJob.getPrinterJob();
+        }
+        if (defaultPage == null) {
+            //defaultPage = new PageFormat();
+            defaultPage = printer.defaultPage();
+            defaultPage.setOrientation(PageFormat.LANDSCAPE);
+        } else {
+            defaultPage = page;
+        }
+        //aset = new HashPrintRequestAttributeSet();
+        page = printer.pageDialog(defaultPage);
     }
 
     /** Ask for a path and filename to export a PDF to */
@@ -472,7 +508,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
     public void actionPerformed(ActionEvent e) {
         // TODO - Convert these to anonymous actons
-        
+
         if (e.getSource() == exitItem) {
             root.exitAlchemy();
 
