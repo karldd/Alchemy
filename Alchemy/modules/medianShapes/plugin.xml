@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.create.MedianShapes"/> 
         <parameter id="name" value="Median Shapes"/> 
         <parameter id="description" value="Create shapes that are repeated along the median" />
-        <parameter id="icon" value="tab.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>

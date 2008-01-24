@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.create.TypeShapes"/> 
         <parameter id="name" value="Type Shapes"/> 
         <parameter id="description" value="Shapes generated from type characters" />
-        <parameter id="icon" value="tab.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>

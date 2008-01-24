@@ -441,14 +441,14 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             // This is a very hacky way to avoid turning the menubar visibility off
             // Allowing keyboard shortcuts set in the menu to keep working
             if (!root.toolBar.getToolBarVisible()) {
-            //if (root.toolBar.getY() < 0) {
+                //if (root.toolBar.getY() < 0) {
                 root.toolBar.setToolBarVisible(true);
                 // Turn drawing off while in the toolbar
                 mouseEvents = false;
             }
         } else if (y > root.toolBar.getTotalHeight() + 5) {
             if (root.toolBar.getToolBarVisible()) {
-            //if (root.toolBar.getY() == 0) {
+                //if (root.toolBar.getY() == 0) {
                 root.toolBar.setToolBarVisible(false);
                 // Turn drawing on once out of the UI
                 mouseEvents = true;
@@ -736,7 +736,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      * 
      **/
     public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
-        // TODO - Test the print function to correct scaling
         // We are only one page long; reject any other page numbers
         if (pageIndex > 0) {
             return Printable.NO_SUCH_PAGE;
@@ -758,30 +757,29 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         // If the canvas is too wide or tall for the page, scale it down
         if (size.width > pageWidth) {
             double factor = pageWidth / size.width;  // How much to scale
-            g2.scale(factor, factor);              // Adjust coordinate system
-            pageWidth /=
-                    factor;                   // Adjust page size up
-            pageHeight /=
-                    factor;
-        }
+            System.out.println("Width Scale: " + factor);
+            g2p.scale(factor, factor);              // Adjust coordinate system
+            pageWidth /= factor;                   // Adjust page size up
+            pageHeight /= factor;
+                    }
 
         if (size.height > pageHeight) {   // Do the same thing for height
             double factor = pageHeight / size.height;
-            g2.scale(factor, factor);
-            pageWidth /=
-                    factor;
-            pageHeight /=
-                    factor;
+            System.out.println("Height Scale: " + factor);
+            g2p.scale(factor, factor);
+            pageWidth /= factor;
+            pageHeight /= factor;
+            
         }
 
         // Now we know the canvas will fit on the page.  Center it by translating as necessary.
-        g2.translate((pageWidth - size.width) / 2, (pageHeight - size.height) / 2);
+        g2p.translate((pageWidth - size.width) / 2, (pageHeight - size.height) / 2);
 
         // Draw a line around the outside of the drawing area
-        g2.drawRect(-1, -1, size.width + 2, size.height + 2);
+        //g2.drawRect(-1, -1, size.width + 2, size.height + 2);
 
         // Set a clipping region so the canvas doesn't go out of bounds
-        g2.setClip(0, 0, size.width, size.height);
+        g2p.setClip(0, 0, size.width, size.height);
 
         // Finally, print the component by calling the paintComponent() method.
         // Or, call paint() to paint the component, its background, border, and
