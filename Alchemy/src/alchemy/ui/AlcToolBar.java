@@ -328,6 +328,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     public void resizeToolBar(Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
+        this.repaint(0, 0, windowSize.width, totalHeight);
         this.revalidate();
     }
 

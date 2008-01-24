@@ -22,8 +22,8 @@ package alchemy;
 import javax.sound.sampled.*;
 
 /**
- * Base class used for microphone input
- * With very limited functionality at the moment to return a buffer or the current sound level
+ * Base class used for microphone input <br />
+ * With very limited functionality at the moment to return a buffer or the current sound level <br />
  * Based on code by Richard G. Baldwin from: http://www.developer.com/java/other/print.php/1572251
  */
 public class AlcMicInput extends Thread {

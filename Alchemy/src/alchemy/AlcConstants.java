@@ -22,8 +22,8 @@ package alchemy;
 import java.awt.Toolkit;
 
 /**
- * Constant values used in Alchemy
- * Much of this is taken from Processings PConstants
+ * Constant values used in Alchemy <br />
+ * Some of this is taken from Processings' PConstants <br />
  * http://dev.processing.org/source/index.cgi/trunk/processing/core/src/processing/core/PConstants.java?view=markup
  */
 public interface AlcConstants {
@@ -35,16 +35,20 @@ public interface AlcConstants {
     //////////////////////////////////////////////////////////////
     // PLATFORM INFO
     //////////////////////////////////////////////////////////////
+    /** Platform: Windows (1) */
     static final int WINDOWS = 1;
+    /** Platform: MacOSX (3) */
     static final int MACOSX = 3;
+    /** Platform: Linux (4) */
     static final int LINUX = 4;
+    /** Platform: Other (0) */
     static final int OTHER = 0;
     /** Modifier flags for the shortcut key used to trigger menus. (Cmd on Mac OS X, Ctrl on Linux and Windows) */
     static final int MENU_SHORTCUT = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
     /** Full name of the Java version (i.e. 1.5.0_11). */
-    public static final String JAVA_VERSION_NAME = System.getProperty("java.version");
+    static final String JAVA_VERSION_NAME = System.getProperty("java.version");
     /** Version of Java that's in use, whether 1.1 or 1.3 or whatever stored as a float */
-    public static final float JAVA_VERSION = new Float(JAVA_VERSION_NAME.substring(0, 3)).floatValue();
+    static final float JAVA_VERSION = new Float(JAVA_VERSION_NAME.substring(0, 3)).floatValue();
     /** Current platform in use. Equivalent to System.getProperty("os.name"), just used internally */
     static public String PLATFORM_NAME = System.getProperty("os.name");
     /** The users name */
@@ -68,14 +72,18 @@ public interface AlcConstants {
     static final float RAD_TO_DEG = 180.0f / PI;
     //
     //////////////////////////////////////////////////////////////
-    // SHAPE TYPES
+    // SHAPE STYLE
     //////////////////////////////////////////////////////////////
+    /** Shape Style: Line (0)  */
     static final int LINE = 0;
+    /** Shape Style: Solid (1)  */
     static final int SOLID = 1;
     //
     //////////////////////////////////////////////////////////////
     // MODULE TYPES
     //////////////////////////////////////////////////////////////
+    /** Module Type: CREATE (0)  */
     static final int CREATE = 0;
+    /** Module Type: AFFECT (1)  */
     static final int AFFECT = 1;
 }

@@ -22,6 +22,7 @@ package alchemy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 /**
@@ -50,6 +51,18 @@ public class AlcSession implements ActionListener, AlcConstants {
 
     public void setRecording(boolean record) {
         if (record) {
+
+            if (root.prefs.getRecordingWarning()) {
+                JOptionPane.showMessageDialog(
+                        null,
+                        "The session pdf will be saved to:\n\n" +
+                        root.prefs.getSessionPath() +
+                        "\n\nWhen finished be sure to toggle recording off\n" +
+                        "in order to view the PDF file", 
+                        "Recording Started",
+                        JOptionPane.INFORMATION_MESSAGE);
+                root.prefs.setRecordingWarning(false);
+            }
 
             String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-mm-ss") + ".pdf";
             currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
@@ -93,7 +106,6 @@ public class AlcSession implements ActionListener, AlcConstants {
 
             System.out.println("recording off..." + currentPdfFile);
             root.canvas.endPdf();
-        //openFile(currentPdfFile);
 
         }
         //Remember the record start
@@ -131,6 +143,48 @@ public class AlcSession implements ActionListener, AlcConstants {
     public int getPageCount() {
         return pageCount;
     }
+
+    /** Save a single page to the current pdf being created */
+    public void savePage() {
+        if (recordState) {
+            root.canvas.savePdfPage();
+            pageCount++;
+            if (timer != null) {
+                if (timer.isRunning()) {
+                    System.out.println("Timer Restarted");
+                    timer.restart();
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Please turn on recording using the : \n " +
+                    "Session > Toggle Recording menu", "Recording not activated",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    /** Save a single page to the current pdf being created, then clear the canvas */
+    public void saveClearPage() {
+        if (recordState) {
+            root.canvas.savePdfPage();
+            root.canvas.clear();
+            pageCount++;
+            if (timer != null) {
+                if (timer.isRunning()) {
+                    System.out.println("Timer Restarted");
+                    timer.restart();
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Please turn on recording using the : \n " +
+                    "Session > Toggle Recording menu", "Recording not activated",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
 
     // Called by the timer
     public void actionPerformed(ActionEvent e) {

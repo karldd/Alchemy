@@ -56,6 +56,7 @@ public class Shapes extends AlcModule implements AlcConstants {
     }
 
     public void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
         reset();
     }
 

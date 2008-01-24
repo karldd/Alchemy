@@ -83,7 +83,7 @@ public class AlcShape implements AlcConstants, Cloneable {
 
     /**
      * Creates a new instance of AlcShape with the default values
-     * @param gp    GeneralPath path
+     * @param path    GeneralPath path
      */
     public AlcShape(GeneralPath path) {
         setupShape(path);
@@ -92,7 +92,7 @@ public class AlcShape implements AlcConstants, Cloneable {
 
     /**
      * Creates a new instance of AlcShape with defined values
-     * @param gp        GeneralPath path
+     * @param path        GeneralPath path
      * @param colour    Colour of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
@@ -239,7 +239,7 @@ public class AlcShape implements AlcConstants, Cloneable {
 
     /**
      * Set (or reset perhaps) the shape with a single Point
-     * @param point
+     * @param p
      */
     public void setPoint(Point p) {
         path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);

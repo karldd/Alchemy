@@ -22,6 +22,7 @@ package alchemy;
 import alchemy.ui.AlcToolBar;
 import java.util.prefs.Preferences;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -32,6 +33,8 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     private final Preferences prefs = Preferences.userNodeForPackage(getClass());
     /** Recording on or off at startup */
     private boolean recordingState;
+    /** Recording warning on or off at startup */
+    private boolean recordingWarning;
     /** Directory to save session files too */
     private String sessionPath;
     /** Time delay between recording a new page */
@@ -43,9 +46,12 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     /** Switch Bitmap Application */
     private String switchBitmapApp;
 
-    public AlcPreferences() {
+    public AlcPreferences(AlcMain root) {
 
+        super(root);
+        
         recordingState = prefs.getBoolean("Recording State", true);
+        recordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", HOME_DIR);
         recordingInterval = prefs.getInt("Recording Delay", 60000);
         autoClear = prefs.getBoolean("Auto Clear Canvas", false);
@@ -58,6 +64,25 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
         JPanel masterPanel = new JPanel();
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        masterPanel.add(new JLabel("Not yet implemented..."));
+
+        /*
+        JCheckBox resetWarnings = new JCheckBox("Reset Warning Dialogs");
+        resetWarnings.setSelected(recordingWarning);
+        resetWarnings.setToolTipText("Reset the display of warning dialogs");
+        resetWarnings.addItemListener(
+        new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+        recordingWarning = true;
+        } else {
+        recordingWarning = false;
+        }
+        }
+        });
+        masterPanel.add(resetWarnings);
+         */
+
         this.getContentPane().add(masterPanel);
         this.setSize(320, 240);
         String title = "Alchemy Options";
@@ -72,6 +97,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     /** Save the changes on exit */
     void writeChanges() {
         prefs.putBoolean("Recording State", this.recordingState);
+        prefs.putBoolean("Recording Warning", this.recordingWarning);
         prefs.put("Session Path", this.sessionPath);
         prefs.putInt("Recording Delay", recordingInterval);
         prefs.putBoolean("Auto Clear Canvas", this.autoClear);
@@ -90,6 +116,14 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
     public void setRecordingState(boolean b) {
         this.recordingState = b;
+    }
+
+    public boolean getRecordingWarning() {
+        return this.recordingWarning;
+    }
+
+    public void setRecordingWarning(boolean b) {
+        this.recordingWarning = b;
     }
 
     public String getSessionPath() {
