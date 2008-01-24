@@ -19,6 +19,7 @@
  */
 package alchemy.ui;
 
+import alchemy.AlcMain;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.*;
@@ -44,12 +45,20 @@ public class AlcSubSlider extends JPanel {
         slider.setMinorTickSpacing(10);  // smaller tick marks
         //slider.setPaintTicks(true);     // display the ticks
 
+        // This causes misalignment on a mac so for now readjust it
+        int sliderHeight = 23;
+        int sliderY = 3;
+        if (AlcMain.PLATFORM == 3) {
+            sliderHeight = 20;
+            sliderY = 4;
+        }
+
         //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
         slider.setOpaque(false);
         //alphaSlider.setBackground(Color.black);
         //alphaSlider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(85, 20));
-        slider.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        slider.setPreferredSize(new Dimension(85, sliderHeight));
+        slider.setBorder(BorderFactory.createEmptyBorder(sliderY, 0, 0, 0));
         this.add(slider);
 
         JLabel label = new JLabel(name);
