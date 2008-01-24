@@ -20,8 +20,8 @@
 package alchemy;
 
 /**
- *  Interface to return calls from AlcMicInput when the buffer is full
- *  To get these calls AlcMicInput must be constructed as so:
+ *  Interface to return calls from AlcMicInput when the buffer is full <br />
+ *  To get these calls AlcMicInput must be constructed as so: <br />
  *  <pre>
  *  public AlcMicInput(AlcMicInterface parent, int bufferSize) {}
  *  </pre>

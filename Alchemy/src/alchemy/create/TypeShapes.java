@@ -113,8 +113,8 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         int initialSliderValue = 50;
         final float levelOffset = 0.1F;
         distortion = initialSliderValue * levelOffset;
-        System.out.println(distortion);
-        AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 1, 100, initialSliderValue);
+        //System.out.println(distortion);
+        AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 0, 100, initialSliderValue);
         distortionSlider.setToolTipText("Adjust the amount of shape distortion");
         distortionSlider.slider.addChangeListener(
                 new ChangeListener() {
@@ -124,7 +124,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                         if (!source.getValueIsAdjusting()) {
                             int value = source.getValue();
                             distortion = value * levelOffset;
-                            System.out.println(distortion);
+                            //System.out.println(distortion);
                         }
                     }
                 });

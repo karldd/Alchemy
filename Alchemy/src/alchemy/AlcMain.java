@@ -26,14 +26,14 @@ import java.awt.event.*;
 import java.lang.reflect.Method;
 
 /**
- * Main class for Alchemy
+ * Main class for Alchemy<br />
  * Handles all and everything - the meta 'root' reference
  */
 public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
 
     /** Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER. */
     public static int PLATFORM;
-    /** Modifier Key to show for tool tips */
+    /** Modifier Key to show for tool tips - This looks like '\u2318' for Apple or 'Ctrl' otherwise */
     public static String MODIFIER_KEY;
 
     static {
@@ -70,15 +70,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcPreferences prefs;
     /** Session class - controls automatic saving of the canvas */
     public AlcSession session;
-    /** Lists of the installed modules */
+    /** Array of the installed 'create' modules */
     public AlcModule[] creates;
+    /** Array of the installed 'affect' modules */
     public AlcModule[] affects;
     /** The menu bar */
     public AlcMenuBar menuBar;
-    /** About Box */
-    //protected AlcAboutBox aboutBox;
     /** Layered pane in which the canvas and toolbar sit */
-    public JLayeredPane layeredPane;
+    private JLayeredPane layeredPane;
     //
     //////////////////////////////////////////////////////////////
     // ALCHEMY STATUS
@@ -96,7 +95,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     // FULLSCREEN
     //////////////////////////////////////////////////////////////
     /** Toggle between windowed and fullscreen */
-    protected boolean fullscreen = false;
+    private boolean fullscreen = false;
     /** For storing the old display size before entering fullscreen */
     private Dimension oldWindowSize = null;
     /** For storing the old display location before entering fullscreen */
@@ -109,7 +108,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         super("OSXAdapter");
 
         // LOAD PREFERENCES
-        prefs = new AlcPreferences();
+        prefs = new AlcPreferences(this);
 
         // LOAD PLUGINS
         plugins = new AlcPlugin(this);
@@ -168,6 +167,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         window.setVisible(true);
     }
 
+    /** Exit Alchemy, saving preferences and doing general clean up */
     public void exitAlchemy() {
         System.out.println("Closing");
         // TODO - prompt to save the drawing on exit
@@ -182,16 +182,16 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
 
     private void loadInterface() {
-    
+
         // Find out how big the parent screen is
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Rectangle bounds = grapConfig.getBounds();
-        if(bounds.width < 1000){
+        if (bounds.width < 1000) {
             windowSize = new Dimension(800, 500);
         } else {
-            //windowSize =  new Dimension(1024, 640);
-            windowSize = new Dimension(800, 500);
-        }      
+            windowSize = new Dimension(1024, 640);
+        //windowSize = new Dimension(800, 500);
+        }
 
         // The canvas to draw on
         canvas = new AlcCanvas(this);
@@ -306,7 +306,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     //////////////////////////////////////////////////////////////
     /** Set the current create function */
     public void setCurrentCreate(int i) {
-
+        // Deselect the old create module
+        creates[currentCreate].deselect();
         currentCreate = i;
 
         // Call that module
@@ -369,7 +370,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public void setFullscreen(boolean fullscreen) {
 
         // TODO - Create a blank window to black out the other screen
-        //devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        //GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Rectangle bounds = grapConfig.getBounds();
         //System.out.println(bounds);
@@ -520,14 +521,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     }
 
+    // TODO - Hide the mac menubar using JNI and the [NSMenu setMenuBarVisible:NO] call
+    // Errors are being returned such as: Invalid memory access of location 00000005 eip=903346d8
     /**
      * Override the JFrame setVisible
      * This is a very hacky way of turning off the mac menubar. 
      * Unfortunately using setFullScreenWindow() on a mac causes very buggy behaviour 
      * ie. PopupMenus do not appear at all
      * 
-     * This should really be done using JNI and the [NSMenu setMenuBarVisible:NO] call
-     * But can look at that later
      * 
      * @param visible true for visible, otherwise false
      */

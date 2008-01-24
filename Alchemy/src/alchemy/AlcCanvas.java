@@ -120,6 +120,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     }
 
+    /** Paint Component that draws all shapes to the canvas */
     public void paintComponent(Graphics g) {
         int w = this.getWidth();
         int h = this.getHeight();
@@ -487,19 +488,23 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
+    /** Get the current alpha value */
     public int getAlpha() {
         return alpha;
     }
 
+    /** Set the current alpha value */
     public void setAlpha(int alpha) {
         this.alpha = alpha;
         setColour(this.colour);
     }
 
+    /** Get the current style */
     public int getStyle() {
         return style;
     }
 
+    /** Set the current style */
     public void setStyle(int style) {
         this.style = style;
     }
@@ -513,10 +518,12 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
+    /** Get the current line width */
     public float getLineWidth() {
         return lineWidth;
     }
 
+    /** Set the current line width */
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
@@ -525,7 +532,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // PDF STUFF
     //////////////////////////////////////////////////////////////
-    /** Start PDF record */
+    /** Start PDF recording */
     public void startPdf(File file) {
         pdfWidth = root.getWindowSize().width;
         pdfHeight = root.getWindowSize().height;
@@ -559,6 +566,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
+    /** Save the canvas to a PDF file
+     * 
+     * @param file  The file object to save the pdf to
+     * @return      True if save worked, otherwise false
+     */
     public boolean saveSinglePdf(File file) {
         int singlePdfWidth = root.getWindowSize().width;
         int singlePdfHeight = root.getWindowSize().height;
@@ -594,7 +606,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    /** Save frame of Pdf */
+    /** Save a PDF page */
     public void savePdfPage() {
         System.out.println("Save PDF Page Called");
         try {
@@ -641,6 +653,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // SAVE BITMAP STUFF
     //////////////////////////////////////////////////////////////
+    /** Save the canvas to a PNG file
+     * 
+     * @param file  The file object to save the PNG to
+     * @return      True if save worked, otherwise false
+     */
     public boolean savePng(File file) {
         try {
             //File file = new File("saveToThisFile.jpg");
@@ -653,7 +670,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    public BufferedImage generatedBufferedImage() {
+    /** Create a bufferedImage from the canvas */
+    private BufferedImage generatedBufferedImage() {
         BufferedImage image = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
         //g.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -761,7 +779,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             g2p.scale(factor, factor);              // Adjust coordinate system
             pageWidth /= factor;                   // Adjust page size up
             pageHeight /= factor;
-                    }
+        }
 
         if (size.height > pageHeight) {   // Do the same thing for height
             double factor = pageHeight / size.height;
@@ -769,7 +787,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             g2p.scale(factor, factor);
             pageWidth /= factor;
             pageHeight /= factor;
-            
+
         }
 
         // Now we know the canvas will fit on the page.  Center it by translating as necessary.

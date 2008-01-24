@@ -65,7 +65,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
     }
 
     public void reselect() {
-        //micIn = new AlcMicInput(2);
+        micIn = new AlcMicInput(2);
         micIn.startMicInput();
         toolBar.addSubToolBarSection(subToolBarSection);
     }

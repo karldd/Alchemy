@@ -22,7 +22,7 @@ package alchemy;
 import java.util.*;
 
 /**
- * Utility class that handles math functions
+ * Utility class that handles math functions <br />
  * Random number generation and noise at the moment... 
  */
 public class AlcMath implements AlcConstants {

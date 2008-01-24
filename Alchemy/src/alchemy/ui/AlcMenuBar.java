@@ -25,7 +25,6 @@ import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
-import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.*;
 
@@ -177,6 +176,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         };
         recordingItem.setAction(recordingAction);
         recordingItem.setup(recordingTitle, KeyEvent.VK_R);
+//        recordingItem.setToolTipText("Start/Finish recording of a session. " +
+//                "Switch on to begin the session, and toggle off to finish the session and view the save PDF file");
         // Shortcut - Modifier r
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, MENU_SHORTCUT), recordingTitle);
         root.canvas.getActionMap().put(recordingTitle, recordingAction);
@@ -186,6 +187,32 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             root.session.setRecording(true);
         }
         sessionMenu.add(recordingItem);
+
+        sessionMenu.add(new JSeparator());
+
+        // Save PDF page
+        AbstractAction savePageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                root.session.savePage();
+            }
+        };
+        AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
+        savePageItem.setup("Save Page", KeyEvent.VK_S);
+        sessionMenu.add(savePageItem);
+        
+                // Save and clear PDF page
+        AbstractAction saveClearPageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                root.session.saveClearPage();
+            }
+        };
+        AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
+        saveClearPageItem.setup("Save Page & Clear", KeyEvent.VK_D);
+        //saveClearPageItem.setToolTipText("");
+        sessionMenu.add(saveClearPageItem);
+
 
         sessionMenu.add(new JSeparator());
 

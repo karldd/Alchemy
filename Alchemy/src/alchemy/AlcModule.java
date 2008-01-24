@@ -25,7 +25,7 @@ import java.awt.event.KeyEvent;
 import java.net.URL;
 
 /**
- * Alchemy module
+ * Alchemy module <br />
  * This is an 'abstract class' which must be extended to make an Alchemy plugin
  * 
  */
