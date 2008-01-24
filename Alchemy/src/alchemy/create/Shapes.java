@@ -80,6 +80,8 @@ public class Shapes extends AlcModule implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         straightShapes = !straightShapes;
+                        root.canvas.guideShapes.clear();
+                        root.canvas.redraw();
                         firstClick = true;
                     }
                 });
