@@ -200,8 +200,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
         savePageItem.setup("Save Page", KeyEvent.VK_S);
         sessionMenu.add(savePageItem);
-        
-                // Save and clear PDF page
+
+        // Save and clear PDF page
         AbstractAction saveClearPageAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -305,18 +305,6 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // HELP MENU
         //////////////////////////////////////////////////////////////
         helpMenu = new AlcMenu("Help");
-        // About menuitem not included on a MAC
-        if (AlcMain.PLATFORM != MACOSX) {
-            AbstractAction aboutAction = new AbstractAction() {
-
-                public void actionPerformed(ActionEvent e) {
-                    showAboutBox();
-                }
-            };
-            AlcMenuItem aboutItem = new AlcMenuItem(aboutAction);
-            aboutItem.setup("About...");
-            helpMenu.add(aboutItem);
-        }
         // Link to the Alchemy Website                
         AbstractAction wwwAction = new AbstractAction() {
 
@@ -337,6 +325,22 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem forumItem = new AlcMenuItem(forumAction);
         forumItem.setup("Alchemy Forum");
         helpMenu.add(forumItem);
+
+        helpMenu.add(new JSeparator());
+
+        // About menuitem not included on a MAC
+        if (AlcMain.PLATFORM != MACOSX) {
+            AbstractAction aboutAction = new AbstractAction() {
+
+                public void actionPerformed(ActionEvent e) {
+                    showAboutBox();
+                }
+            };
+            AlcMenuItem aboutItem = new AlcMenuItem(aboutAction);
+            aboutItem.setup("About Alchemy");
+            helpMenu.add(aboutItem);
+        }
+
         this.add(helpMenu);
     }
 
