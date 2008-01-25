@@ -35,9 +35,9 @@ public class AlcSession implements ActionListener, AlcConstants {
     /** Timer */
     private Timer timer;
     /** Recording interval array in milliseconds */
-    public int[] recordingInterval = {5000, 15000, 30000, 60000, 120000, 300000, 600000};
+    public int[] recordingInterval = {0, 5000, 15000, 30000, 60000, 120000, 300000, 600000};
     /** Recording interval array in readable form */
-    public String[] recordingIntervalString = {"5 sec", "15 sec", "30 sec", "1 min", "2 mins", "5 mins", "10 mins"};
+    public String[] recordingIntervalString = {"Manual", "5 sec", "15 sec", "30 sec", "1 min", "2 mins", "5 mins", "10 mins"};
     /** Recording on or off */
     private boolean recordState;
     /** Current file path */
@@ -58,7 +58,7 @@ public class AlcSession implements ActionListener, AlcConstants {
                         "The session pdf will be saved to:\n\n" +
                         root.prefs.getSessionPath() +
                         "\n\nWhen finished be sure to toggle recording off\n" +
-                        "in order to view the PDF file", 
+                        "in order to view the PDF file",
                         "Recording Started",
                         JOptionPane.INFORMATION_MESSAGE);
                 root.prefs.setRecordingWarning(false);
@@ -69,16 +69,21 @@ public class AlcSession implements ActionListener, AlcConstants {
 
             //currentPdfFile = root.prefs.getSessionPath() + FILE_SEPARATOR + "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
 
+            int interval = root.prefs.getRecordingInterval();
             //Set up timer to save pages into the pdf
             if (timer == null) {
-                timer = new Timer(root.prefs.getRecordingInterval(), this);
-                timer.start();
+                if (interval > 0) {
+                    timer = new Timer(interval, this);
+                    timer.start();
+                }
             } else {
                 if (timer.isRunning()) {
                     timer.stop();
                 }
-                timer.setDelay(root.prefs.getRecordingInterval());
-                timer.start();
+                if (interval > 0) {
+                    timer.setDelay(root.prefs.getRecordingInterval());
+                    timer.start();
+                }
             }
             //timer.setInitialDelay(root.prefs.getRecordingInterval());
             //timer.setRepeats(boolean flag);
@@ -116,15 +121,28 @@ public class AlcSession implements ActionListener, AlcConstants {
         System.out.println("Interval: " + interval);
         // Set the interval in the prefs
         root.prefs.setRecordingInterval(interval);
-        // Check if the timer has been initialised, if not don't do anything extra
-        if (timer != null) {
-            // if it is running then stop it, set the interval then restart it
-            if (timer.isRunning()) {
-                timer.stop();
-                timer.setDelay(interval);
-                timer.start();
+        // If recording is on
+        if (recordState) {
+            // Check if the timer has been initialised, if not don't do anything extra
+            if (timer != null) {
+                // if it is running then stop it, set the interval then restart it
+                if (timer.isRunning()) {
+                    timer.stop();
+                    timer = null;
+                    if (interval > 0) {
+                        timer = new Timer(interval, this);
+                        timer.start();
+                    }
+                } else {
+                    timer = null;
+                    timer = new Timer(interval, this);
+                    timer.start();
+                }
             } else {
-                timer.setDelay(interval);
+                if (interval > 0) {
+                    timer = new Timer(interval, this);
+                    timer.start();
+                }
             }
         }
     }
