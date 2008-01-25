@@ -326,10 +326,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         forumItem.setup("Alchemy Forum");
         helpMenu.add(forumItem);
 
-        helpMenu.add(new JSeparator());
-
         // About menuitem not included on a MAC
         if (AlcMain.PLATFORM != MACOSX) {
+            helpMenu.add(new JSeparator());
+
             AbstractAction aboutAction = new AbstractAction() {
 
                 public void actionPerformed(ActionEvent e) {
