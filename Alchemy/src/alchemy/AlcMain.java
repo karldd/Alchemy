@@ -207,9 +207,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if (PLATFORM == MACOSX) {
             // For some reason the menubar still displays on OSX
             // Set it to transparent and turn off border painting
-            // Still leaving it 'present' to capture shortcut keys
-            menuBar.setOpaque(false);
-            menuBar.setBorderPainted(false);
+            //menuBar.setOpaque(false);
+            //menuBar.setBorderPainted(false);
+            // Set it to invisible
+            menuBar.setVisible(false);
             // Add normally if on MacOSX as the menu is listed above
             this.setJMenuBar(menuBar);
 
@@ -370,7 +371,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public void setFullscreen(boolean fullscreen) {
 
         // TODO - Create a blank window to black out the other screen
-        //GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Rectangle bounds = grapConfig.getBounds();
         //System.out.println(bounds);
@@ -388,7 +389,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 //setVisible(false);                //hide the frame so we can change it.
                 dispose();                          //remove the frame from being displayable.
                 setUndecorated(false);              //put the borders back on the frame.
-                //DEVICE.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
+                //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
                 setSize(oldWindowSize);             //make sure the size of the window is correct.
                 setLocation(oldLocation);           //reset location of the window
                 //setAlwaysOnTop(false);
@@ -413,7 +414,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     setSize(bounds.getSize());   // set the size to maximum
                     setLocation(bounds.getLocation());
                     //setAlwaysOnTop(true);
-                    //DEVICE.setFullScreenWindow(this);   //make the window fullscreen.
+                    //device.setFullScreenWindow(this);   //make the window fullscreen.
                     macMenuBarVisible = false;
                     //menuBar.setVisible(false);          // make the menubar invisible
                     setVisible(true);                   //show the frame

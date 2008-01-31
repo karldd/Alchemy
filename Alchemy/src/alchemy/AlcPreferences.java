@@ -50,7 +50,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
         super(root);
         
-        recordingState = prefs.getBoolean("Recording State", true);
+        recordingState = prefs.getBoolean("Recording State", false);
         recordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", HOME_DIR);
         recordingInterval = prefs.getInt("Recording Delay", 60000);
