@@ -5,8 +5,7 @@
 <project name="Alchemy" default="default" basedir=".">
     <description>Builds, tests, and runs the project Alchemy.</description>
     <import file="nbproject/build-impl.xml"/>
-
-    <import file="nbproject/profiler-build-impl.xml"/>    <!--
+    <!--
 
     There exist several targets which are by default empty and which can be 
     used for execution of your tasks. These targets are usually executed 
@@ -73,6 +72,7 @@
         <unjar src="${file.reference.commons-logging.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.itext-2.0.6.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.jhall.jar}" dest="${build.classes.dir}"/> 
     </target> 
     
     

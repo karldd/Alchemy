@@ -70,7 +70,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
     /** Actions used in the toolbar */
-    public Action clearAction,  styleAction,  bwAction;
+    public Action styleAction,  bwAction;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -135,7 +135,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         // CLEAR BUTTON
         //////////////////////////////////////////////////////////////
         String clearTitle = "Clear";
-        clearAction = new AbstractAction() {
+        AbstractAction clearAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
                 root.canvas.clear();
