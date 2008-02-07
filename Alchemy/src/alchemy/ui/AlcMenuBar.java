@@ -25,8 +25,10 @@ import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.*;
+import javax.help.*;
 
 /** 
  * Menubar for Alchemy
@@ -70,11 +72,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // FILE MENU
         //////////////////////////////////////////////////////////////
         fileMenu = new AlcMenu("File");
+
         // New
-        AlcMenuItem newItem = new AlcMenuItem(root.toolBar.clearAction);
-        newItem.setup("New", KeyEvent.VK_N);
+        String newTitle = "New";
+        AbstractAction newAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                root.canvas.clear();
+            }
+        };
+        AlcMenuItem newItem = new AlcMenuItem(newAction);
+        newItem.setup(newTitle, KeyEvent.VK_N);
+        // Shortcut - Modifier n
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_SHORTCUT), newTitle);
+        root.canvas.getActionMap().put(newTitle, newAction);
         fileMenu.add(newItem);
 
+        
         fileMenu.add(new JSeparator());
 
         // Export
@@ -176,8 +190,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         };
         recordingItem.setAction(recordingAction);
         recordingItem.setup(recordingTitle, KeyEvent.VK_R);
-//        recordingItem.setToolTipText("Start/Finish recording of a session. " +
-//                "Switch on to begin the session, and toggle off to finish the session and view the save PDF file");
+        // recordingItem.setToolTipText("Start/Finish recording of a session. " +
+        // "Switch on to begin the session, and toggle off to finish the session and view the save PDF file");
         // Shortcut - Modifier r
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, MENU_SHORTCUT), recordingTitle);
         root.canvas.getActionMap().put(recordingTitle, recordingAction);
@@ -191,6 +205,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         sessionMenu.add(new JSeparator());
 
         // Save PDF page
+        String savePageTitle = "Save Page";
         AbstractAction savePageAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -198,10 +213,14 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             }
         };
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
-        savePageItem.setup("Save Page", KeyEvent.VK_S);
+        savePageItem.setup(savePageTitle, KeyEvent.VK_S);
+        // Shortcut - Modifier s
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_SHORTCUT), savePageTitle);
+        root.canvas.getActionMap().put(savePageTitle, savePageAction);
         sessionMenu.add(savePageItem);
 
         // Save and clear PDF page
+        String saveClearTitle = "Save Page & Clear";
         AbstractAction saveClearPageAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -209,8 +228,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             }
         };
         AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
-        saveClearPageItem.setup("Save Page & Clear", KeyEvent.VK_D);
-        //saveClearPageItem.setToolTipText("");
+        saveClearPageItem.setup(saveClearTitle, KeyEvent.VK_D);
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, MENU_SHORTCUT), saveClearTitle);
+        root.canvas.getActionMap().put(saveClearTitle, saveClearPageAction);
         sessionMenu.add(saveClearPageItem);
 
 
@@ -305,6 +325,34 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // HELP MENU
         //////////////////////////////////////////////////////////////
         helpMenu = new AlcMenu("Help");
+
+        // Javahelp 
+        try {
+
+            final URL url = AlcMain.class.getResource("help/help-hs.xml");
+            //System.out.println(url);
+            final HelpSet hs = new HelpSet(null, url);
+            final HelpBroker hb = hs.createHelpBroker();
+
+            AbstractAction javaHelpAction = new AbstractAction() {
+
+                public void actionPerformed(ActionEvent e) {
+                    //System.out.println("CALLED");
+                    hb.setDisplayed(true);
+                //new CSH.DisplayHelpFromSource(hb);
+                }
+            };
+
+            AlcMenuItem javaHelpItem = new AlcMenuItem(javaHelpAction);
+            javaHelpItem.setup("Alchemy Help");
+            helpMenu.add(javaHelpItem);
+            helpMenu.add(new JSeparator());
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
+
         // Link to the Alchemy Website                
         AbstractAction wwwAction = new AbstractAction() {
 
