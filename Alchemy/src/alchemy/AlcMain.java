@@ -24,6 +24,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.lang.reflect.Method;
+import java.util.ResourceBundle;
 
 /**
  * Main class for Alchemy<br />
@@ -78,6 +79,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcMenuBar menuBar;
     /** Layered pane in which the canvas and toolbar sit */
     private JLayeredPane layeredPane;
+    /** Resource Bundle containing language specific text */
+    public final ResourceBundle bundle;
     //
     //////////////////////////////////////////////////////////////
     // ALCHEMY STATUS
@@ -106,6 +109,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcMain() {
 
         super("OSXAdapter");
+
+        // LOAD RESOURCE BUNDLE
+        bundle = ResourceBundle.getBundle("alchemy/AlcResourceBundle", LOCALE);
 
         // LOAD PREFERENCES
         prefs = new AlcPreferences(this);

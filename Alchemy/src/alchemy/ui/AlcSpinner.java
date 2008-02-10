@@ -31,6 +31,7 @@ import javax.swing.*;
 public class AlcSpinner extends JPanel {
 
     protected JSpinner spinner;
+    private JLabel label;
 
     public AlcSpinner(String name, SpinnerNumberModel numberModel) {
 
@@ -48,11 +49,16 @@ public class AlcSpinner extends JPanel {
         spinner.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(spinner);
 
-        JLabel label = new JLabel(name);
+        label = new JLabel(name);
         label.setFont(AlcToolBar.toolBarFont);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         this.add(label);
 
+    }
+
+    public void setToolTipText(String toolTip) {
+        spinner.setToolTipText(toolTip);
+        label.setToolTipText(toolTip);
     }
 }

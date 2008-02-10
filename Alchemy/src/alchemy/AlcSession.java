@@ -34,10 +34,6 @@ public class AlcSession implements ActionListener, AlcConstants {
     private AlcMain root;
     /** Timer */
     private Timer timer;
-    /** Recording interval array in milliseconds */
-    public int[] recordingInterval = {0, 5000, 15000, 30000, 60000, 120000, 300000, 600000};
-    /** Recording interval array in readable form */
-    public String[] recordingIntervalString = {"Manual", "5 sec", "15 sec", "30 sec", "1 min", "2 mins", "5 mins", "10 mins"};
     /** Recording on or off */
     private boolean recordState;
     /** Current file path */

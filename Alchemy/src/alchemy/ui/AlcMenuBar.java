@@ -45,6 +45,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     public Action exportAction,  printAction,  fullScreenAction,  recordingAction,  switchVectorAction,  switchBitmapAction;
     private File platformAppDir;
     //
+    /** Recording interval array in milliseconds */
+    private int[] recordingInterval = {0, 5000, 15000, 30000, 60000, 120000, 300000, 600000};
+    /** Recording interval array in readable form */
+    private String[] recordingIntervalString = new String[recordingInterval.length];
+    //
     private PrinterJob printer = null;
     private PageFormat page = null;
     private PrintRequestAttributeSet aset = null;
@@ -66,15 +71,19 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 break;
         }
 
-        //System.out.println(System.getProperty("user.dir"));
+
+        // Initialise the array of recording intervals from the bundle
+        for (int i = 0; i < recordingIntervalString.length; i++) {
+            recordingIntervalString[i] = getS("interval"+recordingInterval[i]);
+        }
 
         //////////////////////////////////////////////////////////////
         // FILE MENU
         //////////////////////////////////////////////////////////////
-        fileMenu = new AlcMenu("File");
+        fileMenu = new AlcMenu(getS("fileTitle"));
 
         // New
-        String newTitle = "New";
+        String newTitle = getS("newTitle");
         AbstractAction newAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -88,11 +97,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         root.canvas.getActionMap().put(newTitle, newAction);
         fileMenu.add(newItem);
 
-        
+
         fileMenu.add(new JSeparator());
 
         // Export
-        String exportTitle = "Export...";
+        String exportTitle = getS("exportTitle");
         exportAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -116,11 +125,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             }
         };
         AlcMenuItem pageItem = new AlcMenuItem(pageAction);
-        pageItem.setup("Page Setup...");
+        pageItem.setup(getS("pageSetupTitle"));
         fileMenu.add(pageItem);
 
         // Print
-        String printTitle = "Print...";
+        String printTitle = getS("printTitle");
         printAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -139,7 +148,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         if (AlcMain.PLATFORM != MACOSX) {
             fileMenu.add(new JSeparator());
 
-            exitItem = new AlcMenuItem("Exit");
+            exitItem = new AlcMenuItem(getS("exitTitle"));
             exitItem.addActionListener(this);
             fileMenu.add(exitItem);
         }
@@ -149,10 +158,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // VIEW MENU
         //////////////////////////////////////////////////////////////
-        viewMenu = new AlcMenu("View");
+        viewMenu = new AlcMenu(getS("viewTitle"));
         // Fullscreen
 
-        String fullScreenTitle = "Fullscreen";
+        String fullScreenTitle = getS("fullScreenTitle");
         fullScreenAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -171,10 +180,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // SESSION MENU
         //////////////////////////////////////////////////////////////
-        sessionMenu = new AlcMenu("Session");
+        sessionMenu = new AlcMenu(getS("sessionTitle"));
 
         // Toggle Recording
-        String recordingTitle = "Toggle Recording";
+        String recordingTitle = getS("recordingTitle");
         final AlcCheckBoxMenuItem recordingItem = new AlcCheckBoxMenuItem();
         recordingAction = new AbstractAction() {
 
@@ -205,7 +214,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         sessionMenu.add(new JSeparator());
 
         // Save PDF page
-        String savePageTitle = "Save Page";
+        String savePageTitle = getS("savePageTitle");
         AbstractAction savePageAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -220,7 +229,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         sessionMenu.add(savePageItem);
 
         // Save and clear PDF page
-        String saveClearTitle = "Save Page & Clear";
+        String saveClearTitle = getS("saveClearTitle");
         AbstractAction saveClearPageAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -237,20 +246,21 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         sessionMenu.add(new JSeparator());
 
         // Default Recording
-        defaultRecordingItem = new AlcCheckBoxMenuItem("Record on Startup", KeyEvent.VK_R);
+        defaultRecordingItem = new AlcCheckBoxMenuItem(getS("recordStartUpTitle"));
         defaultRecordingItem.setState(root.prefs.getRecordingState());
         defaultRecordingItem.addActionListener(this);
         sessionMenu.add(defaultRecordingItem);
+
         // Interval submenu
-        intervalMenu = new AlcMenu("Record Interval");
+        intervalMenu = new AlcMenu(getS("recordIntervalTitle"));
         // Set the opacity and colour of this to overide the defaults used for the top menus
         intervalMenu.setOpaque(true);
         intervalMenu.setBackground(AlcToolBar.toolBarHighlightColour);
         ButtonGroup group = new ButtonGroup();
-        for (int i = 0; i < root.session.recordingIntervalString.length; i++) {
-            intervalItem = new AlcRadioButtonMenuItem(root.session.recordingInterval[i], root.session.recordingIntervalString[i]);
+        for (int i = 0; i < recordingIntervalString.length; i++) {
+            intervalItem = new AlcRadioButtonMenuItem(recordingInterval[i], recordingIntervalString[i]);
             // Set the default value to selected
-            if (root.prefs.getRecordingInterval() == root.session.recordingInterval[i]) {
+            if (root.prefs.getRecordingInterval() == recordingInterval[i]) {
                 intervalItem.setSelected(true);
             }
             intervalItem.addActionListener(this);
@@ -262,13 +272,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         intervalMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
         sessionMenu.add(intervalMenu);
         // Auto Clear
-        autoClearItem = new AlcCheckBoxMenuItem("Auto Clear Canvas");
+        autoClearItem = new AlcCheckBoxMenuItem(getS("autoClearTitle"));
         autoClearItem.setState(root.prefs.getAutoClear());
         autoClearItem.addActionListener(this);
         sessionMenu.add(autoClearItem);
         sessionMenu.add(new JSeparator());
         // Default Directory
-        directoryItem = new AlcMenuItem("Set Session Directory...");
+        directoryItem = new AlcMenuItem(getS("setSessionDirTitle"));
         directoryItem.addActionListener(this);
         sessionMenu.add(directoryItem);
         this.add(sessionMenu);
@@ -277,10 +287,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // SWITCH MENU
         //////////////////////////////////////////////////////////////
-        switchMenu = new AlcMenu("Switch");
+        switchMenu = new AlcMenu(getS("switchTitle"));
 
         // Switch Vector
-        String switchVectorTitle = "Switch Vector";
+        String switchVectorTitle = getS("switchVectorTitle");
         switchVectorAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -295,7 +305,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         switchMenu.add(switchVectorItem);
 
         // Switch Bitmaps
-        String switchBitmapTitle = "Switch Bitmap";
+        String switchBitmapTitle = getS("switchBitmapTitle");
         switchBitmapAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -312,11 +322,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         switchMenu.add(new JSeparator());
 
         // Switch Vector App
-        switchVectorAppItem = new AlcMenuItem("Set Vector Application...");
+        switchVectorAppItem = new AlcMenuItem(getS("setVectorApp"));
         switchVectorAppItem.addActionListener(this);
         switchMenu.add(switchVectorAppItem);
         // Switch Bitmap App
-        switchBitmapAppItem = new AlcMenuItem("Set Bitmap Application...");
+        switchBitmapAppItem = new AlcMenuItem(getS("setBitmapApp"));
         switchBitmapAppItem.addActionListener(this);
         switchMenu.add(switchBitmapAppItem);
         this.add(switchMenu);
@@ -324,9 +334,12 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         // HELP MENU
         //////////////////////////////////////////////////////////////
-        helpMenu = new AlcMenu("Help");
+        helpMenu = new AlcMenu(getS("helpTitle"));
 
         // Javahelp 
+        // TODO - Implement Native help rather than Swing
+        // OSX: http://developer.apple.com/qa/qa2001/qa1022.html
+        //      http://informagen.com/JarBundler/HelpBook.html
         try {
 
             final URL url = AlcMain.class.getResource("help/help-hs.xml");
@@ -334,7 +347,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             final HelpSet hs = new HelpSet(null, url);
             final HelpBroker hb = hs.createHelpBroker();
 
-            AbstractAction javaHelpAction = new AbstractAction() {
+            AbstractAction helpAction = new AbstractAction() {
 
                 public void actionPerformed(ActionEvent e) {
                     //System.out.println("CALLED");
@@ -343,9 +356,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 }
             };
 
-            AlcMenuItem javaHelpItem = new AlcMenuItem(javaHelpAction);
-            javaHelpItem.setup("Alchemy Help");
-            helpMenu.add(javaHelpItem);
+            AlcMenuItem helpItem = new AlcMenuItem(helpAction);
+            helpItem.setup(getS("alchemyHelpTitle"));
+            helpMenu.add(helpItem);
             helpMenu.add(new JSeparator());
 
         } catch (Exception e) {
@@ -361,7 +374,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             }
         };
         AlcMenuItem wwwItem = new AlcMenuItem(wwwAction);
-        wwwItem.setup("Alchemy Website");
+        wwwItem.setup(getS("alchemyWebsiteTitle"));
         helpMenu.add(wwwItem);
         // Link to the Alchemy forum           
         AbstractAction forumAction = new AbstractAction() {
@@ -371,7 +384,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             }
         };
         AlcMenuItem forumItem = new AlcMenuItem(forumAction);
-        forumItem.setup("Alchemy Forum");
+        forumItem.setup(getS("alchemyForumTitle"));
         helpMenu.add(forumItem);
 
         // About menuitem not included on a MAC
@@ -385,7 +398,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
                 }
             };
             AlcMenuItem aboutItem = new AlcMenuItem(aboutAction);
-            aboutItem.setup("About Alchemy");
+            aboutItem.setup(getS("aboutAlchemyTitle"));
             helpMenu.add(aboutItem);
         }
 
@@ -411,6 +424,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     //g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
     }
     }*/
+    /** Get a string from the resource bundle */
+    private String getS(String stringName) {
+        return root.bundle.getString(stringName);
+    }
+
     /** Return the height of the menubar */
     public int getHeight() {
         return height;

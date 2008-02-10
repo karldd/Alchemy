@@ -99,8 +99,8 @@ public class MicShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(volumeSlider);
 
         // Shake/Fatten button
-        AlcSubToggleButton shakeButton = new AlcSubToggleButton("Shake/Fatten", AlcUtil.getUrlPath("shake.png", getClassLoader()));
-        shakeButton.setToolTipText("Toggle between shake and fatten mode");
+        AlcSubToggleButton shakeButton = new AlcSubToggleButton("Fatten/Shake", AlcUtil.getUrlPath("shake.png", getClassLoader()));
+        shakeButton.setToolTipText("Toggle between fatten and shake mode");
 
         shakeButton.addActionListener(
                 new ActionListener() {
