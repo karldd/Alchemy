@@ -22,7 +22,7 @@ package alchemy;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import javax.swing.JOptionPane;
+import java.io.IOException;
 import javax.swing.Timer;
 
 /**
@@ -38,8 +38,6 @@ public class AlcSession implements ActionListener, AlcConstants {
     private boolean recordState;
     /** Current file path */
     private File currentPdfFile;
-    /** Count of pages affed to the pdf */
-    private int pageCount = 0;
 
     public AlcSession(AlcMain root) {
         this.root = root;
@@ -48,53 +46,20 @@ public class AlcSession implements ActionListener, AlcConstants {
     public void setRecording(boolean record) {
         if (record) {
 
-            if (root.prefs.getRecordingWarning()) {
-                JOptionPane.showMessageDialog(
-                        null,
-                        "The session pdf will be saved to:\n\n" +
-                        root.prefs.getSessionPath() +
-                        "\n\nWhen finished be sure to toggle recording off\n" +
-                        "in order to view the PDF file",
-                        "Recording Started",
-                        JOptionPane.INFORMATION_MESSAGE);
-                root.prefs.setRecordingWarning(false);
-            }
-
-            String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-mm-ss") + ".pdf";
-            currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
-
-            //currentPdfFile = root.prefs.getSessionPath() + FILE_SEPARATOR + "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-") + AlcUtil.zeroPad(saveCount, 4) + ".pdf";
-
             int interval = root.prefs.getRecordingInterval();
             //Set up timer to save pages into the pdf
             if (timer == null) {
-                if (interval > 0) {
-                    timer = new Timer(interval, this);
-                    timer.start();
-                }
+                timer = new Timer(interval, this);
+                timer.start();
             } else {
                 if (timer.isRunning()) {
                     timer.stop();
                 }
-                if (interval > 0) {
-                    timer.setDelay(root.prefs.getRecordingInterval());
-                    timer.start();
-                }
+                timer.setDelay(root.prefs.getRecordingInterval());
+                timer.start();
+
             }
-            //timer.setInitialDelay(root.prefs.getRecordingInterval());
-            //timer.setRepeats(boolean flag);
-
-            // Keep track of the amount of shapes
-            //if (root.canvas != null) {
             root.canvas.resetCanvasChange();
-            //}
-
-            // Start the timer
-
-
-            System.out.println("Set Recording called: " + currentPdfFile.toString());
-            root.canvas.startPdf(currentPdfFile);
-            pageCount = 0;
 
         } else {
 
@@ -104,9 +69,6 @@ public class AlcSession implements ActionListener, AlcConstants {
                     timer.stop();
                 }
             }
-
-            System.out.println("recording off..." + currentPdfFile);
-            root.canvas.endPdf();
 
         }
         //Remember the record start
@@ -149,54 +111,68 @@ public class AlcSession implements ActionListener, AlcConstants {
 
     /** Return the current file being created by the pdf */
     public File getCurrentPdfPath() {
-        System.out.println("get Current pdf path called : " + currentPdfFile.toString());
         return currentPdfFile;
     }
 
-    /** Return the current amount of pages added to the pdf */
-    public int getPageCount() {
-        return pageCount;
+    /** Manually save a page then restart the timer */
+    public void manualSavePage() {
+        savePage();
+        restartTimer();
+    }
+
+    /** Manually save and clear a page then restart the timer */
+    public void manualSaveClearPage() {
+        saveClearPage();
+        restartTimer();
     }
 
     /** Save a single page to the current pdf being created */
     public void savePage() {
-        if (recordState) {
-            root.canvas.savePdfPage();
-            pageCount++;
-            if (timer != null) {
-                if (timer.isRunning()) {
-                    System.out.println("Timer Restarted");
-                    timer.restart();
-                }
-            }
+        // If this is the first time
+        if (currentPdfFile == null) {
+            String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-HH-mm-ss") + ".pdf";
+            currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
+            System.out.println("Current PDF file: " + currentPdfFile.getPath());
+            root.canvas.saveSinglePdf(currentPdfFile);
+        // Else save a temp file then join the two together
         } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Please turn on recording using the : \n " +
-                    "Session > Toggle Recording menu", "Recording not activated",
-                    JOptionPane.INFORMATION_MESSAGE);
+            try {
+                File temp = File.createTempFile("AlchemyPage", ".pdf");
+                // Delete temp file when program exits.
+                //temp.deleteOnExit();
+                // Make the temp pdf
+                root.canvas.saveSinglePdf(temp);
+                boolean jointUp = root.canvas.addPageToPdf(currentPdfFile, temp);
+                if (jointUp) {
+                    //System.out.println("Pdf files joint");
+                    temp.delete();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     /** Save a single page to the current pdf being created, then clear the canvas */
     public void saveClearPage() {
-        if (recordState) {
-            root.canvas.savePdfPage();
-            root.canvas.clear();
-            pageCount++;
-            if (timer != null) {
-                if (timer.isRunning()) {
-                    System.out.println("Timer Restarted");
-                    timer.restart();
-                }
+        savePage();
+        //root.canvas.savePdfPage();
+        root.canvas.clear();
+    }
+
+    private void restartTimer() {
+        if (timer != null) {
+            if (timer.isRunning()) {
+                System.out.println("Timer Restarted");
+                timer.restart();
             }
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Please turn on recording using the : \n " +
-                    "Session > Toggle Recording menu", "Recording not activated",
-                    JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    public void restartSession() {
+        currentPdfFile = null;
     }
 
 
@@ -205,11 +181,11 @@ public class AlcSession implements ActionListener, AlcConstants {
         // If the canvas has changed
         if (root.canvas.canvasChange()) {
             System.out.println("SAVE FRAME CALL FROM TIMER");
-            root.canvas.savePdfPage();
+            savePage();
+            //root.canvas.savePdfPage();
             if (root.prefs.getAutoClear()) {
                 root.canvas.clear();
             }
-            pageCount++;
         }
 
     }

@@ -35,6 +35,9 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.Rectangle;
 
+import com.lowagie.text.pdf.PdfCopy;
+import com.lowagie.text.pdf.PdfImportedPage;
+import com.lowagie.text.pdf.PdfReader;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.io.File;
@@ -93,10 +96,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // PDF
     //////////////////////////////////////////////////////////////
-    Document document;
-    PdfWriter writer;
-    PdfContentByte content;
-    int pdfWidth, pdfHeight;
+    private Document document;
+    private PdfWriter writer;
+    private PdfContentByte content;
+    private int pdfWidth,  pdfHeight;
 
     /** Creates a new instance of AlcCanvas
      * @param root Reference to the root
@@ -532,42 +535,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // PDF STUFF
     //////////////////////////////////////////////////////////////
-    // TODO - Append each page to the pdf as we go - rather than having to close the PDF at the end
-    /** Start PDF recording */
-    public void startPdf(File file) {
-        pdfWidth = root.getWindowSize().width;
-        pdfHeight = root.getWindowSize().height;
-        document = new Document(new Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
-        document.addTitle("Alchemy");
-        document.addAuthor(USER_NAME);
-        //document.addSubject("This example explains how to add metadata.");
-        //document.addKeywords("iText, Hello World, step 3, metadata");
-        document.addCreator("al.chemy.org");
 
-        //String path = "test.pdf";
-        System.out.println("Start PDF Called: " + file.toString());
-
-        try {
-
-            writer = PdfWriter.getInstance(document, new FileOutputStream(file));
-            document.open();
-            content = writer.getDirectContent();
-            if (shapes.size() > 0) {
-                // Drawing on the first frame 
-                Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
-                this.paint(g2pdf);
-                g2pdf.dispose();
-            }
-
-
-        } catch (DocumentException ex) {
-            System.err.println(ex);
-        } catch (IOException ex) {
-            System.err.println(ex);
-        }
-    }
-
-    /** Save the canvas to a PDF file
+    /** Save the canvas to a single paged PDF file
      * 
      * @param file  The file object to save the pdf to
      * @return      True if save worked, otherwise false
@@ -581,8 +550,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         //document.addSubject("This example explains how to add metadata.");
         //document.addKeywords("iText, Hello World, step 3, metadata");
         singleDocument.addCreator("al.chemy.org");
-
-        //String path = "test.pdf";
+        
         System.out.println("Save Single Pdf Called: " + file.toString());
 
         try {
@@ -607,47 +575,65 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-    /** Save a PDF page */
-    public void savePdfPage() {
-        System.out.println("Save PDF Page Called");
+    /** Adds a page to an existing pdf file
+     * 
+     * @param mainPdf   The main pdf with multiple pages.
+     *                  Also used as the destination file.
+     * @param tempPdf   The 'new' pdf with one page to be added to the main pdf
+     * @return
+     */
+    public boolean addPageToPdf(File mainPdf, File tempPdf) {
         try {
-            document.newPage();
-            Graphics2D g2pdf = content.createGraphics(pdfWidth, pdfHeight);
-            this.paint(g2pdf);
-            g2pdf.dispose();
-        } catch (Exception event) {
-            System.err.println(event);
-        }
+            // Destination file created in the temp dir then we will move it
+            File dest = new File(TEMP_DIR, "Alchemy.pdf");
 
-    }
+            PdfReader reader = new PdfReader(mainPdf.getPath());
+            PdfReader newPdf = new PdfReader(tempPdf.getPath());
+            int n = reader.getNumberOfPages();
 
-    /** End PDF Record */
-    public void endPdf() {
-        System.out.println("End Pdf Called");
-        if (document != null) {
+            //reader.consolidateNamedDestinations();
 
-            // Check if the document has pages
-            if (root.session.getPageCount() > 0) {
-                document.close();
-                document = null;
+            Document mainDocument = new Document(reader.getPageSizeWithRotation(1));
+            PdfCopy copy = new PdfCopy(mainDocument, new FileOutputStream(dest));
+            mainDocument.open();
+
+            for (int i = 0; i < n;) {
+                ++i;
+                PdfImportedPage page = copy.getImportedPage(reader, i);
+                copy.addPage(page);
+            }
+            // Add the last (new) page
+            PdfImportedPage lastPage = copy.getImportedPage(newPdf, 1);
+            copy.addPage(lastPage);
+
+            mainDocument.close();
+
+            if (dest.exists()) {
+
+                // Save the location of the main pdf
+                String mainPdfPath = mainPdf.getPath();
+                // Delete the old file
+                if (mainPdf.exists()) {
+                    mainPdf.delete();
+                }
+                // The final joined up pdf file
+                File joinPdf = new File(mainPdfPath);
+                // Rename the file
+                boolean success = dest.renameTo(joinPdf);
+                if (!success) {
+                    System.err.println("Error moving Pdf");
+                    return false;
+                }
 
             } else {
-
-                // If the document has shapes but no pages, make a page and close it
-                if (shapes.size() > 0) {
-                    savePdfPage();
-                    document.close();
-                    document = null;
-
-                // If there are no pages and no shapes then delete the empty file created
-                } else {
-                    File f = root.session.getCurrentPdfPath();
-                    if (f.exists()) {
-                        f.delete();
-                    }
-                    document = null;
-                }
+                System.err.println("File does not exist?!: " + dest.getAbsolutePath());
+                return false;
             }
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -736,7 +722,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                     }
                 }
             } catch (Exception e) {
-                System.err.println("passMouseEvent: " + e + " " + eventType);
+                e.printStackTrace();
+                System.err.println("passMouseEvent: " + eventType);
             }
         }
     }

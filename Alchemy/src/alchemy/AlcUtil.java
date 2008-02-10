@@ -32,29 +32,26 @@ import javax.swing.ImageIcon;
  * Static utility methods used in Alchemy
  * Used to manipulate strings, load images, and general stuff
  */
-public class AlcUtil implements AlcConstants{
+public class AlcUtil implements AlcConstants {
 
     //////////////////////////////////////////////////////////////
     // STRING FUNCTIONS
     //////////////////////////////////////////////////////////////
     /** Checks a path for a file extension and adds one if not present */
     public static File addFileExtension(File file, String ext) {
-        String fileName = file.getName();
+        //String fileName = file.getName();
         String filePath = file.getPath();
 
-        // Check if there is a file extension already
-        int dotIndex = fileName.lastIndexOf(".");
-
-        // If there is a dot in there, check the extension
-        if (dotIndex > 0 && dotIndex < fileName.length() - 1) {
-            String possibleExtension = fileName.substring(dotIndex + 1);
-            // If the extensions match return as is
-            if (possibleExtension.equals(ext)) {
-                return file;
+        if (filePath.endsWith("." + ext)) {
+            return file;
+        } else {
+            // If it does not end in a dot then add one
+            if (!filePath.endsWith(".")) {
+                filePath += ".";
             }
+            System.out.println(filePath + ext);
+            return new File(filePath + ext);
         }
-        // Otherwise append the extension
-        return new File(filePath, fileName + ext);
     }
 
     /** Returns just the class name -- no package info. */
@@ -90,13 +87,9 @@ public class AlcUtil implements AlcConstants{
 
     /** Returns a string date stamp according to the format given */
     public static String dateStamp(String format) {
-        Date today;
-        SimpleDateFormat formatter;
-
-        formatter = new SimpleDateFormat(format);
-        today = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        Date today = new Date();
         return formatter.format(today);
-    //System.out.println("Result: " + result);
     }
 
     /** Zero Pad an int */
@@ -215,7 +208,7 @@ public class AlcUtil implements AlcConstants{
         Point center = new Point(x, y);
         return center;
     }
-    
+
     /**
      * Launch a url in the default browser
      * Adapted from: http://www.centerkey.com/java/browser/
@@ -230,11 +223,11 @@ public class AlcUtil implements AlcConstants{
                 Method openURL = fileMgr.getDeclaredMethod("openURL",
                         new Class[]{String.class});
                 openURL.invoke(null, new Object[]{url});
-                
+
             } else if (AlcMain.PLATFORM == WINDOWS) {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-                
-            } else if (AlcMain.PLATFORM == LINUX){ 
+
+            } else if (AlcMain.PLATFORM == LINUX) {
                 String[] browsers = {
                     "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape"
                 };
