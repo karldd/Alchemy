@@ -532,6 +532,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // PDF STUFF
     //////////////////////////////////////////////////////////////
+    // TODO - Append each page to the pdf as we go - rather than having to close the PDF at the end
     /** Start PDF recording */
     public void startPdf(File file) {
         pdfWidth = root.getWindowSize().width;

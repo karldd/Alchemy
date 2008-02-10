@@ -32,6 +32,7 @@ import javax.swing.*;
 public class AlcSlider extends JPanel {
 
     protected JSlider slider;
+    private JLabel label;
 
     public AlcSlider(String name, int minValue, int maxValue, int startValue) {
 
@@ -51,19 +52,24 @@ public class AlcSlider extends JPanel {
         //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
         slider.setOpaque(false);
         // This has to be set to avoid the ticks bg being default coloured
-        slider.setBackground(new Color(225,225,225));
+        slider.setBackground(new Color(225, 225, 225));
         //slider.setForeground(Color.black);
         slider.setPreferredSize(new Dimension(85, 28));
         slider.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         this.add(slider);
 
-        JLabel label = new JLabel(name);
+        label = new JLabel(name);
         label.setFont(AlcToolBar.toolBarFont);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(label);
 
 
+    }
+
+    public void setToolTipText(String toolTip) {
+        slider.setToolTipText(toolTip);
+        label.setToolTipText(toolTip);
     }
 }

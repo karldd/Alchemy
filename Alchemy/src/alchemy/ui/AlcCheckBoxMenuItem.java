@@ -62,7 +62,11 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
     }
 
     public void setup(String title, int accelerator) {
+        
+        // TODO - Customise the Check box so it is obvious when it is not selected
+        
         this.setText(title);
+        
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setBackground(AlcToolBar.toolBarHighlightColour);

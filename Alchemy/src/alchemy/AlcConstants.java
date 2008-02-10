@@ -20,6 +20,7 @@
 package alchemy;
 
 import java.awt.Toolkit;
+import java.util.Locale;
 
 /**
  * Constant values used in Alchemy <br />
@@ -59,6 +60,8 @@ public interface AlcConstants {
     static public String TEMP_DIR = System.getProperty("java.io.tmpdir");
     /** File Separator */
     static public String FILE_SEPARATOR = System.getProperty("file.separator");
+    /** Default Locale */
+    static public Locale LOCALE = Locale.getDefault();
     //
     //////////////////////////////////////////////////////////////
     // MATH CONSTANTS

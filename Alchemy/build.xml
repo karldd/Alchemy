@@ -112,6 +112,12 @@
                 <contains text="MedianShapes" casesensitive="no"/>
             </fileset>
         </copy>
+        <!-- Speed Shapes -->
+        <copy todir="${basedir}/modules/speedShapes/alchemy/create">
+            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+                <contains text="SpeedShapes" casesensitive="no"/>
+            </fileset>
+        </copy>
         
         <!-- AFFECTS -->
         <!-- Mirror -->

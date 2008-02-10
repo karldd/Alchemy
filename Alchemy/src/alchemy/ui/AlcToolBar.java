@@ -110,7 +110,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
-        String styleTitle = "Style";
+        String styleTitle = getS("styleTitle");
         final AlcToggleButton styleButton = new AlcToggleButton();
         styleAction = new AbstractAction() {
 
@@ -124,7 +124,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         };
 
         styleButton.setAction(styleAction);
-        styleButton.setup("Style", "Make marks as a lines or solid shapes (s)", AlcUtil.getUrlPath("data/style.png"));
+        styleButton.setup(styleTitle, getS("styleDescription"), AlcUtil.getUrlPath("data/style.png"));
         // Shortcut - s
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
         root.canvas.getActionMap().put(styleTitle, styleAction);
@@ -134,7 +134,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
         //////////////////////////////////////////////////////////////
-        String clearTitle = "Clear";
+        String clearTitle = getS("clearTitle");
         AbstractAction clearAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -142,7 +142,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
             }
         };
         AlcButton clearButton = new AlcButton(clearAction);
-        clearButton.setup(clearTitle, "Clear the screen (" + AlcMain.MODIFIER_KEY + "+BACKSPACE/DELETE)", AlcUtil.getUrlPath("data/clear.png"));
+        clearButton.setup(clearTitle, getS("clearDescription") + " (" + AlcMain.MODIFIER_KEY + getS("clearKey") + ")", AlcUtil.getUrlPath("data/clear.png"));
         // Shortcuts - Modifier Delete/Backspace
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MENU_SHORTCUT), clearTitle);
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MENU_SHORTCUT), clearTitle);
@@ -154,7 +154,8 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // currentValue, min, max, stepsize
         SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int) root.canvas.getLineWidth(), 1, 50, 1);
-        AlcSpinner lineWidthSpinner = new AlcSpinner("Line Weight", lineWidthNumberModel);
+        AlcSpinner lineWidthSpinner = new AlcSpinner(getS("lineWeightTitle"), lineWidthNumberModel);
+        lineWidthSpinner.setToolTipText(getS("lineWeightDescription"));
         lineWidthSpinner.spinner.addChangeListener(
                 new ChangeListener() {
 
@@ -174,7 +175,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // BLACK WHITE BUTTON
         //////////////////////////////////////////////////////////////
-        String bwTitle = "Black/White";
+        String bwTitle = getS("bwTitle");
         final AlcToggleButton bwButton = new AlcToggleButton();
         bwAction = new AbstractAction() {
 
@@ -187,7 +188,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
             }
         };
         bwButton.setAction(bwAction);
-        bwButton.setup("Black/White", "Make marks in black or white (x)", AlcUtil.getUrlPath("data/blackwhite.png"));
+        bwButton.setup(bwTitle, getS("bwDescription"), AlcUtil.getUrlPath("data/blackwhite.png"));
         // Shortcut - x
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), bwTitle);
         root.canvas.getActionMap().put(bwTitle, bwAction);
@@ -197,7 +198,8 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        AlcSlider alphaSlider = new AlcSlider("Transparency", 0, 255, 255);
+        AlcSlider alphaSlider = new AlcSlider(getS("transparencyTitle"), 0, 255, 255);
+        alphaSlider.setToolTipText(getS("transparencyDescription"));
         alphaSlider.slider.addChangeListener(
                 new ChangeListener() {
 
@@ -223,7 +225,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // CREATE
         //////////////////////////////////////////////////////////////
-        createButton = new AlcPopupButton("Create", "Create Shapes", AlcUtil.getUrlPath("data/create.png"));
+        createButton = new AlcPopupButton(getS("createTitle"), getS("createDescription"), AlcUtil.getUrlPath("data/create.png"));
         // Button group for the radio buttons
         ButtonGroup group = new ButtonGroup();
         // Populate the Popup Menu
@@ -264,7 +266,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         //////////////////////////////////////////////////////////////
         // AFFECT
         //////////////////////////////////////////////////////////////
-        affectButton = new AlcPopupButton("Affect", "Affect Shapes", AlcUtil.getUrlPath("data/affect.png"));
+        affectButton = new AlcPopupButton(getS("affectTitle"), getS("affectDescription"), AlcUtil.getUrlPath("data/affect.png"));
         for (int i = 0; i < root.affects.length; i++) {
             // The current module
             AlcModule currentModule = root.affects[i];
@@ -475,6 +477,11 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     }
 
     // GETTERS
+    /** Get a string from the resource bundle */
+    private String getS(String stringName) {
+        return root.bundle.getString(stringName);
+    }
+
     /** Return the visibility of the UI Toolbar */
     public boolean getToolBarVisible() {
         return toolBarVisible;

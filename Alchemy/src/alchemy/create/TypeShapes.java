@@ -58,6 +58,9 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     protected void setup() {
+        
+        // TODO - Create a seperate Typeshapes mode using key presses and the pen
+        // to generate shapes at specific locations
 
         loadFonts();
 
