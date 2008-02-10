@@ -46,7 +46,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private File platformAppDir;
     //
     /** Recording interval array in milliseconds */
-    private int[] recordingInterval = {0, 5000, 15000, 30000, 60000, 120000, 300000, 600000};
+    private int[] recordingInterval = {5000, 15000, 30000, 60000, 120000, 300000, 600000};
     /** Recording interval array in readable form */
     private String[] recordingIntervalString = new String[recordingInterval.length];
     //
@@ -74,7 +74,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
 
         // Initialise the array of recording intervals from the bundle
         for (int i = 0; i < recordingIntervalString.length; i++) {
-            recordingIntervalString[i] = getS("interval"+recordingInterval[i]);
+            recordingIntervalString[i] = getS("interval" + recordingInterval[i]);
         }
 
         //////////////////////////////////////////////////////////////
@@ -182,6 +182,38 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         //////////////////////////////////////////////////////////////
         sessionMenu = new AlcMenu(getS("sessionTitle"));
 
+        // Save PDF page
+        String savePageTitle = getS("savePageTitle");
+        AbstractAction savePageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                root.session.manualSavePage();
+            }
+        };
+        AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
+        savePageItem.setup(savePageTitle, KeyEvent.VK_S);
+        // Shortcut - Modifier s
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_SHORTCUT), savePageTitle);
+        root.canvas.getActionMap().put(savePageTitle, savePageAction);
+        sessionMenu.add(savePageItem);
+
+        // Save and clear PDF page
+        String saveClearTitle = getS("saveClearTitle");
+        AbstractAction saveClearPageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                root.session.manualSaveClearPage();
+            }
+        };
+        AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
+        saveClearPageItem.setup(saveClearTitle, KeyEvent.VK_D);
+        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, MENU_SHORTCUT), saveClearTitle);
+        root.canvas.getActionMap().put(saveClearTitle, saveClearPageAction);
+        sessionMenu.add(saveClearPageItem);
+
+
+        sessionMenu.add(new JSeparator());
+
         // Toggle Recording
         String recordingTitle = getS("recordingTitle");
         final AlcCheckBoxMenuItem recordingItem = new AlcCheckBoxMenuItem();
@@ -211,46 +243,6 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
         sessionMenu.add(recordingItem);
 
-        sessionMenu.add(new JSeparator());
-
-        // Save PDF page
-        String savePageTitle = getS("savePageTitle");
-        AbstractAction savePageAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                root.session.savePage();
-            }
-        };
-        AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
-        savePageItem.setup(savePageTitle, KeyEvent.VK_S);
-        // Shortcut - Modifier s
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_SHORTCUT), savePageTitle);
-        root.canvas.getActionMap().put(savePageTitle, savePageAction);
-        sessionMenu.add(savePageItem);
-
-        // Save and clear PDF page
-        String saveClearTitle = getS("saveClearTitle");
-        AbstractAction saveClearPageAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                root.session.saveClearPage();
-            }
-        };
-        AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
-        saveClearPageItem.setup(saveClearTitle, KeyEvent.VK_D);
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, MENU_SHORTCUT), saveClearTitle);
-        root.canvas.getActionMap().put(saveClearTitle, saveClearPageAction);
-        sessionMenu.add(saveClearPageItem);
-
-
-        sessionMenu.add(new JSeparator());
-
-        // Default Recording
-        defaultRecordingItem = new AlcCheckBoxMenuItem(getS("recordStartUpTitle"));
-        defaultRecordingItem.setState(root.prefs.getRecordingState());
-        defaultRecordingItem.addActionListener(this);
-        sessionMenu.add(defaultRecordingItem);
-
         // Interval submenu
         intervalMenu = new AlcMenu(getS("recordIntervalTitle"));
         // Set the opacity and colour of this to overide the defaults used for the top menus
@@ -271,12 +263,34 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         }
         intervalMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
         sessionMenu.add(intervalMenu);
+
+        sessionMenu.add(new JSeparator());
+
         // Auto Clear
         autoClearItem = new AlcCheckBoxMenuItem(getS("autoClearTitle"));
         autoClearItem.setState(root.prefs.getAutoClear());
         autoClearItem.addActionListener(this);
         sessionMenu.add(autoClearItem);
+        // Default Recording
+        defaultRecordingItem = new AlcCheckBoxMenuItem(getS("recordStartUpTitle"));
+        defaultRecordingItem.setState(root.prefs.getRecordingState());
+        defaultRecordingItem.addActionListener(this);
+        sessionMenu.add(defaultRecordingItem);
+
         sessionMenu.add(new JSeparator());
+
+        // Restart Session
+        String restartTitle = getS("restartTitle");
+        AbstractAction restartAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                root.session.restartSession();
+            }
+        };
+        AlcMenuItem restartItem = new AlcMenuItem(restartAction);
+        restartItem.setup(restartTitle);
+        sessionMenu.add(restartItem);
+
         // Default Directory
         directoryItem = new AlcMenuItem(getS("setSessionDirTitle"));
         directoryItem.addActionListener(this);
@@ -489,14 +503,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
             //String directory = fileDialog.getDirectory();
             //File file = new File(directory, fileString);
 
-
             File file = fc.getSelectedFile();
             File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
 
             if (root.canvas.saveSinglePdf(fileWithExtension)) {
                 System.out.println(fileWithExtension.toString());
             } else {
-                System.out.println("Didn't save???");
+                System.out.println("Didn't save??? : " + fileWithExtension.toString());
             }
 
         }
