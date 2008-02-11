@@ -29,19 +29,29 @@ public class AlcPopupButton extends AlcButton implements AlcConstants {
 
     private final static int uiPopupMenuY = 47;
     private AlcPopupMenu popup;
+    private boolean inside;
 
     /** Creates a new instance of AlcPopupButton */
     public AlcPopupButton(String text, String toolTip, URL iconUrl) {
         super(text, toolTip, iconUrl);
         popup = new AlcPopupMenu();
 
-
-
         // Add a mouse listener to detect when the button is pressed and display the popup menu
         this.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
+            }
+            });
+
+        popup.addMouseListener(new MouseAdapter() {
+
+            public void mouseEntered(MouseEvent e) {
+                inside = popup.contains(e.getPoint());
+            }
+
+            public void mouseExited(MouseEvent e) {
+                inside = popup.contains(e.getPoint());
             }
             });
 
@@ -52,8 +62,19 @@ public class AlcPopupButton extends AlcButton implements AlcConstants {
         popup.add(item);
     }
 
+    /** Get visibility of the popup menu */
+    public boolean isPopupVisible() {
+        return popup.isVisible();
+    }
+
     /** Hide the popup menu */
     public void hidePopup() {
         popup.setVisible(false);
+    }
+    
+    /** Test to see if the cursor is inside the popup */
+    public boolean isInside(){
+        //System.out.println("INSIDE: " + inside);
+        return inside;
     }
 }

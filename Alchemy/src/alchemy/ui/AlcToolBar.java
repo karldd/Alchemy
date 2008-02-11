@@ -36,27 +36,26 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
     /** Reference to the root */
     private final AlcMain root;
-    /** Visibility of the ToolBar */
-    private boolean toolBarVisible = true;
-    /** Toolbar attached or not */
-    private boolean toolBarAttached = true;
-    /** Height of the ToolBar */
-    private static int toolBarHeight = 60;
-    /** Total height of all tool bars */
-    private int totalHeight = 60;
     /** Keep track of the windowSize */
     public Dimension windowSize;
-    /** ToolBar Background Colour */
+    //////////////////////////////////////////////////////////////
+    // INTERFACE COLOURS
+    //////////////////////////////////////////////////////////////
     public static final Color toolBarBgColour = new Color(225, 225, 225);
     public static final Color toolBarBgStartColour = new Color(235, 235, 235, 240);
     public static final Color toolBarBgEndColour = new Color(215, 215, 215, 240);
     public static final Color toolBarLineColour = new Color(140, 140, 140);
     public static final Color toolBarHighlightColour = new Color(231, 231, 231);
     public static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
-    /** ToolBar Font */
+    //////////////////////////////////////////////////////////////
+    // FONTS
+    //////////////////////////////////////////////////////////////
     public static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
     public static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
     public static final Font subToolBarBoldFont = new Font("sansserif", Font.BOLD, 11);
+    //////////////////////////////////////////////////////////////
+    // TOOLBAR ELEMENTS
+    //////////////////////////////////////////////////////////////
     /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
     /** The main tool bar inside the toolbar */
@@ -71,6 +70,21 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     private int currentSubToolBarSections = 0;
     /** Actions used in the toolbar */
     public Action styleAction,  bwAction;
+    //////////////////////////////////////////////////////////////
+    // TOOLBAR CONTROL
+    //////////////////////////////////////////////////////////////
+    /** Visibility of the ToolBar */
+    private boolean toolBarVisible = true;
+    /** Toolbar attached or not */
+    private boolean toolBarAttached = true;
+    /** Height of the ToolBar */
+    private static int toolBarHeight = 60;
+    /** Total height of all tool bars */
+    private int totalHeight = 60;
+    /** Timer to delay the hiding of the toolbar */
+    public javax.swing.Timer toolBarTimer;
+    /** Cursor inside toolbar or not */
+    private boolean insideToolBar;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -84,7 +98,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         this.setName("Toolbar");
         //this.setVisible(false);
         this.addMouseListener(this);
-        this.setFloatable(false);
+        this.setFloatable(true);
         // Make this a Box Layout so all submenus are stacked below
         //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setLayout(new BorderLayout());
@@ -249,6 +263,12 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                                 root.setCurrentCreate(source.getIndex());
                             }
 
+                            Point loc = source.getLocation();
+                            //Rectangle butLoc = createButton.getBounds();
+                            int heightFromWindow = loc.y + 50;
+                            //System.out.println(loc + " " + heightFromWindow);
+                            toggleToolBar(heightFromWindow, true);
+
                         }
                     });
 
@@ -293,6 +313,9 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                                 // Index is offset to allow for the create module to always be first
                                 removeSubToolBarSection(source.getIndex() + 1);
                             }
+                            Point loc = source.getLocation();
+                            int heightFromWindow = loc.y + 50;
+                            toggleToolBar(heightFromWindow, true);
                         }
                     });
 
@@ -341,36 +364,97 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         resizeToolBar();
     }
 
-    /** Set the visibility of the UI Toolbar */
-    public void setToolBarVisible(boolean b) {
-        if (toolBarAttached) {
-            //this.setVisible(b);
+    /** Function to control the display of the Ui toolbar
+     * 
+     * @param y     The height of the mouse to check against
+     */
+    public void toggleToolBar(int y) {
+        toggleToolBar(y, false);
+    }
 
-            // This is very hacky but...
-            // To make sure the menubars shortcuts still work
-            // we move the toolbar off the top of the scren rather
-            // than making it invisible (which disables the shortcuts)
-            // TODO - implement a better system to handle keyboard shortcuts
-            // SEE: http://java.sun.com/docs/books/tutorial/uiswing/examples/misc/ActionDemoProject/src/misc/ActionDemo.java
+    /** Function to control the display of the Ui toolbar 
+     * 
+     * @param y             The height of the mouse to check against
+     * @param startTimer    To force start the timer
+     */
+    public void toggleToolBar(int y, boolean startTimer) {
+        //int y = event.getY();
+        if (y < 10) {
+            setToolBarVisible(true);
+            insideToolBar = true;
+        } else if (y > getTotalHeight() + 5) {
+            if (isPopupMenusVisible() || toolBarTimer != null || startTimer) {
+                // Set the timer
+                setTimer();
 
-            if (b) {
-                //this.setLocation(0, 0);
-                this.setVisible(true);
             } else {
-                //this.setLocation(0, -1000);
-                this.setVisible(false);
-                // Turn off the popup(s) when we leave the toolbar area
-                if (createButton != null) {
-                    createButton.hidePopup();
-                }
-                if (affectButton != null) {
-                    affectButton.hidePopup();
-                }
+                setToolBarVisible(false);
             }
-            toolBarVisible = b;
+            insideToolBar = false;
+        // Inside the middle of the toolbar
+        } else {
+            //System.out.println("In middle");
+            insideToolBar = true;
         }
     }
 
+    /** Set the visibility of the UI Toolbar */
+    public void setToolBarVisible(boolean visible) {
+        if (toolBarAttached) {
+            if (visible != toolBarVisible) {
+                //System.out.println("Visible: " + visible);
+                this.setVisible(visible);
+                toolBarVisible = visible;
+                root.canvas.setMouseEvents(!visible);
+                if (!visible) {
+                    createButton.hidePopup();
+                    affectButton.hidePopup();
+                }
+            }
+        }
+    }
+
+    /** Sets and manages a timer used to delay hiding of the toolbar */
+    private void setTimer() {
+        if (toolBarTimer == null) {
+            //System.out.println("Timer created");
+            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    //System.out.println("Timer called");
+
+                    if (!insideToolBar) {
+                        if (isPopupMenusVisible()) {
+                            if (!createButton.isInside() && !affectButton.isInside()) {
+                                //System.out.println("Timer setting visibility");
+                                setToolBarVisible(false);
+                                insideToolBar = false;
+                            }
+                        } else {
+                            //System.out.println("Timer setting visibility");
+                            setToolBarVisible(false);
+                            insideToolBar = false;
+                        }
+                    //System.out.println(isPopupMenusVisible());
+                    }
+                    // Else when inside the toolbar just hide the popup menu
+//                            } else {
+//                                if (!createButton.isInside()) {
+//                                    createButton.hidePopup();
+//                                }
+//                                if (!affectButton.isInside()) {
+//                                    affectButton.hidePopup();
+//                                }
+//                            }
+                    toolBarTimer.stop();
+                    toolBarTimer = null;
+                }
+            });
+            toolBarTimer.start();
+        }
+    }
+    
+    /** Check if the toolbar is part of the main window or seperate */
     private void checkParentWindow() {
         //System.out.println("Check Parent");
         Container container = this.getTopLevelAncestor();
@@ -464,8 +548,6 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         }
         // TODO - why doesn't the subtoolbar section display immediately when reloaded?
 
-        //System.out.println("Count: " + subToolBar.getComponentCount());
-
         if (currentSubToolBarSections > 0) {
             //subToolBar.revalidate();
             subToolBar.setVisible(true);
@@ -485,6 +567,22 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     /** Return the visibility of the UI Toolbar */
     public boolean getToolBarVisible() {
         return toolBarVisible;
+    }
+
+    /** Check if any of the popup menus are visible */
+    public boolean isPopupMenusVisible() {
+        boolean visible = false;
+        //if (createButton != null) {
+        if (createButton.isPopupVisible()) {
+            visible = true;
+        }
+        //}
+        //if (affectButton != null) {
+        if (affectButton.isPopupVisible()) {
+            visible = true;
+        }
+        //}
+        return visible;
     }
 
     /** Return the height of the UI Toolbar */

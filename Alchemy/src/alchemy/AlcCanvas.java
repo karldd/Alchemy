@@ -93,13 +93,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public ArrayList guideShapes;
     /** Graphics */
     private Graphics2D g2;
-    //////////////////////////////////////////////////////////////
-    // PDF
-    //////////////////////////////////////////////////////////////
-    private Document document;
-    private PdfWriter writer;
-    private PdfContentByte content;
-    private int pdfWidth,  pdfHeight;
 
     /** Creates a new instance of AlcCanvas
      * @param root Reference to the root
@@ -438,28 +431,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         return smoothing;
     }
 
-    /** Function to control the display of the Ui toolbar */
-    private void toggleToolBar(MouseEvent event) {
-        int y = event.getY();
-        if (y < 10) {
-            // This is a very hacky way to avoid turning the menubar visibility off
-            // Allowing keyboard shortcuts set in the menu to keep working
-            if (!root.toolBar.getToolBarVisible()) {
-                //if (root.toolBar.getY() < 0) {
-                root.toolBar.setToolBarVisible(true);
-                // Turn drawing off while in the toolbar
-                mouseEvents = false;
-            }
-        } else if (y > root.toolBar.getTotalHeight() + 5) {
-            if (root.toolBar.getToolBarVisible()) {
-                //if (root.toolBar.getY() == 0) {
-                root.toolBar.setToolBarVisible(false);
-                // Turn drawing on once out of the UI
-                mouseEvents = true;
-            }
-        }
-    }
-
     /** Return if there has been activity on the canvas since the last time the timer checked */
     boolean canvasChange() {
         return canvasChanged;
@@ -535,7 +506,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // PDF STUFF
     //////////////////////////////////////////////////////////////
-
     /** Save the canvas to a single paged PDF file
      * 
      * @param file  The file object to save the pdf to
@@ -550,7 +520,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         //document.addSubject("This example explains how to add metadata.");
         //document.addKeywords("iText, Hello World, step 3, metadata");
         singleDocument.addCreator("al.chemy.org");
-        
+
         System.out.println("Save Single Pdf Called: " + file.toString());
 
         try {
@@ -674,12 +644,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
         // Toogle visibility of the Toolbar
-        toggleToolBar(event);
+        root.toolBar.toggleToolBar(event.getY());
         passMouseEvent(event, "mouseMoved");
     }
 
     public void mousePressed(MouseEvent event) {
         mouseDown = true;
+        // Turn off the toolbar on canvas click
+        if (root.toolBar.toolBarTimer != null) {
+            root.toolBar.setToolBarVisible(false);
+        }
         passMouseEvent(event, "mousePressed");
     }
 
