@@ -115,6 +115,7 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
 
     public void mouseReleased(MouseEvent e) {
         oldP = null;
+        canvas.commitShapes();
     }
 
     private AlcShape makeShape(Point p) {

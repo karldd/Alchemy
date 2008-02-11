@@ -23,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.Timer;
 
 /**
  * Class to control Alchemy 'sessions'
@@ -33,7 +32,7 @@ public class AlcSession implements ActionListener, AlcConstants {
 
     private AlcMain root;
     /** Timer */
-    private Timer timer;
+    private javax.swing.Timer timer;
     /** Recording on or off */
     private boolean recordState;
     /** Current file path */
@@ -49,7 +48,7 @@ public class AlcSession implements ActionListener, AlcConstants {
             int interval = root.prefs.getRecordingInterval();
             //Set up timer to save pages into the pdf
             if (timer == null) {
-                timer = new Timer(interval, this);
+                timer = new javax.swing.Timer(interval, this);
                 timer.start();
             } else {
                 if (timer.isRunning()) {
@@ -88,17 +87,17 @@ public class AlcSession implements ActionListener, AlcConstants {
                     timer.stop();
                     timer = null;
                     if (interval > 0) {
-                        timer = new Timer(interval, this);
+                        timer = new javax.swing.Timer(interval, this);
                         timer.start();
                     }
                 } else {
                     timer = null;
-                    timer = new Timer(interval, this);
+                    timer = new javax.swing.Timer(interval, this);
                     timer.start();
                 }
             } else {
                 if (interval > 0) {
-                    timer = new Timer(interval, this);
+                    timer = new javax.swing.Timer(interval, this);
                     timer.start();
                 }
             }
@@ -128,14 +127,15 @@ public class AlcSession implements ActionListener, AlcConstants {
 
     /** Save a single page to the current pdf being created */
     public void savePage() {
-        // If this is the first time
-        if (currentPdfFile == null) {
+        // If this is the first time or if the file is not actually there
+        if (currentPdfFile == null || !currentPdfFile.exists()) {
             String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-HH-mm-ss") + ".pdf";
             currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
             System.out.println("Current PDF file: " + currentPdfFile.getPath());
             root.canvas.saveSinglePdf(currentPdfFile);
         // Else save a temp file then join the two together
         } else {
+
             try {
                 File temp = File.createTempFile("AlchemyPage", ".pdf");
                 // Delete temp file when program exits.
@@ -151,6 +151,7 @@ public class AlcSession implements ActionListener, AlcConstants {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
 
     }
@@ -182,6 +183,7 @@ public class AlcSession implements ActionListener, AlcConstants {
         if (root.canvas.canvasChange()) {
             System.out.println("SAVE FRAME CALL FROM TIMER");
             savePage();
+            root.canvas.resetCanvasChange();
             //root.canvas.savePdfPage();
             if (root.prefs.getAutoClear()) {
                 root.canvas.clear();
