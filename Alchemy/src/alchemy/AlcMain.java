@@ -161,10 +161,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Set system look and feel
         try {
+                      
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Custom repaint class to manage transparency and redraw better
             RepaintManager.setCurrentManager(new AlcRepaintManager());
-
+            
+            JFrame.setDefaultLookAndFeelDecorated(true); 
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

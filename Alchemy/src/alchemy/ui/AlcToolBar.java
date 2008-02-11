@@ -26,6 +26,7 @@ import javax.swing.*;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicToolBarUI;
 
 /**
  * Alchemy Toolbar
@@ -85,12 +86,81 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     public javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
+    /** Custom UI for the toolbar */
+    private BasicToolBarUI toolBarUI;
 
     /**
      * Creates a new instance of AlcToolBar
      */
     public AlcToolBar(final AlcMain root) {
 
+        toolBarUI = new BasicToolBarUI() {
+
+            protected RootPaneContainer createFloatingWindow(JToolBar toolbar) {
+                JFrame f = super.createFloatingFrame(toolbar);
+                JLayeredPane layeredPane = f.getLayeredPane();
+
+                //Component[] comps = layeredPane.getComponentsInLayer(JLayeredPane.FRAME_CONTENT_LAYER.intValue());
+                //System.out.println(comps);
+
+//                for (int i = 0; i < comps.length; i++) {
+//                    Component component = comps[i];
+//
+//                    if (component != f.getContentPane()) {
+//                        component.setPreferredSize(new Dimension(12, 12));
+//
+//                        JComponent c = ((JComponent) component);
+//
+//                        Component[] subComponents = c.getComponents();
+//
+//                        for (int j = 0; j < subComponents.length; j++) {
+//                            Component component2 = subComponents[j];
+//
+//                            if (component2 instanceof JButton) {
+//                                JButton b = (JButton) component2;
+//
+//                                b.setIcon(UIManager.getIcon("InternalFrame.paletteCloseIcon"));
+//
+//                                b.setPreferredSize(new Dimension(8, 8));
+//                                b.setMargin(new Insets(1, 1, 1, 1));
+//                            }
+//
+//                        }
+//                    }
+//                }
+
+                //f.setBorder(new BevelBorder(BevelBorder.RAISED));
+                //JFrame.setDefaultLookAndFeelDecorated(true);
+                //JFrame.setDefaultLookAndFeelDecorated(true);
+                f.setUndecorated(true);
+                f.getRootPane().setWindowDecorationStyle(JRootPane.ERROR_DIALOG);
+                return f;
+            }
+//            protected BasicToolBarUI.DragWindow createDragWindow(JToolBar toolbar) {
+//                return dragWindow;
+//            }
+            public boolean canDock(Component c, Point p) {
+
+                if (isFloating()) {
+                    if (p.y < 50) {
+                        return true;
+                    }
+                }
+                return false;
+            //System.out.println(p);
+            //System.out.println(c);
+            //return true;
+            }
+//
+//            public boolean isFloating() {
+//                return true;
+//            }
+        };
+        toolBarUI.setDockingColor(toolBarBgColour);
+        toolBarUI.setFloatingColor(toolBarBgColour);
+        this.setUI(toolBarUI);
+
+        this.setOrientation(SwingConstants.HORIZONTAL);
         // General Toolbar settings
         this.root = root;
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -109,6 +179,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
 
+        System.out.println(getUI());
     }
 
     /** Load the tool bar */
@@ -400,7 +471,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean visible) {
-        if (toolBarAttached) {
+        if (!toolBarUI.isFloating()) {
             if (visible != toolBarVisible) {
                 //System.out.println("Visible: " + visible);
                 this.setVisible(visible);
@@ -453,37 +524,38 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
             toolBarTimer.start();
         }
     }
-    
+
     /** Check if the toolbar is part of the main window or seperate */
-    private void checkParentWindow() {
-        //System.out.println("Check Parent");
-        Container container = this.getTopLevelAncestor();
-        if (container != null) {
-            if (!container.getClass().getName().startsWith("alchemy")) {
-                if (toolBarAttached) {
-                    // JUST DETACHED
-                    //System.out.println("JUST DETACHED");
-                    toolBarAttached = false;
-                    System.out.println(container.getClass().getName());
-
-                    Window window = (Window) container;
-                    //window.setAlwaysOnTop(true);
-                    window.addWindowListener(new WindowAdapter() {
-
-                        public void windowClosing(WindowEvent e) {
-                            //System.out.println("Close button clicked");
-                            toolBarAttached = true;
-                        // TODO - Debug the disappearing toolbar on a mac bug
-                        }
-                    });
-                }
-            } else {
-                toolBarAttached = true;
-            }
-
-        }
-    }
-
+//    private void checkParentWindow() {
+//        //System.out.println("Check Parent");
+//        Container container = this.getTopLevelAncestor();
+//        if (container != null) {
+//            if (!container.getClass().getName().startsWith("alchemy")) {
+//                if (toolBarAttached) {
+//                    // JUST DETACHED
+//                    //System.out.println("JUST DETACHED");
+//                    toolBarAttached = false;
+//                    System.out.println(container.getClass().getName());
+//
+//                    Window window = (Window) container;
+//                    //window.setAlwaysOnTop(true);
+//                    window.addWindowListener(new WindowAdapter() {
+//
+//                        public void windowClosing(WindowEvent e) {
+//                            //System.out.println("Close button clicked");
+//                            toolBarAttached = true;
+//                        // TODO - Debug the disappearing toolbar on a mac bug
+//                        }
+//                    });
+//                }
+//            // Tool bar is reattached
+//            } else {
+//                //System.out.println(container.getClass().getName());
+//                toolBarAttached = true;
+//            }
+//
+//        }
+//    }
     /** Add a Create Module sub-toolbar */
     public void addSubToolBarSection(AlcSubToolBarSection subToolBarSection) {
 
@@ -620,7 +692,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     }
 
     public void mouseReleased(MouseEvent e) {
-        checkParentWindow();
+    //checkParentWindow();
     }
 
     public void mouseEntered(MouseEvent e) {
