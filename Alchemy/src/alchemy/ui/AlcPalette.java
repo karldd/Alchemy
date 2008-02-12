@@ -29,40 +29,43 @@ import javax.swing.JWindow;
  * AlcPalette
  * @author Karl D.D. Willis
  */
-public class AlcPalette extends JPanel {
+public class AlcPalette extends JWindow {
 
     //private JPanel paletteContent;
-    private JWindow container;
+    private JPanel container;
     private final AlcPaletteTitleBar titleBar;
 
     public AlcPalette(Frame owner) {
-        this.titleBar = new AlcPaletteTitleBar(this);
+        super(owner);
+        titleBar = new AlcPaletteTitleBar(this);
         this.setLayout(new BorderLayout());
         this.add("West", titleBar);
         this.setBackground(Color.WHITE);
 
-        JWindow pWindow = new JWindow(owner);
-        container = pWindow;
-        pWindow.getContentPane().add(this);
-        pWindow.setVisible(true);
+        
+        //JWindow pWindow = new JWindow(owner);
+        container = new JPanel();
+        //container = pWindow;
+        this.getContentPane().add(container);
+        this.setVisible(true);
     }
 
     protected void shiftPalette(int x, int y) {
-        Point aPoint = container.getLocation();
-        container.setLocation(aPoint.x + x, aPoint.y + y);
+        Point aPoint = this.getLocation();
+        this.setLocation(aPoint.x + x, aPoint.y + y);
     }
 
-    public void setPaletteLocation(int x, int y) {
-        if (container == null) {
-            container = new JWindow();
-        }
-        container.setLocation(x, y);
-    }
-
-    public void setPaletteSize(int x, int y) {
-        if (container == null) {
-            container = new JWindow();
-        }
-        container.setSize(x, y);
-    }
+//    public void setPaletteLocation(int x, int y) {
+//        if (container == null) {
+//            container = new JWindow();
+//        }
+//        container.setLocation(x, y);
+//    }
+//
+//    public void setPaletteSize(int x, int y) {
+//        if (container == null) {
+//            container = new JWindow();
+//        }
+//        container.setSize(x, y);
+//    }
 }
