@@ -25,6 +25,7 @@ import java.awt.Point;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
+import javax.swing.border.LineBorder;
 
 /**
  * AlcPalette
@@ -41,9 +42,10 @@ public class AlcPalette extends JWindow {
 
         this.setSize(800, 75);
         this.setLocation(100, 100);
-        //this.setBorder(new BevelBorder(BevelBorder.RAISED));
+
 
         mainPalette = new JPanel();
+        mainPalette.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
         mainPalette.setLayout(new BorderLayout());
 
         titleBar = new AlcPaletteTitleBar(this);
@@ -54,7 +56,7 @@ public class AlcPalette extends JWindow {
 
         //JWindow pWindow = new JWindow(owner);
         content = new JPanel();
-        content.setBackground(Color.RED);
+        content.setBackground(Color.WHITE);
         //mainPalette.setSize(100, 400);
         content.add(new JLabel("hello"));
         mainPalette.add("Center", content);
