@@ -225,8 +225,16 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         } else {
             // Otherwise add it to the toolbar area
-            toolBar.add("North", menuBar);
-            toolBar.calculateTotalHeight();
+
+            //Palette
+            if (prefs.getPaletteAttached()) {
+                this.setJMenuBar(menuBar);
+            //Toolbar
+            } else {
+                toolBar.add("North", menuBar);
+                toolBar.calculateTotalHeight();
+            }
+
         }
 
         // LAYERED PANE
@@ -463,11 +471,16 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             if (!prefs.getPaletteAttached()) {
                 toolBar.setToolBarVisible(false);
                 toolBar.remove(toolBar.toolBars);
+                toolBar.remove(menuBar);
             //toolBar.revalidate();
             }
             if (palette == null) {
                 palette = new AlcPalette(this, toolBar.toolBars);
                 prefs.setPaletteAttached(true);
+            }
+            if (PLATFORM != MACOSX) {
+                this.setJMenuBar(menuBar);
+                toolBar.calculateTotalHeight();
             }
             toolBar.detachButton.setVisible(false);
 
@@ -477,7 +490,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 palette.setVisible(false);
                 palette.dispose();
                 palette = null;
+                if (PLATFORM != MACOSX) {
+                    this.setJMenuBar(null);
+                    toolBar.add("North", menuBar);
+                    toolBar.calculateTotalHeight();
+                }
                 toolBar.add("South", toolBar.toolBars);
+                toolBar.calculateTotalHeight();
                 toolBar.detachButton.setVisible(true);
                 toolBar.revalidate();
                 prefs.setPaletteAttached(false);
