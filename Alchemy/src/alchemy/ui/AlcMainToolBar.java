@@ -40,7 +40,8 @@ public class AlcMainToolBar extends JPanel {
         //this.setBackground(AlcToolBar.toolBarBgColour);
         //this.setBorderPainted(false);
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
+        //this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
+        this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
 
 
@@ -59,7 +60,8 @@ public class AlcMainToolBar extends JPanel {
             g2.setPaint(gradientPaint);
             g2.fillRect(0, 0, root.getWindowSize().width, this.height);
             g2.setPaint(AlcToolBar.toolBarLineColour);
-            g2.drawLine(0, this.height - 1, root.getWindowSize().width, this.height - 1);
+            int heightMinusOne = this.height - 1;
+            g2.drawLine(0, heightMinusOne, root.getWindowSize().width, heightMinusOne);
         }
     }
 

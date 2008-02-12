@@ -45,11 +45,13 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     private String switchVectorApp;
     /** Switch Bitmap Application */
     private String switchBitmapApp;
+    /** State of the palette- attached or not */
+    private boolean paletteAttached = false;
 
     public AlcPreferences(AlcMain root) {
 
         super(root);
-        
+
         recordingState = prefs.getBoolean("Recording State", false);
         recordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", HOME_DIR);
@@ -57,6 +59,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         autoClear = prefs.getBoolean("Auto Clear Canvas", false);
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
+        paletteAttached = prefs.getBoolean("Palette Attached", false);
 
         //System.out.println("PREFS SAYS:" + switchVectorApp + " " + switchBitmapApp);
         //System.out.println(prefs);
@@ -101,6 +104,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         prefs.put("Session Path", this.sessionPath);
         prefs.putInt("Recording Delay", recordingInterval);
         prefs.putBoolean("Auto Clear Canvas", this.autoClear);
+        prefs.putBoolean("Palette Attached", this.paletteAttached);
 
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", this.switchVectorApp);
@@ -164,5 +168,13 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
     public void setSwitchBitmapApp(String path) {
         this.switchBitmapApp = path;
+    }
+
+    public boolean getPaletteAttached() {
+        return this.paletteAttached;
+    }
+
+    public void setPaletteAttached(boolean b) {
+        this.paletteAttached = b;
     }
 }

@@ -18,11 +18,8 @@
  */
 package alchemy.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Point;
-import javax.swing.JLabel;
+import alchemy.AlcMain;
+import java.awt.*;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.border.LineBorder;
@@ -34,43 +31,71 @@ import javax.swing.border.LineBorder;
 public class AlcPalette extends JWindow {
 
     //private JPanel paletteContent;
-    private JPanel mainPalette, content;
-    private final AlcPaletteTitleBar titleBar;
+    private JPanel mainPalette,  content;
+    private AlcPaletteTitleBar titleBar;
+    private AlcMain root;
 
     public AlcPalette(Frame owner) {
         super(owner);
+        setup(owner, null);
+    }
 
-        this.setSize(800, 75);
+    public AlcPalette(Frame owner, Component comp) {
+        super(owner);
+        setup(owner, comp);
+    }
+
+    private void setup(Frame owner, Component comp) {
+
+        //if (owner instanceof AlcMain) {
+        root = (AlcMain) owner;
+        //}
+
+        this.setPreferredSize(new Dimension(root.getWindowSize().width, 88));
+        // TODO - Remember the location of the palette
         this.setLocation(100, 100);
+        this.setBackground(Color.WHITE);
+        //this.setLocationRelativeTo(null); 
 
 
         mainPalette = new JPanel();
-        mainPalette.setBorder(new LineBorder(Color.LIGHT_GRAY, 1));
+        mainPalette.setBorder(new LineBorder(AlcToolBar.toolBarLineColour, 1));
         mainPalette.setLayout(new BorderLayout());
+        mainPalette.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
-        titleBar = new AlcPaletteTitleBar(this);
+        titleBar = new AlcPaletteTitleBar(this, root);
+        //titleBar.add(new JLabel("ho"));
         //this.setLayout(new BorderLayout());
         mainPalette.add("West", titleBar);
+
 
 
 
         //JWindow pWindow = new JWindow(owner);
         content = new JPanel();
         content.setBackground(Color.WHITE);
-        //mainPalette.setSize(100, 400);
-        content.add(new JLabel("hello"));
-        mainPalette.add("Center", content);
-        
+        if (comp != null) {
+            addContent(comp);
+        }
+
+
         this.setContentPane(mainPalette);
         //this.pack();                               
         //container = pWindow;
         //this.add("East", container);
+        this.pack();
         this.setVisible(true);
     }
 
     protected void shiftPalette(int x, int y) {
         Point aPoint = this.getLocation();
         this.setLocation(aPoint.x + x, aPoint.y + y);
+    }
+
+    /** Add a component to the main content area */
+    public void addContent(Component comp) {
+        mainPalette.add("Center", comp);
+        mainPalette.revalidate();
     }
 
 //    public void setPaletteLocation(int x, int y) {

@@ -644,7 +644,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
         // Toogle visibility of the Toolbar
-        root.toolBar.toggleToolBar(event.getY());
+        if (!root.prefs.getPaletteAttached()) {
+            root.toolBar.toggleToolBar(event.getY());
+        }
         passMouseEvent(event, "mouseMoved");
     }
 
