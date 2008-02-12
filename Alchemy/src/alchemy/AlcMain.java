@@ -106,7 +106,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** For storing the old display location before entering fullscreen */
     private Point oldLocation = null;
     /** Toggle the state of the osx menu bar on a mac */
-    private boolean macMenuBarVisible = true;
+    //private boolean macMenuBarVisible = true;
 
     public AlcMain() {
 
@@ -166,7 +166,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Custom repaint class to manage transparency and redraw better
-            RepaintManager.setCurrentManager(new AlcRepaintManager());
+            // RepaintManager.setCurrentManager(new AlcRepaintManager());
 
             JFrame.setDefaultLookAndFeelDecorated(true);
 
@@ -418,7 +418,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
                 //System.out.println(DISPLAY_MODE.toString());
 
-                macMenuBarVisible = true;
+                //macMenuBarVisible = true;
                 //menuBar.setVisible(true);          // make the menubar visible
                 setVisible(true);
 
@@ -437,7 +437,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                     setLocation(bounds.getLocation());
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
-                    macMenuBarVisible = false;
+                    //macMenuBarVisible = false;
                     //menuBar.setVisible(false);          // make the menubar invisible
                     setVisible(true);                   //show the frame
 
@@ -601,23 +601,23 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      * 
      * @param visible true for visible, otherwise false
      */
-    public void setVisible(final boolean visible) {
-        if (PLATFORM == MACOSX) {
-            // Turn on
-            if (macMenuBarVisible) {
-                //call it when already not visible and it crashes, so check first
-                if (!com.apple.cocoa.application.NSMenu.menuBarVisible()) {
-                    com.apple.cocoa.application.NSMenu.setMenuBarVisible(true);
-                }
-            // Turn off
-            } else {
-                if (com.apple.cocoa.application.NSMenu.menuBarVisible()) {
-                    com.apple.cocoa.application.NSMenu.setMenuBarVisible(false);
-                }
-            }
-        }
-        super.setVisible(visible);
-    }
+//    public void setVisible(final boolean visible) {
+//        if (PLATFORM == MACOSX) {
+//            // Turn on
+//            if (macMenuBarVisible) {
+//                //call it when already not visible and it crashes, so check first
+//                if (!com.apple.cocoa.application.NSMenu.menuBarVisible()) {
+//                    com.apple.cocoa.application.NSMenu.setMenuBarVisible(true);
+//                }
+//            // Turn off
+//            } else {
+//                if (com.apple.cocoa.application.NSMenu.menuBarVisible()) {
+//                    com.apple.cocoa.application.NSMenu.setMenuBarVisible(false);
+//                }
+//            }
+//        }
+//        super.setVisible(visible);
+//    }
 
     //////////////////////////////////////////////////////////////
     // KEY EVENTS

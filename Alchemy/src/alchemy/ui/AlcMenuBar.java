@@ -59,7 +59,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     public AlcMenuBar(final AlcMain root) {
 
         this.root = root;
-        this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        this.setBackground(AlcToolBar.toolBarHighlightColour);
 
         // Default applications directory depending on the platform
         switch (AlcMain.PLATFORM) {

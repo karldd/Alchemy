@@ -29,6 +29,7 @@ public class AlcRepaintManager extends RepaintManager {
             Container parentContainer = comp.getParent();
             if (parentContainer instanceof JComponent) {
                 JComponent parent = (JComponent) parentContainer;
+                System.out.println("Redraw "+ className);
                 super.addDirtyRegion(parent, 0, 0, parent.getWidth(), parent.getHeight());
             }
         }
