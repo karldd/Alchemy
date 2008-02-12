@@ -81,6 +81,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private JLayeredPane layeredPane;
     /** Resource Bundle containing language specific text */
     public final ResourceBundle bundle;
+    /** Palette for the toolbar when detached */
+    private AlcPalette palette;
     //
     //////////////////////////////////////////////////////////////
     // ALCHEMY STATUS
@@ -161,13 +163,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Set system look and feel
         try {
-                      
+
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Custom repaint class to manage transparency and redraw better
             RepaintManager.setCurrentManager(new AlcRepaintManager());
-            
-            JFrame.setDefaultLookAndFeelDecorated(true); 
-            
+
+            JFrame.setDefaultLookAndFeelDecorated(true);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -215,9 +217,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         if (PLATFORM == MACOSX) {
             // For some reason the menubar still displays on OSX
-            // Set it to transparent and turn off border painting
-            //menuBar.setOpaque(false);
-            //menuBar.setBorderPainted(false);
             // Set it to invisible
             menuBar.setVisible(false);
             // Add normally if on MacOSX as the menu is listed above
@@ -257,6 +256,12 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                                // Finalize window layout
         this.setLocationRelativeTo(null);           // Center window on screen.
+
+
+        // Load the palette after the main window
+        if (prefs.getPaletteAttached()) {
+            setPalette(true);
+        }
 
     }
 
@@ -395,7 +400,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
                 //System.out.println(System.getProperty("user.name"));
 
-                //setVisible(false);                //hide the frame so we can change it.
+                setVisible(false);                //hide the frame so we can change it.
                 dispose();                          //remove the frame from being displayable.
                 setUndecorated(false);              //put the borders back on the frame.
                 //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
@@ -446,6 +451,41 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public boolean isFullscreen() {
         return fullscreen;
     }
+
+    //////////////////////////////////////////////////////////////
+    // PALETTE
+    //////////////////////////////////////////////////////////////
+    /** Set the toolbar into a floating palette or on the main window */
+    public void setPalette(boolean seperate) {
+        // PALETTE
+        if (seperate) {
+            // If this is not being called at startup
+            if (!prefs.getPaletteAttached()) {
+                toolBar.setToolBarVisible(false);
+                toolBar.remove(toolBar.toolBars);
+            //toolBar.revalidate();
+            }
+            if (palette == null) {
+                palette = new AlcPalette(this, toolBar.toolBars);
+                prefs.setPaletteAttached(true);
+            }
+            toolBar.detachButton.setVisible(false);
+
+        // TOOLBAR
+        } else {
+            if (palette != null) {
+                palette.setVisible(false);
+                palette.dispose();
+                palette = null;
+                toolBar.add("South", toolBar.toolBars);
+                toolBar.detachButton.setVisible(true);
+                toolBar.revalidate();
+                prefs.setPaletteAttached(false);
+            }
+        }
+
+    }
+
 
     //////////////////////////////////////////////////////////////
     // MAC SPECIFIC
@@ -569,9 +609,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Turn off fullscreen mode with just the escape key if in fullscreen mode
         if (keyCode == KeyEvent.VK_ESCAPE) {
+            setPalette(true);
             if (isFullscreen()) {
                 setFullscreen(false);
             }
+        }
+
+        if (keyCode == KeyEvent.VK_1) {
+            setPalette(false);
         }
 
         passKeyEvent(event, "keyPressed");

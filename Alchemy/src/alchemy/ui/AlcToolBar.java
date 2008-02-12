@@ -33,7 +33,7 @@ import javax.swing.plaf.basic.BasicToolBarUI;
  * The disappearing toolbar
  * Housing access to all modules and their sub toolbars
  */
-public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener {
+public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
 
     /** Reference to the root */
     private final AlcMain root;
@@ -63,6 +63,10 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     private AlcMainToolBar mainToolBar;
     /** The sub toolbar below the main toolbar */
     private AlcSubToolBar subToolBar;
+    /** Container holding the main and sub toolbars */
+    public JPanel toolBars;
+    /** Detach toolbar button */
+    public JButton detachButton;
     /** Sections within the sub toolbar - either loaded or not */
     private AlcSubToolBarSection[] affectSubToolBarSections;
     /** The create section within the sub toolbar - index of the loaded section */
@@ -92,85 +96,10 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
      */
     public AlcToolBar(final AlcMain root) {
 
-        toolBarUI = new BasicToolBarUI() {
+        // Old JToolBar stuff
+        //this.setOrientation(SwingConstants.HORIZONTAL);
+        //this.setFloatable(true);
 
-//            protected RootPaneContainer createFloatingWindow(JToolBar toolbar) {
-//                JFrame f = super.createFloatingFrame(toolbar);
-//                //dialog.setModal(true);
-//                //root.canvas.setMouseEvents(true);
-////                JDialog d = (JDialog) f;
-////                System.out.println("called ");
-//                //JLayeredPane layeredPane = f.getLayeredPane();
-//
-//                //Component[] comps = layeredPane.getComponentsInLayer(JLayeredPane.FRAME_CONTENT_LAYER.intValue());
-//                //System.out.println(comps);
-//
-////                for (int i = 0; i < comps.length; i++) {
-////                    Component component = comps[i];
-////
-////                    if (component != f.getContentPane()) {
-////                        component.setPreferredSize(new Dimension(12, 12));
-////
-////                        JComponent c = ((JComponent) component);
-////
-////                        Component[] subComponents = c.getComponents();
-////
-////                        for (int j = 0; j < subComponents.length; j++) {
-////                            Component component2 = subComponents[j];
-////
-////                            if (component2 instanceof JButton) {
-////                                JButton b = (JButton) component2;
-////
-////                                b.setIcon(UIManager.getIcon("InternalFrame.paletteCloseIcon"));
-////
-////                                b.setPreferredSize(new Dimension(8, 8));
-////                                b.setMargin(new Insets(1, 1, 1, 1));
-////                            }
-////
-////                        }
-////                    }
-////                }
-//
-//                //f.setBorder(new BevelBorder(BevelBorder.RAISED));
-//                //JFrame.setDefaultLookAndFeelDecorated(true);
-//                //JFrame.setDefaultLookAndFeelDecorated(true);
-//                //f.setUndecorated(true);
-//                //f.getRootPane().setWindowDecorationStyle(JRootPane.ERROR_DIALOG);
-//                return f;
-//            }
-//            protected BasicToolBarUI.DragWindow createDragWindow(JToolBar toolbar) {
-//                return dragWindow;
-//            }
-            public boolean canDock(Component c, Point p) {
-
-                if (isFloating()) {
-                    if (p.y < 50) {
-                        return true;
-                    }
-                } else {
-                    // Hacky way to be sure the canvas is still drawable
-                    root.canvas.setMouseEvents(true);
-                }
-                return false;
-            //System.out.println(p);
-            //System.out.println(c);
-            //return true;
-            }
-//
-//            public boolean isFloating() {
-//                return true;
-//            }
-        };
-        toolBarUI.setDockingColor(toolBarBgColour);
-        toolBarUI.setFloatingColor(toolBarBgColour);
-        this.setUI(toolBarUI);
-
-
-
-
-
-
-        this.setOrientation(SwingConstants.HORIZONTAL);
         // General Toolbar settings
         this.root = root;
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -178,34 +107,43 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         this.setName("Toolbar");
         //this.setVisible(false);
         this.addMouseListener(this);
-        this.setFloatable(true);
+
         // Make this a Box Layout so all submenus are stacked below
         //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setLayout(new BorderLayout());
 
-        loadToolBar();
 
-        AlcPalette palette = new AlcPalette(root);
+        // Create a container for the two toolbars
+        toolBars = new JPanel(new BorderLayout());
+        toolBars.setOpaque(false);
+        // Create and add the main toolbar
+        mainToolBar = loadToolBar();
+        toolBars.add("Center", mainToolBar);
 
-        //palette.add(mainToolBar);
+        // Create and add the sub toolbar
+        subToolBar = loadSubToolBar();
+        // Make it invisible until it gets some content
+        subToolBar.setVisible(false);
+        toolBars.add("South", subToolBar);
 
-        loadSubToolBar();
+        if (!root.prefs.getPaletteAttached()) {
+            this.add("South", toolBars);
+        }
+
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
 
-        System.out.println(getUI());
     }
 
     /** Load the tool bar */
-    private void loadToolBar() {
+    private AlcMainToolBar loadToolBar() {
         // Create the main toolbar
-        mainToolBar = new AlcMainToolBar(root);
+        AlcMainToolBar toolBarGroup = new AlcMainToolBar(root);
 
-        // Buttons in the main toolbar
-        // Align LEFT
-        //JPanel toolBarLeft = new JPanel();
-        //toolBarLeft.setOpaque(false);   // Turn off the background
+        JPanel toolBar = new JPanel();
+        toolBar.setOpaque(false);
+        toolBar.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
 
         //////////////////////////////////////////////////////////////
         // STYLE BUTTON
@@ -229,7 +167,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
         root.canvas.getActionMap().put(styleTitle, styleAction);
 
-        mainToolBar.add(styleButton);
+        toolBar.add(styleButton);
 
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
@@ -247,7 +185,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MENU_SHORTCUT), clearTitle);
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MENU_SHORTCUT), clearTitle);
         root.canvas.getActionMap().put(clearTitle, clearAction);
-        mainToolBar.add(clearButton);
+        toolBar.add(clearButton);
 
         //////////////////////////////////////////////////////////////
         // LINE WIDTH SPINNER
@@ -270,7 +208,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                     }
                 });
 
-        mainToolBar.add(lineWidthSpinner);
+        toolBar.add(lineWidthSpinner);
 
         //////////////////////////////////////////////////////////////
         // BLACK WHITE BUTTON
@@ -293,7 +231,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), bwTitle);
         root.canvas.getActionMap().put(bwTitle, bwAction);
 
-        mainToolBar.add(bwButton);
+        toolBar.add(bwButton);
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -314,12 +252,12 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                     }
                     });
 
-        mainToolBar.add(alphaSlider);
+        toolBar.add(alphaSlider);
 
         //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
-        mainToolBar.add(new AlcSeparator());
+        toolBar.add(new AlcSeparator());
 
 
         //////////////////////////////////////////////////////////////
@@ -366,7 +304,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
             createButton.addItem(createMenuItem);
         }
 
-        mainToolBar.add(createButton);
+        toolBar.add(createButton);
 
 
         //////////////////////////////////////////////////////////////
@@ -407,28 +345,54 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
             affectButton.addItem(affectMenuItem);
         }
-        mainToolBar.add(affectButton);
+        toolBar.add(affectButton);
 
         //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
-        mainToolBar.add(new AlcSeparator());
+        toolBar.add(new AlcSeparator());
 
-        this.add("Center", mainToolBar);
+        JPanel topAlign = new JPanel();
+        topAlign.setOpaque(false);
+        topAlign.setLayout(new BoxLayout(topAlign, BoxLayout.PAGE_AXIS));
 
+        detachButton = new JButton(AlcUtil.createImageIcon("data/palette-detach.png"));
+        detachButton.setRolloverIcon(AlcUtil.createImageIcon("data/palette-detach-over.png"));
+        detachButton.setToolTipText("Detach the toolbar to a seperate palette");
+
+        detachButton.setMargin(new Insets(0, 0, 0, 0));
+        detachButton.setBorderPainted(false);
+        detachButton.setContentAreaFilled(false);
+        detachButton.setFocusPainted(false);
+
+        detachButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        root.setPalette(true);
+                    }
+                });
+
+
+
+        topAlign.add(detachButton);
+
+        toolBarGroup.add(toolBar, BorderLayout.LINE_START);
+        toolBarGroup.add(topAlign, BorderLayout.LINE_END);
+
+        return toolBarGroup;
     }
 
-    private void loadSubToolBar() {
+    private AlcSubToolBar loadSubToolBar() {
         // Initialise the references to the sub toolbar sections
         affectSubToolBarSections = new AlcSubToolBarSection[root.getNumberOfAffectModules()];
         // Set to a negative value to indicate no initially loaded sections
         createSubToolBarSection = null;
 
         // Add the SubToolBar
-        subToolBar = new AlcSubToolBar(root);
-        this.add("South", subToolBar);
-        // Make it invisible until it gets some content
-        subToolBar.setVisible(false);
+        AlcSubToolBar toolBar = new AlcSubToolBar(root);
+
+        return toolBar;
     }
 
     public void resizeToolBar() {
@@ -486,17 +450,15 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean visible) {
-        if (!toolBarUI.isFloating()) {
-            if (visible != toolBarVisible) {
-                //System.out.println("Visible: " + visible);
-                this.setVisible(visible);
-                toolBarVisible = visible;
-                root.canvas.setMouseEvents(!visible);
-                //System.out.println(!visible);
-                if (!visible) {
-                    createButton.hidePopup();
-                    affectButton.hidePopup();
-                }
+        if (visible != toolBarVisible) {
+            //System.out.println("Visible: " + visible);
+            this.setVisible(visible);
+            toolBarVisible = visible;
+            root.canvas.setMouseEvents(!visible);
+            //System.out.println(!visible);
+            if (!visible) {
+                createButton.hidePopup();
+                affectButton.hidePopup();
             }
         }
     }
@@ -541,37 +503,6 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         }
     }
 
-    /** Check if the toolbar is part of the main window or seperate */
-//    private void checkParentWindow() {
-//        //System.out.println("Check Parent");
-//        Container container = this.getTopLevelAncestor();
-//        if (container != null) {
-//            if (!container.getClass().getName().startsWith("alchemy")) {
-//                if (toolBarAttached) {
-//                    // JUST DETACHED
-//                    //System.out.println("JUST DETACHED");
-//                    toolBarAttached = false;
-//                    System.out.println(container.getClass().getName());
-//
-//                    Window window = (Window) container;
-//                    //window.setAlwaysOnTop(true);
-//                    window.addWindowListener(new WindowAdapter() {
-//
-//                        public void windowClosing(WindowEvent e) {
-//                            //System.out.println("Close button clicked");
-//                            toolBarAttached = true;
-//                        // TODO - Debug the disappearing toolbar on a mac bug
-//                        }
-//                    });
-//                }
-//            // Tool bar is reattached
-//            } else {
-//                //System.out.println(container.getClass().getName());
-//                toolBarAttached = true;
-//            }
-//
-//        }
-//    }
     /** Add a Create Module sub-toolbar */
     public void addSubToolBarSection(AlcSubToolBarSection subToolBarSection) {
 
