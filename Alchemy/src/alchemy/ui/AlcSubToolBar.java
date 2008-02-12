@@ -71,8 +71,10 @@ public class AlcSubToolBar extends JPanel {
             g2.fillRect(0, 0, root.getWindowSize().width, height);
             g2.setPaint(AlcToolBar.toolBarHighlightColour);
             g2.drawLine(0, 0, root.getWindowSize().width, 0);
-            g2.setPaint(AlcToolBar.toolBarLineColour);
-            g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
+            if (!root.prefs.getPaletteAttached()) {
+                g2.setPaint(AlcToolBar.toolBarLineColour);
+                g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
+            }
         }
     }
 

@@ -30,16 +30,16 @@ public class AlcMenu extends JMenu implements AlcConstants {
 
         this.setText(title);
         //this.setContentAreaFilled(false);
-        //this.setOpaque(true);
+        //this.setOpaque(false);
         //this.setMnemonic(KeyEvent.VK_A);
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
-        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        this.setBackground(AlcToolBar.toolBarHighlightColour);
 
         // Hacky work around - because the JMenu is layered on top of the JMenuBar - doubling the opacity  
-        this.setBackground(new Color(0, 0, 0, 0));
+        //this.setBackground(new Color(0, 0, 0, 0));
         //this.setBackground(new Color(231, 231, 231, 150));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);

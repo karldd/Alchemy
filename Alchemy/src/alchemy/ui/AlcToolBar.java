@@ -360,7 +360,7 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
         detachButton.setRolloverIcon(AlcUtil.createImageIcon("data/palette-detach-over.png"));
         detachButton.setToolTipText("Detach the toolbar to a seperate palette");
 
-        detachButton.setMargin(new Insets(0, 0, 0, 0));
+        detachButton.setMargin(new Insets(0, 0, 0, 5));
         detachButton.setBorderPainted(false);
         detachButton.setContentAreaFilled(false);
         detachButton.setFocusPainted(false);
