@@ -186,8 +186,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         loadToolBar();
 
         AlcPalette palette = new AlcPalette(root);
-        palette.setSize(800, 75);
-        palette.setLocation(100, 100);
+
         //palette.add(mainToolBar);
 
         loadSubToolBar();

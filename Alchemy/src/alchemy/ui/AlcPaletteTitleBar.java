@@ -37,8 +37,8 @@ public class AlcPaletteTitleBar extends JPanel {
 
     public AlcPaletteTitleBar(final AlcPalette parent) {
         //this.parent = parent;
-        this.setBackground(Color.LIGHT_GRAY);
-        this.setMinimumSize(new Dimension(14, 14));
+        this.setBackground(Color.DARK_GRAY);
+        this.setSize(new Dimension(14, 100));
         this.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent e) {
@@ -57,5 +57,6 @@ public class AlcPaletteTitleBar extends JPanel {
 
     public void paint(Graphics g) {
         super.paint(g);
+        System.out.println(this.getSize() + " " + this.getLocation());
     }
 }
