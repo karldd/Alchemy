@@ -76,8 +76,6 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
     //////////////////////////////////////////////////////////////
     /** Visibility of the ToolBar */
     private boolean toolBarVisible = true;
-    /** Toolbar attached or not */
-    private boolean toolBarAttached = true;
     /** Height of the ToolBar */
     private static int toolBarHeight = 60;
     /** Total height of all tool bars */
@@ -96,46 +94,50 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
 
         toolBarUI = new BasicToolBarUI() {
 
-            protected RootPaneContainer createFloatingWindow(JToolBar toolbar) {
-                JFrame f = super.createFloatingFrame(toolbar);
-                JLayeredPane layeredPane = f.getLayeredPane();
-
-                //Component[] comps = layeredPane.getComponentsInLayer(JLayeredPane.FRAME_CONTENT_LAYER.intValue());
-                //System.out.println(comps);
-
-//                for (int i = 0; i < comps.length; i++) {
-//                    Component component = comps[i];
+//            protected RootPaneContainer createFloatingWindow(JToolBar toolbar) {
+//                JFrame f = super.createFloatingFrame(toolbar);
+//                //dialog.setModal(true);
+//                //root.canvas.setMouseEvents(true);
+////                JDialog d = (JDialog) f;
+////                System.out.println("called ");
+//                //JLayeredPane layeredPane = f.getLayeredPane();
 //
-//                    if (component != f.getContentPane()) {
-//                        component.setPreferredSize(new Dimension(12, 12));
+//                //Component[] comps = layeredPane.getComponentsInLayer(JLayeredPane.FRAME_CONTENT_LAYER.intValue());
+//                //System.out.println(comps);
 //
-//                        JComponent c = ((JComponent) component);
+////                for (int i = 0; i < comps.length; i++) {
+////                    Component component = comps[i];
+////
+////                    if (component != f.getContentPane()) {
+////                        component.setPreferredSize(new Dimension(12, 12));
+////
+////                        JComponent c = ((JComponent) component);
+////
+////                        Component[] subComponents = c.getComponents();
+////
+////                        for (int j = 0; j < subComponents.length; j++) {
+////                            Component component2 = subComponents[j];
+////
+////                            if (component2 instanceof JButton) {
+////                                JButton b = (JButton) component2;
+////
+////                                b.setIcon(UIManager.getIcon("InternalFrame.paletteCloseIcon"));
+////
+////                                b.setPreferredSize(new Dimension(8, 8));
+////                                b.setMargin(new Insets(1, 1, 1, 1));
+////                            }
+////
+////                        }
+////                    }
+////                }
 //
-//                        Component[] subComponents = c.getComponents();
-//
-//                        for (int j = 0; j < subComponents.length; j++) {
-//                            Component component2 = subComponents[j];
-//
-//                            if (component2 instanceof JButton) {
-//                                JButton b = (JButton) component2;
-//
-//                                b.setIcon(UIManager.getIcon("InternalFrame.paletteCloseIcon"));
-//
-//                                b.setPreferredSize(new Dimension(8, 8));
-//                                b.setMargin(new Insets(1, 1, 1, 1));
-//                            }
-//
-//                        }
-//                    }
-//                }
-
-                //f.setBorder(new BevelBorder(BevelBorder.RAISED));
-                //JFrame.setDefaultLookAndFeelDecorated(true);
-                //JFrame.setDefaultLookAndFeelDecorated(true);
-                f.setUndecorated(true);
-                f.getRootPane().setWindowDecorationStyle(JRootPane.ERROR_DIALOG);
-                return f;
-            }
+//                //f.setBorder(new BevelBorder(BevelBorder.RAISED));
+//                //JFrame.setDefaultLookAndFeelDecorated(true);
+//                //JFrame.setDefaultLookAndFeelDecorated(true);
+//                //f.setUndecorated(true);
+//                //f.getRootPane().setWindowDecorationStyle(JRootPane.ERROR_DIALOG);
+//                return f;
+//            }
 //            protected BasicToolBarUI.DragWindow createDragWindow(JToolBar toolbar) {
 //                return dragWindow;
 //            }
@@ -145,6 +147,9 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                     if (p.y < 50) {
                         return true;
                     }
+                } else {
+                    // Hacky way to be sure the canvas is still drawable
+                    root.canvas.setMouseEvents(true);
                 }
                 return false;
             //System.out.println(p);
@@ -160,6 +165,11 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         toolBarUI.setFloatingColor(toolBarBgColour);
         this.setUI(toolBarUI);
 
+
+
+
+
+
         this.setOrientation(SwingConstants.HORIZONTAL);
         // General Toolbar settings
         this.root = root;
@@ -174,6 +184,12 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
         this.setLayout(new BorderLayout());
 
         loadToolBar();
+
+        AlcPalette palette = new AlcPalette(root);
+        palette.setPaletteSize(800, 75);
+        palette.setPaletteLocation(100, 100);
+        //palette.add(mainToolBar);
+
         loadSubToolBar();
 
         // Turn off the visibility until the mouse enters the top of the screen
@@ -477,6 +493,7 @@ public class AlcToolBar extends JToolBar implements AlcConstants, MouseListener 
                 this.setVisible(visible);
                 toolBarVisible = visible;
                 root.canvas.setMouseEvents(!visible);
+                //System.out.println(!visible);
                 if (!visible) {
                     createButton.hidePopup();
                     affectButton.hidePopup();
