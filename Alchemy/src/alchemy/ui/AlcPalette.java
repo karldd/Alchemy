@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Point;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 
@@ -32,21 +33,36 @@ import javax.swing.JWindow;
 public class AlcPalette extends JWindow {
 
     //private JPanel paletteContent;
-    private JPanel container;
+    private JPanel mainPalette, content;
     private final AlcPaletteTitleBar titleBar;
 
     public AlcPalette(Frame owner) {
         super(owner);
-        titleBar = new AlcPaletteTitleBar(this);
-        this.setLayout(new BorderLayout());
-        this.add("West", titleBar);
-        this.setBackground(Color.WHITE);
 
-        
+        this.setSize(800, 75);
+        this.setLocation(100, 100);
+        //this.setBorder(new BevelBorder(BevelBorder.RAISED));
+
+        mainPalette = new JPanel();
+        mainPalette.setLayout(new BorderLayout());
+
+        titleBar = new AlcPaletteTitleBar(this);
+        //this.setLayout(new BorderLayout());
+        mainPalette.add("West", titleBar);
+
+
+
         //JWindow pWindow = new JWindow(owner);
-        container = new JPanel();
+        content = new JPanel();
+        content.setBackground(Color.RED);
+        //mainPalette.setSize(100, 400);
+        content.add(new JLabel("hello"));
+        mainPalette.add("Center", content);
+        
+        this.setContentPane(mainPalette);
+        //this.pack();                               
         //container = pWindow;
-        this.getContentPane().add(container);
+        //this.add("East", container);
         this.setVisible(true);
     }
 
