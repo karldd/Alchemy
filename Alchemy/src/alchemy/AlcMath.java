@@ -280,4 +280,13 @@ public class AlcMath implements AlcConstants {
         // force table reset after changing the random number seed [0122]
         perlin = null;
     }
+
+    /** Return the mean of an int array */
+    public static double mean(int[] p) {
+        int sum = 0;  // sum of all the elements
+        for (int i = 0; i < p.length; i++) {
+            sum += p[i];
+        }
+        return sum / p.length;
+    }
 }

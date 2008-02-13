@@ -118,6 +118,21 @@
                 <contains text="SpeedShapes" casesensitive="no"/>
             </fileset>
         </copy>
+        <!-- X Shapes -->
+        <copy todir="${basedir}/modules/xShapes/alchemy/create">
+            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+                <contains text="XShapes" casesensitive="no"/>
+            </fileset>
+        </copy>
+        <!-- Trace Shapes -->
+        <copy todir="${basedir}/modules/traceShapes/alchemy/create">
+            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+                <contains text="TraceShape" casesensitive="no"/>
+            </fileset>
+            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+                <contains text="Flickr" casesensitive="no"/>
+            </fileset>
+        </copy>
         
         <!-- AFFECTS -->
         <!-- Mirror -->

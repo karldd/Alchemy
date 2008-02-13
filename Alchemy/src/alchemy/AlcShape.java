@@ -124,7 +124,14 @@ public class AlcShape implements AlcConstants, Cloneable {
         path.setWindingRule(GeneralPath.WIND_NON_ZERO);
     }
 
-    private void setupAttributes(Color colour, int alpha, int style, float lineWidth) {
+    /** Setup the attributes of a shape
+     * 
+     * @param colour    Colour of the shape
+     * @param alpha     Alpha value of the shape
+     * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
+     * @param lineWidth Line width of the shape
+     */
+    public void setupAttributes(Color colour, int alpha, int style, float lineWidth) {
         this.alpha = alpha;
         setColour(colour);
         this.style = style;
@@ -209,6 +216,13 @@ public class AlcShape implements AlcConstants, Cloneable {
         // Set the current point to the (original) last point value - not the altered pt value
         lastPt = p;
 
+    }
+
+    /** Add the first point
+     * @param p Point to draw a line to
+     */
+    public void addFirstPoint(Point p) {
+        path.moveTo(p.x, p.y);
     }
 
     /** Add the last point as a straight line 
