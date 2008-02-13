@@ -93,6 +93,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public ArrayList guideShapes;
     /** Graphics */
     private Graphics2D g2;
+    /** Image to draw on the canvas */
+    private Image image;
 
     /** Creates a new instance of AlcCanvas
      * @param root Reference to the root
@@ -136,6 +138,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         g2.setPaint(bgColour);
         g2.fillRect(0, 0, w, h);
 
+        // Paint the image is available
+        if (image != null) {
+            g2.drawImage(image, 0, 0, null);
+        }
 
         // Draw both lots of shapes
         ArrayList[] theShapes = {shapes, createShapes, affectShapes, guideShapes};
@@ -439,6 +445,19 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Reset the activity flag - called by the timer */
     void resetCanvasChange() {
         canvasChanged = false;
+    }
+
+    /** Set the Image to be drawn on the canvas
+     * 
+     * @param image Image to be drawn
+     */
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    /** Clear the image from the canvas */
+    public void clearImage() {
+        this.image = null;
     }
 
 
