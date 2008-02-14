@@ -31,34 +31,27 @@ import javax.swing.border.LineBorder;
 public class AlcPalette extends JWindow {
 
     //private JPanel paletteContent;
-    private JPanel mainPalette,  content;
+    private JPanel mainPalette;
+    private Component content;
     private AlcPaletteTitleBar titleBar;
     private AlcMain root;
 
     public AlcPalette(Frame owner) {
         super(owner);
-        setup(owner, null);
-    }
 
-    public AlcPalette(Frame owner, Component comp) {
-        super(owner);
-        setup(owner, comp);
-    }
-
-    private void setup(Frame owner, Component comp) {
-
-        //if (owner instanceof AlcMain) {
-        root = (AlcMain) owner;
-        //}
+        if (owner instanceof AlcMain) {
+            root = (AlcMain) owner;
+        }
 
         this.setPreferredSize(new Dimension(root.getWindowSize().width, 88));
         // TODO - Remember the location of the palette
         this.setLocation(100, 100);
         this.setBackground(Color.WHITE);
         //this.setLocationRelativeTo(null); 
-
+        this.setFocusable(true);
 
         mainPalette = new JPanel();
+        mainPalette.setBackground(AlcToolBar.toolBarBgColour);
         mainPalette.setBorder(new LineBorder(AlcToolBar.toolBarLineColour, 1));
         mainPalette.setLayout(new BorderLayout());
         mainPalette.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -68,23 +61,9 @@ public class AlcPalette extends JWindow {
         //this.setLayout(new BorderLayout());
         mainPalette.add("West", titleBar);
 
-
-
-
-        //JWindow pWindow = new JWindow(owner);
-        content = new JPanel();
-        content.setBackground(Color.WHITE);
-        if (comp != null) {
-            addContent(comp);
-        }
-
-
         this.setContentPane(mainPalette);
-        //this.pack();                               
-        //container = pWindow;
-        //this.add("East", container);
-        this.pack();
-        this.setVisible(true);
+//        this.pack();
+//        this.setVisible(true);
     }
 
     protected void shiftPalette(int x, int y) {
@@ -94,21 +73,12 @@ public class AlcPalette extends JWindow {
 
     /** Add a component to the main content area */
     public void addContent(Component comp) {
+        this.setPreferredSize(new Dimension(root.getWindowSize().width, 88));
+        if (content != null) {
+            mainPalette.remove(content);
+        }
+        this.content = comp;
         mainPalette.add("Center", comp);
         mainPalette.revalidate();
     }
-
-//    public void setPaletteLocation(int x, int y) {
-//        if (container == null) {
-//            container = new JWindow();
-//        }
-//        container.setLocation(x, y);
-//    }
-//
-//    public void setPaletteSize(int x, int y) {
-//        if (container == null) {
-//            container = new JWindow();
-//        }
-//        container.setSize(x, y);
-//    }
 }

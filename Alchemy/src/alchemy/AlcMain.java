@@ -82,7 +82,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     /** Resource Bundle containing language specific text */
     public final ResourceBundle bundle;
     /** Palette for the toolbar when detached */
-    private AlcPalette palette;
+    public AlcPalette palette;
     //
     //////////////////////////////////////////////////////////////
     // ALCHEMY STATUS
@@ -105,9 +105,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private Dimension oldWindowSize = null;
     /** For storing the old display location before entering fullscreen */
     private Point oldLocation = null;
+
     /** Toggle the state of the osx menu bar on a mac */
     //private boolean macMenuBarVisible = true;
-
     public AlcMain() {
 
         super("OSXAdapter");
@@ -208,10 +208,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         canvas = new AlcCanvas(this);
         // LOAD SESSION
         session = new AlcSession(this);
-
+        // Load the palette
+        palette = new AlcPalette(this);
         // User Interface toolbar
         toolBar = new AlcToolBar(this);
-
         // Menu Bar
         menuBar = new AlcMenuBar(this);
 
@@ -259,7 +259,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         //this.addWindowStateListener(this);          // Add a window state listener to detect window maximising
         this.addKeyListener(this);                  // Key Listener
         this.setFocusable(true);                    // Make the key listener focusable so we can get key events
-        this.requestFocus();                        // Get focus for the key listener
         this.setTitle("Alchemy");                // Title of the frame - Dock name should also be set -Xdock:name="Alchemy"
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();                                // Finalize window layout
@@ -269,6 +268,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Load the palette after the main window
         if (prefs.getPaletteAttached()) {
             setPalette(true);
+        } else {
+            this.requestFocus();
         }
 
     }
@@ -403,50 +404,50 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
             this.fullscreen = fullscreen;           //change modes.
 
-            //change to windowed mode.
+            // NORMAL WINDOW
             if (!fullscreen) {
 
                 //System.out.println(System.getProperty("user.name"));
 
-                setVisible(false);                //hide the frame so we can change it.
-                dispose();                          //remove the frame from being displayable.
-                setUndecorated(false);              //put the borders back on the frame.
+                this.setVisible(false);                //hide the frame so we can change it.
+                this.dispose();                          //remove the frame from being displayable.
+                this.setUndecorated(false);              //put the borders back on the frame.
+                this.setFocusable(true);
                 //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
-                setSize(oldWindowSize);             //make sure the size of the window is correct.
-                setLocation(oldLocation);           //reset location of the window
+                this.setSize(oldWindowSize);             //make sure the size of the window is correct.
+                this.setLocation(oldLocation);           //reset location of the window
                 //setAlwaysOnTop(false);
+                this.setVisible(true);
+                // TODO find out why request focus does not work here
+                this.requestFocus();
 
-                //System.out.println(DISPLAY_MODE.toString());
-
-                //macMenuBarVisible = true;
-                //menuBar.setVisible(true);          // make the menubar visible
-                setVisible(true);
-
-            //change to fullscreen.
+            // FULLSCREEN
             } else {
 
                 oldWindowSize = windowSize;          //save the old window size and location
                 oldLocation = getLocation();
 
                 try {
-                    setVisible(false);                  //hide everything
-                    dispose();                          //remove the frame from being displayable.
-
-                    setUndecorated(true);               //remove borders around the frame
-                    setSize(bounds.getSize());   // set the size to maximum
-                    setLocation(bounds.getLocation());
+                    this.setVisible(false);                  //hide everything
+                    this.dispose();                          //remove the frame from being displayable.
+                    this.setUndecorated(true);               //remove borders around the frame
+                    this.setSize(bounds.getSize());   // set the size to maximum
+                    // Offset for the mac menubar
+                    if (PLATFORM == MACOSX) {
+                        bounds.setLocation(0, 22);
+                    }
+                    this.setLocation(bounds.getLocation());
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
-                    //macMenuBarVisible = false;
-                    //menuBar.setVisible(false);          // make the menubar invisible
-                    setVisible(true);                   //show the frame
+                    this.setVisible(true);                   //show the frame
 
                 } catch (Exception e) {
                     System.err.println(e);
                 }
             }
 
-            repaint();  //make sure that the screen is refreshed.
+            this.repaint();  //make sure that the screen is refreshed.
+
         }
     }
 
@@ -472,12 +473,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 toolBar.setToolBarVisible(false);
                 toolBar.remove(toolBar.toolBars);
                 toolBar.remove(menuBar);
-            //toolBar.revalidate();
             }
-            if (palette == null) {
-                palette = new AlcPalette(this, toolBar.toolBars);
-                prefs.setPaletteAttached(true);
-            }
+            palette.addContent(toolBar.toolBars);
+            palette.pack();
+            palette.setVisible(true);
+            palette.requestFocus();
+            prefs.setPaletteAttached(true);
+
             if (PLATFORM != MACOSX) {
                 this.setJMenuBar(menuBar);
                 toolBar.calculateTotalHeight();
@@ -488,8 +490,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         } else {
             if (palette != null) {
                 palette.setVisible(false);
-                palette.dispose();
-                palette = null;
+                //palette.dispose();
+                //palette = null;
                 if (PLATFORM != MACOSX) {
                     this.setJMenuBar(null);
                     toolBar.add("North", menuBar);
@@ -502,7 +504,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 prefs.setPaletteAttached(false);
             }
         }
-
     }
 
 
@@ -628,14 +629,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Turn off fullscreen mode with just the escape key if in fullscreen mode
         if (keyCode == KeyEvent.VK_ESCAPE) {
-            setPalette(true);
             if (isFullscreen()) {
                 setFullscreen(false);
             }
-        }
-
-        if (keyCode == KeyEvent.VK_1) {
-            setPalette(false);
         }
 
         passKeyEvent(event, "keyPressed");
@@ -668,6 +664,19 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             System.err.println("passKeyEvent: " + e + " " + eventType);
         }
 
+    }
+
+    /** Set the hotkey to trigger an application wide action
+     * 
+     * @param key       The key to trigger the action
+     * @param title     A unique title for the action
+     * @param action    The name of the action to call
+     */
+    public void setHotKey(int key, String title, Action action) {
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key, MENU_SHORTCUT), title);
+        palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key, MENU_SHORTCUT), title);
+        getRootPane().getActionMap().put(title, action);
+        palette.getRootPane().getActionMap().put(title, action);
     }
 
     public void componentHidden(ComponentEvent e) {
