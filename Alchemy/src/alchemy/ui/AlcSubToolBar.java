@@ -67,13 +67,15 @@ public class AlcSubToolBar extends JPanel {
             Graphics2D g2 = (Graphics2D) g;
             // Turn on text antialias - windows does not use it by default
             //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            int targetWidth = getRootPane().getSize().width;
+            int heightMinusOne = height - 1;
             g2.setPaint(gradientPaint);
-            g2.fillRect(0, 0, root.getWindowSize().width, height);
+            g2.fillRect(0, 0, targetWidth, height);
             g2.setPaint(AlcToolBar.toolBarHighlightColour);
-            g2.drawLine(0, 0, root.getWindowSize().width, 0);
+            g2.drawLine(0, 0, targetWidth, 0);
             if (!root.prefs.getPaletteAttached()) {
                 g2.setPaint(AlcToolBar.toolBarLineColour);
-                g2.drawLine(0, height - 1, root.getWindowSize().width, height - 1);
+                g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
             }
         }
     }

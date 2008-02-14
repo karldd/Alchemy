@@ -35,6 +35,9 @@ public class AlcPalette extends JWindow {
     private Component content;
     private AlcPaletteTitleBar titleBar;
     private AlcMain root;
+    private int maxSize = 1000;
+    private int minSize = 600;
+    private int paletteHeight = 88;
 
     public AlcPalette(Frame owner) {
         super(owner);
@@ -43,9 +46,7 @@ public class AlcPalette extends JWindow {
             root = (AlcMain) owner;
         }
 
-        this.setPreferredSize(new Dimension(root.getWindowSize().width, 88));
-        // TODO - Remember the location of the palette
-        this.setLocation(100, 100);
+        setGoodSize();
         this.setBackground(Color.WHITE);
         //this.setLocationRelativeTo(null); 
         this.setFocusable(true);
@@ -73,12 +74,22 @@ public class AlcPalette extends JWindow {
 
     /** Add a component to the main content area */
     public void addContent(Component comp) {
-        this.setPreferredSize(new Dimension(root.getWindowSize().width, 88));
+        setGoodSize();
         if (content != null) {
             mainPalette.remove(content);
         }
         this.content = comp;
         mainPalette.add("Center", comp);
         mainPalette.revalidate();
+    }
+
+    private void setGoodSize() {
+        if (root.getWindowSize().width < minSize) {
+            this.setPreferredSize(new Dimension(minSize, paletteHeight));
+        } else if (root.getWindowSize().width > maxSize) {
+            this.setPreferredSize(new Dimension(maxSize, paletteHeight));
+        } else {
+            this.setPreferredSize(new Dimension(root.getWindowSize().width, paletteHeight));
+        }
     }
 }
