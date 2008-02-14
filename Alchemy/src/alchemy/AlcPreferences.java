@@ -20,6 +20,7 @@
 package alchemy;
 
 import alchemy.ui.AlcToolBar;
+import java.awt.Point;
 import java.util.prefs.Preferences;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -47,6 +48,10 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     private String switchBitmapApp;
     /** State of the palette- attached or not */
     private boolean paletteAttached = false;
+    /** Palette Location */
+    private Point paletteLocation;
+    /** Canvas Location */
+    private Point canvasLocation;
 
     public AlcPreferences(AlcMain root) {
 
@@ -60,10 +65,8 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
         paletteAttached = prefs.getBoolean("Palette Attached", false);
-
-        //System.out.println("PREFS SAYS:" + switchVectorApp + " " + switchBitmapApp);
-        //System.out.println(prefs);
-
+        paletteLocation = stringToPoint(prefs.get("Palette Location", null));
+        canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
 
         JPanel masterPanel = new JPanel();
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
@@ -112,8 +115,17 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         if (switchBitmapApp != null) {
             prefs.put("Switch Bitmap Application", this.switchBitmapApp);
         }
+        if (paletteLocation != null) {
+            prefs.put("Palette Location", pointToString(paletteLocation));
+        }
+        if (canvasLocation != null) {
+            prefs.put("Canvas Location", pointToString(canvasLocation));
+        }
     }
 
+    //////////////////////////////////////////////////////////////
+    // GETTER / SETTERS
+    //////////////////////////////////////////////////////////////
     public boolean getRecordingState() {
         return this.recordingState;
     }
@@ -176,5 +188,61 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
     public void setPaletteAttached(boolean b) {
         this.paletteAttached = b;
+    }
+
+    public Point getPaletteLocation() {
+        return paletteLocation;
+    }
+
+    public void setPaletteLocation(Point location) {
+        this.paletteLocation = location;
+    }
+
+    public Point getCanvasLocation() {
+        return canvasLocation;
+    }
+
+    public void setCanvasLocation(Point location) {
+        this.canvasLocation = location;
+    }
+
+
+    //////////////////////////////////////////////////////////////
+    // UTILITIES
+    //////////////////////////////////////////////////////////////
+    /** Converts two numbers stored in the prefs such as:
+     *  '10,30' into a Point
+     *  
+     * @param string    The number separated by a comma
+     * @return          A Point object 
+     */
+    private Point stringToPoint(String string) {
+        if (string != null) {
+            String[] splitString = string.split(",", 2);
+            int x = new Integer(splitString[0]).intValue();
+            int y = new Integer(splitString[1]).intValue();
+            Point point = new Point(x, y);
+            //System.out.println(point);
+            return point;
+        } else {
+            return null;
+        }
+    }
+
+    /** Converts a point into a string such as:
+     *  '10,30'
+     * @param point    The point to be converted
+     * @return         A string with the points numbers
+     */
+    private String pointToString(Point point) {
+        if (point != null) {
+            String x = String.valueOf(point.x);
+            String y = String.valueOf(point.y);
+            String xy = x + "," + y;
+            //System.out.println(xy);
+            return xy;
+        } else {
+            return null;
+        }
     }
 }
