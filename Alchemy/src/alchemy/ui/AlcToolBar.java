@@ -641,6 +641,7 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
+        
     }
 
     public void mouseReleased(MouseEvent e) {

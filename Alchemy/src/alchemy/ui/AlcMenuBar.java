@@ -42,7 +42,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
     private AlcMenuItem exitItem,  directoryItem,  switchVectorAppItem,  switchBitmapAppItem;
     private AlcCheckBoxMenuItem defaultRecordingItem,  autoClearItem;
     private AlcRadioButtonMenuItem intervalItem;
-    public Action exportAction,  printAction,  fullScreenAction,  recordingAction,  switchVectorAction,  switchBitmapAction;
+    public AbstractAction exportAction,  printAction,  fullScreenAction,  recordingAction,  switchVectorAction,  switchBitmapAction;
     private File platformAppDir;
     //
     /** Recording interval array in milliseconds */
@@ -93,8 +93,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem newItem = new AlcMenuItem(newAction);
         newItem.setup(newTitle, KeyEvent.VK_N);
         // Shortcut - Modifier n
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_N, MENU_SHORTCUT), newTitle);
-        root.canvas.getActionMap().put(newTitle, newAction);
+        root.setHotKey(KeyEvent.VK_N, newTitle, newAction);
         fileMenu.add(newItem);
 
 
@@ -111,8 +110,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem exportItem = new AlcMenuItem(exportAction);
         exportItem.setup(exportTitle, KeyEvent.VK_E);
         // Shortcut - Modifier e
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_E, MENU_SHORTCUT), exportTitle);
-        root.canvas.getActionMap().put(exportTitle, exportAction);
+        root.setHotKey(KeyEvent.VK_E, exportTitle, exportAction);
         fileMenu.add(exportItem);
 
         fileMenu.add(new JSeparator());
@@ -139,8 +137,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem printItem = new AlcMenuItem(printAction);
         printItem.setup(printTitle, KeyEvent.VK_P);
         // Shortcut - Modifier p
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_P, MENU_SHORTCUT), printTitle);
-        root.canvas.getActionMap().put(printTitle, printAction);
+        root.setHotKey(KeyEvent.VK_P, printTitle, printAction);
         fileMenu.add(printItem);
 
 
@@ -171,8 +168,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem fullScreenItem = new AlcMenuItem(fullScreenAction);
         fullScreenItem.setup(fullScreenTitle, KeyEvent.VK_F);
         // Shortcut - Modifier f
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, MENU_SHORTCUT), fullScreenTitle);
-        root.canvas.getActionMap().put(fullScreenTitle, fullScreenAction);
+        root.setHotKey(KeyEvent.VK_F, fullScreenTitle, fullScreenAction);
         viewMenu.add(fullScreenItem);
 
         this.add(viewMenu);
@@ -193,8 +189,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
         savePageItem.setup(savePageTitle, KeyEvent.VK_S);
         // Shortcut - Modifier s
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, MENU_SHORTCUT), savePageTitle);
-        root.canvas.getActionMap().put(savePageTitle, savePageAction);
+        root.setHotKey(KeyEvent.VK_S, savePageTitle, savePageAction);
         sessionMenu.add(savePageItem);
 
         // Save and clear PDF page
@@ -207,8 +202,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         };
         AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
         saveClearPageItem.setup(saveClearTitle, KeyEvent.VK_D);
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, MENU_SHORTCUT), saveClearTitle);
-        root.canvas.getActionMap().put(saveClearTitle, saveClearPageAction);
+        root.setHotKey(KeyEvent.VK_D, saveClearTitle, saveClearPageAction);
         sessionMenu.add(saveClearPageItem);
 
 
@@ -234,8 +228,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         // recordingItem.setToolTipText("Start/Finish recording of a session. " +
         // "Switch on to begin the session, and toggle off to finish the session and view the save PDF file");
         // Shortcut - Modifier r
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_R, MENU_SHORTCUT), recordingTitle);
-        root.canvas.getActionMap().put(recordingTitle, recordingAction);
+        root.setHotKey(KeyEvent.VK_R, recordingTitle, recordingAction);
 
         recordingItem.setState(root.prefs.getRecordingState());
         if (root.prefs.getRecordingState()) {
@@ -314,8 +307,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem switchVectorItem = new AlcMenuItem(switchVectorAction);
         switchVectorItem.setup(switchVectorTitle, KeyEvent.VK_V);
         // Shortcut - Modifier v
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_V, MENU_SHORTCUT), switchVectorTitle);
-        root.canvas.getActionMap().put(switchVectorTitle, switchVectorAction);
+        root.setHotKey(KeyEvent.VK_V, switchVectorTitle, switchVectorAction);
         switchMenu.add(switchVectorItem);
 
         // Switch Bitmaps
@@ -329,8 +321,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants, ActionListener
         AlcMenuItem switchBitmapItem = new AlcMenuItem(switchBitmapAction);
         switchBitmapItem.setup(switchBitmapTitle, KeyEvent.VK_B);
         // Shortcut - Modifier v
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_B, MENU_SHORTCUT), switchBitmapTitle);
-        root.canvas.getActionMap().put(switchBitmapTitle, switchBitmapAction);
+        root.setHotKey(KeyEvent.VK_B, switchBitmapTitle, switchBitmapAction);
         switchMenu.add(switchBitmapItem);
 
         switchMenu.add(new JSeparator());
