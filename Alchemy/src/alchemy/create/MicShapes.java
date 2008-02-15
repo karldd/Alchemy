@@ -50,7 +50,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
     public MicShapes() {
     }
 
-    public void setup() {
+    protected void setup() {
         points.ensureCapacity(1000);
         // Create a new MicInput Object with a buffer of 10
         micIn = new AlcMicInput(2);

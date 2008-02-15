@@ -49,7 +49,7 @@ public class Random extends AlcModule {
 
     }
 
-    public void setup() {
+    protected void setup() {
 
     }
 

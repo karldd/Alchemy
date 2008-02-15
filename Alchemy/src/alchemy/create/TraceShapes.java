@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import foxtrot.*;
 
 /**
  * TraceShapes
@@ -40,38 +41,114 @@ public class TraceShapes extends AlcModule {
     private int areaArraySize = area * area;
     private int imageW,  imageH,  edgeX,  edgeY;
     private AlcSubToolBarSection subToolBarSection;
+//    private SwingWorker worker;
 
     public TraceShapes() {
 
     }
 
-    public void setup() {
+    protected void setup() {
 
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
-
         loadImage();
-
-    }
-
-    private void loadImage() {
-        String random = AlcUtil.zeroPad((int) root.math.random(1000), 4);
-        //System.out.println(random);
-        Image flickrImage = Flickr.getInstance().search(random);
-        //Image flickrImage =  AlcUtil.getImage("data/testImage.jpg", root);
-        canvas.setImage(flickrImage);
-        canvas.redraw();
-        System.out.println("IMAGE LOADED");
-        flickrBufferedImage = (BufferedImage) flickrImage;
-        imageW = flickrBufferedImage.getWidth();
-        imageH = flickrBufferedImage.getHeight();
-        edgeX = imageW - halfArea;
-        edgeY = imageH - halfArea;
     }
 
     protected void reselect() {
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(subToolBarSection);
+        loadImage();
+    }
+
+    protected void deselect() {
+        canvas.clearImage();
+        canvas.redraw();
+    }
+
+    private void loadImage() {
+
+        final String random = AlcUtil.zeroPad((int) root.math.random(1000), 4);
+        Image flickrImage = null;
+
+//        worker = new SwingWorker() {
+//
+//            public Object construct() {
+//                return Flickr.getInstance().search(random);
+//            }
+//
+//            public void finished() {
+//                Image flickrImage = (Image) get();
+//                //Image flickrImage = Flickr.getInstance().search(random);
+//                canvas.setImage(flickrImage);
+//                canvas.redraw();
+//                //System.out.println("IMAGE LOADED");
+//                flickrBufferedImage = (BufferedImage) flickrImage;
+//                imageW = flickrBufferedImage.getWidth();
+//                imageH = flickrBufferedImage.getHeight();
+//                edgeX = imageW - halfArea;
+//                edgeY = imageH - halfArea;
+//            }
+//        };
+//        worker.start();
+
+        try {
+            flickrImage = (Image) Worker.post(new Task() {
+
+                public Object run() throws Exception {
+                    return Flickr.getInstance().search(random);
+                }
+            });
+        } catch (Exception ignored) {
+        }
+        canvas.setImage(flickrImage);
+        canvas.redraw();
+        //System.out.println("IMAGE LOADED");
+        flickrBufferedImage = (BufferedImage) flickrImage;
+        imageW = flickrBufferedImage.getWidth();
+        imageH = flickrBufferedImage.getHeight();
+        edgeX = imageW - halfArea;
+        edgeY = imageH - halfArea;
+
+    }
+
+    private AlcShape makeShape(
+            Point p) {
+        // Make a new shape with the globally defined style etc...
+        return new AlcShape(p, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+    }
+
+    private Point checkSnap(Point p) {
+        // If inside the image
+        if (p.x > area && p.x < edgeX && p.y > area &&p.y < edgeY) {
+            // The pixel under the cursor
+            int xy = flickrBufferedImage.getRGB(p.x, p.y);
+            int xyGrey = convertToGrey(xy);
+            //System.out.println(xyGrey);
+
+            int startX = p.x - halfArea;
+            int startY = p.y - halfArea;
+
+            int[] rgbs = new int[areaArraySize];
+            flickrBufferedImage.getRGB(startX, startY, area, area, rgbs, 0, area);
+
+            for (int i = 0; i <
+                    rgbs.length; i++) {
+                int pix = convertToGrey(rgbs[i]);
+                if (Math.abs(pix - xyGrey) > 100) {
+                    //System.out.println(i);
+                    return new Point(startX + (i % area), startY + (i / area));
+                }
+
+            }
+        }
+        return p;
+    }
+
+    private int convertToGrey(int rgb) {
+        int r = (rgb >> 16) & 0xff;
+        int g = (rgb >> 8) & 0xff;
+        int b = rgb & 0xff;
+        return (r + g + b) / 3;
     }
 
     public void createSubToolBarSection() {
@@ -104,47 +181,10 @@ public class TraceShapes extends AlcModule {
             canvas.getCurrentCreateShape().addCurvePoint(checkSnap(p));
             canvas.redraw();
         }
+
     }
 
     public void mouseReleased(MouseEvent e) {
         canvas.commitShapes();
-    }
-
-    private AlcShape makeShape(Point p) {
-        // Make a new shape with the globally defined style etc...
-        return new AlcShape(p, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
-    }
-
-    private Point checkSnap(Point p) {
-        // If inside the image
-        if (p.x < edgeX && p.y < edgeY) {
-            // The pixel under the cursor
-            int xy = flickrBufferedImage.getRGB(p.x, p.y);
-            int xyGrey = convertToGrey(xy);
-            //System.out.println(xyGrey);
-
-            int startX = p.x - halfArea;
-            int startY = p.y - halfArea;
-
-            int[] rgbs = new int[areaArraySize];
-            flickrBufferedImage.getRGB(startX, startY, area, area, rgbs, 0, area);
-
-            for (int i = 0; i < rgbs.length; i++) {
-                int pix = convertToGrey(rgbs[i]);
-                if (Math.abs(pix - xyGrey) > 100) {
-                    //System.out.println(i);
-                    return new Point(startX + (i % area), startY + (i / area));
-                }
-
-            }
-        }
-        return p;
-    }
-
-    private int convertToGrey(int rgb) {
-        int r = (rgb >> 16) & 0xff;
-        int g = (rgb >> 8) & 0xff;
-        int b = rgb & 0xff;
-        return (r + g + b) / 3;
     }
 }

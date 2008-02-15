@@ -73,6 +73,7 @@
         <unjar src="${file.reference.itext-2.0.6.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.jhall.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/> 
     </target> 
     
     

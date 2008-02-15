@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import foxtrot.*;
 
 /**
  * Class to control Alchemy 'sessions'
@@ -31,12 +32,14 @@ import java.io.IOException;
 public class AlcSession implements ActionListener, AlcConstants {
 
     private AlcMain root;
-    /** Timer */
+    /** Recording Timer */
     private javax.swing.Timer timer;
     /** Recording on or off */
     private boolean recordState;
     /** Current file path */
     private File currentPdfFile;
+    /** Record Indicator Timer */
+    private javax.swing.Timer indicatorTimer;
 
     public AlcSession(AlcMain root) {
         this.root = root;
@@ -126,13 +129,14 @@ public class AlcSession implements ActionListener, AlcConstants {
     }
 
     /** Save a single page to the current pdf being created */
-    public void savePage() {
+    public boolean savePage() {
         // If this is the first time or if the file is not actually there
         if (currentPdfFile == null || !currentPdfFile.exists()) {
             String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-HH-mm-ss") + ".pdf";
             currentPdfFile = new File(root.prefs.getSessionPath(), fileName);
             System.out.println("Current PDF file: " + currentPdfFile.getPath());
-            root.canvas.saveSinglePdf(currentPdfFile);
+            return root.canvas.saveSinglePdf(currentPdfFile);
+
         // Else save a temp file then join the two together
         } else {
 
@@ -146,6 +150,7 @@ public class AlcSession implements ActionListener, AlcConstants {
                 if (jointUp) {
                     //System.out.println("Pdf files joint");
                     temp.delete();
+                    return true;
                 }
 
             } catch (IOException e) {
@@ -153,7 +158,7 @@ public class AlcSession implements ActionListener, AlcConstants {
             }
 
         }
-
+        return false;
     }
 
     /** Save a single page to the current pdf being created, then clear the canvas */
@@ -181,8 +186,41 @@ public class AlcSession implements ActionListener, AlcConstants {
     public void actionPerformed(ActionEvent e) {
         // If the canvas has changed
         if (root.canvas.canvasChange()) {
+
+//            This should potentially be in a thread...
+//            try {
+//                Worker.post(new Task() {
+//
+//                    public Object run() throws Exception {
             System.out.println("SAVE FRAME CALL FROM TIMER");
-            savePage();
+
+            // If the page has been saved
+            if (savePage()) {
+                // Show this with a small red circle on the canvas
+                root.canvas.recordIndicator = true;
+                
+                if (indicatorTimer == null) {
+                    indicatorTimer = new javax.swing.Timer(500, new ActionListener() {
+
+                        public void actionPerformed(ActionEvent e) {
+                            System.out.println("indicatorTimer action called");
+                            root.canvas.recordIndicator = false;
+                            root.canvas.repaint();
+                            indicatorTimer.stop();
+                            indicatorTimer = null;
+                        }
+                    });
+                    indicatorTimer.start();
+                }
+                root.canvas.redraw();
+            }
+//                        return null;
+//                    }
+//                });
+//            } catch (Exception ignored) {
+//            }
+
+
             root.canvas.resetCanvasChange();
             //root.canvas.savePdfPage();
             if (root.prefs.getAutoClear()) {

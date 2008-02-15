@@ -54,7 +54,7 @@ public class Repeat extends AlcModule {
 
     }
 
-    public void setup() {
+    protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
 
