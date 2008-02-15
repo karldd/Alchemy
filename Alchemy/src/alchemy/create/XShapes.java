@@ -46,7 +46,7 @@ public class XShapes extends AlcModule implements AlcConstants {
 
     }
 
-    public void setup() {
+    protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }

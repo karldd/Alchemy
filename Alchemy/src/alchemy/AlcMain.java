@@ -161,12 +161,25 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Find out how big the parent screen is
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
-        Rectangle bounds = grapConfig.getBounds();
-        if (bounds.width < 1000) {
-            windowSize = new Dimension(800, 500);
-        } else {
-            windowSize = new Dimension(1024, 640);
-        //windowSize = new Dimension(800, 500);
+        Dimension currentWindowSize = grapConfig.getBounds().getSize();
+
+        boolean windowSet = false;
+        // If there is a saved window size then us it
+        if (prefs.getCanvasSize() != null) {
+            Dimension savedWindowSize = prefs.getCanvasSize();
+            // Make sure the window is not too big
+            if (savedWindowSize.width <= currentWindowSize.height && savedWindowSize.height <= currentWindowSize.height) {
+                windowSize = savedWindowSize;
+                windowSet = true;
+            }
+        }
+        
+        if (!windowSet) {
+            if (currentWindowSize.width < 1000) {
+                windowSize = new Dimension(800, 500);
+            } else {
+                windowSize = new Dimension(1024, 640);
+            }
         }
 
         // The canvas to draw on
@@ -290,6 +303,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Save the window location if not in full screen mode
         if (!isFullscreen()) {
             prefs.setCanvasLocation(this.getLocation());
+            prefs.setCanvasSize(this.getSize());
         }
         if (prefs.getPaletteAttached()) {
             prefs.setPaletteLocation(palette.getLocation());
@@ -772,6 +786,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             // Custom repaint class to manage transparency and redraw better
             // RepaintManager.setCurrentManager(new AlcRepaintManager());
+            //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
 
             JFrame.setDefaultLookAndFeelDecorated(true);
 

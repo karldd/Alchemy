@@ -20,6 +20,7 @@
 package alchemy;
 
 import alchemy.ui.AlcToolBar;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.util.prefs.Preferences;
 import javax.swing.JDialog;
@@ -50,8 +51,10 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     private boolean paletteAttached = false;
     /** Palette Location */
     private Point paletteLocation;
-    /** Canvas Location */
+    /** Canvas Window Location */
     private Point canvasLocation;
+    /** Canvas Window size */
+    private Dimension canvasSize;
 
     public AlcPreferences(AlcMain root) {
 
@@ -67,6 +70,8 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         paletteAttached = prefs.getBoolean("Palette Attached", false);
         paletteLocation = stringToPoint(prefs.get("Palette Location", null));
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
+        canvasSize = stringToDimension(prefs.get("Canvas Size", null));
+
 
         JPanel masterPanel = new JPanel();
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
@@ -120,6 +125,9 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         }
         if (canvasLocation != null) {
             prefs.put("Canvas Location", pointToString(canvasLocation));
+        }
+        if (canvasSize != null) {
+            prefs.put("Canvas Size", dimensionToString(canvasSize));
         }
     }
 
@@ -206,6 +214,14 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         this.canvasLocation = location;
     }
 
+    public Dimension getCanvasSize() {
+        return canvasSize;
+    }
+
+    public void setCanvasSize(Dimension canvasSize) {
+        this.canvasSize = canvasSize;
+    }
+
 
     //////////////////////////////////////////////////////////////
     // UTILITIES
@@ -213,7 +229,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     /** Converts two numbers stored in the prefs such as:
      *  '10,30' into a Point
      *  
-     * @param string    The number separated by a comma
+     * @param string    The numbers separated by a comma
      * @return          A Point object 
      */
     private Point stringToPoint(String string) {
@@ -241,6 +257,41 @@ public class AlcPreferences extends JDialog implements AlcConstants {
             String xy = x + "," + y;
             //System.out.println(xy);
             return xy;
+        } else {
+            return null;
+        }
+    }
+
+    /** Converts two numbers stored in the prefs such as:
+     *  '10,30' into a Dimension
+     *  
+     * @param string    The numbers separated by a comma
+     * @return          A Dimension object 
+     */
+    private Dimension stringToDimension(String string) {
+        if (string != null) {
+            String[] splitString = string.split(",", 2);
+            int width = new Integer(splitString[0]).intValue();
+            int height = new Integer(splitString[1]).intValue();
+            Dimension dimension = new Dimension(width, height);
+            return dimension;
+        } else {
+            return null;
+        }
+    }
+
+    /** Converts a Dimension into a string such as:
+     *  '10,30'
+     * @param point    The Dimension to be converted
+     * @return         A string with the points numbers
+     */
+    private String dimensionToString(Dimension dimension) {
+        if (dimension != null) {
+            String width = String.valueOf(dimension.width);
+            String height = String.valueOf(dimension.height);
+            String widthHeight = width + "," + height;
+            //System.out.println(xy);
+            return widthHeight;
         } else {
             return null;
         }

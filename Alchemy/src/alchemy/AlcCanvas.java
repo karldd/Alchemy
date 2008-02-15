@@ -38,6 +38,7 @@ import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.io.File;
@@ -95,6 +96,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private Graphics2D g2;
     /** Image to draw on the canvas */
     private Image image;
+    /** Record indicator */
+    private Ellipse2D.Double recordCircle;
+    /** Record indicator on/off */
+    boolean recordIndicator = false;
 
     /** Creates a new instance of AlcCanvas
      * @param root Reference to the root
@@ -138,7 +143,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         g2.setPaint(bgColour);
         g2.fillRect(0, 0, w, h);
 
-        // Paint the image is available
+        // Paint the buffImage is available
         if (image != null) {
             g2.drawImage(image, 0, 0, null);
         }
@@ -172,6 +177,12 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
                 }
             }
+        }
+
+        if (recordIndicator) {
+            recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
+            g2.setPaint(Color.RED);
+            g2.fill(recordCircle);
         }
 
     }
@@ -447,15 +458,18 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         canvasChanged = false;
     }
 
+    //////////////////////////////////////////////////////////////
+    // IMAGE
+    //////////////////////////////////////////////////////////////
     /** Set the Image to be drawn on the canvas
      * 
-     * @param image Image to be drawn
+     * @param buffImage Image to be drawn
      */
     public void setImage(Image image) {
         this.image = image;
     }
 
-    /** Clear the image from the canvas */
+    /** Clear the buffImage from the canvas */
     public void clearImage() {
         this.image = null;
     }
@@ -637,8 +651,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public boolean savePng(File file) {
         try {
             //File file = new File("saveToThisFile.jpg");
-            BufferedImage image = generatedBufferedImage();
-            ImageIO.write(image, "png", file);
+            BufferedImage buffImage = generatedBufferedImage();
+            ImageIO.write(buffImage, "png", file);
             return true;
         } catch (IOException ex) {
             System.err.println(ex);
@@ -648,13 +662,13 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Create a bufferedImage from the canvas */
     private BufferedImage generatedBufferedImage() {
-        BufferedImage image = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = image.getGraphics();
-        //g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = buffImage.getGraphics();
+        //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
         this.print(g);
         //System.out.println(this.getVisibleRect());
         g.dispose();
-        return image;
+        return buffImage;
     }
 
 

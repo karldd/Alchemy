@@ -67,7 +67,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     }
 
-    public void setup() {
+    protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }

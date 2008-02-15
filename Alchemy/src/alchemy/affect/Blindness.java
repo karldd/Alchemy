@@ -39,7 +39,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     public Blindness() {
     }
 
-    public void setup() {
+    protected void setup() {
         canvas.setRedraw(false);
 
         // Create the toolbar section
