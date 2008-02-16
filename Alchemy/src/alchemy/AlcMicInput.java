@@ -20,7 +20,6 @@
 package alchemy;
 
 import javax.sound.sampled.*;
-import javax.swing.JOptionPane;
 
 /**
  * Base class used for microphone input <br />
@@ -59,54 +58,8 @@ public class AlcMicInput extends Thread {
         audioBytes = new byte[bufferSize];
         lengthInSamples = bufferSize / 2;
         audioSamples = new int[lengthInSamples];
+        audioFormat = getAudioFormat();
 
-        Mixer.Info[] mi = AudioSystem.getMixerInfo();
-
-        search:
-        for (int i = 0; i < mi.length; i++) {
-            //System.out.println(mi[i]);
-            Mixer m = AudioSystem.getMixer(mi[i]);
-
-            Line.Info[] tli = m.getTargetLineInfo();
-
-            for (int j = 0; j < tli.length; j++) {
-                //System.out.println("target: " + tli[j]);
-
-                try {
-                    AudioFormat[] formats = ((DataLine.Info) tli[j]).getFormats();
-                    for (int k = 0; k < formats.length; k++) {
-                        AudioFormat thisFormat = formats[k];
-                        //System.out.println("    " + thisFormat);
-                        // Get the last mono/16bit format from the list
-                        if (audioFormat == null && thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
-                            //&& thisFormat.getSampleSizeInBits() == 16
-                            audioFormat = thisFormat;
-                            // If a match is found break out to the top
-                            break search;
-                        }
-                    }
-                } catch (ClassCastException e) {
-                //e.printStackTrace();
-                }
-            }
-        //System.out.println();
-        }
-
-        if (audioFormat.getSampleRate() == AudioSystem.NOT_SPECIFIED) {
-            //AudioFormat(float sampleRate, int sampleSizeInBits, int channels, boolean signed, boolean bigEndian) 
-            audioFormat = new AudioFormat(
-                    //audioFormat.getEncoding(),
-                    //32000F,
-                    41000F,
-                    //audioFormat.getSampleRate(),
-                    audioFormat.getSampleSizeInBits(),
-                    audioFormat.getChannels(),
-                    true,
-                    //audioFormat.getFrameSize(),
-                    //audioFormat.getFrameRate(),
-                    audioFormat.isBigEndian());
-        //false);
-        }
         System.out.println("Selected Format: " + audioFormat);
 
     }
@@ -148,27 +101,12 @@ public class AlcMicInput extends Thread {
             //Loop until stopMicInput is turned off
             while (!stopMicInput) {
                 //Read data from the internal buffer of the data line.
-                //System.out.println("Audio Bytes: " + audioBytes.length);
-                //System.out.println("Audio Format frame size: " + audioFormat.getFrameSize());
                 int cnt = targetDataLine.read(audioBytes, 0, audioBytes.length);
 
                 // When the buffer is full
                 if (cnt > 0) {
                     // Call back to the parent if it implements the AlcMicInterface
                     if (parent != null) {
-
-//                        int sampleIndex = 0;
-//
-//                        for (int t = 0; t < tempBuffer.length;) {
-//                            int low = (int) tempBuffer[t];
-//                            t++;
-//                            int high = (int) tempBuffer[t];
-//                            t++;
-//                            int sample = getSixteenBitSample(high, low);
-//                            sampleArray[sampleIndex] = sample;
-//                            sampleIndex++;
-//                        }
-
                         convertToSamples();
                         parent.bufferFull();
                     }
@@ -184,7 +122,6 @@ public class AlcMicInput extends Thread {
 
     private void convertToSamples() {
         //System.out.println(lengthInSamples);
-
         for (int i = 0; i < audioSamples.length; i++) {
             /* First byte is LSB (low order) */
             int LSB = (int) audioBytes[2 * i];
@@ -216,32 +153,64 @@ public class AlcMicInput extends Thread {
         return audioSamples;
     }
 
-    //This method creates and returns an
-    // AudioFormat object for a given set
-    // of format parameters.  If these
-    // parameters don't work well for
-    // you, try some of the other
-    // allowable parameter values, which
-    // are shown in comments following
-    // the declarations.
-    // TODO - Check the compatibility of getAudioFormat() across machines
+    /** Creates and returns an AudioFormat object by walking through the list
+     *  of supported formats and returning the first one that matches the criteria.
+     *  Failing to find a suitable format it returns a default object
+     * 
+     * @return AudioFormat object
+     */
     private AudioFormat getAudioFormat() {
-        //float sampleRate = 44100.0F;
-        float sampleRate = 44100.0F;
-        //8000,11025,16000,22050,44100
-        int sampleSizeInBits = 16;
-        //8,16
-        int channels = 1;
-        //1,2
-        boolean signed = true;
-        //true,false
-        boolean bigEndian = false;
-        //true,false
-        return new AudioFormat(
-                sampleRate,
-                sampleSizeInBits,
-                channels,
-                signed,
-                bigEndian);
+        Mixer.Info[] mi = AudioSystem.getMixerInfo();
+        // Top layer to break out to when we find the correct format
+        search:
+        for (int i = 0; i < mi.length; i++) {
+            //System.out.println(mi[i]);
+            Mixer m = AudioSystem.getMixer(mi[i]);
+
+            Line.Info[] tli = m.getTargetLineInfo();
+
+            for (int j = 0; j < tli.length; j++) {
+                //System.out.println("target: " + tli[j]);
+
+                try {
+                    AudioFormat[] formats = ((DataLine.Info) tli[j]).getFormats();
+                    for (int k = 0; k < formats.length; k++) {
+                        AudioFormat thisFormat = formats[k];
+                        //System.out.println("    " + thisFormat);
+                        // Get the first mono/2frame (thus 16 bit) format from the list
+                        if (audioFormat == null && thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
+                            audioFormat = thisFormat;
+                            // If a match is found break out to the top
+                            break search;
+                        }
+                    }
+                } catch (ClassCastException e) {
+                //e.printStackTrace();
+                }
+            }
+        //System.out.println();
+        }
+
+        if (audioFormat.getSampleRate() == AudioSystem.NOT_SPECIFIED) {
+            System.out.println("Sample Rate not specified, assigning 441000hz");
+            audioFormat = new AudioFormat(
+                    //audioFormat.getEncoding(),
+                    //32000F,
+                    41000F,
+                    //audioFormat.getSampleRate(),
+                    audioFormat.getSampleSizeInBits(),
+                    audioFormat.getChannels(),
+                    true,
+                    //audioFormat.getFrameSize(),
+                    //audioFormat.getFrameRate(),
+                    //false);
+                    audioFormat.isBigEndian());
+        }
+
+        if (audioFormat == null) {
+            audioFormat = new AudioFormat(44100.0F, 16, 1, true, false);
+            System.err.println("No audio format found, assigning the default format");
+        }
+        return audioFormat;
     }
 }
