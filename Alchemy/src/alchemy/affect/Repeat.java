@@ -133,7 +133,6 @@ public class Repeat extends AlcModule {
         //System.out.println(offset);
         //
         //Point finalOffset = new Point(offset.x - bounds.width/2, offset.y - bounds.height/2);
-        // TODO - Adjust the offset so the shape repeats correctly
 
         AffineTransform moveTransform = new AffineTransform();
         moveTransform.translate(offset.x, offset.y);
