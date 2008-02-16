@@ -69,20 +69,21 @@ public class AlcMicInput extends Thread {
         stopMicInput = false;
         try {
             //Get everything set up for capture
-            //audioFormat = getAudioFormat();
-
             DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
-
             targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            targetDataLine.open();
+            targetDataLine.open(audioFormat);
             targetDataLine.start();
 
             // Start the thread
             this.start();
 
-        } catch (Exception e) {
-            System.err.println("ERROR opening the audio line: " + e);
-            e.printStackTrace();
+        } catch (LineUnavailableException ex) {
+            System.err.println("ERROR opening the audio line: " + ex);
+            ex.printStackTrace();
+        } catch (SecurityException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -105,9 +106,9 @@ public class AlcMicInput extends Thread {
 
                 // When the buffer is full
                 if (cnt > 0) {
+                    convertToSamples();
                     // Call back to the parent if it implements the AlcMicInterface
                     if (parent != null) {
-                        convertToSamples();
                         parent.bufferFull();
                     }
 
@@ -147,10 +148,10 @@ public class AlcMicInput extends Thread {
      */
     public double getMicLevel() {
         double sum = 0;
-        for (int i = 0; i < audioBytes.length; i++) {
-            sum += Math.abs(audioBytes[i]);
+        for (int i = 0; i < audioSamples.length; i++) {
+            sum += Math.abs(audioSamples[i]);
         }
-        return sum / (double) audioBytes.length;
+        return sum / (double) audioSamples.length;
     }
 
     /** Get the raw buffer */
