@@ -151,7 +151,9 @@ public class AlcMicInput extends Thread {
         for (int i = 0; i < audioSamples.length; i++) {
             sum += Math.abs(audioSamples[i]);
         }
-        return sum / (double) audioSamples.length;
+        double average = (sum / (double) audioSamples.length) / 100;
+        //System.out.println(average);
+        return average;
     }
 
     /** Get the raw buffer */
