@@ -20,6 +20,7 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
+import alchemy.AlcMain;
 import alchemy.AlcModule;
 import alchemy.AlcUtil;
 import java.awt.Color;
@@ -38,9 +39,19 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
     // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
     private int index;
     private int moduleType = -1;
-    Ellipse2D.Double toolCircle = new Ellipse2D.Double(3, 15, 8, 8);
-    Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(2, 15, 8, 8);
-    Ellipse2D.Double menuCircle = new Ellipse2D.Double(3, 9, 8, 8);
+    private static int checkX;
+
+    static {
+        if (AlcMain.PLATFORM == MACOSX) {
+            checkX = 0;
+        } else {
+            checkX = 3;
+        }
+    }
+    Ellipse2D.Double toolCircle = new Ellipse2D.Double(checkX, 15, 8, 8);
+    Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(checkX+1, 15, 6, 6);
+    Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX+1, 16, 6, 6);
+    Ellipse2D.Double menuCircle = new Ellipse2D.Double(3, 9, 6, 6);
 
     public AlcRadioButtonMenuItem(int index, String title) {
         setup(index, title);
@@ -102,8 +113,11 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
         // NOT SELECTED
         } else {
             if (moduleType != -1) {
-                g2.setColor(Color.BLACK);
+                g2.setColor(this.getBackground());
                 g2.fill(toolCircle);
+                g2.setColor(Color.BLACK);
+                g2.fill(toolInnerCircle);
+                
 
             // This is the menubar
             } else {
