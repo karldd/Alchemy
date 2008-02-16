@@ -20,9 +20,9 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
+import alchemy.AlcMain;
 import alchemy.AlcModule;
 import alchemy.AlcUtil;
-import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -33,6 +33,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     private int index;
     private int moduleType = -1;
+    private int checkX;
 
     public AlcCheckBoxMenuItem() {
     }
@@ -68,8 +69,12 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     public void setup(String title, int accelerator) {
 
-        // TODO - Customise the Check box so it is obvious when it is not selected
-        //installUI();
+        if(AlcMain.PLATFORM == MACOSX){
+            checkX = 0;
+        } else {
+            checkX = 4;
+        }
+        
         this.setText(title);
 
         // Top Left Bottom Right
@@ -96,11 +101,11 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
             g.setColor(AlcToolBar.toolBarBoxColour);
             // This is the toolbar menu popup
             if (moduleType > 0) {
-                g.drawRect(4, 16, 7, 7);
+                g.drawRect(checkX, 16, 7, 7);
 
             // This is the menubar
             } else {
-                g.drawRect(4, 10, 7, 7);
+                g.drawRect(checkX, 10, 7, 7);
             }
         }
     }

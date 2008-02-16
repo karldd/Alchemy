@@ -48,7 +48,7 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
     public static final Color toolBarLineColour = new Color(140, 140, 140);
     public static final Color toolBarHighlightColour = new Color(231, 231, 231);
     public static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
-    public static final Color toolBarBoxColour = new Color(180, 180, 180);
+    public static final Color toolBarBoxColour = new Color(190, 190, 190);
     //////////////////////////////////////////////////////////////
     // FONTS
     //////////////////////////////////////////////////////////////
