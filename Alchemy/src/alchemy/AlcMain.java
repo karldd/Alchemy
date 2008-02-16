@@ -283,7 +283,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 exitMessage = bundle.getString("exitDialogMessage");
             }
 
-            int result = JOptionPane.showConfirmDialog(this, exitMessage, exitTitle, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            int result = JOptionPane.showConfirmDialog(
+                    this, 
+                    exitMessage, 
+                    exitTitle, 
+                    JOptionPane.YES_NO_OPTION, 
+                    JOptionPane.INFORMATION_MESSAGE);
+            
             if (result == JOptionPane.YES_OPTION) {
                 exit();
                 return true;
