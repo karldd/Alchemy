@@ -63,7 +63,7 @@ public class AlcMicInput extends Thread {
 
 
         for (int i = 0; i < mi.length; i++) {
-            //System.out.println(mi[i]);
+            System.out.println(mi[i]);
             Mixer m = AudioSystem.getMixer(mi[i]);
 
             Line.Info[] tli = m.getTargetLineInfo();
@@ -76,7 +76,7 @@ public class AlcMicInput extends Thread {
                         AudioFormat thisFormat = formats[k];
                         System.out.println("    " + thisFormat);
                         // Get the last mono/16bit format from the list
-                        if (thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
+                        if (audioFormat == null && thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
                             //&& thisFormat.getSampleSizeInBits() == 16
                             audioFormat = thisFormat;
 
@@ -102,6 +102,7 @@ public class AlcMicInput extends Thread {
                     //audioFormat.getFrameSize(),
                     //audioFormat.getFrameRate(),
                     audioFormat.isBigEndian());
+                    //false);
         }
         System.out.println("Selected Format: " + audioFormat);
         if (audioFormat == null) {
