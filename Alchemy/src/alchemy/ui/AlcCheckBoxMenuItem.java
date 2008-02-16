@@ -33,7 +33,15 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     private int index;
     private int moduleType = -1;
-    private int checkX;
+    private static int checkX;
+
+    static {
+        if (AlcMain.PLATFORM == MACOSX) {
+            checkX = 0;
+        } else {
+            checkX = 4;
+        }
+    }
 
     public AlcCheckBoxMenuItem() {
     }
@@ -69,12 +77,6 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     public void setup(String title, int accelerator) {
 
-        if(AlcMain.PLATFORM == MACOSX){
-            checkX = 0;
-        } else {
-            checkX = 4;
-        }
-        
         this.setText(title);
 
         // Top Left Bottom Right

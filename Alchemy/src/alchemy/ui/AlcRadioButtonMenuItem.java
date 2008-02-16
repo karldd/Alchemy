@@ -49,9 +49,10 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
         }
     }
     Ellipse2D.Double toolCircle = new Ellipse2D.Double(checkX, 15, 8, 8);
-    Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(checkX+1, 15, 6, 6);
-    Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX+1, 16, 6, 6);
-    Ellipse2D.Double menuCircle = new Ellipse2D.Double(3, 9, 6, 6);
+    Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(checkX + 1, 15, 6, 6);
+    Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX + 1, 16, 6, 6);
+    Ellipse2D.Double menuCircle = new Ellipse2D.Double(3, 9, 8, 8);
+    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(4, 10, 6, 6);
 
     public AlcRadioButtonMenuItem(int index, String title) {
         setup(index, title);
@@ -108,7 +109,7 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
 
             // This is the menubar
             } else {
-                g2.draw(menuCircle);
+                g2.draw(menuInnerCircle);
             }
         // NOT SELECTED
         } else {
@@ -117,11 +118,14 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
                 g2.fill(toolCircle);
                 g2.setColor(Color.BLACK);
                 g2.fill(toolInnerCircle);
-                
+
 
             // This is the menubar
             } else {
+                g2.setColor(this.getBackground());
                 g2.fill(menuCircle);
+                g2.setColor(Color.BLACK);
+                g2.fill(menuInnerCircle);
             }
         }
     }
