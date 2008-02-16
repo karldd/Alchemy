@@ -39,9 +39,7 @@ public class AlcMicInput extends Thread {
 
     /** Creates a new instance of AlcMicInput */
     public AlcMicInput(int bufferSize) {
-        audioBytes = new byte[bufferSize];
-        lengthInSamples = bufferSize / 2;
-        audioSamples = new int[lengthInSamples];
+        setup(null, bufferSize);
     }
 
     /** Creates a new instance of AlcMicInput
@@ -50,10 +48,67 @@ public class AlcMicInput extends Thread {
      * @param bufferSize    Size of the required buffer
      */
     public AlcMicInput(AlcMicInterface parent, int bufferSize) {
-        this.parent = parent;
+        setup(parent, bufferSize);
+    }
+
+    private void setup(AlcMicInterface parent, int bufferSize) {
+        if (parent != null) {
+            this.parent = parent;
+        }
         audioBytes = new byte[bufferSize];
         lengthInSamples = bufferSize / 2;
         audioSamples = new int[lengthInSamples];
+
+        Mixer.Info[] mi = AudioSystem.getMixerInfo();
+
+
+        for (int i = 0; i < mi.length; i++) {
+            //System.out.println(mi[i]);
+            Mixer m = AudioSystem.getMixer(mi[i]);
+
+            Line.Info[] tli = m.getTargetLineInfo();
+            for (int j = 0; j < tli.length; j++) {
+                System.out.println("target: " + tli[j]);
+
+                try {
+                    AudioFormat[] formats = ((DataLine.Info) tli[j]).getFormats();
+                    for (int k = 0; k < formats.length; k++) {
+                        AudioFormat thisFormat = formats[k];
+                        System.out.println("    " + thisFormat);
+                        // Get the last mono/16bit format from the list
+                        if (thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
+                            //&& thisFormat.getSampleSizeInBits() == 16
+                            audioFormat = thisFormat;
+
+                        }
+                    }
+                } catch (ClassCastException e) {
+                //e.printStackTrace();
+                }
+            }
+            System.out.println();
+        }
+
+        if (audioFormat.getSampleRate() == AudioSystem.NOT_SPECIFIED) {
+            //AudioFormat(float sampleRate, int sampleSizeInBits, int channels, boolean signed, boolean bigEndian) 
+            audioFormat = new AudioFormat(
+                    //audioFormat.getEncoding(),
+                    //32000F,
+                    41000F,
+                    //audioFormat.getSampleRate(),
+                    audioFormat.getSampleSizeInBits(),
+                    audioFormat.getChannels(),
+                    true,
+                    //audioFormat.getFrameSize(),
+                    //audioFormat.getFrameRate(),
+                    audioFormat.isBigEndian());
+        }
+        System.out.println("Selected Format: " + audioFormat);
+        if (audioFormat == null) {
+            System.err.println("Could not find an appropriate audio format, assigning the default");
+            audioFormat = getAudioFormat();
+        }
+
     }
 
     /** Starts Microphone Input */
@@ -61,72 +116,20 @@ public class AlcMicInput extends Thread {
         stopMicInput = false;
         try {
             //Get everything set up for capture
-            audioFormat = getAudioFormat();
-
-
-            Mixer.Info[] mi = AudioSystem.getMixerInfo();
-
-
-            for (int i = 0; i < mi.length; i++) {
-                System.out.println(mi[i]);
-                Mixer m = AudioSystem.getMixer(mi[i]);
-//
-//                Line.Info[] sli = m.getSourceLineInfo();
-//                for (int j = 0; j < sli.length; j++) {
-//                    System.out.println("source: " + sli[j]);
-//                }
-
-                Line.Info[] tli = m.getTargetLineInfo();
-                for (int j = 0; j < tli.length; j++) {
-                    System.out.println("target: " + tli[j]);
-
-                    try {
-                        AudioFormat[] formats = ((DataLine.Info) tli[j]).getFormats();
-                        for (int k = 0; k < formats.length; k++) {
-                            System.out.println("    " + formats[k]);
-                        }
-                    } catch (ClassCastException e) {
-                    }
-
-
-                }
-                System.out.println();
-            }
-
-
-
+            //audioFormat = getAudioFormat();
 
             DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
 
-//            Mixer.Info[] mi = AudioSystem.getMixerInfo();
-//            for (int i = 0; i < mi.length; i++) {
-//                System.out.println(i+" - "+mi[i]);
-//                 Mixer thisMixer = AudioSystem.getMixer(mi[i]);
-//                 System.out.println("Line Supported: " + thisMixer.isLineSupported(dataLineInfo));
-//            }
-
-
-
-
-
-
-
-
             targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            //targetDataLine.open(audioFormat);
             targetDataLine.open();
-
-            //System.out.println(targetDataLine.getFormat());
-            //System.out.println(targetDataLine.getBufferSize());
             targetDataLine.start();
 
             // Start the thread
             this.start();
 
         } catch (Exception e) {
-
-            System.out.println("startMicInput: " + e);
-
+            System.err.println("ERROR opening the audio line: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -145,6 +148,8 @@ public class AlcMicInput extends Thread {
             //Loop until stopMicInput is turned off
             while (!stopMicInput) {
                 //Read data from the internal buffer of the data line.
+                //System.out.println("Audio Bytes: " + audioBytes.length);
+                //System.out.println("Audio Format frame size: " + audioFormat.getFrameSize());
                 int cnt = targetDataLine.read(audioBytes, 0, audioBytes.length);
 
                 // When the buffer is full
@@ -172,7 +177,7 @@ public class AlcMicInput extends Thread {
             }
 
         } catch (Exception e) {
-            System.out.println("run: " + e);
+            e.printStackTrace();
         //System.exit(0);
         }
     }
