@@ -33,7 +33,7 @@ import javax.swing.plaf.basic.BasicToolBarUI;
  * The disappearing toolbar
  * Housing access to all modules and their sub toolbars
  */
-public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
+public class AlcToolBar extends JPanel implements AlcConstants {
 
     /** Reference to the root */
     private final AlcMain root;
@@ -107,7 +107,6 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
         this.setOpaque(false);
         this.setName("Toolbar");
         //this.setVisible(false);
-        this.addMouseListener(this);
 
         // Make this a Box Layout so all submenus are stacked below
         //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -124,8 +123,8 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
         // Create and add the sub toolbar
         subToolBar = loadSubToolBar();
         // Make it invisible until it gets some content
-        subToolBar.setVisible(false);
         toolBars.add("South", subToolBar);
+        subToolBar.setVisible(false);
 
         if (!root.prefs.getPaletteAttached()) {
             this.add("South", toolBars);
@@ -409,8 +408,11 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
     public void resizeToolBar(Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
-        this.repaint(0, 0, windowSize.width, totalHeight);
+        //this.repaint(0, 0, windowSize.width, totalHeight);
         this.revalidate();
+        this.repaint();
+
+    //this.isValidateRoot();
     }
 
     private void refreshToolBar() {
@@ -550,7 +552,6 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
     }
 
     private void refreshSubToolBar() {
-        //System.out.println("Sections:" + currentSubToolBarSections);
         // Remove everything
         subToolBar.removeAll();
         // If there is a create section add that first
@@ -571,16 +572,47 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
             }
 
         }
-        // TODO - why doesn't the subtoolbar section display immediately when reloaded?
-
         if (currentSubToolBarSections > 0) {
-            //subToolBar.revalidate();
             subToolBar.setVisible(true);
         } else {
-            subToolBar.setVisible(false);
+            if (!root.prefs.getPaletteAttached()) {
+                subToolBar.setVisible(false);
+            }
         }
-
+        subToolBar.revalidate();
+        subToolBar.repaint();
         refreshToolBar();
+    }
+
+    /** Called when detaching the toolbar into the palette */
+    public void detachToolBar() {
+        if (!subToolBar.isVisible()) {
+            subToolBar.setVisible(true);
+        }
+        this.setToolBarVisible(false);
+        this.remove(toolBars);
+        this.remove(root.menuBar);
+    }
+
+    /** Called when attaching the toolbar from the palette */
+    public void attachToolBar() {
+        if (AlcMain.PLATFORM != MACOSX) {
+            root.setJMenuBar(null);
+            this.add("North", root.menuBar);
+        }
+        if (currentSubToolBarSections < 1) {
+            subToolBar.setVisible(false);
+            System.out.println("SET FALSE");
+        }
+        this.calculateTotalHeight();
+        this.add("South", toolBars);
+        this.calculateTotalHeight();
+        this.detachButton.setVisible(true);
+        this.revalidate();
+        refreshToolBar();
+        this.setToolBarVisible(true);
+        // Request focus here to enable key mapping on windows
+        this.requestFocus();
     }
 
     // GETTERS
@@ -633,42 +665,4 @@ public class AlcToolBar extends JPanel implements AlcConstants, MouseListener {
     public int getTotalHeight() {
         return totalHeight;
     }
-
-    public void loadCreate(int index) {
-        root.setCurrentCreate(index);
-    }
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-        
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    //checkParentWindow();
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
-
-    /*
-    public class ClearAction extends AbstractAction {
-    public ClearAction() {
-    //super("Clear", AlcUtil.getUrlPath("data/clear.png"));
-    //putValue(SHORT_DESCRIPTION, "Description goes here");
-    //putValue(NAME, "Clear");
-    //putValue(SMALL_ICON, "data/clear.png");
-    //putValue(MNEMONIC_KEY, mnemonic);
-    //putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MENU_SHORTCUT));
-    putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MENU_SHORTCUT));
-    }
-    public void actionPerformed(ActionEvent e) {
-    System.out.println("CLEAR ACTION CALLED");
-    root.canvas.clear();
-    }
-    }*/
 }
