@@ -579,14 +579,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             } else {
                 palette.setLocation(100, 100);
             }
-
-
+            
             palette.addContent(toolBar.toolBars);
             palette.pack();
             palette.setVisible(true);
             palette.requestFocus();
-
-
             prefs.setPaletteAttached(true);
 
             if (PLATFORM != MACOSX) {
@@ -598,6 +595,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // TOOLBAR
         } else {
             if (palette != null) {
+                
                 prefs.setPaletteLocation(palette.getLocation());
                 palette.setVisible(false);
                 //palette.dispose();
@@ -611,7 +609,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 toolBar.calculateTotalHeight();
                 toolBar.detachButton.setVisible(true);
                 toolBar.revalidate();
+                toolBar.setToolBarVisible(true);
+                // Request focus here to enable key mapping on windows
+                toolBar.requestFocus();
                 prefs.setPaletteAttached(false);
+             
             }
         }
     }
@@ -791,10 +793,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             // Custom repaint class to manage transparency and redraw better
             // RepaintManager.setCurrentManager(new AlcRepaintManager());
             //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
-            
-            // TODO - Check the CheckBoxMenuItem appears on windows
-            //UIManager.put("CheckBoxMenuItem.checkIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
-            //UIManager.put("CheckBoxMenuItem.arrowIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
 
             //JFrame.setDefaultLookAndFeelDecorated(true);
 

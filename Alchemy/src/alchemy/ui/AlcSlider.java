@@ -46,8 +46,6 @@ public class AlcSlider extends JPanel {
         slider.setMinorTickSpacing(25);  // smaller tick marks
         slider.setPaintTicks(true);     // display the ticks
         //slider.setPaintLabels(false);
-        // TODO - customise this slider?  or set to number box? http://www.java2s.com/Code/Java/Swing-Components/ThumbSliderExample1.htm
-        // or make a popupmenu with a slider inside?
 
         //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
         slider.setOpaque(false);
