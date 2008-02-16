@@ -793,7 +793,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
             
             // TODO - Check the CheckBoxMenuItem appears on windows
-            UIManager.put("CheckBoxMenuItem.checkIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
+            //UIManager.put("CheckBoxMenuItem.checkIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
             //UIManager.put("CheckBoxMenuItem.arrowIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
 
             //JFrame.setDefaultLookAndFeelDecorated(true);

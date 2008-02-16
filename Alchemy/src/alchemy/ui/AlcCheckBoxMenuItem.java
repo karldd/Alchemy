@@ -22,6 +22,8 @@ package alchemy.ui;
 import alchemy.AlcConstants;
 import alchemy.AlcModule;
 import alchemy.AlcUtil;
+import java.awt.Color;
+import java.awt.Graphics;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -44,8 +46,6 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     public AlcCheckBoxMenuItem(String title, int accelerator) {
         setup(title, accelerator);
-
-
     }
 
     public AlcCheckBoxMenuItem(AlcModule module) {
@@ -68,7 +68,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
     public void setup(String title, int accelerator) {
 
         // TODO - Customise the Check box so it is obvious when it is not selected
-
+        //installUI();
         this.setText(title);
 
         // Top Left Bottom Right
@@ -88,4 +88,23 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
     public int getModuleType() {
         return moduleType;
     }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (!this.getState()) {
+            g.setColor(AlcToolBar.toolBarLineColour);
+            g.drawRect(0, 16, 7, 7);
+        }
+    }
+    //
+//    private void installUI() {
+//        BasicMenuItemUI customUI = new BasicMenuItemUI() {
+//
+//            public void paint(Graphics g, JComponent c) {
+//                paintMenuItem(g, c, null, arrowIcon, selectionBackground, selectionForeground, defaultTextIconGap);
+//            }
+//        };
+//        this.setUI(customUI);
+//
+//    }
 }
