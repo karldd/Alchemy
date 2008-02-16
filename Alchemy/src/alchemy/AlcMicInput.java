@@ -20,6 +20,7 @@
 package alchemy;
 
 import javax.sound.sampled.*;
+import javax.swing.JOptionPane;
 
 /**
  * Base class used for microphone input <br />
@@ -61,32 +62,34 @@ public class AlcMicInput extends Thread {
 
         Mixer.Info[] mi = AudioSystem.getMixerInfo();
 
-
+        search:
         for (int i = 0; i < mi.length; i++) {
-            System.out.println(mi[i]);
+            //System.out.println(mi[i]);
             Mixer m = AudioSystem.getMixer(mi[i]);
 
             Line.Info[] tli = m.getTargetLineInfo();
+
             for (int j = 0; j < tli.length; j++) {
-                System.out.println("target: " + tli[j]);
+                //System.out.println("target: " + tli[j]);
 
                 try {
                     AudioFormat[] formats = ((DataLine.Info) tli[j]).getFormats();
                     for (int k = 0; k < formats.length; k++) {
                         AudioFormat thisFormat = formats[k];
-                        System.out.println("    " + thisFormat);
+                        //System.out.println("    " + thisFormat);
                         // Get the last mono/16bit format from the list
                         if (audioFormat == null && thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
                             //&& thisFormat.getSampleSizeInBits() == 16
                             audioFormat = thisFormat;
-
+                            // If a match is found break out to the top
+                            break search;
                         }
                     }
                 } catch (ClassCastException e) {
                 //e.printStackTrace();
                 }
             }
-            System.out.println();
+        //System.out.println();
         }
 
         if (audioFormat.getSampleRate() == AudioSystem.NOT_SPECIFIED) {
@@ -102,13 +105,9 @@ public class AlcMicInput extends Thread {
                     //audioFormat.getFrameSize(),
                     //audioFormat.getFrameRate(),
                     audioFormat.isBigEndian());
-                    //false);
+        //false);
         }
         System.out.println("Selected Format: " + audioFormat);
-        if (audioFormat == null) {
-            System.err.println("Could not find an appropriate audio format, assigning the default");
-            audioFormat = getAudioFormat();
-        }
 
     }
 
