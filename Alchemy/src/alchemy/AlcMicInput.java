@@ -152,7 +152,6 @@ public class AlcMicInput extends Thread {
             sum += Math.abs(audioSamples[i]);
         }
         double average = (sum / (double) audioSamples.length) / 100;
-        //System.out.println(average);
         return average;
     }
 
