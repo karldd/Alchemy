@@ -122,12 +122,22 @@ public class AlcMicInput extends Thread {
 
     private void convertToSamples() {
         //System.out.println(lengthInSamples);
-        for (int i = 0; i < audioSamples.length; i++) {
-            /* First byte is LSB (low order) */
-            int LSB = (int) audioBytes[2 * i];
-            /* Second byte is MSB (high order) */
-            int MSB = (int) audioBytes[2 * i + 1];
-            audioSamples[i] = MSB << 8 | (255 & LSB);
+        if (audioFormat.isBigEndian()) {
+            for (int i = 0; i < audioSamples.length; i++) {
+                /* First byte is MSB (high order) */
+                int MSB = (int) audioBytes[2 * i];
+                /* Second byte is LSB (low order) */
+                int LSB = (int) audioBytes[2 * i + 1];
+                audioSamples[i] = MSB << 8 | (255 & LSB);
+            }
+        } else {
+            for (int i = 0; i < audioSamples.length; i++) {
+                /* First byte is LSB (low order) */
+                int LSB = (int) audioBytes[2 * i];
+                /* Second byte is MSB (high order) */
+                int MSB = (int) audioBytes[2 * i + 1];
+                audioSamples[i] = MSB << 8 | (255 & LSB);
+            }
         }
     }
 
@@ -177,8 +187,11 @@ public class AlcMicInput extends Thread {
                     for (int k = 0; k < formats.length; k++) {
                         AudioFormat thisFormat = formats[k];
                         //System.out.println("    " + thisFormat);
-                        // Get the first mono/2frame (thus 16 bit) format from the list
-                        if (audioFormat == null && thisFormat.getChannels() == 1 && thisFormat.getFrameSize() == 2) {
+                        // Get the first mono / 2frame / 16 bit format from the list
+                        if (thisFormat.getChannels() == 1 &&
+                                thisFormat.getFrameSize() == 2 &&
+                                thisFormat.getSampleSizeInBits() == 16) {
+
                             audioFormat = thisFormat;
                             // If a match is found break out to the top
                             break search;
