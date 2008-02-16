@@ -773,8 +773,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
      */
 
-    // TODO - Look into making the UI thread safe
-    // SEE: http://mindprod.com/jgloss/threadsafe.html
     public static void main(String[] args) {
         if (PLATFORM == MACOSX) {
             setupMacSystemProperties();
@@ -787,8 +785,12 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             // Custom repaint class to manage transparency and redraw better
             // RepaintManager.setCurrentManager(new AlcRepaintManager());
             //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
+            
+            // TODO - Check the CheckBoxMenuItem appears on windows
+            UIManager.put("CheckBoxMenuItem.checkIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
+            //UIManager.put("CheckBoxMenuItem.arrowIcon", AlcUtil.createImageIcon("data/palette-detach-over.png"));
 
-            JFrame.setDefaultLookAndFeelDecorated(true);
+            //JFrame.setDefaultLookAndFeelDecorated(true);
 
         } catch (Exception e) {
             e.printStackTrace();

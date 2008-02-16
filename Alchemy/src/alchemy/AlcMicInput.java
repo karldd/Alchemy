@@ -62,9 +62,62 @@ public class AlcMicInput extends Thread {
         try {
             //Get everything set up for capture
             audioFormat = getAudioFormat();
+
+
+            Mixer.Info[] mi = AudioSystem.getMixerInfo();
+
+
+            for (int i = 0; i < mi.length; i++) {
+                System.out.println(mi[i]);
+                Mixer m = AudioSystem.getMixer(mi[i]);
+//
+//                Line.Info[] sli = m.getSourceLineInfo();
+//                for (int j = 0; j < sli.length; j++) {
+//                    System.out.println("source: " + sli[j]);
+//                }
+
+                Line.Info[] tli = m.getTargetLineInfo();
+                for (int j = 0; j < tli.length; j++) {
+                    System.out.println("target: " + tli[j]);
+
+                    try {
+                        AudioFormat[] formats = ((DataLine.Info) tli[j]).getFormats();
+                        for (int k = 0; k < formats.length; k++) {
+                            System.out.println("    " + formats[k]);
+                        }
+                    } catch (ClassCastException e) {
+                    }
+
+
+                }
+                System.out.println();
+            }
+
+
+
+
             DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
+
+//            Mixer.Info[] mi = AudioSystem.getMixerInfo();
+//            for (int i = 0; i < mi.length; i++) {
+//                System.out.println(i+" - "+mi[i]);
+//                 Mixer thisMixer = AudioSystem.getMixer(mi[i]);
+//                 System.out.println("Line Supported: " + thisMixer.isLineSupported(dataLineInfo));
+//            }
+
+
+
+
+
+
+
+
             targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            targetDataLine.open(audioFormat);
+            //targetDataLine.open(audioFormat);
+            targetDataLine.open();
+
+            //System.out.println(targetDataLine.getFormat());
+            //System.out.println(targetDataLine.getBufferSize());
             targetDataLine.start();
 
             // Start the thread
@@ -145,7 +198,7 @@ public class AlcMicInput extends Thread {
         for (int i = 0; i < audioBytes.length; i++) {
             sum += Math.abs(audioBytes[i]);
         }
-        return sum / (double)audioBytes.length;
+        return sum / (double) audioBytes.length;
     }
 
     /** Get the raw buffer */
@@ -168,6 +221,7 @@ public class AlcMicInput extends Thread {
     // the declarations.
     // TODO - Check the compatibility of getAudioFormat() across machines
     private AudioFormat getAudioFormat() {
+        //float sampleRate = 44100.0F;
         float sampleRate = 44100.0F;
         //8000,11025,16000,22050,44100
         int sampleSizeInBits = 16;

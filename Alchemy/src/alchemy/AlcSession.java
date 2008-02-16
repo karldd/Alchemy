@@ -192,7 +192,7 @@ public class AlcSession implements ActionListener, AlcConstants {
 //                Worker.post(new Task() {
 //
 //                    public Object run() throws Exception {
-            System.out.println("SAVE FRAME CALL FROM TIMER");
+            //System.out.println("SAVE FRAME CALL FROM TIMER");
 
             // If the page has been saved
             if (savePage()) {
@@ -203,7 +203,7 @@ public class AlcSession implements ActionListener, AlcConstants {
                     indicatorTimer = new javax.swing.Timer(500, new ActionListener() {
 
                         public void actionPerformed(ActionEvent e) {
-                            System.out.println("indicatorTimer action called");
+                            //System.out.println("indicatorTimer action called");
                             root.canvas.recordIndicator = false;
                             root.canvas.repaint();
                             indicatorTimer.stop();
