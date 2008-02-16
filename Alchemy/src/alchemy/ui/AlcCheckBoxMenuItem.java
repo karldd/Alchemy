@@ -31,7 +31,8 @@ import javax.swing.KeyStroke;
 
 public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
 
-    private int index,  moduleType;
+    private int index;
+    private int moduleType = -1;
 
     public AlcCheckBoxMenuItem() {
     }
@@ -92,19 +93,15 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (!this.getState()) {
-            g.setColor(AlcToolBar.toolBarLineColour);
-            g.drawRect(0, 16, 7, 7);
+            g.setColor(AlcToolBar.toolBarBoxColour);
+            // This is the toolbar menu popup
+            if (moduleType > 0) {
+                g.drawRect(4, 16, 7, 7);
+
+            // This is the menubar
+            } else {
+                g.drawRect(4, 10, 7, 7);
+            }
         }
     }
-    //
-//    private void installUI() {
-//        BasicMenuItemUI customUI = new BasicMenuItemUI() {
-//
-//            public void paint(Graphics g, JComponent c) {
-//                paintMenuItem(g, c, null, arrowIcon, selectionBackground, selectionForeground, defaultTextIconGap);
-//            }
-//        };
-//        this.setUI(customUI);
-//
-//    }
 }

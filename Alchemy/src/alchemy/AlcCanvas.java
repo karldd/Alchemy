@@ -140,7 +140,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
 
         //... Paint background.
-        g2.setPaint(bgColour);
+        g2.setColor(bgColour);
         g2.fillRect(0, 0, w, h);
 
         // Paint the buffImage is available
@@ -164,13 +164,13 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
                         //g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                        g2.setPaint(currentShape.getColour());
+                        g2.setColor(currentShape.getColour());
                         g2.draw(currentShape.getPath());
 
                     // SOLID
                     } else {
 
-                        g2.setPaint(currentShape.getColour());
+                        g2.setColor(currentShape.getColour());
                         g2.fill(currentShape.getPath());
 
                     }
@@ -181,7 +181,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
         if (recordIndicator) {
             recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
-            g2.setPaint(Color.RED);
+            g2.setColor(Color.RED);
             g2.fill(recordCircle);
         }
 

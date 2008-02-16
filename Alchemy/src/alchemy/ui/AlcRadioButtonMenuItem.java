@@ -22,6 +22,11 @@ package alchemy.ui;
 import alchemy.AlcConstants;
 import alchemy.AlcModule;
 import alchemy.AlcUtil;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
 import javax.swing.BorderFactory;
 import javax.swing.JRadioButtonMenuItem;
 //import javax.swing.plaf.basic.BasicMenuItemUI;
@@ -31,7 +36,11 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
 
     // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here:
     // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
-    private int index,  moduleType;
+    private int index;
+    private int moduleType = -1;
+    Ellipse2D.Double toolCircle = new Ellipse2D.Double(3, 15, 8, 8);
+    Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(2, 15, 8, 8);
+    Ellipse2D.Double menuCircle = new Ellipse2D.Double(3, 9, 8, 8);
 
     public AlcRadioButtonMenuItem(int index, String title) {
         setup(index, title);
@@ -73,5 +82,33 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
 
     public int getModuleType() {
         return moduleType;
+    }
+
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // SELECTED
+        if (!this.isSelected()) {
+            g2.setColor(AlcToolBar.toolBarBoxColour);
+            // This is the toolbar menu popup
+            if (moduleType != -1) {
+                g2.draw(toolCircleLine);
+
+            // This is the menubar
+            } else {
+                g2.draw(menuCircle);
+            }
+        // NOT SELECTED
+        } else {
+            if (moduleType != -1) {
+                g2.setColor(Color.BLACK);
+                g2.fill(toolCircle);
+
+            // This is the menubar
+            } else {
+                g2.fill(menuCircle);
+            }
+        }
     }
 }
