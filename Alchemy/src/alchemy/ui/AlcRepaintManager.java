@@ -13,8 +13,6 @@ public class AlcRepaintManager extends RepaintManager {
         String className = comp.getClass().getName();
         //System.out.println(className);
 
-        //TODO - Debug the ghosting when you rollover the black/white button and then the menubar
-
         //if (!lastClass.endsWith("AlcToolBar") && !className.endsWith("JLayeredPane")) {
 //        if (!className.endsWith("JLayeredPane")) {
 //            super.addDirtyRegion(comp, x, y, w, h);

@@ -35,8 +35,6 @@ import javax.swing.KeyStroke;
 
 public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstants {
 
-    // TODO - find some way to avoid the ugly round selected circle mark - possibly by adding a normal radiobutton see here:
-    // http://www.onjava.com/pub/a/onjava/excerpt/swing_14/index6.html?page=2
     private int index;
     private int moduleType = -1;
     private static int checkX;
