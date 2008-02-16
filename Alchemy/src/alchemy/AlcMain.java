@@ -173,7 +173,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 windowSet = true;
             }
         }
-        
+
         if (!windowSet) {
             if (currentWindowSize.width < 1000) {
                 windowSize = new Dimension(800, 500);
@@ -284,12 +284,12 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
 
             int result = JOptionPane.showConfirmDialog(
-                    this, 
-                    exitMessage, 
-                    exitTitle, 
-                    JOptionPane.YES_NO_OPTION, 
+                    this,
+                    exitMessage,
+                    exitTitle,
+                    JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE);
-            
+
             if (result == JOptionPane.YES_OPTION) {
                 exit();
                 return true;
@@ -555,9 +555,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if (seperate) {
             // If this is not being called at startup
             if (!prefs.getPaletteAttached()) {
-                toolBar.setToolBarVisible(false);
-                toolBar.remove(toolBar.toolBars);
-                toolBar.remove(menuBar);
+                toolBar.detachToolBar();
             }
 
             // Make sure the palette will not be offscreen
@@ -579,7 +577,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             } else {
                 palette.setLocation(100, 100);
             }
-            
+
             palette.addContent(toolBar.toolBars);
             palette.pack();
             palette.setVisible(true);
@@ -595,25 +593,14 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // TOOLBAR
         } else {
             if (palette != null) {
-                
+
                 prefs.setPaletteLocation(palette.getLocation());
                 palette.setVisible(false);
                 //palette.dispose();
                 //palette = null;
-                if (PLATFORM != MACOSX) {
-                    this.setJMenuBar(null);
-                    toolBar.add("North", menuBar);
-                    toolBar.calculateTotalHeight();
-                }
-                toolBar.add("South", toolBar.toolBars);
-                toolBar.calculateTotalHeight();
-                toolBar.detachButton.setVisible(true);
-                toolBar.revalidate();
-                toolBar.setToolBarVisible(true);
-                // Request focus here to enable key mapping on windows
-                toolBar.requestFocus();
+                toolBar.attachToolBar();
                 prefs.setPaletteAttached(false);
-             
+
             }
         }
     }
@@ -790,11 +777,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         try {
 
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // Custom repaint class to manage transparency and redraw better
-            // RepaintManager.setCurrentManager(new AlcRepaintManager());
-            //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
+        // Custom repaint class to manage transparency and redraw better
+        // RepaintManager.setCurrentManager(new AlcRepaintManager());
+        //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
 
-            //JFrame.setDefaultLookAndFeelDecorated(true);
+        //JFrame.setDefaultLookAndFeelDecorated(true);
 
         } catch (Exception e) {
             e.printStackTrace();
