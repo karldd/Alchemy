@@ -724,10 +724,12 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                     method.invoke(root.creates[root.currentCreate], new Object[]{event});
                 }
                 // Pass to all active affect modules
-                for (int i = 0; i < root.currentAffects.length; i++) {
-                    if (root.currentAffects[i]) {
-                        Method method = root.affects[i].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
-                        method.invoke(root.affects[i], new Object[]{event});
+                if (root.hasCurrentAffects()) {
+                    for (int i = 0; i < root.currentAffects.length; i++) {
+                        if (root.currentAffects[i]) {
+                            Method method = root.affects[i].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
+                            method.invoke(root.affects[i], new Object[]{event});
+                        }
                     }
                 }
             } catch (Exception e) {
