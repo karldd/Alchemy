@@ -310,42 +310,44 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // AFFECT
         //////////////////////////////////////////////////////////////
-        affectButton = new AlcPopupButton(getS("affectTitle"), getS("affectDescription"), AlcUtil.getUrlPath("data/affect.png"));
-        for (int i = 0; i < root.affects.length; i++) {
-            // The current module
-            AlcModule currentModule = root.affects[i];
+        if (root.getNumberOfAffectModules() > 0) {
+            affectButton = new AlcPopupButton(getS("affectTitle"), getS("affectDescription"), AlcUtil.getUrlPath("data/affect.png"));
+            for (int i = 0; i < root.affects.length; i++) {
+                // The current module
+                AlcModule currentModule = root.affects[i];
 
-            AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(currentModule);
-            affectMenuItem.setToolTipText(currentModule.getDescription());
-            affectMenuItem.addItemListener(
-                    new ItemListener() {
+                AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(currentModule);
+                affectMenuItem.setToolTipText(currentModule.getDescription());
+                affectMenuItem.addItemListener(
+                        new ItemListener() {
 
-                        public void itemStateChanged(ItemEvent e) {
+                            public void itemStateChanged(ItemEvent e) {
 
-                            AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
+                                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
 
-                            // SELECTED
-                            if (e.getStateChange() == ItemEvent.SELECTED) {
+                                // SELECTED
+                                if (e.getStateChange() == ItemEvent.SELECTED) {
 
-                                //System.out.println( index );
+                                    //System.out.println( index );
 
-                                root.addAffect(source.getIndex());
+                                    root.addAffect(source.getIndex());
 
-                            // DESELECTED
-                            } else {
-                                root.removeAffect(source.getIndex());
-                                // Index is offset to allow for the create module to always be first
-                                removeSubToolBarSection(source.getIndex() + 1);
+                                // DESELECTED
+                                } else {
+                                    root.removeAffect(source.getIndex());
+                                    // Index is offset to allow for the create module to always be first
+                                    removeSubToolBarSection(source.getIndex() + 1);
+                                }
+                                Point loc = source.getLocation();
+                                int heightFromWindow = loc.y + 50;
+                                toggleToolBar(heightFromWindow, true);
                             }
-                            Point loc = source.getLocation();
-                            int heightFromWindow = loc.y + 50;
-                            toggleToolBar(heightFromWindow, true);
-                        }
-                    });
+                        });
 
-            affectButton.addItem(affectMenuItem);
+                affectButton.addItem(affectMenuItem);
+            }
+            toolBar.add(affectButton);
         }
-        toolBar.add(affectButton);
 
         //////////////////////////////////////////////////////////////
         // SEPARATOR
@@ -466,7 +468,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             //System.out.println(!visible);
             if (!visible) {
                 createButton.hidePopup();
-                affectButton.hidePopup();
+                if (affectButton != null) {
+                    affectButton.hidePopup();
+                }
             }
         }
     }
@@ -634,11 +638,11 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             visible = true;
         }
         //}
-        //if (affectButton != null) {
-        if (affectButton.isPopupVisible()) {
-            visible = true;
+        if (affectButton != null) {
+            if (affectButton.isPopupVisible()) {
+                visible = true;
+            }
         }
-        //}
         return visible;
     }
 

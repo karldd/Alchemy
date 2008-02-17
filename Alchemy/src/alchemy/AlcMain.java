@@ -124,16 +124,30 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         plugins = new AlcPlugin(this);
         System.out.println("Number of Plugins: " + getNumberOfPlugins());
 
-        // Initialise the on/off array for current affects
-        currentAffects = new boolean[plugins.getNumberOfAffectModules()];
-
-        // Add each type of plugin
-        if (plugins.getNumberOfPlugins() > 0) {
-            String[] createsOrder = {"Shapes", "Inverse Shapes", "Type Shapes", "Mic Shapes"};
+        // Load affects first - zero number of affects is not a problem
+        if (getNumberOfAffectModules() > 0) {
+            // Initialise the on/off array for current affects
+            currentAffects = new boolean[getNumberOfAffectModules()];
             String[] affectsOrder = {"Mirror", "Blindness", "Random"};
             // Extension Point Name, Array Size, Module Type
-            creates = plugins.addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
             affects = plugins.addPlugins("Affect", getNumberOfAffectModules(), AFFECT, affectsOrder);
+        }
+        // Load create - zero creates = exit!
+        if (getNumberOfCreateModules() > 0) {
+            String[] createsOrder = {"Shapes", "Inverse Shapes", "Type Shapes", "Mic Shapes"};
+            // Extension Point Name, Array Size, Module Type
+            creates = plugins.addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
+        } else {
+
+            // Tell the user that there must be at least one create module loaded
+            JOptionPane.showConfirmDialog(
+                    null,
+                    bundle.getString("noCreateModulesDialogMessage"),
+                    bundle.getString("noCreateModulesDialogTitle"),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            System.exit(0);
         }
 
         // LOAD INTERFACE AND CANVAS
@@ -331,8 +345,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         for (int i = 0; i < creates.length; i++) {
             creates[i].setGlobals(this, canvas, toolBar);
         }
-        for (int i = 0; i < affects.length; i++) {
-            affects[i].setGlobals(this, canvas, toolBar);
+        if (getNumberOfAffectModules() > 0) {
+            for (int i = 0; i < affects.length; i++) {
+                affects[i].setGlobals(this, canvas, toolBar);
+            }
         }
 
         // Set the default create module
@@ -724,14 +740,16 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 method.invoke(creates[currentCreate], new Object[]{event});
             }
             // Pass to all active affect modules
-            for (int i = 0; i < currentAffects.length; i++) {
-                if (currentAffects[i]) {
-                    Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
-                    method.invoke(affects[i], new Object[]{event});
+            if (hasCurrentAffects()) {
+                for (int i = 0; i < currentAffects.length; i++) {
+                    if (currentAffects[i]) {
+                        Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
+                        method.invoke(affects[i], new Object[]{event});
+                    }
                 }
             }
         } catch (Throwable e) {
-            System.err.println("passKeyEvent: " + e + " " + eventType);
+            e.printStackTrace();
         }
 
     }
