@@ -32,7 +32,7 @@ import java.awt.event.MouseEvent;
  */
 public class Blindness extends AlcModule implements AlcConstants {
 
-    private boolean autoRedraw = false;
+    private boolean autoReveal = false;
     private AlcSubToolBarSection subToolBarSection;
 
     /** Creates a new instance of Blindness */
@@ -71,42 +71,42 @@ public class Blindness extends AlcModule implements AlcConstants {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Buttons
-        AlcSubButton redrawButton = new AlcSubButton("Redraw", AlcUtil.getUrlPath("redraw.png", getClassLoader()));
-        redrawButton.setToolTipText("Redraw the screen (r)");
+        AlcSubButton revealButton = new AlcSubButton("Reveal", AlcUtil.getUrlPath("reveal.png", getClassLoader()));
+        revealButton.setToolTipText("Reveal the screen (r)");
 
-        redrawButton.addActionListener(
+        revealButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
                         redrawOnce();
                     }
                 });
-        subToolBarSection.add(redrawButton);
+        subToolBarSection.add(revealButton);
 
-        AlcSubToggleButton autoRedrawButton = new AlcSubToggleButton("Autoredraw", AlcUtil.getUrlPath("autoredraw.png", getClassLoader()));
-        autoRedrawButton.setToolTipText("Redraw the screen after each shape");
+        AlcSubToggleButton autoRevealButton = new AlcSubToggleButton("Auto-reveal", AlcUtil.getUrlPath("autoreveal.png", getClassLoader()));
+        autoRevealButton.setToolTipText("Reveal the screen after each shape is created");
 
-        autoRedrawButton.addActionListener(
+        autoRevealButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
                         toggleAutoRedraw();
                     }
                 });
-        subToolBarSection.add(autoRedrawButton);
+        subToolBarSection.add(autoRevealButton);
     }
-
+    
     private void toggleAutoRedraw() {
-        if (autoRedraw) {
-            autoRedraw = false;
+        if (autoReveal) {
+            autoReveal = false;
         } else {
-            autoRedraw = true;
+            autoReveal = true;
         }
     }
 
     // MOUSE EVENTS
     public void mouseReleased(MouseEvent e) {
-        if (autoRedraw) {
+        if (autoReveal) {
             redrawOnce();
         }
     }

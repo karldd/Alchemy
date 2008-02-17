@@ -26,13 +26,15 @@ import javax.sound.sampled.*;
  * With very limited functionality at the moment to return a buffer or the current sound level <br />
  * Based on code by Richard G. Baldwin from: http://www.developer.com/java/other/print.php/1572251
  */
-public class AlcMicInput extends Thread {
+public class AlcMicInput {
 
+    private Thread micThread;
     //An arbitrary-size temporary holding buffer
     private byte audioBytes[];
     private int[] audioSamples;
     private int lengthInSamples;
-    private boolean stopMicInput = false;
+    private boolean running = false;
+    private boolean firstRun = true;
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     AlcMicInterface parent;
@@ -51,31 +53,44 @@ public class AlcMicInput extends Thread {
         setup(parent, bufferSize);
     }
 
+    public AlcMicInput(AlcMicInterface parent) {
+        setup(parent, -1);
+    }
+
     private void setup(AlcMicInterface parent, int bufferSize) {
         if (parent != null) {
             this.parent = parent;
         }
+        audioFormat = getAudioFormat();
+        System.out.println("Selected Format: " + audioFormat);
+
+        if (bufferSize > 0) {
+            setBuffer(bufferSize);
+        }
+    }
+
+    /** Set the buffer to a certain size 
+     * 
+     * @param bufferSize Size for the buffer
+     */
+    public void setBuffer(int bufferSize) {
         audioBytes = new byte[bufferSize];
         lengthInSamples = bufferSize / 2;
         audioSamples = new int[lengthInSamples];
-        audioFormat = getAudioFormat();
-
-        System.out.println("Selected Format: " + audioFormat);
-
+        if (firstRun) {
+            openLine();
+        }
     }
 
-    /** Starts Microphone Input */
-    public void startMicInput() {
-        stopMicInput = false;
+    /** Open the mic line */
+    public void openLine() {
         try {
             //Get everything set up for capture
             DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
             targetDataLine = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
             targetDataLine.open(audioFormat);
             targetDataLine.start();
-
-            // Start the thread
-            this.start();
+            firstRun = false;
 
         } catch (LineUnavailableException ex) {
             System.err.println("ERROR opening the audio line: " + ex);
@@ -87,38 +102,52 @@ public class AlcMicInput extends Thread {
         }
     }
 
-//    private int getSixteenBitSample(int high, int low) {
-//        return (high << 8) + (low & 0x00ff);
-//    }
-    /** Stops Microphone Input */
-    public void stopMicInput() {
-        stopMicInput = true;
+    /** Close the mic line
+     *  The line can be opened again by calling setBufer() or openLine() directly
+     */
+    public void closeLine() {
+        stopMicInput();
+        targetDataLine.stop();
+        targetDataLine = null;
+        firstRun = true;
     }
 
-    public void run() {
-        stopMicInput = false;
+    /** Starts Microphone Input */
+    public void startMicInput() {
+        running = true;
+        micThread = new Thread() {
 
-        try {
-            //Loop until stopMicInput is turned off
-            while (!stopMicInput) {
-                //Read data from the internal buffer of the data line.
-                int cnt = targetDataLine.read(audioBytes, 0, audioBytes.length);
+            public void run() {
+                try {
+                    //Loop until running is turned off
+                    while (running) {
+                        //Read data from the internal buffer of the data line.
+                        int cnt = targetDataLine.read(audioBytes, 0, audioBytes.length);
 
-                // When the buffer is full
-                if (cnt > 0) {
-                    convertToSamples();
-                    // Call back to the parent if it implements the AlcMicInterface
-                    if (parent != null) {
-                        parent.bufferFull();
+                        // When the buffer is full
+                        if (cnt > 0) {
+                            convertToSamples();
+                            // Call back to the parent if it implements the AlcMicInterface
+                            if (parent != null) {
+                                parent.bufferFull();
+                            }
+
+                        }
                     }
 
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
+        };
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        //System.exit(0);
-        }
+        micThread.start();
+    }
+
+    /** Stops Microphone Input */
+    public void stopMicInput() {
+        running = false;
+        micThread = null;
     }
 
     private void convertToSamples() {

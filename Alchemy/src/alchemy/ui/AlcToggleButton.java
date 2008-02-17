@@ -50,6 +50,9 @@ public class AlcToggleButton extends JToggleButton {
             // Set the rollover - selected icon
             URL rolloverSelectedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-on-over");
             this.setRolloverSelectedIcon(AlcUtil.createImageIcon(rolloverSelectedIconUrl));
+
+            URL pressedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-down");
+            this.setPressedIcon(AlcUtil.createImageIcon(pressedIconUrl));
         }
 
         this.setFont(AlcToolBar.toolBarFont);

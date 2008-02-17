@@ -100,6 +100,8 @@ public class Mirror extends AlcModule implements AlcConstants {
                     public void actionPerformed(ActionEvent e) {
                         selectAxis = true;
                         firstSelect = true;
+                        canvas.setCreateMouseEvents(false);
+                        canvas.commitShapes();
                     }
                 });
         subToolBarSection.add(moveAxisButton);
@@ -123,47 +125,46 @@ public class Mirror extends AlcModule implements AlcConstants {
 
     protected void affectShape() {
 
-        //int initialAffectShapeCount = canvas.affectShapes.size();
+        if (!selectAxis) {
 
-        for (int i = 0; i < canvas.createShapes.size(); i++) {
-            AlcShape shape = (AlcShape) canvas.createShapes.get(i);
+            for (int i = 0; i < canvas.createShapes.size(); i++) {
+                AlcShape shape = (AlcShape) canvas.createShapes.get(i);
 
-            // Original Path with which we reflect
-            GeneralPath originalPath = shape.getPath();
+                // Original Path with which we reflect
+                GeneralPath originalPath = shape.getPath();
 
-            GeneralPath[] paths = new GeneralPath[3];
-            int pathCount = 0;
+                GeneralPath[] paths = new GeneralPath[3];
+                int pathCount = 0;
 
-            if (horizontal) {
-                paths[0] = makeHorizontalReflectedShape(originalPath);
-                pathCount++;
-            }
-            if (vertical) {
-                paths[1] = makeVerticalReflectedShape(originalPath);
-                pathCount++;
-            }
-            if (horizontal && vertical) {
-                paths[2] = makeHorizontalReflectedShape(paths[1]);
-                pathCount++;
-            }
-
-            for (int j = 0; j < paths.length; j++) {
-                // If the reflected shape is actually there
-                if (paths[j] != null) {
-                    // If we are starting a new shape or adding to an existing one
-                    if (canvas.affectShapes.size() < paths.length) {
-                        canvas.affectShapes.add(shape.customClone(paths[j]));
-                    } else {
-                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(j));
-                        // Make sure the points tally is up to date
-                        thisShape.setPath(paths[j]);
-                        thisShape.setTotalPoints(shape.getTotalPoints());
-                    }
+                if (horizontal) {
+                    paths[0] = makeHorizontalReflectedShape(originalPath);
+                    pathCount++;
+                }
+                if (vertical) {
+                    paths[1] = makeVerticalReflectedShape(originalPath);
+                    pathCount++;
+                }
+                if (horizontal && vertical) {
+                    paths[2] = makeHorizontalReflectedShape(paths[1]);
+                    pathCount++;
                 }
 
+                for (int j = 0; j < paths.length; j++) {
+                    // If the reflected shape is actually there
+                    if (paths[j] != null) {
+                        // If we are starting a new shape or adding to an existing one
+                        if (canvas.affectShapes.size() < paths.length) {
+                            canvas.affectShapes.add(shape.customClone(paths[j]));
+                        } else {
+                            AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(j));
+                            // Make sure the points tally is up to date
+                            thisShape.setPath(paths[j]);
+                            thisShape.setTotalPoints(shape.getTotalPoints());
+                        }
+                    }
+
+                }
             }
-
-
         }
     }
 
@@ -215,27 +216,29 @@ public class Mirror extends AlcModule implements AlcConstants {
 
             if (firstSelect) {
                 firstSelect = false;
+                canvas.guideShapes.clear();
                 AlcShape axis = new AlcShape(line, new Color(0, 255, 255), 100, LINE, 1);
                 canvas.guideShapes.add(axis);
             } else {
-                canvas.getCurrentGuideShape().setPath(line);
+                if (canvas.getCurrentGuideShape() != null) {
+                    canvas.getCurrentGuideShape().setPath(line);
+                }
             }
             canvas.redraw();
         }
     }
 
     public void mousePressed(MouseEvent e) {
-        if (selectAxis) {
-            canvas.removeCurrentGuideShape();
-             canvas.redraw();
-        }
     }
 
     public void mouseReleased(MouseEvent e) {
         if (selectAxis) {
+            canvas.removeCurrentGuideShape();
             horizontalAxis = e.getX();
             verticalAxis = e.getY();
             selectAxis = false;
+            canvas.setCreateMouseEvents(true);
+            canvas.redraw();
         }
 
     }

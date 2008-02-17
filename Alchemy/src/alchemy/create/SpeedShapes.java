@@ -58,8 +58,8 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Shake/Fatten button
-        AlcSubToggleButton lineStyleButton = new AlcSubToggleButton("Style", AlcUtil.getUrlPath("linestyle.png", getClassLoader()));
-        lineStyleButton.setToolTipText("Select the style of line");
+        AlcSubToggleButton lineStyleButton = new AlcSubToggleButton("Line Type", AlcUtil.getUrlPath("linestyle.png", getClassLoader()));
+        lineStyleButton.setToolTipText("Change the line type to curved or straight");
 
         lineStyleButton.addActionListener(
                 new ActionListener() {

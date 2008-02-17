@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.create.TraceShapes"/> 
         <parameter id="name" value="Trace Shapes"/> 
         <parameter id="description" value="Trace over hidden images to create shapes" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>

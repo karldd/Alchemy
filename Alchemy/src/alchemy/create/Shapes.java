@@ -64,7 +64,10 @@ public class Shapes extends AlcModule implements AlcConstants {
         lastPt = null;
         firstClick = true;
         if (guideSize > 0) {
-            canvas.guideShapes.remove(guideSize - 1);
+//            if (canvas.guideShapes.get(guideSize - 1) != null) {
+//                canvas.guideShapes.remove(guideSize - 1);
+//            }
+            canvas.guideShapes.clear();
         }
         guideSize = -1;
     }
@@ -72,10 +75,10 @@ public class Shapes extends AlcModule implements AlcConstants {
     public void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
-        // Freeform Button
-        AlcSubToggleButton freeformButton = new AlcSubToggleButton("Freeform/Straight", AlcUtil.getUrlPath("freeform.png", getClassLoader()));
-        freeformButton.setToolTipText("Change the drawing mode to freeform or straight lines");
-        freeformButton.addActionListener(
+        // Line Type Button
+        AlcSubToggleButton lineTypeButton = new AlcSubToggleButton("Line Type", AlcUtil.getUrlPath("linetype.png", getClassLoader()));
+        lineTypeButton.setToolTipText("Change the line type to freeform or straight lines");
+        lineTypeButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
@@ -84,7 +87,7 @@ public class Shapes extends AlcModule implements AlcConstants {
                         root.canvas.redraw();
                     }
                 });
-        subToolBarSection.add(freeformButton);
+        subToolBarSection.add(lineTypeButton);
 
     }
 
@@ -152,7 +155,6 @@ public class Shapes extends AlcModule implements AlcConstants {
         Point p = e.getPoint();
         // Only if this is a single click
         if (e.getClickCount() <= 1) {
-
             if (straightShapes) {
                 if (firstClick) {
                     canvas.createShapes.add(makeShape(p));

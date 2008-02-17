@@ -18,7 +18,7 @@
         <parameter id="class" value="alchemy.create.XShapes"/> 
         <parameter id="name" value="X Shapes"/> 
         <parameter id="description" value="Create hard edged shapes" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>

@@ -37,6 +37,9 @@ public class AlcSubButton extends JButton {
             // Set the rollover icon
             URL rolloverIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-over");
             this.setRolloverIcon(AlcUtil.createImageIcon(rolloverIconUrl));
+
+            URL pressedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-down");
+            this.setPressedIcon(AlcUtil.createImageIcon(pressedIconUrl));
         }
 
         this.setFont(AlcToolBar.subToolBarFont);

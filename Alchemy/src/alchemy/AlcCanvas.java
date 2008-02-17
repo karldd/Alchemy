@@ -64,6 +64,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private boolean redraw = true;
     /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
     private boolean mouseEvents = true;
+    private boolean createMouseEvents = true;
+    private boolean affectMouseEvents = true;
     /** Mouse down */
     private boolean mouseDown;
     /** Smoothing on or off */
@@ -96,6 +98,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private Graphics2D g2;
     /** Image to draw on the canvas */
     private Image image;
+    /** Display the image or not */
+    private boolean displayImage = true;
     /** Record indicator */
     private Ellipse2D.Double recordCircle;
     /** Record indicator on/off */
@@ -144,8 +148,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         g2.fillRect(0, 0, w, h);
 
         // Paint the buffImage is available
-        if (image != null) {
-            g2.drawImage(image, 0, 0, null);
+        if (displayImage) {
+            if (image != null) {
+                g2.drawImage(image, 0, 0, null);
+            }
         }
 
         // Draw both lots of shapes
@@ -204,6 +210,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Turn on/off mouseEvents being sent to modules */
     public void setMouseEvents(boolean b) {
         mouseEvents = b;
+    }
+
+    /** Turn on/off mouseEvents being sent to create modules */
+    public void setCreateMouseEvents(boolean b) {
+        createMouseEvents = b;
+    }
+
+    /** Turn on/off mouseEvents being sent to affect modules */
+    public void setAffectMouseEvents(boolean b) {
+        affectMouseEvents = b;
     }
 
     /** Resize the canvas - called when the window is resized */
@@ -474,6 +490,21 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         this.image = null;
     }
 
+    /** Check if the image display is on
+     * 
+     * @return Image display on or off
+     */
+    public boolean isDisplayImage() {
+        return displayImage;
+    }
+
+    /** Set image display to on or off
+     * 
+     * @param displayImage Image display on or off
+     */
+    public void setDisplayImage(boolean displayImage) {
+        this.displayImage = displayImage;
+    }
 
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
@@ -716,27 +747,33 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Calls a mouse event in each active module */
     private void passMouseEvent(MouseEvent event, String eventType) {
         // Reflection is used here to simplify passing events to each module
-        if (mouseEvents) {
-            try {
+
+        try {
+            if (mouseEvents) {
                 // Pass to the current create module
-                if (root.currentCreate >= 0) {
-                    Method method = root.creates[root.currentCreate].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
-                    method.invoke(root.creates[root.currentCreate], new Object[]{event});
+                if (createMouseEvents) {
+                    if (root.currentCreate >= 0) {
+                        Method method = root.creates[root.currentCreate].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
+                        method.invoke(root.creates[root.currentCreate], new Object[]{event});
+                    }
                 }
                 // Pass to all active affect modules
-                if (root.hasCurrentAffects()) {
-                    for (int i = 0; i < root.currentAffects.length; i++) {
-                        if (root.currentAffects[i]) {
-                            Method method = root.affects[i].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
-                            method.invoke(root.affects[i], new Object[]{event});
+                if (affectMouseEvents) {
+                    if (root.hasCurrentAffects()) {
+                        for (int i = 0; i < root.currentAffects.length; i++) {
+                            if (root.currentAffects[i]) {
+                                Method method = root.affects[i].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
+                                method.invoke(root.affects[i], new Object[]{event});
+                            }
                         }
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("passMouseEvent: " + eventType);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("passMouseEvent: " + eventType);
         }
+
     }
 
     //////////////////////////////////////////////////////////////

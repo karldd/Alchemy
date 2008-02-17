@@ -20,6 +20,7 @@ package alchemy.create;
 
 import alchemy.*;
 import alchemy.ui.AlcSubButton;
+import alchemy.ui.AlcSubToggleButton;
 import alchemy.ui.AlcSubToolBarSection;
 import java.awt.Image;
 import java.awt.Point;
@@ -42,13 +43,12 @@ public class TraceShapes extends AlcModule {
     private int imageW,  imageH,  edgeX,  edgeY;
     private AlcSubToolBarSection subToolBarSection;
 //    private SwingWorker worker;
-
     public TraceShapes() {
 
     }
 
     protected void setup() {
-
+        canvas.setDisplayImage(false);
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
         loadImage();
@@ -111,15 +111,14 @@ public class TraceShapes extends AlcModule {
 
     }
 
-    private AlcShape makeShape(
-            Point p) {
+    private AlcShape makeShape(Point p) {
         // Make a new shape with the globally defined style etc...
         return new AlcShape(p, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
     }
 
     private Point checkSnap(Point p) {
         // If inside the image
-        if (p.x > area && p.x < edgeX && p.y > area &&p.y < edgeY) {
+        if (p.x > area && p.x < edgeX && p.y > area && p.y < edgeY) {
             // The pixel under the cursor
             int xy = flickrBufferedImage.getRGB(p.x, p.y);
             int xyGrey = convertToGrey(xy);
@@ -153,6 +152,19 @@ public class TraceShapes extends AlcModule {
 
     public void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
+
+        // Image Display Button
+        final AlcSubToggleButton imageDisplayButton = new AlcSubToggleButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));
+        imageDisplayButton.setToolTipText("Turn image display on or off");
+        imageDisplayButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        canvas.setDisplayImage(imageDisplayButton.isSelected());
+                        canvas.redraw();
+                    }
+                });
+        subToolBarSection.add(imageDisplayButton);
 
         // Run Button
         AlcSubButton runButton = new AlcSubButton("Load Image", AlcUtil.getUrlPath("run.png", getClassLoader()));
