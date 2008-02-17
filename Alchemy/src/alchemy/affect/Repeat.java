@@ -48,6 +48,8 @@ public class Repeat extends AlcModule {
     private AlcSubToolBarSection subToolBarSection;
     // Margin before the mouse falls outside of the shape once inside
     private int margin = 10;
+    
+    private AlcSubToggleButton repeatButton;
 
     //private int activeShape = -1;
     public Repeat() {
@@ -72,9 +74,9 @@ public class Repeat extends AlcModule {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Repeat button
-        AlcSubToggleButton repeatButton = new AlcSubToggleButton("Repeat", AlcUtil.getUrlPath("repeat.png", getClassLoader()));
+        repeatButton = new AlcSubToggleButton("Repeat", AlcUtil.getUrlPath("repeat.png", getClassLoader()));
         repeatButton.setSelected(true);
-        repeatButton.setToolTipText("Toggle repeat on/off (Press and hold the b key)");
+        repeatButton.setToolTipText("Toggle repeat on/off");
 
         repeatButton.addActionListener(
                 new ActionListener() {
@@ -88,7 +90,7 @@ public class Repeat extends AlcModule {
 
         // Repeat Speed Slider
         int initialSliderValue = 50;
-        AlcSubSlider speedSlider = new AlcSubSlider("Repeat Interval", 0, 100, initialSliderValue);
+        AlcSubSlider speedSlider = new AlcSubSlider("Interval", 0, 100, initialSliderValue);
         speedSlider.setToolTipText("Adjust the repeat interval");
         speedSlider.slider.addChangeListener(
                 new ChangeListener() {
@@ -219,13 +221,8 @@ public class Repeat extends AlcModule {
 
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_B) {
-            repeat = false;
-        }
-    }
-
-    public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_B) {
-            repeat = true;
+            repeat = !repeat;
+            repeatButton.setSelected(repeat);
         }
     }
 }

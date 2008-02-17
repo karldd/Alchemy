@@ -78,6 +78,20 @@ public class MicShapes extends AlcModule implements AlcConstants {
     public void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
+        // Draw mode button
+        AlcSubToggleButton drawModeButton = new AlcSubToggleButton("Draw Mode", AlcUtil.getUrlPath("drawmode.png", getClassLoader()));
+        drawModeButton.setToolTipText("Change the draw mode between fatten and shake style");
+
+        drawModeButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        shake = !shake;
+                    }
+                });
+        subToolBarSection.add(drawModeButton);
+        
+
         // Volume Slider
         int initialSliderValue = 50;
         final float levelOffset = 0.05F;
@@ -97,19 +111,6 @@ public class MicShapes extends AlcModule implements AlcConstants {
                     }
                 });
         subToolBarSection.add(volumeSlider);
-
-        // Shake/Fatten button
-        AlcSubToggleButton shakeButton = new AlcSubToggleButton("Fatten/Shake", AlcUtil.getUrlPath("shake.png", getClassLoader()));
-        shakeButton.setToolTipText("Toggle between fatten and shake mode");
-
-        shakeButton.addActionListener(
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        shake = !shake;
-                    }
-                });
-        subToolBarSection.add(shakeButton);
     }
 
     private void makeBlob(AlcShape shape) {

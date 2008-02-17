@@ -68,16 +68,20 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     }
 
     protected void setup() {
+        // Create the mic input object
+        micIn = new AlcMicInput(this);
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     public void deselect() {
         stopExpand();
+        micIn = null;
     }
 
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
+        micIn = new AlcMicInput(this);
     }
 
     public void createSubToolBarSection() {
@@ -87,7 +91,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         int initialSliderValue = 50;
         AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
         final float waveOffset = 0.0003F;
-        final float levelOffset = 0.0001F;
+        final float levelOffset = 0.001F;
         waveVolume = initialSliderValue * waveOffset;
         levelVolume = initialSliderValue * levelOffset;
         volumeSlider.setToolTipText("Adjust the microphone input volume");
@@ -148,9 +152,14 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
             totalPoints *= 2;
             //}
-            // Create a new MicInput Object with a buffer equal to the number of points
+
+//            if(running){
+//                micIn.stopMicInput();
+//            }
             running = true;
-            micIn = new AlcMicInput(this, totalPoints);
+            //micIn = new AlcMicInput(this, totalPoints);
+            // buffer equal to the number of points
+            micIn.setBuffer(totalPoints);
             micIn.startMicInput();
         }
     }
