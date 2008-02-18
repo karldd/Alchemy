@@ -20,6 +20,7 @@ package alchemy.create;
 
 import alchemy.*;
 import alchemy.ui.AlcSubButton;
+import alchemy.ui.AlcSubSlider;
 import alchemy.ui.AlcSubToggleButton;
 import alchemy.ui.AlcSubToolBarSection;
 import java.awt.Image;
@@ -29,6 +30,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import foxtrot.*;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * TraceShapes
@@ -36,13 +42,13 @@ import foxtrot.*;
  */
 public class TraceShapes extends AlcModule {
 
-    private BufferedImage flickrBufferedImage;
-    private int halfArea = 20;
-    private int area = halfArea * 2;
-    private int areaArraySize = area * area;
-    private int imageW,  imageH,  edgeX,  edgeY;
+    private int halfArea = 30;
+    private int tolerance = 100;
+    private int imageW,  imageH;
     private AlcSubToolBarSection subToolBarSection;
-//    private SwingWorker worker;
+    private int[] pixels;
+    private boolean pixelsLoaded = false;
+
     public TraceShapes() {
 
     }
@@ -67,29 +73,10 @@ public class TraceShapes extends AlcModule {
 
     private void loadImage() {
 
-        final String random = AlcUtil.zeroPad((int) root.math.random(1000), 4);
+        final String random = AlcUtil.zeroPad((int) root.math.random(10000), 5);
+        //System.out.println(random);
         Image flickrImage = null;
-
-//        worker = new SwingWorker() {
-//
-//            public Object construct() {
-//                return Flickr.getInstance().search(random);
-//            }
-//
-//            public void finished() {
-//                Image flickrImage = (Image) get();
-//                //Image flickrImage = Flickr.getInstance().search(random);
-//                canvas.setImage(flickrImage);
-//                canvas.redraw();
-//                //System.out.println("IMAGE LOADED");
-//                flickrBufferedImage = (BufferedImage) flickrImage;
-//                imageW = flickrBufferedImage.getWidth();
-//                imageH = flickrBufferedImage.getHeight();
-//                edgeX = imageW - halfArea;
-//                edgeY = imageH - halfArea;
-//            }
-//        };
-//        worker.start();
+        pixelsLoaded = false;
 
         try {
             flickrImage = (Image) Worker.post(new Task() {
@@ -100,14 +87,31 @@ public class TraceShapes extends AlcModule {
             });
         } catch (Exception ignored) {
         }
-        canvas.setImage(flickrImage);
+
+        BufferedImage flickrBufferedImage = (BufferedImage) flickrImage;
+
+        // Scale the image to the screen size
+        imageW = root.getWindowSize().width;
+        imageH = root.getWindowSize().height;
+        BufferedImage scaledImage = new BufferedImage(imageW, imageH, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = scaledImage.createGraphics();
+        AffineTransform scaleTransform = AffineTransform.getScaleInstance(
+                (double) imageW / flickrBufferedImage.getWidth(),
+                (double) imageH / flickrBufferedImage.getHeight());
+        g.drawRenderedImage(flickrBufferedImage, scaleTransform);
+
+        // Load the pixels into an array
+        pixels = new int[imageW * imageH];
+        //int[] rgbs = new int[areaArraySize];
+        scaledImage.getRGB(0, 0, imageW, imageH, pixels, 0, imageW);
+        // Then convert them all to grey for easy access
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = convertToGrey(pixels[i]);
+        }
+        pixelsLoaded = true;
+
+        canvas.setImage(scaledImage);
         canvas.redraw();
-        //System.out.println("IMAGE LOADED");
-        flickrBufferedImage = (BufferedImage) flickrImage;
-        imageW = flickrBufferedImage.getWidth();
-        imageH = flickrBufferedImage.getHeight();
-        edgeX = imageW - halfArea;
-        edgeY = imageH - halfArea;
 
     }
 
@@ -117,29 +121,51 @@ public class TraceShapes extends AlcModule {
     }
 
     private Point checkSnap(Point p) {
-        // If inside the image
-        if (p.x > area && p.x < edgeX && p.y > area && p.y < edgeY) {
-            // The pixel under the cursor
-            int xy = flickrBufferedImage.getRGB(p.x, p.y);
-            int xyGrey = convertToGrey(xy);
-            //System.out.println(xyGrey);
+        if (pixelsLoaded) {
+            // The pixel value under the cursor
+            int xy = getPixel(p.x, p.y);
 
+            // Where to look in the array
             int startX = p.x - halfArea;
+            if (startX < 0) {
+                startX = 0;
+            }
             int startY = p.y - halfArea;
+            if (startY < 0) {
+                startY = 0;
+            }
+            int endX = p.x + halfArea;
+            if (endX > imageW) {
+                endX = imageW;
+            }
+            int endY = p.y + halfArea;
+            if (endY > imageH) {
+                endY = imageH;
+            }
 
-            int[] rgbs = new int[areaArraySize];
-            flickrBufferedImage.getRGB(startX, startY, area, area, rgbs, 0, area);
+            int contrast = 0;
+            Point bestContrastPoint = null;
 
-            for (int i = 0; i <
-                    rgbs.length; i++) {
-                int pix = convertToGrey(rgbs[i]);
-                if (Math.abs(pix - xyGrey) > 100) {
-                    //System.out.println(i);
-                    return new Point(startX + (i % area), startY + (i / area));
+            for (int x = startX; x < endX; x++) {
+                for (int y = startY; y < endY; y++) {
+                    int thisPixel = getPixel(x, y);
+                    int difference = Math.abs(thisPixel - xy);
+                    if (difference > tolerance) {
+                        if (difference > contrast) {
+                            contrast = difference;
+                            bestContrastPoint = new Point(x, y);
+                        }
+                    }
                 }
+            }
 
+
+            if (bestContrastPoint != null) {
+                //System.out.println("Contrast: " + contrast);
+                return bestContrastPoint;
             }
         }
+
         return p;
     }
 
@@ -148,6 +174,10 @@ public class TraceShapes extends AlcModule {
         int g = (rgb >> 8) & 0xff;
         int b = rgb & 0xff;
         return (r + g + b) / 3;
+    }
+
+    private int getPixel(int x, int y) {
+        return pixels[y * imageW + x];
     }
 
     public void createSubToolBarSection() {
@@ -167,7 +197,7 @@ public class TraceShapes extends AlcModule {
         subToolBarSection.add(imageDisplayButton);
 
         // Run Button
-        AlcSubButton runButton = new AlcSubButton("Load Image", AlcUtil.getUrlPath("run.png", getClassLoader()));
+        AlcSubButton runButton = new AlcSubButton("Load Image", AlcUtil.getUrlPath("load.png", getClassLoader()));
         runButton.setToolTipText("Load a new image");
         runButton.addActionListener(
                 new ActionListener() {
@@ -177,6 +207,38 @@ public class TraceShapes extends AlcModule {
                     }
                 });
         subToolBarSection.add(runButton);
+
+        // Snap Distance Slider
+        AlcSubSlider snapSlider = new AlcSubSlider("Snap Distance", 1, 100, halfArea);
+        snapSlider.setToolTipText("Adjust the snap distance");
+        snapSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            halfArea = source.getValue();
+
+                        }
+                    }
+                });
+        subToolBarSection.add(snapSlider);
+
+        // Tolerance Slider
+        AlcSubSlider toleranceSlider = new AlcSubSlider("Tolerance", 0, 200, tolerance);
+        toleranceSlider.setToolTipText("Adjust the snapping tolerance");
+        toleranceSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            tolerance = source.getValue();
+
+                        }
+                    }
+                });
+        subToolBarSection.add(toleranceSlider);
     }
 
     public void mousePressed(MouseEvent e) {

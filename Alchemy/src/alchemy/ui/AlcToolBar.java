@@ -89,8 +89,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     public javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
-    /** Custom UI for the toolbar */
-    private BasicToolBarUI toolBarUI;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -391,6 +389,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     private AlcSubToolBar loadSubToolBar() {
+        // TODO - Check there is enough room for the subtoolbar and expand the window as required        
         // Initialise the references to the sub toolbar sections
         affectSubToolBarSections = new AlcSubToolBarSection[root.getNumberOfAffectModules()];
         // Set to a negative value to indicate no initially loaded sections
@@ -410,11 +409,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     public void resizeToolBar(Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
-        //this.repaint(0, 0, windowSize.width, totalHeight);
         this.revalidate();
         this.repaint();
-
-    //this.isValidateRoot();
     }
 
     private void refreshToolBar() {
