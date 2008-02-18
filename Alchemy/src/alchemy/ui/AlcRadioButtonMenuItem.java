@@ -43,14 +43,14 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
         if (AlcMain.PLATFORM == MACOSX) {
             checkX = 0;
         } else {
-            checkX = 3;
+            checkX = 6;
         }
     }
     Ellipse2D.Double toolCircle = new Ellipse2D.Double(checkX, 15, 8, 8);
     Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(checkX + 1, 15, 6, 6);
     Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX + 1, 16, 6, 6);
-    Ellipse2D.Double menuCircle = new Ellipse2D.Double(3, 9, 8, 8);
-    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(4, 10, 6, 6);
+    Ellipse2D.Double menuCircle = new Ellipse2D.Double(checkX, 9, 8, 8);
+    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(checkX+1, 10, 6, 6);
 
     public AlcRadioButtonMenuItem(int index, String title) {
         setup(index, title);
