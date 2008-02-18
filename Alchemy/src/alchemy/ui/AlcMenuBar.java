@@ -26,9 +26,9 @@ import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import javax.print.attribute.PrintRequestAttributeSet;
 import javax.swing.*;
 import javax.help.*;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /** 
  * Menubar for Alchemy
@@ -390,6 +390,68 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         switchBitmapAppItem.setup(getS("setBitmapApp"));
         switchMenu.add(switchBitmapAppItem);
         this.add(switchMenu);
+
+        //////////////////////////////////////////////////////////////
+        // SETTINGS MENU
+        //////////////////////////////////////////////////////////////
+        AlcMenu settingsMenu = new AlcMenu(getS("settingsTitle"));
+
+        // Smoothing
+        AbstractAction smoothingAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
+                root.canvas.setSmoothing(source.getState());
+                root.canvas.redraw();
+            }
+        };
+        AlcCheckBoxMenuItem smoothingItem = new AlcCheckBoxMenuItem(smoothingAction);
+        smoothingItem.setSelected(root.canvas.getSmoothing());
+        smoothingItem.setup(getS("smoothingTitle"));
+        settingsMenu.add(smoothingItem);
+
+        // Background Colour
+        AbstractAction bgColourAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                // Swing Colour Chooser
+                final JColorChooser cc = new JColorChooser(Color.WHITE);
+                // Just want to show the HSB panel
+                AbstractColorChooserPanel[] panels = cc.getChooserPanels();
+                // Get the panels and search for the HSB one
+                for (int i = 0; i < panels.length; i++) {
+                    String name = panels[i].getClass().getName();
+                    if (name.contains("HSB")) {
+                        // Add the HSB panel, replacing the others
+                        AbstractColorChooserPanel[] hsb = {panels[i]};
+                        cc.setChooserPanels(hsb);
+                        break;
+                    }
+                }
+
+                cc.setPreviewPanel(new JPanel());
+                // Action to change the colour
+                ActionListener colorAction = new ActionListener() {
+
+                    public void actionPerformed(ActionEvent event) {
+                        root.canvas.setBgColour(cc.getColor());
+                        root.canvas.redraw();
+                    }
+                };
+                // Dialog to hold the colour chooser
+                JDialog dialog = JColorChooser.createDialog(root, getS("bgColourDialogTitle"), true, cc, colorAction, null);
+                dialog.setBackground(AlcToolBar.toolBarBgColour);
+                dialog.setResizable(false);
+                dialog.setVisible(true);
+
+            }
+        };
+        AlcMenuItem bgColourItem = new AlcMenuItem(bgColourAction);
+        bgColourItem.setup(getS("bgColourTitle"));
+        settingsMenu.add(bgColourItem);
+
+        this.add(settingsMenu);
 
         //////////////////////////////////////////////////////////////
         // HELP MENU
