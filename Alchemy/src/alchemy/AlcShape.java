@@ -203,6 +203,15 @@ public class AlcShape implements AlcConstants, Cloneable {
         }
     }
 
+    /** Append a GeneralPath to this shape
+     * 
+     * @param newPath   The path to be appended
+     * @param connect   Connect the two paths together or not
+     */
+    public void append(GeneralPath newPath, boolean connect){
+        this.path.append(newPath, connect);
+    }
+    
     /** 
      * Save the points to keep track of the total number of points
      * along with setting the last point

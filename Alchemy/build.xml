@@ -74,6 +74,9 @@
         <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.jhall.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/> 
+        <!--<unjar src="${file.reference.quaqua.jar}" dest="${build.classes.dir}"/>-->
+        <unjar src="${file.reference.quaqua-filechooser-only.jar}" dest="${build.classes.dir}"/>
+        <!--<unjar src="${file.reference.quaqua-colorchooser-only.jar}" dest="${build.classes.dir}"/>-->
     </target> 
     
     

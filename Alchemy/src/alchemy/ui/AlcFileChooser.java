@@ -29,6 +29,9 @@ import javax.swing.JFileChooser;
 
 public class AlcFileChooser extends JFileChooser {
 
+    // TODO - Implement OSX look and feel file chooser using Quaqua
+    // http://www.randelshofer.ch/quaqua/download.html
+    // UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
     public AlcFileChooser() {
         super();
     }
@@ -37,7 +40,6 @@ public class AlcFileChooser extends JFileChooser {
         super(currentDirectory);
     }
 
-    
     protected JDialog createDialog(Component parent) throws HeadlessException {
         JDialog dialog = super.createDialog(parent);
         Point p = AlcUtil.calculateCenter(dialog);

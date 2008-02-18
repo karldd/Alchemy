@@ -106,7 +106,7 @@ public class Flickr {
            return elements;
        }
        else {
-           logger.warning("no elements with tag " + tag + "at " + doc.getDocumentURI());
+           logger.warning("no elements with tag " + tag + "at " + doc.toString());
            return null;
        }
    }
