@@ -29,6 +29,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -52,13 +53,15 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
     private boolean addShape = true;
     private AlcSubToolBarSection subToolBarSection;
+    private Point oldP;
+    private AlcShape mouseShape;
 
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
     }
 
     protected void setup() {
-        
+
         // TODO - Create a seperate Typeshapes mode using key presses and the pen
         // to generate shapes at specific locations
 
@@ -85,7 +88,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         addShape = true;
     }
 
-    public void createSubToolBarSection() {
+    private void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Run Button
@@ -127,7 +130,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                         if (!source.getValueIsAdjusting()) {
                             int value = source.getValue();
                             distortion = value * levelOffset;
-                            //System.out.println(distortion);
+                        //System.out.println(distortion);
                         }
                     }
                 });
@@ -160,8 +163,10 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     private void generate() {
+
         // Create a new shape with default properties
-        AlcShape shape = new AlcShape(randomShape(), canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+        AlcShape shape = makeShape(randomShape());
+
         // Set the number of points
         shape.recalculateTotalPoints();
         if (addShape) {
@@ -177,26 +182,48 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     /** Load all available system fonts into an array */
-    public void loadFonts() {
+    private void loadFonts() {
         GraphicsEnvironment graphicsenvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
         //fonts = graphicsenvironment.getAllFonts(); // Slow
         fonts = graphicsenvironment.getAvailableFontFamilyNames();
     }
 
-    /** Returns a random font from the list */
-    public Font randomFont() {
-        return new Font(fonts[(int) root.math.random(0, fonts.length)], Font.PLAIN, (int) root.math.random(100, 300));
+    /** Returns a random font from the list with a randomly given size */
+    private Font randomFont() {
+        return randomFont(-1);
     }
 
-    public GeneralPath randomShape() {
-        //randX = quarterWidth + (int) root.math.random(halfWidth);
-        //randY = quarterHeight + (int) root.math.random(halfHeight);
+    /** Returns a random font from the list
+     * 
+     * @param size  Size of the font
+     * @return      A random font from the font list
+     */
+    private Font randomFont(int size) {
+        if (size < 0) {
+            size = (int) root.math.random(100, 300);
+        }
+        return new Font(fonts[(int) root.math.random(0, fonts.length)], Font.PLAIN, size);
+    }
 
+    /** Returns a random letter */
+    private String randomLetter() {
+        return Character.toString(letters.charAt((int) root.math.random(letters.length())));
+    }
+
+    private void shuffle() {
         scale = (int) root.math.random(2, 6);
         doubleScale = scale << 1;
 
         explode = (int) root.math.random(1, 5);
         noisiness = root.math.random(0.00001F, distortion);
+    }
+
+    private GeneralPath randomShape() {
+        //randX = quarterWidth + (int) root.math.random(halfWidth);
+        //randY = quarterHeight + (int) root.math.random(halfHeight);
+
+        shuffle();
+
         //System.out.println(noisiness);
 
         //f = new Font("Helvetica", Font.PLAIN, 150);
@@ -205,8 +232,8 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         AffineTransform affineTransform = f.getTransform();
         fontRenderContext = new FontRenderContext(affineTransform, false, false);
 
-        //Area union = new Area(makeShape(f));
-        GeneralPath union = new GeneralPath(makeShape(f));
+        //Area union = new Area(makeTypeShape(f));
+        GeneralPath union = new GeneralPath(makeTypeShape(f));
 
         int iterations = (int) root.math.random(5, 12);
         System.out.println("Iterations: " + iterations + " Scale: " + scale);
@@ -215,19 +242,43 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         // Need to find some hack to stop causing this
         // Allocating more memory using [-ms50m -mx100m] does nothing
         for (int i = 0; i < iterations; i++) {
-            GeneralPath shape = makeShape(f);
-            //Area a = new Area(shape);
+            GeneralPath shape = makeTypeShape(f);
 
-            if (shape.intersects(union.getBounds2D())) {
-                Area mainArea = new Area(union);
-                Area newArea = new Area(shape);
-                mainArea.add(newArea);
-                union = new GeneralPath((Shape) mainArea);
+            if (!shape.intersects(union.getBounds2D())) {
+
+                //System.out.println("SIMPLE MISS");
+                union.append(shape, false);
 
             } else {
-                union.append(shape, false);
-            }
 
+
+                Area hitTestArea = new Area(union);
+                Area newArea = new Area(shape);
+                hitTestArea.intersect(newArea);
+
+                if (hitTestArea.isEmpty()) {
+                    //System.out.println("MISS");
+                    union.append(shape, false);
+
+
+                } else {
+                    //System.out.println("HIT " + Runtime.getRuntime().totalMemory());
+
+                    Area mainArea;
+                    try {
+                        mainArea = new Area(union);
+                        mainArea.add(newArea);
+                        union = new GeneralPath((Shape) mainArea);
+
+                    } finally {
+                        mainArea = null;
+                        hitTestArea = null;
+                        newArea = null;
+
+                    }
+
+                }
+            }
 
         }
 
@@ -242,9 +293,15 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         return gp;
     }
 
-    public GeneralPath makeShape(Font font) {
+    private GeneralPath makeTypeShape(Font font) {
+        return makeTypeShape(font, null, null);
+    }
+
+    private GeneralPath makeTypeShape(Font font, String randomLetter, Point location) {
         // Make a string from one random char from the letters string
-        String randomLetter = Character.toString(letters.charAt((int) root.math.random(letters.length())));
+        if (randomLetter == null) {
+            randomLetter = randomLetter();
+        }
 
         GlyphVector gv = font.createGlyphVector(fontRenderContext, randomLetter);
         Shape shp = gv.getOutline();
@@ -322,12 +379,16 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         }
 
-        // Move the shape to the middle of the screen
         AffineTransform newTr = new AffineTransform();
-        int offsetX = root.getWindowSize().width >> explode;
-        int offsetY = root.getWindowSize().width >> explode;
-        newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
+        if (location == null) {
+            // Move the shape to the middle of the screen
 
+            int offsetX = root.getWindowSize().width >> explode;
+            int offsetY = root.getWindowSize().width >> explode;
+            newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
+        } else {
+            newTr.translate(location.x, location.y);
+        }
         // Rotate the shape randomly - this would normall be 360deg
         // i.e. TWO_PI but we want to make sure it is not in the same position
         newTr.rotate(root.math.random(0.3F, 6.0F));
@@ -336,28 +397,86 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     }
 
-    public float mess(float f) {
+    private float mess(float f) {
         noiseScale += noisiness;
         float n = (root.math.noise(noiseScale) * doubleScale) - scale;
         return n * f;
     }
 
-//    public void mousePressed(MouseEvent e) {
-//        add();
-//        Point p = e.getPoint();
-//        canvas.createShapes.add(makeShape(p));
-//        canvas.redraw();
-//    }
-//    public void mouseDragged(MouseEvent e) {
-//        Point p = e.getPoint();
-//        // Need to test if it null incase the shape has been auto-cleared
-//        if (canvas.getCurrentCreateShape() != null) {
-//            canvas.getCurrentCreateShape().addCurvePoint(p);
-//            canvas.redraw();
-//        }
+    private static int getCursorSpeed(Point p1, Point p2) {
+        int diffX = Math.abs(p1.x - p2.x);
+        int diffY = Math.abs(p1.y - p2.y);
+        return diffX + diffY;
+    }
+
+    public void mousePressed(MouseEvent e) {
+        Point p = e.getPoint();
+        shuffle();
+        mouseShape = makeShape(makeTypeShape(randomFont(), randomLetter(), p));
+        mouseShape.recalculateTotalPoints();
+        canvas.createShapes.add(mouseShape);
+        canvas.redraw();
+        oldP = p;
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        Point p = e.getPoint();
+        if (mouseShape != null) {
+            int speed = getCursorSpeed(p, oldP) * 5;
+            GeneralPath newPath = makeTypeShape(randomFont(speed), randomLetter(), p);
+
+            if (!newPath.intersects(mouseShape.getPath().getBounds2D())) {
+                mouseShape.append(newPath, false);
+                canvas.redraw();
+            }
+        }
+//            } else {
+//                Area hitTestArea = new Area(mouseShape.getPath());
+//                System.out.println("SIMPLE MISS");
+//                Area newArea = new Area(newPath);
+//                hitTestArea.intersect(newArea);
 //
-//    }
-//    public void mouseReleased(MouseEvent e) {
+//                if (hitTestArea.isEmpty()) {
+//                    System.out.println("MISS");
+//                    mouseShape.append(newPath, false);
+//                    canvas.redraw();
+//                }
+//            }
+
+
+//                    //System.out.println("HIT " + Runtime.getRuntime().totalMemory());
+//
+//                    Area mainArea, newArea;
+//                    try {
+//                        mainArea = new Area(mouseShape.getPath());
+//                        newArea = new Area(newPath);
+//                        mainArea.add(newArea);
+//                        mouseShape.setPath(new GeneralPath((Shape) mainArea));
+//
+//                    } finally {
+//                        
+//                        mainArea = null;
+////                        hitTestArea = null;
+////                        newArea = null;
+//
+//                    }
+////                }
+//
+//            }
+//
+//            //mouseShape.append(makeTypeShape(randomFont(speed), randomLetter(), p), false);
+//
+//            mouseShape.recalculateTotalPoints();
+
+//        }
+//        //canvas.createShapes.add(shape);
+//
+        oldP = p;
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        oldP = null;
+        canvas.commitShapes();
 //        Point p = e.getPoint();
 //        // Need to test if it null incase the shape has been auto-cleared
 //        if (canvas.getCurrentCreateShape() != null) {
@@ -365,16 +484,17 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 //            canvas.redraw();
 //            canvas.commitShapes();
 //        }
-//    }
+    }
 
-//    private AlcShape makeShape(Point p) {
-//        // Make a new shape with the globally defined style etc...
-//        return new AlcShape(p, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
-//    }
+    private AlcShape makeShape(GeneralPath path) {
+        // Make a new shape with the globally defined style etc...
+        return new AlcShape(path, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+    }
 
     // KEY EVENTS
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
+        String keyText = KeyEvent.getKeyText(keyCode);
 
         switch (keyCode) {
             case KeyEvent.VK_SPACE:
@@ -390,6 +510,22 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                 remove();
                 break;
 
+            default:
+
+                // If longer than a single character then take the first
+                if (keyText.length() > 1) {
+                    keyText = keyText.substring(0, 1);
+                }
+
+                AlcShape shape = makeShape(makeTypeShape(randomFont(), keyText, canvas.getMouseLoc()));
+                shape.recalculateTotalPoints();
+                canvas.createShapes.add(shape);
+                canvas.redraw();
+                 canvas.commitShapes();
+
+                //System.out.println(keyText);
+                break;
         }
+
     }
 }

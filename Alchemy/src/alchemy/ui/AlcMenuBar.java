@@ -415,23 +415,29 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
 
+                //TODO - Make a nicer colour chooser, use the Processing one as a base?
+//http://dev.processing.org/source/index.cgi/trunk/processing/app/src/processing/app/tools/ColorSelector.java?view=markup                
                 // Swing Colour Chooser
                 final JColorChooser cc = new JColorChooser(Color.WHITE);
                 //cc.setBackground(AlcToolBar.toolBarBgColour);
+
+                String singleChooser = "DefaultHSBChooserPanel";
                 // Just want to show the HSB panel
                 AbstractColorChooserPanel[] panels = cc.getChooserPanels();
                 // Get the panels and search for the HSB one
                 for (int i = 0; i < panels.length; i++) {
                     String name = panels[i].getClass().getName();
-                    if (name.contains("HSB")) {
-                        // Add the HSB panel, replacing the others
+                    if (name.endsWith(singleChooser)) {
+                        //Add the HSB panel, replacing the others
                         AbstractColorChooserPanel[] hsb = {panels[i]};
                         cc.setChooserPanels(hsb);
                         break;
                     }
                 }
-
                 cc.setPreviewPanel(new JPanel());
+
+
+
                 // Action to change the colour
                 ActionListener colorAction = new ActionListener() {
 
@@ -454,7 +460,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         this.add(settingsMenu);
 
-        //////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////  
         // HELP MENU
         //////////////////////////////////////////////////////////////
         AlcMenu helpMenu = new AlcMenu(getS("helpTitle"));

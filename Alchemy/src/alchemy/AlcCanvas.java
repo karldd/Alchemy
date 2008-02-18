@@ -68,6 +68,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private boolean affectMouseEvents = true;
     /** Mouse down */
     private boolean mouseDown;
+    /** Mouse Location */
+    private Point mouseLoc;
     /** Smoothing on or off */
     private boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
@@ -433,13 +435,19 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     /** Get the canvas redraw state */
-    public boolean getRedraw() {
+    public boolean isRedraw() {
         return redraw;
     }
 
     /** Return if the mouse is down - this does not take into account left/right buttons */
-    public boolean getMouseDown() {
+    public boolean isMouseDown() {
         return mouseDown;
+    }
+
+    /** Get the location of the mouse if within the canvas */
+    public Point getMouseLoc() {
+        // TODO - Return null if the mouse is outside the canvas or in the toolbar
+        return mouseLoc;
     }
 
     /** Get the Background Colour */
@@ -714,6 +722,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
+        mouseLoc = event.getPoint();
         // Toogle visibility of the Toolbar
         if (!root.prefs.getPaletteAttached()) {
             root.toolBar.toggleToolBar(event.getY());

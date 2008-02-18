@@ -720,40 +720,84 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         }
 
-        passKeyEvent(event, "keyPressed");
+        if (currentCreate >= 0) {
+            creates[currentCreate].keyPressed(event);
+        }
+        if (hasCurrentAffects()) {
+            for (int i = 0; i < currentAffects.length; i++) {
+                if (currentAffects[i]) {
+                    affects[i].keyPressed(event);
+                }
+            }
+        }
     }
 
     public void keyTyped(KeyEvent event) {
-        passKeyEvent(event, "keyTyped");
+        if (currentCreate >= 0) {
+            creates[currentCreate].keyTyped(event);
+        }
+        if (hasCurrentAffects()) {
+            for (int i = 0; i < currentAffects.length; i++) {
+                if (currentAffects[i]) {
+                    affects[i].keyTyped(event);
+                }
+            }
+        }
     }
 
     public void keyReleased(KeyEvent event) {
-        passKeyEvent(event, "keyReleased");
-    }
+        if (currentCreate >= 0) {
+            creates[currentCreate].keyReleased(event);
+        }
+        if (hasCurrentAffects()) {
+            for (int i = 0; i < currentAffects.length; i++) {
+                if (currentAffects[i]) {
+                    try {
+                        affects[i].keyReleased(event);
 
-    private void passKeyEvent(KeyEvent event, String eventType) {
-        // Reflection is used here to simplify passing events to each module
-        try {
-            // Pass to the current create module
-            if (currentCreate >= 0) {
-                Method method = creates[currentCreate].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
-                method.invoke(creates[currentCreate], new Object[]{event});
-            }
-            // Pass to all active affect modules
-            if (hasCurrentAffects()) {
-                for (int i = 0; i < currentAffects.length; i++) {
-                    if (currentAffects[i]) {
-                        Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
-                        method.invoke(affects[i], new Object[]{event});
+                    //TODO - Look at how to pass on exceptions correctly for handling down the food chain
+                    } catch (OutOfMemoryError error) {
+                        System.out.println("OUT OF MEMORY: " + Runtime.getRuntime().totalMemory());
+                        System.out.println(error);
+                        System.gc();
+
+                    } catch (InternalError error) {
+                        System.out.println("INTERNAL ERROR: " + error);
+                        System.gc();
                     }
                 }
             }
-        } catch (Throwable e) {
-            e.printStackTrace();
         }
-
     }
 
+// Refection stuff here removed to simplify the error throwing process
+//    passKeyEvent(event, "keyReleased");
+//    private void passKeyEvent(KeyEvent event, String eventType) {
+//        // Reflection is used here to simplify passing events to each module
+//        try {
+//            // Pass to the current create module
+//            if (currentCreate >= 0) {
+//                Method method = creates[currentCreate].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
+//                method.invoke(creates[currentCreate], new Object[]{event});
+//            }
+//            // Pass to all active affect modules
+//            if (hasCurrentAffects()) {
+//                for (int i = 0; i < currentAffects.length; i++) {
+//                    if (currentAffects[i]) {
+//                        Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
+//                        method.invoke(affects[i], new Object[]{event});
+//                    }
+//                }
+//            }
+//        } catch (OutOfMemoryError error) {
+//            System.out.println("OUT OF MEMORY" + Runtime.getRuntime().totalMemory());
+//        } catch (InternalError error) {
+//            System.out.println("INTERNAL ERROR");
+//        } catch (Throwable e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
     /** Set the hotkey to trigger an application wide action
      * 
      * @param key       The key to trigger the action
@@ -787,14 +831,17 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
      */
 
     public static void main(String[] args) {
-        if (PLATFORM == MACOSX) {
-            setupMacSystemProperties();
-        }
-
         // Set system look and feel
         try {
 
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            if (PLATFORM == MACOSX) {
+                System.setProperty("apple.laf.useScreenMenuBar", "true");
+                UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
+
+            } else {
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            }
+
         // Custom repaint class to manage transparency and redraw better
         // RepaintManager.setCurrentManager(new AlcRepaintManager());
         //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
