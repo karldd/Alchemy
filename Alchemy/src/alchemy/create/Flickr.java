@@ -50,7 +50,8 @@ public class Flickr {
        "&format=rest" +
        "&api_key=3f44e4e680a2a1b89af1b4bb803057ac" +
        "&per_page=1" +        // just send one match back
-       "&sort=interestingness-desc" +
+       //"&sort=interestingness-desc" +
+       //"&sort=date-posted-desc" +
        "&text=";
 
    private Flickr() throws ParserConfigurationException {

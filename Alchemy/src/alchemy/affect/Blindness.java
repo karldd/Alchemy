@@ -107,6 +107,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     // MOUSE EVENTS
     public void mouseReleased(MouseEvent e) {
         if (autoReveal) {
+            // TODO - Deal with straight shapes and autoreveal bug
             redrawOnce();
         }
     }

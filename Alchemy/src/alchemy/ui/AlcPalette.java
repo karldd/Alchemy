@@ -35,7 +35,7 @@ public class AlcPalette extends JWindow {
     private Component content;
     private AlcPaletteTitleBar titleBar;
     private AlcMain root;
-    private int maxSize = 1000;
+    private int maxSize = 1280;
     private int minSize = 600;
     private int paletteHeight = 88;
 
