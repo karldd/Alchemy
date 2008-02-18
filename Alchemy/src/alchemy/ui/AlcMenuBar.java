@@ -417,6 +417,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
                 // Swing Colour Chooser
                 final JColorChooser cc = new JColorChooser(Color.WHITE);
+                //cc.setBackground(AlcToolBar.toolBarBgColour);
                 // Just want to show the HSB panel
                 AbstractColorChooserPanel[] panels = cc.getChooserPanels();
                 // Get the panels and search for the HSB one
