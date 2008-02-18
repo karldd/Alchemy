@@ -32,6 +32,9 @@ import javax.swing.JPanel;
  */
 public class AlcPreferences extends JDialog implements AlcConstants {
 
+    /** Root */
+    private final AlcMain root;
+    /** Preferences package */
     private final Preferences prefs = Preferences.userNodeForPackage(getClass());
     /** Recording on or off at startup */
     private boolean recordingState;
@@ -55,10 +58,14 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     private Point canvasLocation;
     /** Canvas Window size */
     private Dimension canvasSize;
+    /** Canvas smoothing */
+    private boolean smoothing;
+    /** Canvas background colour */
+    private int bgColour;
 
     public AlcPreferences(AlcMain root) {
 
-        super(root);
+        this.root = root;
 
         recordingState = prefs.getBoolean("Recording State", false);
         recordingWarning = prefs.getBoolean("Recording Warning", true);
@@ -71,7 +78,8 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         paletteLocation = stringToPoint(prefs.get("Palette Location", null));
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
-
+        smoothing = prefs.getBoolean("Smoothing", true);
+        bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
 
         JPanel masterPanel = new JPanel();
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
@@ -110,9 +118,11 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         prefs.putBoolean("Recording State", this.recordingState);
         prefs.putBoolean("Recording Warning", this.recordingWarning);
         prefs.put("Session Path", this.sessionPath);
-        prefs.putInt("Recording Delay", recordingInterval);
+        prefs.putInt("Recording Delay", this.recordingInterval);
         prefs.putBoolean("Auto Clear Canvas", this.autoClear);
         prefs.putBoolean("Palette Attached", this.paletteAttached);
+        prefs.putBoolean("Smoothing", root.canvas.getSmoothing());
+        prefs.putInt("Background Colour", root.canvas.getBgColour().getRGB());
 
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", this.switchVectorApp);
@@ -222,6 +232,14 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         this.canvasSize = canvasSize;
     }
 
+    public boolean getSmoothing() {
+        return smoothing;
+    }
+
+    public int getBgColour() {
+        return bgColour;
+    }
+    
 
     //////////////////////////////////////////////////////////////
     // UTILITIES

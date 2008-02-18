@@ -69,7 +69,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Mouse down */
     private boolean mouseDown;
     /** Smoothing on or off */
-    private boolean smoothing = true;
+    private boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
     private boolean canvasChanged = false;
     //////////////////////////////////////////////////////////////
@@ -111,6 +111,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public AlcCanvas(AlcMain root) {
         this.root = root;
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        this.smoothing = root.prefs.getSmoothing();
+        this.bgColour = new Color(root.prefs.getBgColour());
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -443,6 +445,11 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Get the Background Colour */
     public Color getBgColour() {
         return bgColour;
+    }
+
+    /** Set the Background Colour */
+    public void setBgColour(Color bgColour) {
+        this.bgColour = bgColour;
     }
 
     /** Set Antialiasing */
