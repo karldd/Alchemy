@@ -51,19 +51,22 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     private String letters =
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
-    private boolean addShape = true;
+//    private boolean addShape = true;
     private AlcSubToolBarSection subToolBarSection;
     private Point oldP;
-    private AlcShape mouseShape;
+    private float size = 2.5F;
+    private boolean keys = false;
+//    private AlcShape mouseShape;
+    // Timing
+    private long mouseDelayGap = 50;
+    private boolean mouseFirstRun = true;
+    private long mouseDelayTime;
 
     /** Creates a new instance of TypeShapes */
     public TypeShapes() {
     }
 
     protected void setup() {
-
-        // TODO - Create a seperate Typeshapes mode using key presses and the pen
-        // to generate shapes at specific locations
 
         loadFonts();
 
@@ -85,39 +88,30 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     protected void cleared() {
-        addShape = true;
+//        addShape = true;
     }
 
     private void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
-        // Run Button
-        AlcSubButton runButton = new AlcSubButton("Create", AlcUtil.getUrlPath("run.png", getClassLoader()));
-        runButton.setToolTipText("Create Type Shapes (Space)");
-        runButton.addActionListener(
-                new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        generate();
-                    }
-                });
-        subToolBarSection.add(runButton);
+//
+//        // Add Button
+//        AlcSubButton addButton = new AlcSubButton("Add", AlcUtil.getUrlPath("add.png", getClassLoader()));
+//        addButton.setToolTipText("Add the current shape (Enter/Return)");
+//        addButton.addActionListener(
+//                new ActionListener() {
+//
+//                    public void actionPerformed(ActionEvent e) {
+//                        add();
+//                    }
+//                });
+//        subToolBarSection.add(addButton);
 
-        // Add Button
-        AlcSubButton addButton = new AlcSubButton("Add", AlcUtil.getUrlPath("add.png", getClassLoader()));
-        addButton.setToolTipText("Add the current shape (Enter/Return)");
-        addButton.addActionListener(
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        add();
-                    }
-                });
-        subToolBarSection.add(addButton);
 
         // Distortion Slider
         int initialSliderValue = 50;
-        final float levelOffset = 0.1F;
+        final float levelOffset = 0.01F;
         distortion = initialSliderValue * levelOffset;
         //System.out.println(distortion);
         AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 0, 100, initialSliderValue);
@@ -130,11 +124,54 @@ public class TypeShapes extends AlcModule implements AlcConstants {
                         if (!source.getValueIsAdjusting()) {
                             int value = source.getValue();
                             distortion = value * levelOffset;
-                        //System.out.println(distortion);
+                        System.out.println(distortion);
                         }
                     }
                 });
         subToolBarSection.add(distortionSlider);
+
+        // Run Button
+        AlcSubButton runButton = new AlcSubButton("Auto-generate", AlcUtil.getUrlPath("run.png", getClassLoader()));
+        runButton.setToolTipText("Create Type Shapes (Space)");
+        runButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        generate();
+                    }
+                });
+        subToolBarSection.add(runButton);
+
+        // Size Slider
+        AlcSubSlider sizeSlider = new AlcSubSlider("Size", 1, 50, (int) size * 10);
+        sizeSlider.setToolTipText("Adjust the size of shapes created");
+        sizeSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            size = 0.1F + source.getValue() / 10F;
+                            System.out.println(size);
+                        //System.out.println(distortion);
+                        }
+                    }
+                });
+        subToolBarSection.add(sizeSlider);
+
+
+        // Keyboard Button
+        AlcSubToggleButton keyboardButton = new AlcSubToggleButton("Key Drawing", AlcUtil.getUrlPath("keys.png", getClassLoader()));
+        keyboardButton.setToolTipText("Use the keys to create shapes (Caution: may conflict with other shortcut keys)");
+        keyboardButton.setSelected(keys);
+        keyboardButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        keys = !keys;
+                    }
+                });
+        subToolBarSection.add(keyboardButton);
 
 //        // Remove Button
 //        AlcSubButton removeButton = new AlcSubButton("Remove", AlcUtil.getUrlPath("remove.png", getClassLoader()));
@@ -149,18 +186,18 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 //        subToolBarSection.add(removeButton);
     }
 
-    private void add() {
-        // Commit the shape
-        canvas.commitShapes();
-        addShape = true;
-    }
-
-    private void remove() {
-        canvas.removeCurrentCreateShape();
-        canvas.removeCurrentAffectShape();
-        addShape = true;
-        canvas.redraw();
-    }
+//    private void add() {
+//        // Commit the shape
+//        canvas.commitShapes();
+//        addShape = true;
+//    }
+//
+//    private void remove() {
+//        canvas.removeCurrentCreateShape();
+//        canvas.removeCurrentAffectShape();
+//        addShape = true;
+//        canvas.redraw();
+//    }
 
     private void generate() {
 
@@ -169,15 +206,15 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         // Set the number of points
         shape.recalculateTotalPoints();
-        if (addShape) {
-            canvas.createShapes.add(shape);
-            addShape = false;
-        } else {
-            //canvas.removeCurrentAffectShape();
-            // Clear any affect shapes that may be floating around, then replace the current shape
-            canvas.affectShapes.clear();
-            canvas.setCurrentCreateShape(shape);
-        }
+//        if (addShape) {
+        canvas.createShapes.add(shape);
+//            addShape = false;
+//        } else {
+//            //canvas.removeCurrentAffectShape();
+//            // Clear any affect shapes that may be floating around, then replace the current shape
+//            canvas.affectShapes.clear();
+//            canvas.setCurrentCreateShape(shape);
+//        }
         canvas.redraw();
     }
 
@@ -289,7 +326,6 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         // Convert the random shape into a general path
         GeneralPath gp = new GeneralPath((Shape) union);
         //AlcShape alcShape = new AlcShape(gp, SOLID);
-
         return gp;
     }
 
@@ -297,13 +333,19 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         return makeTypeShape(font, null, null);
     }
 
-    private GeneralPath makeTypeShape(Font font, String randomLetter, Point location) {
+    private GeneralPath makeTypeShape(Font font, String letter) {
+        return makeTypeShape(font, letter, null);
+    }
+
+    private GeneralPath makeTypeShape(Font font, String letter, Point location) {
         // Make a string from one random char from the letters string
-        if (randomLetter == null) {
-            randomLetter = randomLetter();
+        boolean auto = false;
+        if (letter == null) {
+            auto = true;
+            letter = randomLetter();
         }
 
-        GlyphVector gv = font.createGlyphVector(fontRenderContext, randomLetter);
+        GlyphVector gv = font.createGlyphVector(fontRenderContext, letter);
         Shape shp = gv.getOutline();
         //Shape shp = gv.getOutline(math.random(150), math.random(150));
         //PathIterator count = shp.getPathIterator(null);
@@ -345,10 +387,11 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
             // Only add the first segment
             if (segCount == 1) {
-                if (pointCount < 20) {
+                if (pointCount < 50) {
                     switch (cutType) {
                         case PathIterator.SEG_MOVETO:
-                            newShape.moveTo(cutPts[0], cutPts[1]);
+                            newShape.moveTo(mess(cutPts[0]), mess(cutPts[1]));
+                            //newShape.moveTo(cutPts[0], cutPts[1]);
                             break;
                         case PathIterator.SEG_LINETO:
                             newShape.lineTo(mess(cutPts[0]), mess(cutPts[1]));
@@ -381,11 +424,19 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         AffineTransform newTr = new AffineTransform();
         if (location == null) {
-            // Move the shape to the middle of the screen
 
-            int offsetX = root.getWindowSize().width >> explode;
-            int offsetY = root.getWindowSize().width >> explode;
-            newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
+            if (auto) {
+                // Move the shape to the middle of the screen
+                int offsetX = root.getWindowSize().width >> explode;
+                int offsetY = root.getWindowSize().width >> explode;
+                newTr.translate(root.math.random(offsetX * -1, offsetX), root.math.random(offsetY * -1, offsetY));
+            } else {
+                // Move the shape to a random location
+                int offsetX = root.getWindowSize().width;
+                int offsetY = root.getWindowSize().width;
+                newTr.translate(root.math.random(0, offsetX), root.math.random(0, offsetY));
+            }
+
         } else {
             newTr.translate(location.x, location.y);
         }
@@ -412,83 +463,54 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         shuffle();
-        mouseShape = makeShape(makeTypeShape(randomFont(), randomLetter(), p));
-        mouseShape.recalculateTotalPoints();
-        canvas.createShapes.add(mouseShape);
-        canvas.redraw();
+        makePressShape(p, (int) (size * 50F));
         oldP = p;
     }
 
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
-        if (mouseShape != null) {
-            int speed = getCursorSpeed(p, oldP) * 5;
-            GeneralPath newPath = makeTypeShape(randomFont(speed), randomLetter(), p);
 
-            if (!newPath.intersects(mouseShape.getPath().getBounds2D())) {
-                mouseShape.append(newPath, false);
-                canvas.redraw();
+        if (mouseFirstRun) {
+            mouseDelayTime = System.currentTimeMillis();
+            mouseFirstRun = false;
+            makeDragShape(p);
+        } else {
+            // If enough time has elapsed
+            if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
+                mouseDelayTime = System.currentTimeMillis();
+                makeDragShape(p);
             }
         }
-//            } else {
-//                Area hitTestArea = new Area(mouseShape.getPath());
-//                System.out.println("SIMPLE MISS");
-//                Area newArea = new Area(newPath);
-//                hitTestArea.intersect(newArea);
-//
-//                if (hitTestArea.isEmpty()) {
-//                    System.out.println("MISS");
-//                    mouseShape.append(newPath, false);
-//                    canvas.redraw();
-//                }
-//            }
-
-
-//                    //System.out.println("HIT " + Runtime.getRuntime().totalMemory());
-//
-//                    Area mainArea, newArea;
-//                    try {
-//                        mainArea = new Area(mouseShape.getPath());
-//                        newArea = new Area(newPath);
-//                        mainArea.add(newArea);
-//                        mouseShape.setPath(new GeneralPath((Shape) mainArea));
-//
-//                    } finally {
-//                        
-//                        mainArea = null;
-////                        hitTestArea = null;
-////                        newArea = null;
-//
-//                    }
-////                }
-//
-//            }
-//
-//            //mouseShape.append(makeTypeShape(randomFont(speed), randomLetter(), p), false);
-//
-//            mouseShape.recalculateTotalPoints();
-
-//        }
-//        //canvas.createShapes.add(shape);
-//
         oldP = p;
     }
 
     public void mouseReleased(MouseEvent e) {
         oldP = null;
-        canvas.commitShapes();
-//        Point p = e.getPoint();
-//        // Need to test if it null incase the shape has been auto-cleared
-//        if (canvas.getCurrentCreateShape() != null) {
-//            canvas.getCurrentCreateShape().addLastPoint(p);
-//            canvas.redraw();
-//            canvas.commitShapes();
-//        }
+    //canvas.commitShapes();
     }
 
     private AlcShape makeShape(GeneralPath path) {
         // Make a new shape with the globally defined style etc...
         return new AlcShape(path, canvas.getColour(), canvas.getAlpha(), canvas.getStyle(), canvas.getLineWidth());
+    }
+
+    private void makePressShape(Point p, int fontSize) {
+        makeMouseShape(p, fontSize);
+    }
+
+    private void makeDragShape(Point p) {
+        makeMouseShape(p, -1);
+    }
+
+    private void makeMouseShape(Point p, int fontSize) {
+        if (fontSize < 0) {
+            fontSize = (int) (getCursorSpeed(p, oldP) * size);
+        }
+        AlcShape mouseShape = makeShape(makeTypeShape(randomFont(fontSize), randomLetter(), p));
+        mouseShape.recalculateTotalPoints();
+        canvas.createShapes.add(mouseShape);
+        canvas.redraw();
+        canvas.commitShapes();
     }
 
     // KEY EVENTS
@@ -498,31 +520,49 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
         switch (keyCode) {
             case KeyEvent.VK_SPACE:
-                generate();
-                break;
 
-            case KeyEvent.VK_ENTER:
-                add();
-                break;
+                try {
+                    //System.out.println("MEMORY BEFORE: " + Runtime.getRuntime().totalMemory());
+                    generate();
+                //System.out.println("MEMORY AFTER: " + Runtime.getRuntime().totalMemory());
+                } catch (OutOfMemoryError error) {
+                    System.out.println("OUT OF MEMORY: " + Runtime.getRuntime().totalMemory());
+                    System.out.println(error);
+                    System.gc();
 
-            case KeyEvent.VK_DELETE:
-            case KeyEvent.VK_BACK_SPACE:
-                remove();
+                } catch (InternalError error) {
+                    System.out.println("INTERNAL ERROR: " + error);
+                    //System.out.println("MEMORY AFTER CATCH: " + Runtime.getRuntime().totalMemory());
+                    System.gc();
+                    generate();
+                }
+
                 break;
+//
+//            case KeyEvent.VK_ENTER:
+//                add();
+//                break;
+
+//            case KeyEvent.VK_DELETE:
+//            case KeyEvent.VK_BACK_SPACE:
+//                remove();
+//                break;
 
             default:
 
-                // If longer than a single character then take the first
-                if (keyText.length() > 1) {
-                    keyText = keyText.substring(0, 1);
+                if (keys) {
+                    // If longer than a single character then take the first
+                    if (keyText.length() > 1) {
+                        keyText = keyText.substring(0, 1);
+                    }
+                    shuffle();
+                    //AlcShape shape = makeShape(makeTypeShape(randomFont(), keyText, canvas.getMouseLoc()));
+                    AlcShape shape = makeShape(makeTypeShape(randomFont(), keyText));
+                    shape.recalculateTotalPoints();
+                    canvas.createShapes.add(shape);
+                    canvas.redraw();
+                    canvas.commitShapes();
                 }
-
-                AlcShape shape = makeShape(makeTypeShape(randomFont(), keyText, canvas.getMouseLoc()));
-                shape.recalculateTotalPoints();
-                canvas.createShapes.add(shape);
-                canvas.redraw();
-                 canvas.commitShapes();
-
                 //System.out.println(keyText);
                 break;
         }

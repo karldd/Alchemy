@@ -752,19 +752,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if (hasCurrentAffects()) {
             for (int i = 0; i < currentAffects.length; i++) {
                 if (currentAffects[i]) {
-                    try {
-                        affects[i].keyReleased(event);
-
-                    //TODO - Look at how to pass on exceptions correctly for handling down the food chain
-                    } catch (OutOfMemoryError error) {
-                        System.out.println("OUT OF MEMORY: " + Runtime.getRuntime().totalMemory());
-                        System.out.println(error);
-                        System.gc();
-
-                    } catch (InternalError error) {
-                        System.out.println("INTERNAL ERROR: " + error);
-                        System.gc();
-                    }
+                    affects[i].keyReleased(event);
                 }
             }
         }

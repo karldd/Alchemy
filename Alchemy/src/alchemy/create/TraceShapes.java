@@ -88,30 +88,33 @@ public class TraceShapes extends AlcModule {
         } catch (Exception ignored) {
         }
 
-        BufferedImage flickrBufferedImage = (BufferedImage) flickrImage;
 
-        // Scale the image to the screen size
-        imageW = root.getWindowSize().width;
-        imageH = root.getWindowSize().height;
-        BufferedImage scaledImage = new BufferedImage(imageW, imageH, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = scaledImage.createGraphics();
-        AffineTransform scaleTransform = AffineTransform.getScaleInstance(
-                (double) imageW / flickrBufferedImage.getWidth(),
-                (double) imageH / flickrBufferedImage.getHeight());
-        g.drawRenderedImage(flickrBufferedImage, scaleTransform);
+        if (flickrImage != null) {
+            BufferedImage flickrBufferedImage = (BufferedImage) flickrImage;
 
-        // Load the pixels into an array
-        pixels = new int[imageW * imageH];
-        //int[] rgbs = new int[areaArraySize];
-        scaledImage.getRGB(0, 0, imageW, imageH, pixels, 0, imageW);
-        // Then convert them all to grey for easy access
-        for (int i = 0; i < pixels.length; i++) {
-            pixels[i] = convertToGrey(pixels[i]);
+            // Scale the image to the screen size
+            imageW = root.getWindowSize().width;
+            imageH = root.getWindowSize().height;
+            BufferedImage scaledImage = new BufferedImage(imageW, imageH, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = scaledImage.createGraphics();
+            AffineTransform scaleTransform = AffineTransform.getScaleInstance(
+                    (double) imageW / flickrBufferedImage.getWidth(),
+                    (double) imageH / flickrBufferedImage.getHeight());
+            g.drawRenderedImage(flickrBufferedImage, scaleTransform);
+
+            // Load the pixels into an array
+            pixels = new int[imageW * imageH];
+            //int[] rgbs = new int[areaArraySize];
+            scaledImage.getRGB(0, 0, imageW, imageH, pixels, 0, imageW);
+            // Then convert them all to grey for easy access
+            for (int i = 0; i < pixels.length; i++) {
+                pixels[i] = convertToGrey(pixels[i]);
+            }
+            pixelsLoaded = true;
+
+            canvas.setImage(scaledImage);
+            canvas.redraw();
         }
-        pixelsLoaded = true;
-
-        canvas.setImage(scaledImage);
-        canvas.redraw();
 
     }
 

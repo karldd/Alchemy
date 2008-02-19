@@ -26,7 +26,6 @@ import javax.swing.*;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicToolBarUI;
 
 /**
  * Alchemy Toolbar
@@ -351,6 +350,10 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // SEPARATOR
         //////////////////////////////////////////////////////////////
         toolBar.add(new AlcSeparator());
+        
+        //////////////////////////////////////////////////////////////
+        // DETACH BUTTON
+        //////////////////////////////////////////////////////////////
 
         JPanel topAlign = new JPanel();
         topAlign.setOpaque(false);
