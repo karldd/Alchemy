@@ -38,7 +38,7 @@ public class AlcSubToolBar extends JPanel {
         this.setOpaque(false);
         //this.setBorderPainted(false);
         //this.setFloatable(false); 
-        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
 

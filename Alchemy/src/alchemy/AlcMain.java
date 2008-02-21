@@ -23,7 +23,6 @@ import alchemy.ui.*;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
 /**
@@ -114,6 +113,15 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         super("OSXAdapter");
 
+        if (PLATFORM == MACOSX) {
+            // TODO - Make some custom mac 64pix icons
+            Object appIcon = LookAndFeel.makeIcon(getClass(), "data/alchemy-logo64.png");
+            UIManager.put("OptionPane.errorIcon", appIcon);
+            UIManager.put("OptionPane.informationIcon", appIcon);
+            UIManager.put("OptionPane.questionIcon", appIcon);
+            UIManager.put("OptionPane.warningIcon", appIcon);
+        }
+
         // LOAD RESOURCE BUNDLE
         bundle = ResourceBundle.getBundle("alchemy/AlcResourceBundle", LOCALE);
 
@@ -134,7 +142,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         }
         // Load create - zero creates = exit!
         if (getNumberOfCreateModules() > 0) {
-            String[] createsOrder = {"Shapes", "Inverse Shapes", "Type Shapes", "Mic Shapes"};
+            String[] createsOrder = {"Shapes", "Mic Shapes", "Speed Shapes"};
             // Extension Point Name, Array Size, Module Type
             creates = plugins.addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
         } else {
@@ -208,9 +216,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         menuBar = new AlcMenuBar(this);
 
         if (PLATFORM == MACOSX) {
+
+
             // For some reason the menubar still displays on OSX
-            // Set it to invisible
-            menuBar.setVisible(false);
+            // Set it to invisible for Leopard?
+            //menuBar.setVisible(false);
+            menuBar.setOpaque(false);
+            menuBar.setBorderPainted(false);
             // Add normally if on MacOSX as the menu is listed above
             this.setJMenuBar(menuBar);
 
@@ -595,7 +607,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
 
             palette.addContent(toolBar.toolBars);
-            palette.pack();
+            //palette.pack();
             palette.setVisible(true);
             palette.requestFocus();
             prefs.setPaletteAttached(true);
@@ -620,7 +632,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
         }
     }
-
 
     //////////////////////////////////////////////////////////////
     // MAC SPECIFIC
@@ -703,7 +714,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         //System.setProperty("apple.awt.showGrowBox", "true");
         System.setProperty("apple.laf.useScreenMenuBar", "true");
     //System.setProperty("apple.awt.fullscreencapturealldisplays", "true");
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -825,6 +835,15 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             if (PLATFORM == MACOSX) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
+
+            // TODO - Make more mac like dialogs
+//                String css = "<head>" +
+//                        "<style type=\"text/css\">" +
+//                        "b { font: 13pt \"Lucida Grande\" }" +
+//                        "p { font: 11pt \"Lucida Grande\"; margin-top: 8px }" +
+//                        "</style>" +
+//                        "</head>";
+//                UIManager.put("OptionPane.css", css);
 
             } else {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

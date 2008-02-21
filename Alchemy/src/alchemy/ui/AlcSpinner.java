@@ -41,7 +41,7 @@ public class AlcSpinner extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         spinner = new JSpinner(numberModel);
-        spinner.setPreferredSize(new Dimension(40, 24));
+        spinner.setPreferredSize(new Dimension(40, 25));
         spinner.setOpaque(false);
         spinner.setBackground(AlcToolBar.toolBarBgColour);
         // Top Left Bottom Right

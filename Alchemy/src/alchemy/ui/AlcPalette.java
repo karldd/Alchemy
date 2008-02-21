@@ -85,11 +85,11 @@ public class AlcPalette extends JWindow {
 
     private void setGoodSize() {
         if (root.getWindowSize().width < minSize) {
-            this.setSize(new Dimension(minSize, paletteHeight));
+            this.setSize(minSize, paletteHeight);
         } else if (root.getWindowSize().width > maxSize) {
-            this.setSize(new Dimension(maxSize, paletteHeight));
+            this.setSize(maxSize, paletteHeight);
         } else {
-            this.setSize(new Dimension(root.getWindowSize().width, paletteHeight));
+            this.setSize(root.getWindowSize().width, paletteHeight);
         }
     }
 }

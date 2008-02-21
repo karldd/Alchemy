@@ -37,7 +37,7 @@ public class AlcPopupMenu extends JPopupMenu {
 
 
         Border outline = BorderFactory.createLineBorder(AlcToolBar.toolBarLineColour, 1);
-        Border empty = BorderFactory.createEmptyBorder(5, 5, 5, 5);
+        Border empty = BorderFactory.createEmptyBorder(2, 2, 2, 2);
         // Compound border combining the above two
         Border compound = BorderFactory.createCompoundBorder(outline, empty);
         this.setBorder(compound);

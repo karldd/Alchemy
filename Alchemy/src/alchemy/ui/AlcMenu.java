@@ -20,7 +20,6 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
-import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 

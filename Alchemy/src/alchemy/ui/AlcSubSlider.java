@@ -19,6 +19,7 @@
  */
 package alchemy.ui;
 
+import alchemy.AlcConstants;
 import alchemy.AlcMain;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -29,7 +30,7 @@ import javax.swing.*;
  * 
  * 
  */
-public class AlcSubSlider extends JPanel {
+public class AlcSubSlider extends JPanel implements AlcConstants{
 
     public JSlider slider;
 
@@ -48,7 +49,7 @@ public class AlcSubSlider extends JPanel {
         // This causes misalignment on a mac so for now readjust it
         int sliderHeight = 23;
         int sliderY = 3;
-        if (AlcMain.PLATFORM == 3) {
+        if (AlcMain.PLATFORM == MACOSX) {
             sliderHeight = 20;
             sliderY = 4;
         }
@@ -63,7 +64,7 @@ public class AlcSubSlider extends JPanel {
 
         JLabel label = new JLabel(name);
         label.setFont(AlcToolBar.subToolBarFont);
-        label.setBorder(BorderFactory.createEmptyBorder(6, 0, 0, 0));
+        label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(label);
 
