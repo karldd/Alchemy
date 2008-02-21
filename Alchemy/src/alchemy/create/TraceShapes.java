@@ -124,7 +124,7 @@ public class TraceShapes extends AlcModule {
     }
 
     private Point checkSnap(Point p) {
-        if (pixelsLoaded) {
+        if (pixelsLoaded && p.x < imageW && p.y < imageH) {
             // The pixel value under the cursor
             int xy = getPixel(p.x, p.y);
 
@@ -161,8 +161,6 @@ public class TraceShapes extends AlcModule {
                     }
                 }
             }
-
-
             if (bestContrastPoint != null) {
                 //System.out.println("Contrast: " + contrast);
                 return bestContrastPoint;

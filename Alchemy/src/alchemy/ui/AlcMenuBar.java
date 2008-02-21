@@ -148,6 +148,11 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         }
 
         this.add(fileMenu);
+        
+        // TODO - Add Edit Menu and Copy to clipboard functions
+        // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/datatransfer/Clipboard.html
+        // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/Toolkit.html#getSystemClipboard()
+        // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/datatransfer/DataFlavor.html
 
         //////////////////////////////////////////////////////////////
         // VIEW MENU
@@ -256,7 +261,6 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
                     AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
                     root.session.setTimerInterval(source.getIndex());
 
-
                 }
             });
             group.add(intervalItem);
@@ -265,7 +269,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         intervalMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
         sessionMenu.add(intervalMenu);
 
-        sessionMenu.add(new JSeparator());
+        //sessionMenu.add(new JSeparator());
 
         // Auto Clear
         AbstractAction autoClearAction = new AbstractAction() {
@@ -415,27 +419,26 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
 
-                //TODO - Make a nicer colour chooser, use the Processing one as a base?
-//http://dev.processing.org/source/index.cgi/trunk/processing/app/src/processing/app/tools/ColorSelector.java?view=markup                
                 // Swing Colour Chooser
                 final JColorChooser cc = new JColorChooser(Color.WHITE);
                 //cc.setBackground(AlcToolBar.toolBarBgColour);
 
-                String singleChooser = "DefaultHSBChooserPanel";
-                // Just want to show the HSB panel
-                AbstractColorChooserPanel[] panels = cc.getChooserPanels();
-                // Get the panels and search for the HSB one
-                for (int i = 0; i < panels.length; i++) {
-                    String name = panels[i].getClass().getName();
-                    if (name.endsWith(singleChooser)) {
-                        //Add the HSB panel, replacing the others
-                        AbstractColorChooserPanel[] hsb = {panels[i]};
-                        cc.setChooserPanels(hsb);
-                        break;
+                if (AlcMain.PLATFORM != MACOSX) {
+                    String singleChooser = "DefaultHSBChooserPanel";
+                    // Just want to show the HSB panel
+                    AbstractColorChooserPanel[] panels = cc.getChooserPanels();
+                    // Get the panels and search for the HSB one
+                    for (int i = 0; i < panels.length; i++) {
+                        String name = panels[i].getClass().getName();
+                        if (name.endsWith(singleChooser)) {
+                            //Add the HSB panel, replacing the others
+                            AbstractColorChooserPanel[] hsb = {panels[i]};
+                            cc.setChooserPanels(hsb);
+                            break;
+                        }
                     }
+                    cc.setPreviewPanel(new JPanel());
                 }
-                cc.setPreviewPanel(new JPanel());
-
 
 
                 // Action to change the colour
@@ -587,6 +590,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         //FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
         //fileDialog.setVisible(true);
         //String fileString = fileDialog.getFile();
+
 
         final AlcFileChooser fc = new AlcFileChooser();
         fc.setDialogTitle("Export Pdf");

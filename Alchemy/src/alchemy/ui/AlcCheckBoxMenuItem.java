@@ -37,7 +37,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
     static {
         if (AlcMain.PLATFORM == MACOSX) {
-            checkX = 0;
+            checkX = 6;
         } else {
             checkX = 4;
         }

@@ -34,7 +34,7 @@ public class AlcSubLabel extends JLabel {
 
         // Cant set the margins so make an empty border to adjust the spacing
         // EmptyBorder(int top, int left, int bottom, int right) 
-        this.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 
     //this.setIconTextGap(10);
 

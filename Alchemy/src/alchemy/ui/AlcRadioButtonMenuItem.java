@@ -41,7 +41,7 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
 
     static {
         if (AlcMain.PLATFORM == MACOSX) {
-            checkX = 0;
+            checkX = 7;
         } else {
             checkX = 6;
         }
@@ -50,7 +50,7 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
     Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(checkX + 1, 15, 6, 6);
     Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX + 1, 16, 6, 6);
     Ellipse2D.Double menuCircle = new Ellipse2D.Double(checkX, 9, 8, 8);
-    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(checkX+1, 10, 6, 6);
+    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(checkX + 1, 10, 6, 6);
 
     public AlcRadioButtonMenuItem(int index, String title) {
         setup(index, title);
@@ -112,10 +112,12 @@ public class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcC
         // NOT SELECTED
         } else {
             if (moduleType != -1) {
-                g2.setColor(this.getBackground());
-                g2.fill(toolCircle);
-                g2.setColor(Color.BLACK);
-                g2.fill(toolInnerCircle);
+                if (AlcMain.PLATFORM != MACOSX) {
+                    g2.setColor(this.getBackground());
+                    g2.fill(toolCircle);
+                    g2.setColor(Color.BLACK);
+                    g2.fill(toolInnerCircle);
+                }
 
 
             // This is the menubar

@@ -75,7 +75,7 @@
         <unjar src="${file.reference.jhall.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/> 
         <!--<unjar src="${file.reference.quaqua.jar}" dest="${build.classes.dir}"/>-->
-        <unjar src="${file.reference.quaqua-filechooser-only.jar}" dest="${build.classes.dir}"/>
+        <!--<unjar src="${file.reference.quaqua-filechooser-only.jar}" dest="${build.classes.dir}"/>-->
         <!--<unjar src="${file.reference.quaqua-colorchooser-only.jar}" dest="${build.classes.dir}"/>-->
     </target> 
     
@@ -187,7 +187,7 @@
             <fileset dir="${basedir}/lib"/>
         </copy>
          -->
-        
+         
         <!-- Define custom JPF specific Ant tasks -->
         <path id="classpath">
             <fileset dir="lib" includes="*.jar" />
@@ -232,6 +232,13 @@
         <delete dir="${dist.dir}/Alchemy"/>
         <delete dir="${dist.dir}/lib"/>
         <delete file="${dist.dir}/README.TXT"/>
+        
+        <!-- Copy the Quaqua libraries
+              These are not inlcuded in the distribution jar
+              but put in the Mac Alchemy.app -->
+        <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}"/>
+        <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
+        
         
         
     </target>	
