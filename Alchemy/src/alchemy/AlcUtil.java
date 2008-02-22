@@ -20,6 +20,9 @@
 package alchemy;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -33,6 +36,9 @@ import javax.swing.ImageIcon;
  * Used to manipulate strings, load images, and general stuff
  */
 public class AlcUtil implements AlcConstants {
+
+    private final static Clipboard CLIPBOARD = Toolkit.getDefaultToolkit().getSystemClipboard();
+
 
     //////////////////////////////////////////////////////////////
     // STRING FUNCTIONS
@@ -247,6 +253,23 @@ public class AlcUtil implements AlcConstants {
         } catch (Exception e) {
             System.err.println(errMsg + ":\n" + e.getLocalizedMessage());
         }
+    }
+
+    /**
+     * Sets the current contents of the clipboard to the specified transferable object and registers the specified clipboard owner as the owner of the new contents. 
+     * Shows warning message if an exception occured
+     * @param contents
+     * @return boolean false if an exception occured
+     */
+    public static boolean setClipboard(Transferable contents, ClipboardOwner owner) {
+        boolean result = true;
+        try {
+            CLIPBOARD.setContents(contents, owner);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            result = false;
+        }
+        return result;
     }
 
 
