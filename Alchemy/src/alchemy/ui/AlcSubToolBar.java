@@ -23,7 +23,7 @@ import alchemy.*;
 import java.awt.*;
 import javax.swing.*;
 
-public class AlcSubToolBar extends JPanel {
+public class AlcSubToolBar extends JPanel implements AlcConstants {
 
     private final AlcMain root;
     //private AlcToolBar parent;
@@ -38,7 +38,11 @@ public class AlcSubToolBar extends JPanel {
         this.setOpaque(false);
         //this.setBorderPainted(false);
         //this.setFloatable(false); 
-        this.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        if (AlcMain.PLATFORM == MACOSX) {
+            this.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        } else {
+            this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        }
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
         //this.setAlignmentX(Component.LEFT_ALIGNMENT);
 

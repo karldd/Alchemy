@@ -37,7 +37,7 @@ public class AlcSlider extends JPanel {
     public AlcSlider(String name, int minValue, int maxValue, int startValue) {
 
         // Top Left Bottom Right
-        //this.setBorder(BorderFactory.createEmptyBorder(4, 8, 6, 4));
+        //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
