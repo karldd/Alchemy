@@ -263,8 +263,12 @@ public class AlcPlugin implements AlcConstants {
 class PluginComparator implements Comparator {
 
     public int compare(Object o1, Object o2) {
-        Integer int1 = new Integer(((AlcModule) o1).getSortOrderIndex());
-        Integer int2 = new Integer(((AlcModule) o2).getSortOrderIndex());
+        AlcModule module1 = ((AlcModule) o1);
+        Integer int1 = new Integer(module1.getSortOrderIndex());
+
+        AlcModule module2 = ((AlcModule) o2);
+        Integer int2 = new Integer(module2.getSortOrderIndex());
+
         return int1.compareTo(int2);
     }
 }

@@ -21,8 +21,6 @@ package alchemy.ui;
 
 import alchemy.*;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
 import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
@@ -154,7 +152,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // EDIT MENU
         //////////////////////////////////////////////////////////////
-        
+
         AlcMenu editMenu = new AlcMenu(getS("editTitle"));
 
         // Copy
@@ -675,17 +673,18 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         }
     }
 
+    /** Copy the canvas to the clipboard as an image */
     private void copy() {
         // TODO - Implement Vector clipboard copy function
         // http://www.java2s.com/Code/Java/Swing-JFC/MimeClipboardTest.htm
 
         Image currentScreen = root.canvas.generatedBufferedImage();
         boolean set = AlcUtil.setClipboard(new AlcImageTransferable(currentScreen), root);
-        System.out.println("Clipboard Set: " + set);
+    //System.out.println("Clipboard Set: " + set);
     }
 
+    /** Make a temporary file, create a PDF, and then open it */
     private void switchVector() {
-        // Make a temporary file, create a PDF, and then open it
         try {
             File tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
             tempVector.deleteOnExit();
@@ -700,8 +699,8 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
     }
 
+    /** Make a temporary file, create a PNG, and then open it */
     private void switchBitmap() {
-        // Make a temporary file, create a PNG, and then open it
         try {
             File tempBitmap = File.createTempFile("AlchemyTempBitmapFile", ".png");
             tempBitmap.deleteOnExit();
@@ -716,6 +715,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
     }
 
+    /** Open the appropriate application with the temp file and 'switch' */
     private void openSwitch(String file, String app) {
         File path = new File(app);
         try {
