@@ -21,6 +21,9 @@ package alchemy;
 
 import alchemy.ui.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ResourceBundle;
@@ -29,7 +32,7 @@ import java.util.ResourceBundle;
  * Main class for Alchemy<br />
  * Handles all and everything - the meta 'root' reference
  */
-public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener {
+public class AlcMain extends JFrame implements AlcConstants, ComponentListener, KeyListener, ClipboardOwner {
 
     /** Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER. */
     public static int PLATFORM;
@@ -96,6 +99,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     private int numberOfCurrentAffects = 0;
     /** Preferred size of the window */
     private Dimension windowSize = null;
+    /** Minimum Size for the window */
+    private static final Dimension minWindowSize = new Dimension(640, 400);
     //
     //////////////////////////////////////////////////////////////
     // FULLSCREEN
@@ -190,7 +195,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if (prefs.getCanvasSize() != null) {
             Dimension savedWindowSize = prefs.getCanvasSize();
             // Make sure the window is not too big
-            if (savedWindowSize.width <= currentWindowSize.height && savedWindowSize.height <= currentWindowSize.height) {
+            if (savedWindowSize.width <= currentWindowSize.width && savedWindowSize.height <= currentWindowSize.height) {
                 windowSize = savedWindowSize;
                 windowSet = true;
             }
@@ -456,8 +461,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     // WINDOW CONTROLS
     //////////////////////////////////////////////////////////////
     private void resizeWindow(ComponentEvent e) {
+        // Make sure the minimum size is observed
+        this.setSize(Math.max(minWindowSize.width, this.getWidth()), Math.max(minWindowSize.height, this.getHeight()));
         // Get and set the new size of the window
-        windowSize = e.getComponent().getSize();
+        //windowSize = e.getComponent().getSize();
+        windowSize = this.getSize();
         // Resize the UI and Canvas
         toolBar.resizeToolBar(windowSize);
         canvas.resizeCanvas(windowSize);
@@ -861,5 +869,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         AlcMain window = new AlcMain();
         window.setVisible(true);
+    }
+
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+        System.out.println("Clipboard contents replaced");
     }
 }

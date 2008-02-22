@@ -215,11 +215,21 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         bwAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
+
                 root.canvas.toggleBlackWhite();
-                // Only toogle the button manually if it is triggered by a key
-                if (e.getActionCommand().equals("x")) {
-                    bwButton.setSelected(!bwButton.isSelected());
+
+                Color bwColour = root.canvas.getColour();
+                if (bwColour == Color.BLACK) {
+                    bwButton.setSelected(false);
+                } else {
+                    bwButton.setSelected(true);
                 }
+
+
+            // Only toogle the button manually if it is triggered by a key
+//                if (e.getActionCommand().equals("x")) {
+//                    bwButton.setSelected(!bwButton.isSelected());
+//                }
             }
         };
         bwButton.setAction(bwAction);
@@ -350,7 +360,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // SEPARATOR
         //////////////////////////////////////////////////////////////
         toolBar.add(new AlcSeparator());
-        
+
         //////////////////////////////////////////////////////////////
         // DETACH BUTTON
         //////////////////////////////////////////////////////////////

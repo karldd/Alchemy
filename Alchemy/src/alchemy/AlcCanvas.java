@@ -41,6 +41,7 @@ import com.lowagie.text.pdf.PdfReader;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -451,7 +452,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 //        // Return null if the mouse is outside the canvas or in the toolbar?
 //        return mouseLoc;
 //    }
-
     /** Get the Background Colour */
     public Color getBgColour() {
         return bgColour;
@@ -708,8 +708,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
+
     /** Create a bufferedImage from the canvas */
-    private BufferedImage generatedBufferedImage() {
+    public BufferedImage generatedBufferedImage() {
         BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = buffImage.getGraphics();
         //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());

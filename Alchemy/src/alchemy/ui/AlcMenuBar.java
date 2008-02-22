@@ -21,6 +21,8 @@ package alchemy.ui;
 
 import alchemy.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
@@ -148,11 +150,29 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         }
 
         this.add(fileMenu);
+
+        //////////////////////////////////////////////////////////////
+        // EDIT MENU
+        //////////////////////////////////////////////////////////////
         
-        // TODO - Add Edit Menu and Copy to clipboard functions
-        // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/datatransfer/Clipboard.html
-        // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/Toolkit.html#getSystemClipboard()
-        // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/datatransfer/DataFlavor.html
+        AlcMenu editMenu = new AlcMenu(getS("editTitle"));
+
+        // Copy
+        String copyTitle = getS("copyTitle");
+        AbstractAction copyAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                copy();
+            }
+        };
+        AlcMenuItem copyItem = new AlcMenuItem(copyAction);
+        copyItem.setup(copyTitle, KeyEvent.VK_C);
+        // Shortcut - Modifier c
+        root.setHotKey(KeyEvent.VK_C, copyTitle, copyAction);
+        editMenu.add(copyItem);
+
+        this.add(editMenu);
+
 
         //////////////////////////////////////////////////////////////
         // VIEW MENU
@@ -653,6 +673,15 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         } else {
             return null;
         }
+    }
+
+    private void copy() {
+        // TODO - Implement Vector clipboard copy function
+        // http://www.java2s.com/Code/Java/Swing-JFC/MimeClipboardTest.htm
+
+        Image currentScreen = root.canvas.generatedBufferedImage();
+        boolean set = AlcUtil.setClipboard(new AlcImageTransferable(currentScreen), root);
+        System.out.println("Clipboard Set: " + set);
     }
 
     private void switchVector() {
