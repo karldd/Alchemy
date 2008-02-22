@@ -2,19 +2,19 @@
 <!DOCTYPE helpset
 PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp HelpSet Version 1.0//EN"
 "http://java.sun.com/products/javahelp/helpset_1_0.dtd">
-<helpset version="1.0">
+<helpset version="1.0" xml:lang="ja">
     <!-- title -->
     <title>Help</title>
     <!-- maps -->
     <maps>
         <homeID>introduction</homeID>
-        <mapref location="help-jhm.xml" />
+        <mapref location="ja/map.jhm" />
     </maps>
     <!-- views -->
     <view>
         <name>TOC</name>
         <label>Table Of Contents</label>
         <type>javax.help.TOCView</type>
-        <data>help-toc.xml</data>
+        <data>ja/toc.xml</data>
     </view>
 </helpset>

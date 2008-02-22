@@ -153,23 +153,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         // EDIT MENU
         //////////////////////////////////////////////////////////////
 
-        AlcMenu editMenu = new AlcMenu(getS("editTitle"));
-
-        // Copy
-        String copyTitle = getS("copyTitle");
-        AbstractAction copyAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                copy();
-            }
-        };
-        AlcMenuItem copyItem = new AlcMenuItem(copyAction);
-        copyItem.setup(copyTitle, KeyEvent.VK_C);
-        // Shortcut - Modifier c
-        root.setHotKey(KeyEvent.VK_C, copyTitle, copyAction);
-        editMenu.add(copyItem);
-
-        this.add(editMenu);
+//        AlcMenu editMenu = new AlcMenu(getS("editTitle"));
+//
+//        // Copy
+//        String copyTitle = getS("copyTitle");
+//        AbstractAction copyAction = new AbstractAction() {
+//
+//            public void actionPerformed(ActionEvent e) {
+//                copy();
+//            }
+//        };
+//        AlcMenuItem copyItem = new AlcMenuItem(copyAction);
+//        copyItem.setup(copyTitle, KeyEvent.VK_C);
+//        // Shortcut - Modifier c
+//        root.setHotKey(KeyEvent.VK_C, copyTitle, copyAction);
+//        editMenu.add(copyItem);
+//
+//        this.add(editMenu);
 
 
         //////////////////////////////////////////////////////////////
@@ -492,9 +492,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         //      http://informagen.com/JarBundler/HelpBook.html
         try {
 
-            final URL url = AlcMain.class.getResource("help/help-hs.xml");
+            //final URL url = AlcMain.class.getResource("help/help-hs.xml");
+
+            final ClassLoader cl = AlcMain.class.getClassLoader();
+            final URL hsURL = HelpSet.findHelpSet(cl, "alchemy/help/helpset.hs");
+            final HelpSet hs = new HelpSet(null, hsURL);
             //System.out.println(url);
-            final HelpSet hs = new HelpSet(null, url);
+            //final HelpSet hs = new HelpSet(null, url);
             final HelpBroker hb = hs.createHelpBroker();
 
             AbstractAction helpAction = new AbstractAction() {
@@ -677,8 +681,9 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
     private void copy() {
         // TODO - Implement Vector clipboard copy function
         // http://www.java2s.com/Code/Java/Swing-JFC/MimeClipboardTest.htm
+        // TODO - Fix bug when resizing the window then copying
 
-        Image currentScreen = root.canvas.generatedBufferedImage();
+        Image currentScreen = (Image) root.canvas.getBufferedImage();
         boolean set = AlcUtil.setClipboard(new AlcImageTransferable(currentScreen), root);
     //System.out.println("Clipboard Set: " + set);
     }
