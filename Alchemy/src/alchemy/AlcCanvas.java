@@ -699,7 +699,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public boolean savePng(File file) {
         try {
             //File file = new File("saveToThisFile.jpg");
-            BufferedImage buffImage = generatedBufferedImage();
+            BufferedImage buffImage = getBufferedImage();
             ImageIO.write(buffImage, "png", file);
             return true;
         } catch (IOException ex) {
@@ -710,8 +710,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
 
     /** Create a bufferedImage from the canvas */
-    public BufferedImage generatedBufferedImage() {
-        BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
+    public BufferedImage getBufferedImage() {
+        //BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        System.out.println(this.getSize() + " " + root.getWindowSize());
         Graphics g = buffImage.getGraphics();
         //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
         this.print(g);

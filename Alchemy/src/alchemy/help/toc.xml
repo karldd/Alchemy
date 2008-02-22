@@ -12,12 +12,4 @@ PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
     <tocitem text="Affect Modules" target="affect-modules" image="topic" />
     </tocitem>
     
-    <tocitem text="Alchemy 日本語" image="chapter" >
-    <tocitem text="紹介" target="introduction_ja" image="topic" />
-    <tocitem text="メニュー" target="menubar_ja" image="topic" />
-    <tocitem text="ツールバー" target="toolbar_ja" image="topic" />
-    <tocitem text="クリエイトモジュール" target="create-modules_ja" image="topic" />
-    <tocitem text="アフェクトモジュール" target="affect-modules_ja" image="topic" />
-    </tocitem>
-    
 </toc>
