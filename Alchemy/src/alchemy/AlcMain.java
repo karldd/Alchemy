@@ -221,19 +221,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         menuBar = new AlcMenuBar(this);
 
         if (PLATFORM == MACOSX) {
-
-
-            // For some reason the menubar still displays on OSX
-            // Set it to invisible for Leopard?
-            //menuBar.setVisible(false);
-            menuBar.setOpaque(false);
-            menuBar.setBorderPainted(false);
             // Add normally if on MacOSX as the menu is listed above
             this.setJMenuBar(menuBar);
 
         } else {
             // Otherwise add it to the toolbar area
-
             //Palette
             if (prefs.getPaletteAttached()) {
                 this.setJMenuBar(menuBar);
