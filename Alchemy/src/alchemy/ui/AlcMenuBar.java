@@ -47,15 +47,16 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
     public AlcMenuBar(final AlcMain root) {
 
         this.root = root;
-        this.setBackground(AlcToolBar.toolBarHighlightColour);
 
         // Default applications directory depending on the platform
         switch (AlcMain.PLATFORM) {
             case MACOSX:
                 platformAppDir = new File(File.separator + "Applications");
+                this.setBorderPainted(false);
                 break;
             case WINDOWS:
                 platformAppDir = new File(File.separator + "Program Files");
+                this.setBackground(AlcToolBar.toolBarHighlightColour);
                 break;
         }
 
@@ -748,5 +749,13 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
      */
     public void showAboutBox() {
         final AlcAbout aboutWindow = new AlcAbout(root);
+    }
+
+    protected void paintComponent(Graphics g) {
+        if (AlcMain.PLATFORM != MACOSX) {
+            // Make sure this is not painted on Mac
+            // The mac menubar is used instead
+            super.paintComponent(g);
+        }
     }
 }
