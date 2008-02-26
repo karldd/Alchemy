@@ -80,7 +80,7 @@ public class AlcPlugin implements AlcConstants {
             // Delete temp file when program exits.
             tempCore.deleteOnExit();
             // Copy to the temp directory
-            copy(coreStream, tempCore);
+            AlcUtil.copyFile(coreStream, tempCore);
 
             //
             if (!tempCore.exists()) {
@@ -226,22 +226,6 @@ public class AlcPlugin implements AlcConstants {
 
 
         return plugins;
-    }
-
-    // Copies src file to dst file.
-    // If the dst file does not exist, it is created
-    private void copy(InputStream in, File dst) throws IOException {
-        //InputStream in = new FileInputStream(src);
-        OutputStream out = new FileOutputStream(dst);
-
-        // Transfer bytes from in to out
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > 0) {
-            out.write(buf, 0, len);
-        }
-        in.close();
-        out.close();
     }
 
     public int getNumberOfPlugins() {

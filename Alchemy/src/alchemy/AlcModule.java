@@ -20,6 +20,7 @@
 package alchemy;
 
 import alchemy.ui.AlcToolBar;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
@@ -90,14 +91,29 @@ public abstract class AlcModule {
     }
 
     /**
-     *  Affect an AlcShape
-     *  Called by the canvas for every affect module, after the shapes have been added to the canvas
+     *  Apply affect
+     *  Called for every active affect module, before the canvas is redrawn.
      *  This is used by affect modules to 'affect' a shape, apply some sort of change to it
      *  Typically the affect module will work with all shapes in the canvas.createShapes array
      *  then either replace them or add new shapes to the canvas.affectShapes array
      */
-    protected void affectShape() {
+    protected void affect() {
     }
+    
+    /**
+     * Affect Shapes
+     * Passes the location of the cursor and a list of 'active' shapes which the cursor is 'inside' of.
+     * 
+     * If there are no active shapes, the activeShapes array will be null.
+     * This is useful for determining when to stop processing other stuff.
+     * 
+     * Called for every active affect module after mouse events have been passed.
+     * 
+     * @param activeShapes      Array of 'active' shapes
+     * @param cursorLocation    The location of the cursor
+     */
+     protected void affectShapes(int[] activeShapes, Point cursorLocation) {
+     }
 
     //////////////////////////////////////////////////////////////
     // MODULE DATA

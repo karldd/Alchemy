@@ -41,7 +41,6 @@ import com.lowagie.text.pdf.PdfReader;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -264,12 +263,43 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         System.gc();
     }
 
+    /** Checks if the pen is inside any shapes on the canvas
+     *  If so, passes an array of shapes along with the mouse location
+     * @param p     The location of the pen
+     */
+    private void checkMouseInside(Point p) {
+        if (root.hasCurrentAffects()) {
+            int[] shapeListFull = new int[shapes.size()];
+            int shapeCount = 0;
+            //ArrayList shapeList = new ArrayList(shapes.size());
+            for (int i = 0; i < shapes.size(); i++) {
+                AlcShape thisShape = (AlcShape) shapes.get(i);
+                if (thisShape.getPath().contains(p)) {
+                    shapeListFull[shapeCount] = i;
+                    shapeCount++;
+                }
+            }
+
+            int[] shapeList = null;
+            if (shapeCount > 0) {
+                shapeList = new int[shapeCount];
+                System.arraycopy(shapeListFull, 0, shapeList, 0, shapeCount);
+            }
+            for (int i = 0; i < root.currentAffects.length; i++) {
+                if (root.currentAffects[i]) {
+                    root.affects[i].affectShapes(shapeList, p);
+                }
+            }
+
+        }
+    }
+
     /** Apply affects to the current shape and redraw the canvas */
-    public void applyAffects() {
+    private void applyAffects() {
         if (root.hasCurrentAffects()) {
             for (int i = 0; i < root.currentAffects.length; i++) {
                 if (root.currentAffects[i]) {
-                    root.affects[i].affectShape();
+                    root.affects[i].affect();
                 }
             }
         }
@@ -708,7 +738,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
     }
 
-
     /** Create a bufferedImage from the canvas */
     public BufferedImage getBufferedImage() {
         //BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
@@ -733,6 +762,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             root.toolBar.toggleToolBar(event.getY());
         }
         passMouseEvent(event, "mouseMoved");
+        checkMouseInside(event.getPoint());
     }
 
     public void mousePressed(MouseEvent event) {
