@@ -61,12 +61,12 @@ public class Random extends AlcModule {
 
     }
 
-    private void randomiseShape(Point currentLoc) {
+    private void randomiseShape(Point currentLoc, int shapeNumber) {
         //noisiness = root.math.random(-0.01F, 0.1F);
 
         scale = 100F;
         halfScale = scale / 2;
-        AlcShape shape = (AlcShape) canvas.shapes.get(activeShape);
+        AlcShape shape = (AlcShape) canvas.shapes.get(shapeNumber);
         GeneralPath randomisedShape = randomise(shape.getPath(), currentLoc);
         shape.setPath(randomisedShape);
         canvas.redraw();
@@ -104,7 +104,6 @@ public class Random extends AlcModule {
                     }
                     break;
                 case PathIterator.SEG_CUBICTO:
-                    // Randomising the curves tends to generate errors and unresposiveness
                     if (closeBy(p.x, p.y, (int) cutPts[2], (int) cutPts[3])) {
                         newShape.curveTo(mess(cutPts[0]), mess(cutPts[1]), mess(cutPts[2]), mess(cutPts[3]), mess(cutPts[4]), mess(cutPts[5]));
                     } else {
@@ -157,27 +156,12 @@ public class Random extends AlcModule {
         halfScale = scale / 2;
     }
 
-    private void mouseInside(Point p) {
-        int currentActiveShape = -1;
-        for (int i = 0; i < canvas.shapes.size(); i++) {
-            AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
-            GeneralPath currentPath = thisShape.getPath();
-            Rectangle bounds = currentPath.getBounds();
-            if (bounds.contains(p)) {
-                currentActiveShape = i;
+    protected void affectShapes(int[] activeShapes, Point cursorLocation) {
+        if (!mouseDown) {
+            if (activeShapes != null) {
+                int last = activeShapes[activeShapes.length - 1];
+                randomiseShape(cursorLocation, last);
             }
-        }
-        // Inside a shape
-        if (currentActiveShape >= 0) {
-            // Filter out repeat calls
-            //if (currentActiveShape != activeShape) {
-            activeShape = currentActiveShape;
-            randomiseShape(p);
-        //}
-        // Outside a shape
-        } else {
-            activeShape = -1;
-        //stopExpand();
         }
     }
 
@@ -187,23 +171,8 @@ public class Random extends AlcModule {
 
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
-    //            canvas.setCurrentShape(randomiseShape(currentShape));
     }
 
-    public void mouseMoved(MouseEvent e) {
-        if (!mouseDown) {
-            // Dispatch checking for intersection at a slow rate
-            if (mouseFirstRun) {
-                mouseDelayTime = System.currentTimeMillis();
-                mouseInside(e.getPoint());
-                mouseFirstRun = false;
-            } else {
-                if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
-                    mouseDelayTime = System.currentTimeMillis();
-                    mouseInside(e.getPoint());
-                }
-            }
-        }
-    }
+
 }
 

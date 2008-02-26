@@ -48,7 +48,6 @@ public class Repeat extends AlcModule {
     private AlcSubToolBarSection subToolBarSection;
     // Margin before the mouse falls outside of the shape once inside
     private int margin = 10;
-    
     private AlcSubToggleButton repeatButton;
 
     //private int activeShape = -1;
@@ -123,7 +122,7 @@ public class Repeat extends AlcModule {
             if (update) {
                 update = false;
             }
-            //System.out.println("Changed");
+        //System.out.println("Changed");
         }
 
         Point offset = new Point(pt.x - (bounds.x + shapeOffset.x), pt.y - (bounds.y + shapeOffset.y));
@@ -160,7 +159,7 @@ public class Repeat extends AlcModule {
 
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
-        for (int i = 0; i < canvas.shapes.size(); i++) {
+        for (int i = canvas.shapes.size() - 1; i >= 0; i--) {
             AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
             GeneralPath currentPath = thisShape.getPath();
             Rectangle bounds = new Rectangle(currentPath.getBounds());
@@ -168,10 +167,12 @@ public class Repeat extends AlcModule {
             if (outside == 0) {
                 // Check that it is still within X pixels of the original
                 bounds.grow(margin, margin);
-                //System.out.println("GROW");
+            //System.out.println("GROW");
             }
             if (bounds.contains(p)) {
                 currentActiveShape = i;
+                // Break once we find the first matching shape
+                break;
             }
         }
         // Inside a shape
