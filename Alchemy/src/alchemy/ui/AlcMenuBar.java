@@ -38,6 +38,8 @@ import javax.swing.colorchooser.AbstractColorChooserPanel;
 public class AlcMenuBar extends JMenuBar implements AlcConstants {
 
     private final AlcMain root;
+    /** Reference to the windows help .chm file */
+    private File tempHelp;
     private final static int height = 27;
     private File platformAppDir;
     private PrinterJob printer = null;
@@ -509,15 +511,17 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
                         case WINDOWS:
                             try {
 
-                                //Get the Core Plugin as as a resource from the JAR
-                                InputStream helpStream = AlcMain.class.getResourceAsStream("data/AlchemyHelp.chm");
-                                // Create temp file.
-                                File tempHelp = new File(TEMP_DIR, "AlchemyHelp.chm");
-                                //File tempHelp = File.createTempFile("AlchemyHelp", "chm");
-                                // Delete temp file when program exits.
-                                tempHelp.deleteOnExit();
-                                // Copy to the temp directory
-                                AlcUtil.copyFile(helpStream, tempHelp);
+                                if (tempHelp == null) {
+                                    //Get the Core Plugin as as a resource from the JAR
+                                    InputStream helpStream = AlcMain.class.getResourceAsStream("data/AlchemyHelp.chm");
+                                    // Create temp file.
+                                    tempHelp = new File(TEMP_DIR, "AlchemyHelp.chm");
+                                    //File tempHelp = File.createTempFile("AlchemyHelp", "chm");
+                                    // Delete temp file when program exits.
+                                    tempHelp.deleteOnExit();
+                                    // Copy to the temp directory
+                                    AlcUtil.copyFile(helpStream, tempHelp);
+                                }
 
                                 if (tempHelp.exists()) {
                                     Runtime.getRuntime().exec("hh.exe " + tempHelp.getAbsolutePath());
