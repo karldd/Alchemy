@@ -26,9 +26,8 @@ import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.util.Locale;
 import javax.swing.*;
-import javax.help.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /** 
@@ -490,66 +489,82 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         AlcMenu helpMenu = new AlcMenu(getS("helpTitle"));
 
-        try {
+        AbstractAction helpAction = new AbstractAction() {
 
-            //final URL url = AlcMain.class.getResource("help/help-hs.xml");
+            public void actionPerformed(ActionEvent e) {
 
-            final ClassLoader cl = AlcMain.class.getClassLoader();
-            final URL hsURL = HelpSet.findHelpSet(cl, "alchemy/help/helpset.hs");
-            final HelpSet hs = new HelpSet(null, hsURL);
-            //System.out.println(url);
-            //final HelpSet hs = new HelpSet(null, url);
-            final HelpBroker hb = hs.createHelpBroker();
+                switch (AlcMain.PLATFORM) {
+                    case MACOSX:
+                        HelpHook.showHelp();
+                        break;
+                    case WINDOWS:
 
-            AbstractAction helpAction = new AbstractAction() {
+                        if (tempHelp == null) {
 
-                public void actionPerformed(ActionEvent e) {
-                    switch (AlcMain.PLATFORM) {
-                        case MACOSX:
-                            HelpHook.showHelp();
-                            break;
-                        case WINDOWS:
+                            // English is the default
+                            String helpFile = "AlchemyHelp.chm";
+                            String helpFile_ja = "AlchemyHelp_ja.chm";
+                            boolean useJapanese = false;
+
+                            String locale = LOCALE.getLanguage().toLowerCase();
+                            System.out.println(locale);
+                            if (locale.startsWith("ja")) {
+                                useJapanese = true;
+                                System.out.println("Japanese Help");
+                            } else {
+                                System.out.println("English Help");
+                            }
+
+                            InputStream helpStream = null;
+
+                            if (useJapanese) {
+                                System.out.println("Loading Japanese Help");
+                                helpStream = AlcMain.class.getResourceAsStream("data/" + helpFile_ja);
+                            }
+                            // If set to English or Japanese help is not found
+                            if (helpStream == null) {
+                                System.out.println("Loading English Help");
+                                helpStream = AlcMain.class.getResourceAsStream("data/" + helpFile);
+                            }
+                            // Create temp file.
+                            tempHelp = new File(TEMP_DIR, helpFile);
+
+                            // Delete temp file when program exits.
+                            tempHelp.deleteOnExit();
+
+
                             try {
-
-                                if (tempHelp == null) {
-                                    //Get the Core Plugin as as a resource from the JAR
-                                    InputStream helpStream = AlcMain.class.getResourceAsStream("data/AlchemyHelp.chm");
-                                    // Create temp file.
-                                    tempHelp = new File(TEMP_DIR, "AlchemyHelp.chm");
-                                    //File tempHelp = File.createTempFile("AlchemyHelp", "chm");
-                                    // Delete temp file when program exits.
-                                    tempHelp.deleteOnExit();
-                                    // Copy to the temp directory
-                                    AlcUtil.copyFile(helpStream, tempHelp);
-                                }
-
-                                if (tempHelp.exists()) {
-                                    Runtime.getRuntime().exec("hh.exe " + tempHelp.getAbsolutePath());
-                                } else {
-                                    System.err.println("ERROR - Help could not be copied to the temp dir: " + TEMP_DIR);
-                                }
+                                AlcUtil.copyFile(helpStream, tempHelp);
 
                             } catch (IOException ex) {
                                 ex.printStackTrace();
                             }
-                            break;
-                        default:
-                            System.out.println("Alchemy Help on Linux is not currently supported");
-                            break;
+
+                        }
+
+                        if (tempHelp.exists()) {
+                            try {
+                                Runtime.getRuntime().exec("hh.exe " + tempHelp.getAbsolutePath());
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        } else {
+                            System.err.println("ERROR - Help could not be copied to the temp dir: " + TEMP_DIR);
+                        }
+
+
+                        break;
+                    default:
+                        System.out.println("Alchemy Help on Linux is not currently supported");
+                        break;
                     }
-                //hb.setDisplayed(true);
-                //new CSH.DisplayHelpFromSource(hb);
-                }
+            }
             };
 
-            AlcMenuItem helpItem = new AlcMenuItem(helpAction);
-            helpItem.setup(getS("alchemyHelpTitle"));
-            helpMenu.add(helpItem);
-            helpMenu.add(new JSeparator());
-
-        } catch (Exception e) {
-            System.err.println(e);
-        }
+        AlcMenuItem helpItem = new AlcMenuItem(helpAction);
+        helpItem.setup(getS("alchemyHelpTitle"));
+        helpMenu.add(helpItem);
+        helpMenu.add(new JSeparator());
 
 
         // Link to the Alchemy Website                
