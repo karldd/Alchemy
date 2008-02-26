@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"  ?>
 <!DOCTYPE toc
-PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN"
-"http://java.sun.com/products/javahelp/toc_1_0.dtd">
-<toc version="1.0">
+PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 2.0//EN"
+"http://java.sun.com/products/javahelp/toc_2_0.dtd">
+<toc version="2.0" xml:lang="ja">
     
-    <tocitem text="Alchemy" image="chapter" >
-    <tocitem text="紹介" target="introduction" image="topic" />
-    <tocitem text="メニュー" target="menubar" image="topic" />
-    <tocitem text="ツールバー" target="toolbar" image="topic" />
-    <tocitem text="クリエイトモジュール" target="create-modules" image="topic" />
-    <tocitem text="アフェクトモジュール" target="affect-modules" image="topic" />
+    <tocitem text="Alchemy" image="chapter" xml:lang="ja">
+    <tocitem text="紹介" target="introduction" image="topic" xml:lang="ja" />
+    <tocitem text="メニュー" target="menubar" image="topic" xml:lang="ja" />
+    <tocitem text="ツールバー" target="toolbar" image="topic" xml:lang="ja" />
+    <tocitem text="クリエイトモジュール" target="create-modules" image="topic" xml:lang="ja" />
+    <tocitem text="アフェクトモジュール" target="affect-modules" image="topic" xml:lang="ja" />
     </tocitem>
     
 </toc>

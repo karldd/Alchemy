@@ -233,11 +233,14 @@
         <delete dir="${dist.dir}/lib"/>
         <delete file="${dist.dir}/README.TXT"/>
         
-        <!-- Copy the Quaqua libraries
-              These are not inlcuded in the distribution jar
-              but put in the Mac Alchemy.app -->
+        <!-- MAC STUFF 
+             Not inlcuded in the distribution jar
+             but put in the Mac Alchemy.app -->
+        <!-- Copy the Quaqua libraries for more mac looking interface support -->
         <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}"/>
         <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
+        <!-- Also copy the HelpHook to launch help on Mac -->
+        <copy file="${basedir}/lib/libJavaHelpHook.jnilib" todir="${dist.dir}"/>
         
         
         

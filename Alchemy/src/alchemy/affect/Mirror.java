@@ -123,7 +123,7 @@ public class Mirror extends AlcModule implements AlcConstants {
 
     }
 
-    protected void affectShape() {
+    protected void affect() {
 
         if (!selectAxis) {
 

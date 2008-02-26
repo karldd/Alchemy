@@ -24,6 +24,10 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -113,7 +117,7 @@ public class AlcUtil implements AlcConstants {
     }
 
     //////////////////////////////////////////////////////////////
-    // IMAGE LOADING FUNCTIONS
+    // FILE FUNCTIONS
     //////////////////////////////////////////////////////////////
     /** Returns a URL from a String, or null if the path was invalid.
      * 
@@ -193,6 +197,27 @@ public class AlcUtil implements AlcConstants {
         } catch (InterruptedException e) {
         }
         return image;
+    }
+
+    /** Copies the source file to destination file.
+     *  If the destination file does not exist, it is created.
+     * 
+     * @param in    The source file as an InputStream
+     * @param dst   The destination file
+     * @throws java.io.IOException
+     */
+    public static void copyFile(InputStream in, File dst) throws IOException {
+        //InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dst);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
     }
 
     //////////////////////////////////////////////////////////////

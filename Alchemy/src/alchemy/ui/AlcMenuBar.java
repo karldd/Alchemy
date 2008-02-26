@@ -25,6 +25,7 @@ import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import javax.swing.*;
 import javax.help.*;
@@ -487,10 +488,6 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         AlcMenu helpMenu = new AlcMenu(getS("helpTitle"));
 
-        // Javahelp 
-        // TODO - Implement Native help rather than Swing
-        // OSX: http://developer.apple.com/qa/qa2001/qa1022.html
-        //      http://informagen.com/JarBundler/HelpBook.html
         try {
 
             //final URL url = AlcMain.class.getResource("help/help-hs.xml");
@@ -505,8 +502,38 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
             AbstractAction helpAction = new AbstractAction() {
 
                 public void actionPerformed(ActionEvent e) {
-                    //System.out.println("CALLED");
-                    hb.setDisplayed(true);
+                    switch (AlcMain.PLATFORM) {
+                        case MACOSX:
+                            HelpHook.showHelp();
+                            break;
+                        case WINDOWS:
+                            try {
+
+                                //Get the Core Plugin as as a resource from the JAR
+                                InputStream helpStream = AlcMain.class.getResourceAsStream("data/AlchemyHelp.chm");
+                                // Create temp file.
+                                File tempHelp = new File(TEMP_DIR, "AlchemyHelp.chm");
+                                //File tempHelp = File.createTempFile("AlchemyHelp", "chm");
+                                // Delete temp file when program exits.
+                                tempHelp.deleteOnExit();
+                                // Copy to the temp directory
+                                AlcUtil.copyFile(helpStream, tempHelp);
+
+                                if (tempHelp.exists()) {
+                                    Runtime.getRuntime().exec("hh.exe " + tempHelp.getAbsolutePath());
+                                } else {
+                                    System.err.println("ERROR - Help could not be copied to the temp dir: " + TEMP_DIR);
+                                }
+
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                            break;
+                        default:
+                            System.out.println("Alchemy Help on Linux is not currently supported");
+                            break;
+                    }
+                //hb.setDisplayed(true);
                 //new CSH.DisplayHelpFromSource(hb);
                 }
             };
