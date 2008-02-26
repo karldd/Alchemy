@@ -54,12 +54,14 @@ public interface AlcConstants {
     static public String PLATFORM_NAME = System.getProperty("os.name");
     /** The users name */
     static public String USER_NAME = System.getProperty("user.name");
-    /** The users home directory */
-    static public String HOME_DIR = System.getProperty("user.home");
-    /** The default temp directory */
-    static public String TEMP_DIR = System.getProperty("java.io.tmpdir");
     /** File Separator */
     static public String FILE_SEPARATOR = System.getProperty("file.separator");
+    /** The users home directory */
+    static public String HOME_DIR = System.getProperty("user.home");
+    /** The users destop directory */
+    static public String DESKTOP_DIR = System.getProperty("user.home") + FILE_SEPARATOR + "Desktop";
+    /** The default temp directory */
+    static public String TEMP_DIR = System.getProperty("java.io.tmpdir");
     /** Default Locale */
     static public Locale LOCALE = Locale.getDefault();
     //

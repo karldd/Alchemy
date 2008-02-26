@@ -94,7 +94,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
 
         // Volume Slider
         int initialSliderValue = 50;
-        final float levelOffset = 0.05F;
+        final float levelOffset = 0.02F;
         volume = initialSliderValue * levelOffset;
         AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
         volumeSlider.setToolTipText("Adjust the microphone input volume");
