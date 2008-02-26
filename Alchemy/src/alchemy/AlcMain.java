@@ -194,9 +194,11 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // If there is a saved window size then us it
         if (prefs.getCanvasSize() != null) {
             Dimension savedWindowSize = prefs.getCanvasSize();
+
             // Make sure the window is not too big
             if (savedWindowSize.width <= currentWindowSize.width && savedWindowSize.height <= currentWindowSize.height) {
                 windowSize = savedWindowSize;
+                System.out.println(savedWindowSize);
                 windowSet = true;
             }
         }
@@ -245,6 +247,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         layeredPane.add(toolBar, new Integer(2));
 
         // FRAME
+        //this.setSize(windowSize);
         layeredPane.setPreferredSize(windowSize);          // Set the window size
         this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
         this.addComponentListener(this);            // Add a component listener to detect window resizing
@@ -327,12 +330,20 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
     /** Exit Alchemy, saving preferences and doing general clean up */
     private void exit() {
-        System.out.println("Closing");
+        //System.out.println("Alchemy Closing...");
 
         // Save the window location if not in full screen mode
         if (!isFullscreen()) {
             prefs.setCanvasLocation(this.getLocation());
-            prefs.setCanvasSize(this.getSize());
+
+            // Get the size of the title bar and border area
+            Insets insets = this.getInsets();
+            // Subtract that from the window size
+            Dimension canvasSize = new Dimension(
+                    windowSize.width - (insets.left + insets.right),
+                    windowSize.height - (insets.top + insets.bottom));
+            // Set the canvas size
+            prefs.setCanvasSize(canvasSize);
         }
         if (prefs.getPaletteAttached()) {
             prefs.setPaletteLocation(palette.getLocation());
@@ -525,16 +536,12 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                             // make a new full size window for each
                             if (!screenBounds.equals(bounds)) {
                                 screens[index] = new JWindow(this);
-                                screens[index].setBounds(screenBounds);                 
+                                screens[index].setBounds(screenBounds);
+                                // Set the window background to black
                                 JPanel blackBackground = new JPanel();
                                 blackBackground.setOpaque(true);
                                 blackBackground.setBackground(Color.BLACK);
                                 screens[index].setContentPane(blackBackground);
-//                                if (PLATFORM == MACOSX) {
-//                                    screens[index].getContentPane().setBackground(Color.BLACK);
-//                                } else {
-//                                    screens[index].getRootPane().setBackground(Color.BLACK);
-//                                }
                                 screens[index].setFocusable(false);
                                 screens[index].setVisible(true);
                                 index++;
@@ -829,12 +836,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public void componentResized(ComponentEvent e) {
         resizeWindow(e);
     }
-    /*
-    public void windowStateChanged(WindowEvent e) {
-    System.out.println("STATE CHANGED");
-    //resizeWindow(e);
-    }
-     */
 
     public static void main(String[] args) {
         // Set system look and feel

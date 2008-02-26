@@ -296,44 +296,6 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         return expandedPts;
     }
 
-//    private void mouseInside(Point p) {
-//        int currentActiveShape = -1;
-//        for (int i = 0; i < canvas.shapes.size(); i++) {
-//            AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
-//            GeneralPath currentPath = thisShape.getPath();
-//            if (currentPath.contains(p)) {
-//                currentActiveShape = i;
-//            }
-//        }
-//        // Inside a shape
-//        if (currentActiveShape >= 0) {
-//            currentPt = p;
-//            // Filter out repeat calls
-//            if (currentActiveShape != activeShape) {
-//                activeShape = currentActiveShape;
-//                captureSound();
-//            }
-//        // Outside a shape
-//        } else {
-//            stopExpand();
-//        }
-//    }
-
-    //TODO - Mic Expand reaction is slow here?
-    private void mouseInside(int[] activeShapes, Point cursorLocation) {
-        System.out.println(cursorLocation);
-        if (activeShapes == null) {
-            stopExpand();
-        } else {
-            int lastShape = activeShapes[activeShapes.length - 1];
-            currentPt = cursorLocation;
-            if (lastShape != activeShape) {
-                activeShape = lastShape;
-                captureSound();
-            }
-        }
-    }
-
     private void stopExpand() {
         activeShape = -1;
         if (running) {
@@ -344,16 +306,14 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     protected void affectShapes(int[] activeShapes, Point cursorLocation) {
         if (!mouseDown) {
-
-            // Dispatch checking for intersection at a slow rate
-            if (mouseFirstRun) {
-                mouseDelayTime = System.currentTimeMillis();
-                mouseInside(activeShapes, cursorLocation);
-                mouseFirstRun = false;
+            if (activeShapes == null) {
+                stopExpand();
             } else {
-                if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
-                    mouseDelayTime = System.currentTimeMillis();
-                    mouseInside(activeShapes, cursorLocation);
+                int lastShape = activeShapes[activeShapes.length - 1];
+                currentPt = cursorLocation;
+                if (lastShape != activeShape) {
+                    activeShape = lastShape;
+                    captureSound();
                 }
             }
         }
@@ -367,22 +327,6 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         mouseDown = false;
     }
 
-//    public void mouseMoved(MouseEvent e) {
-//        if (!mouseDown) {
-//
-//            // Dispatch checking for intersection at a slow rate
-//            if (mouseFirstRun) {
-//                mouseDelayTime = System.currentTimeMillis();
-//                mouseInside(e.getPoint());
-//                mouseFirstRun = false;
-//            } else {
-//                if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
-//                    mouseDelayTime = System.currentTimeMillis();
-//                    mouseInside(e.getPoint());
-//                }
-//            }
-//        }
-//    }
     public void bufferFull() {
         // If the spacebar has just been pressed
         if (firstRun) {
