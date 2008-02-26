@@ -119,7 +119,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         super("OSXAdapter");
 
         if (PLATFORM == MACOSX) {
-            // TODO - Make some custom mac 64pix icons
             Object appIcon = LookAndFeel.makeIcon(getClass(), "data/alchemy-logo64.png");
             UIManager.put("OptionPane.errorIcon", appIcon);
             UIManager.put("OptionPane.informationIcon", appIcon);
@@ -302,19 +301,23 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             // Text for the dialog depends on the platform
             String exitTitle, exitMessage;
             if (PLATFORM == MACOSX) {
-                exitTitle = bundle.getString("quitDialogTitle");
-                exitMessage = bundle.getString("quitDialogMessage");
+                exitTitle = "";
+                exitMessage =
+                        "<html>" + UIManager.get("OptionPane.css") +
+                        "<b>" + bundle.getString("quitDialogTitle") + "</b>" +
+                        "<p>" + bundle.getString("quitDialogMessage");
             } else {
                 exitTitle = bundle.getString("exitDialogTitle");
                 exitMessage = bundle.getString("exitDialogMessage");
             }
+
 
             int result = JOptionPane.showConfirmDialog(
                     this,
                     exitMessage,
                     exitTitle,
                     JOptionPane.YES_NO_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.QUESTION_MESSAGE);
 
             if (result == JOptionPane.YES_OPTION) {
                 exit();
@@ -467,7 +470,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         // Make sure the minimum size is observed
         this.setSize(Math.max(minWindowSize.width, this.getWidth()), Math.max(minWindowSize.height, this.getHeight()));
         // Get and set the new size of the window
-        //windowSize = e.getComponent().getSize();
         windowSize = this.getSize();
         // Resize the UI and Canvas
         toolBar.resizeToolBar(windowSize);
@@ -693,14 +695,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     }
 
     /** 
-     * General quit handler; fed to the OSXAdapter as the method to call when a system quit event occurs
-     * A quit event is triggered by Cmd-Q, selecting Quit from the application or Dock menu, or logging out 
-     */
-//    public boolean quit() {
-//        int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
-//        return (option == JOptionPane.YES_OPTION);
-//    }
-    /** 
      * General load file handler; fed to the OSXAdapter as the method to call when a file is dragged into the dock icon
      */
 //    public void loadFile(String path) {
@@ -714,22 +708,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 //        }
 //        repaint();
 //    }
-    /** 
-     * Set the system properties - called before the interface is built 
-     * This should eventually be removed once jar-builder is implemented
-     */
-    private static void setupMacSystemProperties() {
-        // Mac Java 1.3
-        //System.setProperty("com.apple.macos.useScreenMenuBar", "true");
-        //System.setProperty("com.apple.mrj.application.growbox.intrudes", "true");
-        //System.setProperty("com.apple.hwaccel", "true"); // only needed for 1.3.1 on OS X 10.2
-        //System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Yes Test");
-
-        // Mac Java 1.4
-        //System.setProperty("apple.awt.showGrowBox", "true");
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-    //System.setProperty("apple.awt.fullscreencapturealldisplays", "true");
-    }
 
     //////////////////////////////////////////////////////////////
     // KEY EVENTS
@@ -783,34 +761,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         }
     }
 
-// Refection stuff here removed to simplify the error throwing process
-//    passKeyEvent(event, "keyReleased");
-//    private void passKeyEvent(KeyEvent event, String eventType) {
-//        // Reflection is used here to simplify passing events to each module
-//        try {
-//            // Pass to the current create module
-//            if (currentCreate >= 0) {
-//                Method method = creates[currentCreate].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
-//                method.invoke(creates[currentCreate], new Object[]{event});
-//            }
-//            // Pass to all active affect modules
-//            if (hasCurrentAffects()) {
-//                for (int i = 0; i < currentAffects.length; i++) {
-//                    if (currentAffects[i]) {
-//                        Method method = affects[i].getClass().getMethod(eventType, new Class[]{KeyEvent.class});
-//                        method.invoke(affects[i], new Object[]{event});
-//                    }
-//                }
-//            }
-//        } catch (OutOfMemoryError error) {
-//            System.out.println("OUT OF MEMORY" + Runtime.getRuntime().totalMemory());
-//        } catch (InternalError error) {
-//            System.out.println("INTERNAL ERROR");
-//        } catch (Throwable e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
     /** Set the hotkey to trigger an application wide action
      * 
      * @param key       The key to trigger the action
@@ -845,14 +795,13 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
 
-            // TODO - Make more mac like dialogs
-//                String css = "<head>" +
-//                        "<style type=\"text/css\">" +
-//                        "b { font: 13pt \"Lucida Grande\" }" +
-//                        "p { font: 11pt \"Lucida Grande\"; margin-top: 8px }" +
-//                        "</style>" +
-//                        "</head>";
-//                UIManager.put("OptionPane.css", css);
+                String css = "<head>" +
+                        "<style type=\"text/css\">" +
+                        "b { font: 13pt \"Lucida Grande\" }" +
+                        "p { font: 11pt \"Lucida Grande\"; margin-top: 8px }" +
+                        "</style>" +
+                        "</head>";
+                UIManager.put("OptionPane.css", css);
 
             } else {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -860,9 +809,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // Custom repaint class to manage transparency and redraw better
         // RepaintManager.setCurrentManager(new AlcRepaintManager());
-        //RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
-
-        //JFrame.setDefaultLookAndFeelDecorated(true);
+        // RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());
+        // JFrame.setDefaultLookAndFeelDecorated(true);
 
         } catch (Exception e) {
             e.printStackTrace();
