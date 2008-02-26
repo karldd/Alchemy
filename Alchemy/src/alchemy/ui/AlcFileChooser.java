@@ -29,9 +29,6 @@ import javax.swing.JFileChooser;
 
 public class AlcFileChooser extends JFileChooser {
 
-    // TODO - Fully implement OSX look and feel file chooser using Quaqua
-    // http://www.randelshofer.ch/quaqua/download.html
-    // UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
     public AlcFileChooser() {
         super();
     }
