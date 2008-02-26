@@ -26,7 +26,6 @@ import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Locale;
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 

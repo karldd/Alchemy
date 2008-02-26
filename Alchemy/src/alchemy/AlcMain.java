@@ -525,8 +525,16 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                             // make a new full size window for each
                             if (!screenBounds.equals(bounds)) {
                                 screens[index] = new JWindow(this);
-                                screens[index].getContentPane().setBackground(Color.BLACK);
-                                screens[index].setBounds(screenBounds);
+                                screens[index].setBounds(screenBounds);                 
+                                JPanel blackBackground = new JPanel();
+                                blackBackground.setOpaque(true);
+                                blackBackground.setBackground(Color.BLACK);
+                                screens[index].setContentPane(blackBackground);
+//                                if (PLATFORM == MACOSX) {
+//                                    screens[index].getContentPane().setBackground(Color.BLACK);
+//                                } else {
+//                                    screens[index].getRootPane().setBackground(Color.BLACK);
+//                                }
                                 screens[index].setFocusable(false);
                                 screens[index].setVisible(true);
                                 index++;

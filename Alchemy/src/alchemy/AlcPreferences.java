@@ -69,7 +69,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
         recordingState = prefs.getBoolean("Recording State", false);
         recordingWarning = prefs.getBoolean("Recording Warning", true);
-        sessionPath = prefs.get("Session Path", HOME_DIR);
+        sessionPath = prefs.get("Session Path", DESKTOP_DIR);
         recordingInterval = prefs.getInt("Recording Interval", 5000);
         autoClear = prefs.getBoolean("Auto Clear Canvas", false);
         switchVectorApp = prefs.get("Switch Vector Application", null);

@@ -26,7 +26,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 
 /**
  * AlcImageTransferable
- * @author Karl D.D. Willis
+ * 
+ * Class used for copying an image to the clipboard
+ * for pasting into other applications
  */
 public class AlcImageTransferable implements Transferable {
 
