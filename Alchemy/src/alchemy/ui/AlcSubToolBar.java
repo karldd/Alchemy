@@ -42,7 +42,7 @@ public class AlcSubToolBar extends JPanel implements AlcConstants {
             // Top Left Bottom Right
             this.setBorder(BorderFactory.createEmptyBorder(2, 10, 0, 5));
         } else {
-            this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+            this.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 5));
         }
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
