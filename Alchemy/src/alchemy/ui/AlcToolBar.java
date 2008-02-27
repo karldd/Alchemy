@@ -45,6 +45,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     public static final Color toolBarBgStartColour = new Color(235, 235, 235, 240);
     public static final Color toolBarBgEndColour = new Color(215, 215, 215, 240);
     public static final Color toolBarLineColour = new Color(140, 140, 140);
+    public static final Color toolBarSubLineColour = new Color(160, 160, 160);
     public static final Color toolBarHighlightColour = new Color(231, 231, 231);
     public static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
     public static final Color toolBarBoxColour = new Color(190, 190, 190);
@@ -73,6 +74,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     private AlcSubToolBarSection createSubToolBarSection;
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
+    /** The number of rows in the sub toolbar */
+    private int subToolBarRows;
     /** Actions used in the toolbar */
     public Action styleAction,  bwAction;
     //////////////////////////////////////////////////////////////
@@ -121,7 +124,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         subToolBar = loadSubToolBar();
         // Make it invisible until it gets some content
         toolBars.add("South", subToolBar);
-        subToolBar.setVisible(false);
+        subToolBar.setVisible(true);
 
         if (!root.prefs.getPaletteAttached()) {
             this.add("South", toolBars);
@@ -402,7 +405,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     private AlcSubToolBar loadSubToolBar() {
-        // TODO - Check there is enough room for the subtoolbar and expand the window as required        
         // Initialise the references to the sub toolbar sections
         affectSubToolBarSections = new AlcSubToolBarSection[root.getNumberOfAffectModules()];
         // Set to a negative value to indicate no initially loaded sections
@@ -426,6 +428,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         this.repaint();
     }
 
+    /** Refresh the toolbar */
     private void refreshToolBar() {
         // Recalculate the total height of the tool bar
         calculateTotalHeight();
@@ -470,11 +473,19 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     /** Set the visibility of the UI Toolbar */
     public void setToolBarVisible(boolean visible) {
         if (visible != toolBarVisible) {
-            //System.out.println("Visible: " + visible);
+
+            // Fix here to make sure the area under the toolbar is not redrawn
+            // When redraw is off (ie Blindness Module)
+            if (!root.canvas.isRedraw()) {
+                if (visible) {
+                    // Entering the toolbar
+                    root.canvas.setDisplayBufferImage(true);
+                }
+            }
+
             this.setVisible(visible);
             toolBarVisible = visible;
             root.canvas.setMouseEvents(!visible);
-            //System.out.println(!visible);
             if (!visible) {
                 createButton.hidePopup();
                 if (affectButton != null) {
@@ -527,6 +538,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     /** Add a Create Module sub-toolbar */
     public void addSubToolBarSection(AlcSubToolBarSection subToolBarSection) {
 
+        subToolBarSection.revalidate();
+
         if (subToolBarSection.getModuleType() == CREATE) {
             createSubToolBarSection = subToolBarSection;
 
@@ -567,15 +580,17 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     private void refreshSubToolBar() {
         // Remove everything
         subToolBar.removeAll();
+
         // If there is a create section add that first
         if (createSubToolBarSection != null) {
+
             subToolBar.add(createSubToolBarSection);
         }
         // Add the affect sections
-        for (int i = 0; i <
-                affectSubToolBarSections.length; i++) {
+        for (int i = 0; i < affectSubToolBarSections.length; i++) {
 
             if (affectSubToolBarSections[i] != null) {
+
                 // If there is odd number of components then add a separator
                 if ((subToolBar.getComponentCount() % 2) != 0) {
                     subToolBar.add(new AlcSubSeparator());
@@ -583,9 +598,27 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 // Then add the section
                 subToolBar.add(affectSubToolBarSections[i]);
             }
-
         }
+
         if (currentSubToolBarSections > 0) {
+
+            // TODO - Check there is enough room for the subtoolbar and expand the window as required    
+//            int layoutWidth = subToolBar.getLayoutWidth();
+//            System.out.println("SubToolbar layout width:" + layoutWidth);
+//            if (layoutWidth > windowSize.width) {
+//                subToolBarRows = layoutWidth / windowSize.width + 1;
+//                System.out.println(layoutWidth + " / " + windowSize.width + " + 1 = " + subToolBarRows);
+//                subToolBar.setRows(subToolBarRows);
+//                calculateTotalHeight();
+//
+//            } else {
+//                if (subToolBarRows != 1) {
+//                    subToolBarRows = 1;
+//                    subToolBar.setRows(subToolBarRows);
+//                    calculateTotalHeight();
+//                }
+//            }
+
             subToolBar.setVisible(true);
         } else {
             if (!root.prefs.getPaletteAttached()) {
@@ -617,7 +650,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             subToolBar.setVisible(false);
             System.out.println("SET FALSE");
         }
-        this.calculateTotalHeight();
         this.add("South", toolBars);
         this.calculateTotalHeight();
         this.detachButton.setVisible(true);

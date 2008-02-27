@@ -58,7 +58,7 @@ public class AlcSubSlider extends JPanel implements AlcConstants{
         slider.setOpaque(false);
         //alphaSlider.setBackground(Color.black);
         //alphaSlider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(85, sliderHeight));
+        slider.setPreferredSize(new Dimension(75, sliderHeight));
         slider.setBorder(BorderFactory.createEmptyBorder(sliderY, 0, 0, 0));
         this.add(slider);
 

@@ -155,23 +155,23 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         // EDIT MENU
         //////////////////////////////////////////////////////////////
 
-//        AlcMenu editMenu = new AlcMenu(getS("editTitle"));
-//
-//        // Copy
-//        String copyTitle = getS("copyTitle");
-//        AbstractAction copyAction = new AbstractAction() {
-//
-//            public void actionPerformed(ActionEvent e) {
-//                copy();
-//            }
-//        };
-//        AlcMenuItem copyItem = new AlcMenuItem(copyAction);
-//        copyItem.setup(copyTitle, KeyEvent.VK_C);
-//        // Shortcut - Modifier c
-//        root.setHotKey(KeyEvent.VK_C, copyTitle, copyAction);
-//        editMenu.add(copyItem);
-//
-//        this.add(editMenu);
+        AlcMenu editMenu = new AlcMenu(getS("editTitle"));
+
+        // Copy
+        String copyTitle = getS("copyTitle");
+        AbstractAction copyAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                copy();
+            }
+        };
+        AlcMenuItem copyItem = new AlcMenuItem(copyAction);
+        copyItem.setup(copyTitle, KeyEvent.VK_C);
+        // Shortcut - Modifier c
+        root.setHotKey(KeyEvent.VK_C, copyTitle, copyAction);
+        editMenu.add(copyItem);
+
+        this.add(editMenu);
 
 
         //////////////////////////////////////////////////////////////

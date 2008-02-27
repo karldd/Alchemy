@@ -40,6 +40,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     protected void setup() {
+        canvas.assignBufferImage();
         canvas.setRedraw(false);
 
         // Create the toolbar section
@@ -49,22 +50,21 @@ public class Blindness extends AlcModule implements AlcConstants {
 
     }
 
-    public void reselect() {
+    protected void reselect() {
         // Readd the toolbar section
         toolBar.addSubToolBarSection(subToolBarSection);
+        canvas.assignBufferImage();
         canvas.setRedraw(false);
     }
 
-    public void deselect() {
+    protected void deselect() {
         // Turn drawing back on and show what is underneath
         canvas.setRedraw(true);
         canvas.redraw();
     }
 
-    private void redrawOnce() {
-        canvas.setRedraw(true);
-        canvas.redraw();
-        canvas.setRedraw(false);
+    protected void cleared() {
+        canvas.assignBufferImage();
     }
 
     public void createSubToolBarSection() {
@@ -78,44 +78,42 @@ public class Blindness extends AlcModule implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        redrawOnce();
+                        canvas.forceRedraw();
+                        canvas.assignBufferImage();
+                    // Save this to a buffer to stop the toolbar refreshing the canvas
                     }
                 });
         subToolBarSection.add(revealButton);
 
         AlcSubToggleButton autoRevealButton = new AlcSubToggleButton("Auto-reveal", AlcUtil.getUrlPath("autoreveal.png", getClassLoader()));
+        autoRevealButton.setSelected(true);
+        autoReveal = true;
         autoRevealButton.setToolTipText("Reveal the screen after each shape is created");
 
         autoRevealButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        toggleAutoRedraw();
+                        autoReveal = !autoReveal;
                     }
                 });
         subToolBarSection.add(autoRevealButton);
-    }
-    
-    private void toggleAutoRedraw() {
-        if (autoReveal) {
-            autoReveal = false;
-        } else {
-            autoReveal = true;
-        }
     }
 
     // MOUSE EVENTS
     public void mouseReleased(MouseEvent e) {
         if (autoReveal) {
             // TODO - Deal with straight shapes and autoreveal bug
-            redrawOnce();
+            canvas.forceRedraw();
+            canvas.assignBufferImage();
         }
     }
 
     // KEY EVENTS
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_R) {
-            redrawOnce();
+            canvas.forceRedraw();
+            canvas.assignBufferImage();
         }
     }
 }

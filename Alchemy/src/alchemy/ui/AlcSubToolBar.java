@@ -27,37 +27,47 @@ public class AlcSubToolBar extends JPanel implements AlcConstants {
 
     private final AlcMain root;
     //private AlcToolBar parent;
-    private static final int height = 26;
+    private static final int rowHeight = 26;
+    private int height = rowHeight;
+    private int numberOfRows = 1;
 
     /** Creates a new instance of AlcSubToolBar */
     public AlcSubToolBar(AlcMain root) {
 
         this.root = root;
-        //this.parent = root.toolBar;
         // Allow Transparency
         this.setOpaque(false);
-        //this.setBorderPainted(false);
-        //this.setFloatable(false); 
+
         if (AlcMain.PLATFORM == MACOSX) {
-            this.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+            // Top Left Bottom Right
+            this.setBorder(BorderFactory.createEmptyBorder(2, 10, 0, 5));
         } else {
             this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         }
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        //this.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
+    }
 
-    //this.add(new AlcLabel(parent, title, null, description));
+    protected void setRows(int numberOfRows) {
+        this.numberOfRows = numberOfRows;
+        height = numberOfRows * rowHeight;
+        this.setPreferredSize(new Dimension(root.getWindowSize().width, height));
+    }
 
-    // this.setAlignmentY(Component.TOP_ALIGNMENT);
+    protected int getLayoutHeight() {
+        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
 
-    //this.setBackground(Color.BLACK);
-    //this.setLocation(0, parent.getToolBarHeight());
-    //this.setBounds(500, root.getWindowSize().width, 600, 25);
+        return layoutSize.height;
+    }
 
-    //JButton ok = new JButton("OK");
-    //this.add(ok);
+    protected int getLayoutWidth() {
+        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
+        // Plus extra to account for padding on the sides
+        return layoutSize.width + 20;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     // Override the paint component to draw the gradient bg
@@ -82,10 +92,5 @@ public class AlcSubToolBar extends JPanel implements AlcConstants {
                 g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
             }
         }
-    }
-
-    /** Return the height of the sub toolbar */
-    public int getHeight() {
-        return height;
     }
 }

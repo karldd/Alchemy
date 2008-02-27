@@ -46,7 +46,7 @@ public class AlcSubButton extends JButton {
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
         this.setMargin(new Insets(4, 0, 0, 0));
-
+        this.setIconTextGap(2);
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button
         this.setFocusPainted(false);       // Draw the highlight when focused

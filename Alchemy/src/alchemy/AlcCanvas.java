@@ -96,12 +96,19 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public ArrayList affectShapes;
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList guideShapes;
+    //////////////////////////////////////////////////////////////
+    // DISPLAY
+    //////////////////////////////////////////////////////////////
     /** Graphics */
     private Graphics2D g2;
     /** Image to draw on the canvas */
     private Image image;
     /** Display the image or not */
     private boolean displayImage = true;
+    /** Image to draw on the canvas */
+    private Image bufferImage;
+    /** Display the image or not */
+    private boolean displayBufferImage = true;
     /** Record indicator */
     private Ellipse2D.Double recordCircle;
     /** Record indicator on/off */
@@ -133,6 +140,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Paint Component that draws all shapes to the canvas */
     public void paintComponent(Graphics g) {
+
         int w = this.getWidth();
         int h = this.getHeight();
 
@@ -187,6 +195,14 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
                 }
             }
+
+        }
+
+        // Buffer image drawn over everything else temporarily
+        if (displayBufferImage) {
+            if (bufferImage != null) {
+                g2.drawImage(bufferImage, 0, 0, null);
+            }
         }
 
         if (recordIndicator) {
@@ -194,6 +210,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             g2.setColor(Color.RED);
             g2.fill(recordCircle);
         }
+
 
     }
 
@@ -204,11 +221,21 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void redraw() {
         applyAffects();
         if (redraw) {
-
+            if (displayBufferImage) {
+                bufferImage = null;
+            }
             // Something has happened on the canvas and the user is still active
             canvasChanged = true;
             this.repaint();
         }
+    }
+
+    /** Force the canvas to redraw regardless of the current redraw setting */
+    public void forceRedraw() {
+        this.setRedraw(true);
+        this.redraw();
+        this.setRedraw(false);
+        canvasChanged = true;
     }
 
     /** Turn on/off mouseEvents being sent to modules */
@@ -238,8 +265,14 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         affectShapes.clear();
         guideShapes.clear();
 
+
+        if (redraw) {
+            this.redraw();
+        // Redraw to clear the screen even if redrawing is off
+        } else {
+            forceRedraw();
+        }
         // Pass this on to the currently selected modules
-        // Does this need to be passed to all of the modules? Even if not selected?
         if (root.currentCreate >= 0) {
             root.creates[root.currentCreate].cleared();
         }
@@ -249,15 +282,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                     root.affects[i].cleared();
                 }
             }
-        }
-
-        // Redraw to clear the screen even if redrawing is off
-        if (redraw) {
-            redraw();
-        } else {
-            redraw = true;
-            redraw();
-            redraw = false;
         }
         // Now is a good time to clean up memory
         System.gc();
@@ -553,6 +577,23 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         this.displayImage = displayImage;
     }
 
+    /** Set the buffer image 
+     *  A temporary snap shot of the canvas used instead of the canvas.
+     *  This is used to prevent the area under the canvas redrawing
+     *  when the redraw is set to off ie Blindness module
+     * 
+     */
+    public void assignBufferImage() {
+        this.bufferImage = getBufferedImage();
+        this.displayBufferImage = false;
+    }
+
+    /** Set the buffer image to be displayed or not */
+    public void setDisplayBufferImage(boolean displayBufferImage) {
+        this.displayBufferImage = displayBufferImage;
+    }
+
+
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
@@ -640,9 +681,21 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             singleDocument.open();
             PdfContentByte singleContent = singleWriter.getDirectContent();
 
+            // Turn off the buffer image if present
+            boolean bufferOff = false;
+            if (displayBufferImage) {
+                displayBufferImage = false;
+                bufferOff = true;
+            }
+
             Graphics2D g2pdf = singleContent.createGraphics(singlePdfWidth, singlePdfHeight);
             this.paint(g2pdf);
             g2pdf.dispose();
+
+            // Turn the buffer back on again
+            if (bufferOff) {
+                displayBufferImage = true;
+            }
 
             singleDocument.close();
             return true;
@@ -742,10 +795,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public BufferedImage getBufferedImage() {
         //BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
         BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        System.out.println(this.getSize() + " " + root.getWindowSize());
         Graphics g = buffImage.getGraphics();
         //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
-        this.print(g);
+        //this.print(g);
+        this.paint(g);
         //System.out.println(this.getVisibleRect());
         g.dispose();
         return buffImage;

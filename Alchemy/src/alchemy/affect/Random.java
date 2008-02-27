@@ -22,7 +22,6 @@ package alchemy.affect;
 import alchemy.AlcModule;
 import alchemy.AlcShape;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;

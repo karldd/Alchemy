@@ -20,6 +20,7 @@
 package alchemy.ui;
 
 import alchemy.AlcModule;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.JPanel;
 
@@ -35,10 +36,15 @@ public class AlcSubToolBarSection extends JPanel {
 
         this.module = module;
         this.setOpaque(false);
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        this.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 0));
         this.add(new AlcSubLabel(module.getName()));
 
+    }
 
+    protected int getLayoutWidth() {
+        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
+        // Plus extra to account for padding on the sides
+        return layoutSize.width;
     }
 
     protected int getIndex() {
