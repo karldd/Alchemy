@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<plugin id="alchemy.affect.mirror" version="1.0.3">
+<plugin id="alchemy.affect.mirror" version="1.0.4">
     
     <requires> 
         <import plugin-id="alchemy.core"/> 
