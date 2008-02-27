@@ -35,8 +35,7 @@ public class AlcSubSeparator extends JLabel {
         this.setIcon(AlcUtil.createImageIcon("data/sub-separator.png"));
         //this.setVerticalAlignment(SwingConstants.BOTTOM);
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-    //this.setLocation(this.getX(), this.getY()-10);
+        this.setBorder(BorderFactory.createEmptyBorder(4, 4, 0, 4));
     }
 }
 
