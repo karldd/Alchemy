@@ -340,7 +340,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             prefs.setCanvasLocation(this.getLocation());
 
             // Get the size of the canvas without the titlebar and insets
-             Rectangle visibleRect = canvas.getVisibleRect();
+            Rectangle visibleRect = canvas.getVisibleRect();
             // Set the canvas size
             prefs.setCanvasSize(new Dimension(visibleRect.width, visibleRect.height));
         }
@@ -621,8 +621,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
             palette.addContent(toolBar.toolBars);
             //palette.pack();
-            palette.setVisible(true);
-            palette.requestFocus();
+            //palette.setVisible(true);
+
             prefs.setPaletteAttached(true);
 
             if (PLATFORM != MACOSX) {
@@ -630,6 +630,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 toolBar.calculateTotalHeight();
             }
             toolBar.detachButton.setVisible(false);
+
+            palette.show();
+            palette.toFront();
+            palette.requestFocus();
 
         // TOOLBAR
         } else {

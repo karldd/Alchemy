@@ -22,6 +22,8 @@ import alchemy.AlcMain;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.border.LineBorder;
@@ -30,10 +32,10 @@ import javax.swing.border.LineBorder;
  * AlcPalette
  * @author Karl D.D. Willis
  */
-public class AlcPalette extends JWindow implements KeyListener{
+public class AlcPalette extends JWindow implements KeyListener, MouseListener {
 
     //private JPanel paletteContent;
-    private JPanel mainPalette;
+    public JPanel mainPalette;
     private Component content;
     private AlcPaletteTitleBar titleBar;
     private AlcMain root;
@@ -58,6 +60,8 @@ public class AlcPalette extends JWindow implements KeyListener{
         mainPalette.setBorder(new LineBorder(AlcToolBar.toolBarLineColour, 1));
         mainPalette.setLayout(new BorderLayout());
         mainPalette.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        mainPalette.addKeyListener(this);
+        mainPalette.addMouseListener(this);
 
         titleBar = new AlcPaletteTitleBar(this, root);
         //titleBar.add(new JLabel("ho"));
@@ -95,17 +99,30 @@ public class AlcPalette extends JWindow implements KeyListener{
         }
     }
 
-    public void keyTyped(KeyEvent e) {
-        System.out.println("key typed");
-        //root.keyTyped(e);
+    public void keyPressed(KeyEvent event) {
+        System.out.println("keypressed");
     }
 
-    public void keyPressed(KeyEvent e) {
-        System.out.println("key pressed");
-        //root.keyPressed(e);
+    public void keyReleased(KeyEvent event) {
     }
 
-    public void keyReleased(KeyEvent e) {
-        root.keyReleased(e);
+    public void keyTyped(KeyEvent event) {
+    }
+
+    public void mouseClicked(MouseEvent event) {
+        this.requestFocus();
+        this.toFront();
+    }
+
+    public void mouseEntered(MouseEvent event) {
+    }
+
+    public void mouseExited(MouseEvent event) {
+    }
+
+    public void mousePressed(MouseEvent event) {
+    }
+
+    public void mouseReleased(MouseEvent event) {
     }
 }
