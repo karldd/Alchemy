@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.util.prefs.Preferences;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -82,8 +83,9 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
 
         JPanel masterPanel = new JPanel();
+        masterPanel.setOpaque(true);
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
-//        masterPanel.add(new JLabel("Not yet implemented..."));
+        masterPanel.add(new JLabel("Not yet implemented..."));
 
         /*
         JCheckBox resetWarnings = new JCheckBox("Reset Warning Dialogs");
@@ -102,10 +104,8 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         masterPanel.add(resetWarnings);
          */
 
-        // TODO - Implement preferences, move Strings to the lang bundle
-        
         this.getContentPane().add(masterPanel);
-        this.setSize(320, 240);
+        this.setSize(400, 240);
         String title = "Alchemy Options";
         if (AlcMain.PLATFORM == MACOSX) {
             title = "Alchemy Preferences";
