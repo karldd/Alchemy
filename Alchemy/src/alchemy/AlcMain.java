@@ -339,14 +339,10 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         if (!isFullscreen()) {
             prefs.setCanvasLocation(this.getLocation());
 
-            // Get the size of the title bar and border area
-            Insets insets = this.getInsets();
-            // Subtract that from the window size
-            Dimension canvasSize = new Dimension(
-                    windowSize.width - (insets.left + insets.right),
-                    windowSize.height - (insets.top + insets.bottom));
+            // Get the size of the canvas without the titlebar and insets
+             Rectangle visibleRect = canvas.getVisibleRect();
             // Set the canvas size
-            prefs.setCanvasSize(canvasSize);
+            prefs.setCanvasSize(new Dimension(visibleRect.width, visibleRect.height));
         }
         if (prefs.getPaletteAttached()) {
             prefs.setPaletteLocation(palette.getLocation());

@@ -727,11 +727,10 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
     private void copy() {
         // TODO - Implement Vector clipboard copy function
         // http://www.java2s.com/Code/Java/Swing-JFC/MimeClipboardTest.htm
-        // TODO - Fix bug when resizing the window then copying
-
-        Image currentScreen = (Image) root.canvas.getBufferedImage();
-        boolean set = AlcUtil.setClipboard(new AlcImageTransferable(currentScreen), root);
-    //System.out.println("Clipboard Set: " + set);
+        
+        // A bug on mac with older versions of java can scramble the clipboard
+        // fixed in Java 1.5 Release 3 (4238470)
+        boolean set = AlcUtil.setClipboard(new AlcImageTransferable(root.canvas.getBufferedImage()), root);
     }
 
     /** Make a temporary file, create a PDF, and then open it */
