@@ -60,8 +60,8 @@ public class AlcPalette extends JWindow implements KeyListener, MouseListener {
         mainPalette.setBorder(new LineBorder(AlcToolBar.toolBarLineColour, 1));
         mainPalette.setLayout(new BorderLayout());
         mainPalette.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        mainPalette.addKeyListener(this);
-        mainPalette.addMouseListener(this);
+        this.addKeyListener(this);
+        this.addMouseListener(this);
 
         titleBar = new AlcPaletteTitleBar(this, root);
         //titleBar.add(new JLabel("ho"));
@@ -99,19 +99,20 @@ public class AlcPalette extends JWindow implements KeyListener, MouseListener {
         }
     }
 
+    // Send the key events to the root
     public void keyPressed(KeyEvent event) {
-        System.out.println("keypressed");
+        root.keyPressed(event);
     }
 
     public void keyReleased(KeyEvent event) {
+        root.keyReleased(event);
     }
 
     public void keyTyped(KeyEvent event) {
+        root.keyTyped(event);
     }
 
     public void mouseClicked(MouseEvent event) {
-        this.requestFocus();
-        this.toFront();
     }
 
     public void mouseEntered(MouseEvent event) {
@@ -121,6 +122,8 @@ public class AlcPalette extends JWindow implements KeyListener, MouseListener {
     }
 
     public void mousePressed(MouseEvent event) {
+        this.requestFocus();
+        this.toFront();
     }
 
     public void mouseReleased(MouseEvent event) {
