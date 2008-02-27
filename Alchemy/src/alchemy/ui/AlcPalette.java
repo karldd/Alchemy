@@ -20,6 +20,8 @@ package alchemy.ui;
 
 import alchemy.AlcMain;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
 import javax.swing.border.LineBorder;
@@ -28,7 +30,7 @@ import javax.swing.border.LineBorder;
  * AlcPalette
  * @author Karl D.D. Willis
  */
-public class AlcPalette extends JWindow {
+public class AlcPalette extends JWindow implements KeyListener{
 
     //private JPanel paletteContent;
     private JPanel mainPalette;
@@ -91,5 +93,19 @@ public class AlcPalette extends JWindow {
         } else {
             this.setSize(root.getWindowSize().width, paletteHeight);
         }
+    }
+
+    public void keyTyped(KeyEvent e) {
+        System.out.println("key typed");
+        //root.keyTyped(e);
+    }
+
+    public void keyPressed(KeyEvent e) {
+        System.out.println("key pressed");
+        //root.keyPressed(e);
+    }
+
+    public void keyReleased(KeyEvent e) {
+        root.keyReleased(e);
     }
 }
