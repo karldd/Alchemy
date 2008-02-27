@@ -21,10 +21,15 @@ package alchemy.affect;
 
 import alchemy.AlcModule;
 import alchemy.AlcShape;
+import alchemy.ui.AlcSubSlider;
+import alchemy.ui.AlcSubToolBarSection;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Random Alchemy Module
@@ -32,24 +37,31 @@ import java.awt.geom.PathIterator;
  */
 public class Random extends AlcModule {
 
-    private float noisiness = 0.1F;
-    private float noiseScale = 0.0F;
-    private float scale,  halfScale;
+//    private float distortion = 0.1F;
+//    private float noiseScale = 0.0F;
+//    private float scale;
     // Timing
-    private long mouseDelayGap = 250;
-    private boolean mouseFirstRun = true;
-    private long mouseDelayTime;
+//    private long mouseDelayGap = 250;
+//    private boolean mouseFirstRun = true;
+//    private long mouseDelayTime;
+    private int initialDistortion = 50;
+    private float distortionScaler = 0.15F;
+    private float bottomEnd = (initialDistortion * distortionScaler) * -1;
+    private float topEnd = initialDistortion * distortionScaler;
     private boolean mouseDown = false;
-    //
-    private int activeShape = -1;
+//
+//    private int activeShape = -1;
     private int proximity = 5;
+    //
+    private AlcSubToolBarSection subToolBarSection;
 
     public Random() {
 
     }
 
     protected void setup() {
-
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     public void deselect() {
@@ -57,21 +69,37 @@ public class Random extends AlcModule {
     }
 
     public void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+        // Distortion Slider
+        AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 1, 100, initialDistortion);
+
+        distortionSlider.setToolTipText("Adjust the distortion level");
+        distortionSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            int value = source.getValue();
+                            bottomEnd = (value * distortionScaler) * -1;
+                            topEnd = value * distortionScaler;
+                        }
+                    }
+                });
+        subToolBarSection.add(distortionSlider);
 
     }
 
     private void randomiseShape(Point currentLoc, int shapeNumber) {
-        //noisiness = root.math.random(-0.01F, 0.1F);
-
-        scale = 100F;
-        halfScale = scale / 2;
         AlcShape shape = (AlcShape) canvas.shapes.get(shapeNumber);
         GeneralPath randomisedShape = randomise(shape.getPath(), currentLoc);
         shape.setPath(randomisedShape);
         canvas.redraw();
-
-    //return shape;
-
     }
 
     private GeneralPath randomise(GeneralPath shape, Point p) {
@@ -135,24 +163,12 @@ public class Random extends AlcModule {
 
     /** Apply Perlin noise to the given float */
     private float mess(float f) {
-        //noiseScale += noisiness;
+        //noiseScale += distortion;
         //float n = (root.math.noise(noiseScale) * scale) - halfScale;
-        float n = root.math.random(-10F, 10F);
+        float n = root.math.random(bottomEnd, topEnd);
         //n = n * 0.5F;
         //System.out.println(n);
         return n + f;
-    }
-
-    // TODO - make an interface to allow setting of noisines and scale
-    /** Set the level of variation */
-    private void setNoisiness(float f) {
-        noisiness = f;
-    }
-
-    /** Set the scale on which to apply the noise */
-    private void setScale(float f) {
-        scale = f;
-        halfScale = scale / 2;
     }
 
     protected void affectShapes(int[] activeShapes, Point cursorLocation) {
@@ -171,7 +187,5 @@ public class Random extends AlcModule {
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     }
-
-
 }
 

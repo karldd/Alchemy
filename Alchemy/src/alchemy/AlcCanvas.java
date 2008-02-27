@@ -793,8 +793,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Create a bufferedImage from the canvas */
     public BufferedImage getBufferedImage() {
-        //BufferedImage buffImage = new BufferedImage(this.getVisibleRect().width, this.getVisibleRect().height, BufferedImage.TYPE_INT_ARGB);
-        BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        // Get the canvas size with out the frame/decorations
+        java.awt.Rectangle visibleRect = this.getVisibleRect();
+        BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
+        //BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics g = buffImage.getGraphics();
         //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
         //this.print(g);

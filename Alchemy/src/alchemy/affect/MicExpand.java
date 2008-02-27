@@ -52,9 +52,9 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private long delayGap = 10;
     private boolean firstRun = true;
     private long delayTime;
-    private long mouseDelayGap = 500;
-    private boolean mouseFirstRun = true;
-    private long mouseDelayTime;
+//    private long mouseDelayGap = 500;
+//    private boolean mouseFirstRun = true;
+//    private long mouseDelayTime;
     //
     private boolean mouseDown = false;
     private AlcSubToolBarSection subToolBarSection;
