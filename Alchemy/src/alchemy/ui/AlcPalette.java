@@ -116,12 +116,19 @@ public class AlcPalette extends JWindow implements KeyListener, MouseListener {
     }
 
     public void mouseEntered(MouseEvent event) {
+        // Set the default cursor
+        root.canvas.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     public void mouseExited(MouseEvent event) {
+        // Set the cursor back to a cross hair when leaving the palette
+       if(!this.contains(event.getPoint())){
+            root.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+        }
     }
 
     public void mousePressed(MouseEvent event) {
+        // TODO - Main window is unfocused on a mac when clicking on the palette
         this.requestFocus();
         this.toFront();
     }

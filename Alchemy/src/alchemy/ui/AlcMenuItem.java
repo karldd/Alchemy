@@ -47,7 +47,7 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
 
         //this.setUI(new AlcMenuItemUI());
         //System.out.println(this.getUI());
-        //this.setOpaque(false);
+        //this.setOpaque(true);
 
 
         this.setText(title);
@@ -60,6 +60,7 @@ public class AlcMenuItem extends JMenuItem implements AlcConstants {
 
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
+        //this.setOpaque(true);
         this.setBackground(AlcToolBar.toolBarHighlightColour);
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);

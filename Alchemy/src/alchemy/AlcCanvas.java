@@ -29,15 +29,15 @@ import java.awt.Graphics2D;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+// iText
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.Rectangle;
-
 import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
+//
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
@@ -59,7 +59,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // GLOBAL SETTINGS
     ////////////////////////////////////////////////////////////// 
     /** Background colour */
-    private Color bgColour = Color.WHITE;
+    private Color bgColour;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
@@ -78,7 +78,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
     /** Colour of this shape */
-    private Color colour = Color.BLACK;
+    private Color colour;
     /** Alpha of this shape */
     private int alpha = 255;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
@@ -114,14 +114,19 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Record indicator on/off */
     boolean recordIndicator = false;
 
+// PDF READER
+//    PDFFile pdffile;
     /** Creates a new instance of AlcCanvas
      * @param root Reference to the root
      */
     public AlcCanvas(AlcMain root) {
         this.root = root;
+
+
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         this.smoothing = root.prefs.getSmoothing();
         this.bgColour = new Color(root.prefs.getBgColour());
+        this.colour = new Color(root.prefs.getColour());
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -136,10 +141,28 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         guideShapes = new ArrayList(25);
         guideShapes.ensureCapacity(25);
 
+//       PDF READER
+//        try {
+//            File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
+//
+//            // set up the PDF reading
+//            RandomAccessFile raf = new RandomAccessFile(file, "r");
+//            FileChannel channel = raf.getChannel();
+//            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+//            pdffile = new PDFFile(buf);
+//
+//        } catch (FileNotFoundException ex) {
+//            ex.printStackTrace();
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+
+
     }
 
     /** Paint Component that draws all shapes to the canvas */
     public void paintComponent(Graphics g) {
+
 
         int w = this.getWidth();
         int h = this.getHeight();
@@ -154,10 +177,20 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         // Hints that don't seem to offer any extra performance on OSX
         //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
-
         //... Paint background.
         g2.setColor(bgColour);
         g2.fillRect(0, 0, w, h);
+
+//        PDF READER
+//        get the first page
+//        PDFPage page = pdffile.getPage(0);
+//        PDFRenderer renderer = new PDFRenderer(page, g2, new Rectangle(0, 0, w, h), null, Color.RED);
+//        try {
+//            page.waitForFinish();
+//            renderer.run();
+//        } catch (InterruptedException ex) {
+//            ex.printStackTrace();
+//        }
 
         // Paint the buffImage is available
         if (displayImage) {
@@ -190,12 +223,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
                         g2.setColor(currentShape.getColour());
                         g2.fill(currentShape.getPath());
-
                     }
-
                 }
             }
-
         }
 
         // Buffer image drawn over everything else temporarily
@@ -210,8 +240,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             g2.setColor(Color.RED);
             g2.fill(recordCircle);
         }
-
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -666,7 +694,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public boolean saveSinglePdf(File file) {
         int singlePdfWidth = root.getWindowSize().width;
         int singlePdfHeight = root.getWindowSize().height;
-        Document singleDocument = new Document(new Rectangle(singlePdfWidth, singlePdfHeight), 0, 0, 0, 0);
+        Document singleDocument = new Document(new com.lowagie.text.Rectangle(singlePdfWidth, singlePdfHeight), 0, 0, 0, 0);
         singleDocument.addTitle("Alchemy");
         singleDocument.addAuthor(USER_NAME);
         //document.addSubject("This example explains how to add metadata.");

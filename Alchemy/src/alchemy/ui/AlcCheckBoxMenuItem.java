@@ -81,6 +81,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
 
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
+        //this.setOpaque(true);
         this.setBackground(AlcToolBar.toolBarHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);
 
@@ -97,7 +98,7 @@ public class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstan
         return moduleType;
     }
 
-    public void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (!this.getState()) {
             g.setColor(AlcToolBar.toolBarBoxColour);
