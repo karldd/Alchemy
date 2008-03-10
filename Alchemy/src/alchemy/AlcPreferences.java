@@ -62,6 +62,8 @@ public class AlcPreferences extends JDialog implements AlcConstants {
     private boolean smoothing;
     /** Canvas background colour */
     private int bgColour;
+    /** Colour */
+    private int colour;
 
     public AlcPreferences(AlcMain root) {
         // Define the parent window
@@ -81,6 +83,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
         smoothing = prefs.getBoolean("Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
+        colour = prefs.getInt("Colour", 0x000000);
 
         JPanel masterPanel = new JPanel();
         masterPanel.setOpaque(true);
@@ -125,6 +128,7 @@ public class AlcPreferences extends JDialog implements AlcConstants {
         prefs.putBoolean("Palette Attached", this.paletteAttached);
         prefs.putBoolean("Smoothing", root.canvas.getSmoothing());
         prefs.putInt("Background Colour", root.canvas.getBgColour().getRGB());
+        prefs.putInt("Colour", root.canvas.getColour().getRGB());
 
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", this.switchVectorApp);
@@ -240,6 +244,10 @@ public class AlcPreferences extends JDialog implements AlcConstants {
 
     public int getBgColour() {
         return bgColour;
+    }
+
+    public int getColour() {
+        return colour;
     }
 
 

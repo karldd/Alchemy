@@ -20,7 +20,9 @@
 package alchemy.ui;
 
 import alchemy.AlcConstants;
+import alchemy.AlcMain;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -30,19 +32,30 @@ public class AlcPopupButton extends AlcButton implements AlcConstants {
     private final static int uiPopupMenuY = 47;
     private AlcPopupMenu popup;
     private boolean inside;
+    private final AlcMain root;
 
     /** Creates a new instance of AlcPopupButton */
-    public AlcPopupButton(String text, String toolTip, URL iconUrl) {
+//    public AlcPopupButton(Action action) {
+//        super(action);
+//    }
+    /** Creates a new instance of AlcPopupButton */
+    public AlcPopupButton(AlcMain root, String text, String toolTip, URL iconUrl) {
         super(text, toolTip, iconUrl);
-        popup = new AlcPopupMenu();
+        this.root = root;
+        makePopup();
+    }
 
+    private void makePopup() {
+        popup = new AlcPopupMenu();
+        
         // Add a mouse listener to detect when the button is pressed and display the popup menu
         this.addMouseListener(new MouseAdapter() {
 
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
+                root.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
-            });
+        });
 
         popup.addMouseListener(new MouseAdapter() {
 
@@ -54,9 +67,12 @@ public class AlcPopupButton extends AlcButton implements AlcConstants {
                 inside = popup.contains(e.getPoint());
             }
             });
-
     }
 
+//    public void setup(String text, String toolTip, URL iconUrl) {
+//        super.setup(text, toolTip, iconUrl);
+//        makePopup();
+//    }
     /** Add an interface element to the popup menu */
     public void addItem(Component item) {
         popup.add(item);
@@ -71,9 +87,9 @@ public class AlcPopupButton extends AlcButton implements AlcConstants {
     public void hidePopup() {
         popup.setVisible(false);
     }
-    
+
     /** Test to see if the cursor is inside the popup */
-    public boolean isInside(){
+    public boolean isInside() {
         //System.out.println("INSIDE: " + inside);
         return inside;
     }

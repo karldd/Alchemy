@@ -102,7 +102,7 @@ public abstract class AlcModule {
     
     /**
      * Affect Shapes
-     * Passes the location of the cursor and a list of 'active' shapes which the cursor is 'inside' of.
+     * Passes the location of the pen and a list of 'active' shapes which the pen is 'inside' of.
      * 
      * If there are no active shapes, the activeShapes array will be null.
      * This is useful for determining when to stop processing other stuff.
@@ -110,9 +110,9 @@ public abstract class AlcModule {
      * Called for every active affect module after mouse events have been passed.
      * 
      * @param activeShapes      Array of 'active' shapes
-     * @param cursorLocation    The location of the cursor
+     * @param penLocation    The location of the pen
      */
-     protected void affectShapes(int[] activeShapes, Point cursorLocation) {
+     protected void affectShapes(int[] activeShapes, Point penLocation) {
      }
 
     //////////////////////////////////////////////////////////////

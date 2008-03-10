@@ -71,6 +71,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcToolBar toolBar;
     /** Preferences class */
     public AlcPreferences prefs;
+    /** Custom colour chooser */
+    public final AlcColourChooser colourChooser;
     /** Session class - controls automatic saving of the canvas */
     public AlcSession session;
     /** Array of the installed 'create' modules */
@@ -131,6 +133,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // LOAD PREFERENCES
         prefs = new AlcPreferences(this);
+
+        // Colour chooser
+        colourChooser = new AlcColourChooser(Color.WHITE);
 
         // LOAD PLUGINS
         plugins = new AlcPlugin(this);
@@ -220,6 +225,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
         toolBar = new AlcToolBar(this);
         // Menu Bar
         menuBar = new AlcMenuBar(this);
+
 
         if (PLATFORM == MACOSX) {
             // Add normally if on MacOSX as the menu is listed above
@@ -631,7 +637,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
             }
             toolBar.detachButton.setVisible(false);
 
-            palette.show();
+            palette.setVisible(true);
+            //palette.show();
             palette.toFront();
             palette.requestFocus();
 

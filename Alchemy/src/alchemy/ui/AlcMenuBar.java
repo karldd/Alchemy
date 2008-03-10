@@ -27,7 +27,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /** 
  * Menubar for Alchemy
@@ -438,43 +437,22 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction bgColourAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-
-                // Swing Colour Chooser
-                final JColorChooser cc = new JColorChooser(Color.WHITE);
-                //cc.setBackground(AlcToolBar.toolBarBgColour);
-
-                if (AlcMain.PLATFORM != MACOSX) {
-                    String singleChooser = "DefaultHSBChooserPanel";
-                    // Just want to show the HSB panel
-                    AbstractColorChooserPanel[] panels = cc.getChooserPanels();
-                    // Get the panels and search for the HSB one
-                    for (int i = 0; i < panels.length; i++) {
-                        String name = panels[i].getClass().getName();
-                        if (name.endsWith(singleChooser)) {
-                            //Add the HSB panel, replacing the others
-                            AbstractColorChooserPanel[] hsb = {panels[i]};
-                            cc.setChooserPanels(hsb);
-                            break;
-                        }
-                    }
-                    cc.setPreviewPanel(new JPanel());
-                }
-
-
                 // Action to change the colour
                 ActionListener colorAction = new ActionListener() {
 
                     public void actionPerformed(ActionEvent event) {
-                        root.canvas.setBgColour(cc.getColor());
+                        root.canvas.setBgColour(root.colourChooser.getColor());
                         root.canvas.redraw();
                     }
                 };
+                
+                // Set the current colour to the bg
+                root.colourChooser.setColor(root.canvas.getBgColour());
                 // Dialog to hold the colour chooser
-                JDialog dialog = JColorChooser.createDialog(root, getS("bgColourDialogTitle"), true, cc, colorAction, null);
+                JDialog dialog = JColorChooser.createDialog(root, getS("bgColourDialogTitle"), true, root.colourChooser, colorAction, null);
                 dialog.setBackground(AlcToolBar.toolBarBgColour);
                 dialog.setResizable(false);
                 dialog.setVisible(true);
-
             }
         };
         AlcMenuItem bgColourItem = new AlcMenuItem(bgColourAction);

@@ -58,8 +58,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // TOOLBAR ELEMENTS
     //////////////////////////////////////////////////////////////
-    /** Popup buttons for the create and affect button in the toolbar - these are declared global so we can hide the popup when hiding the toolbar */
-    private AlcPopupButton createButton,  affectButton;
+    /** Popup buttons for the colour, create, amd affect buttons in the toolbar
+     *  These are declared global so we can hide the popup when hiding the toolbar */
+    private AlcPopupButton createButton,  affectButton,  colourButton;
     /** The main tool bar inside the toolbar */
     private AlcMainToolBar mainToolBar;
     /** The sub toolbar below the main toolbar */
@@ -76,8 +77,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     private int currentSubToolBarSections = 0;
     /** The number of rows in the sub toolbar */
     private int subToolBarRows;
-    /** Actions used in the toolbar */
-    public Action styleAction,  bwAction;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
     //////////////////////////////////////////////////////////////
@@ -150,7 +149,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
         String styleTitle = getS("styleTitle");
         final AlcToggleButton styleButton = new AlcToggleButton();
-        styleAction = new AbstractAction() {
+        AbstractAction styleAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
                 root.canvas.toggleStyle();
@@ -211,37 +210,74 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         toolBar.add(lineWidthSpinner);
 
         //////////////////////////////////////////////////////////////
-        // BLACK WHITE BUTTON
+        // COLOUR  BUTTON
         //////////////////////////////////////////////////////////////
-        String bwTitle = getS("bwTitle");
-        final AlcToggleButton bwButton = new AlcToggleButton();
-        bwAction = new AbstractAction() {
+//        AbstractAction colourAction = new AbstractAction() {
+//
+//            public void actionPerformed(ActionEvent e) {
+//
+//                //root.canvas.toggleBlackWhite();
+//                root.canvas.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//
+////                Color bwColour = root.canvas.getColour();
+////                if (bwColour == Color.BLACK) {
+////                    bwButton.setSelected(false);
+////                } else {
+////                    bwButton.setSelected(true);
+////                }
+//
+//
+//            // Only toogle the button manually if it is triggered by a key
+////                if (e.getActionCommand().equals("x")) {
+////                    bwButton.setSelected(!bwButton.isSelected());
+////                }
+//            }
+//        };
+//        colourButton = new AlcPopupButton(colourAction);
+        //colourButton.setAction(bwAction);
+        //colourButton.setup(colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("data/colour.png"));
 
-            public void actionPerformed(ActionEvent e) {
+        String colourTitle = getS("colourTitle");
+        colourButton = new AlcPopupButton(root, colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("data/colour.png"));
+        final AlcColourPicker picker = new AlcColourPicker(root);
+        picker.addMouseListener(new MouseAdapter() {
 
-                root.canvas.toggleBlackWhite();
+            public void mouseReleased(MouseEvent e) {
 
-                Color bwColour = root.canvas.getColour();
-                if (bwColour == Color.BLACK) {
-                    bwButton.setSelected(false);
+                // Check if the colour choose needs to be launched
+                if (e.getX() >= 75 && e.getY() <= 15) {
+
+                    // Action to change the colour
+                    ActionListener colorAction = new ActionListener() {
+
+                        public void actionPerformed(ActionEvent event) {
+                            root.canvas.setColour(root.colourChooser.getColor());
+                        }
+                    };
+
+                    // Set the current colour 
+                    root.colourChooser.setColor(root.canvas.getColour());
+
+                    // Dialog to hold the colour chooser
+                    JDialog dialog = JColorChooser.createDialog(root, getS("colourTitle"), true, root.colourChooser, colorAction, null);
+                    dialog.setBackground(AlcToolBar.toolBarBgColour);
+                    dialog.setResizable(false);
+                    dialog.setVisible(true);
+
                 } else {
-                    bwButton.setSelected(true);
+                    root.canvas.setColour(picker.getColor(e.getX(), e.getY()));
+                    colourButton.hidePopup();
                 }
-
-
-            // Only toogle the button manually if it is triggered by a key
-//                if (e.getActionCommand().equals("x")) {
-//                    bwButton.setSelected(!bwButton.isSelected());
-//                }
             }
-        };
-        bwButton.setAction(bwAction);
-        bwButton.setup(bwTitle, getS("bwDescription"), AlcUtil.getUrlPath("data/blackwhite.png"));
-        // Shortcut - x
-        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), bwTitle);
-        root.canvas.getActionMap().put(bwTitle, bwAction);
+        });
 
-        toolBar.add(bwButton);
+        colourButton.addItem(picker);
+
+        // Shortcut - x
+//        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), colourTitle);
+//        root.canvas.getActionMap().put(colourTitle, colourAction);
+
+        toolBar.add(colourButton);
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -273,7 +309,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // CREATE
         //////////////////////////////////////////////////////////////
-        createButton = new AlcPopupButton(getS("createTitle"), getS("createDescription"), AlcUtil.getUrlPath("data/create.png"));
+        createButton = new AlcPopupButton(root, getS("createTitle"), getS("createDescription"), AlcUtil.getUrlPath("data/create.png"));
         // Button group for the radio buttons
         ButtonGroup group = new ButtonGroup();
         // Populate the Popup Menu
@@ -302,7 +338,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                             int heightFromWindow = loc.y + 50;
                             //System.out.println(loc + " " + heightFromWindow);
                             toggleToolBar(heightFromWindow, true);
-
                         }
                     });
 
@@ -321,7 +356,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // AFFECT
         //////////////////////////////////////////////////////////////
         if (root.getNumberOfAffectModules() > 0) {
-            affectButton = new AlcPopupButton(getS("affectTitle"), getS("affectDescription"), AlcUtil.getUrlPath("data/affect.png"));
+            affectButton = new AlcPopupButton(root, getS("affectTitle"), getS("affectDescription"), AlcUtil.getUrlPath("data/affect.png"));
             for (int i = 0; i < root.affects.length; i++) {
                 // The current module
                 AlcModule currentModule = root.affects[i];
@@ -487,6 +522,10 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             toolBarVisible = visible;
             root.canvas.setMouseEvents(!visible);
             if (!visible) {
+                // Be sure to set the cursor back to the cross hair
+                root.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+                this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                colourButton.hidePopup();
                 createButton.hidePopup();
                 if (affectButton != null) {
                     affectButton.hidePopup();
@@ -506,7 +545,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
                     if (!insideToolBar) {
                         if (isPopupMenusVisible()) {
-                            if (!createButton.isInside() && !affectButton.isInside()) {
+                            if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");
                                 setToolBarVisible(false);
                                 insideToolBar = false;
@@ -673,18 +712,22 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
     /** Check if any of the popup menus are visible */
     public boolean isPopupMenusVisible() {
-        boolean visible = false;
+
+        if (colourButton.isPopupVisible()) {
+            return true;
+        }
+
         //if (createButton != null) {
         if (createButton.isPopupVisible()) {
-            visible = true;
+            return true;
         }
         //}
         if (affectButton != null) {
             if (affectButton.isPopupVisible()) {
-                visible = true;
+                return true;
             }
         }
-        return visible;
+        return false;
     }
 
     /** Return the height of the UI Toolbar */
