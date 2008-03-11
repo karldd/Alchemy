@@ -85,7 +85,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem newItem = new AlcMenuItem(newAction);
         newItem.setup(newTitle, KeyEvent.VK_N);
         // Shortcut - Modifier n
-        root.setHotKey(KeyEvent.VK_N, newTitle, newAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_N, newTitle, newAction);
         fileMenu.add(newItem);
 
         fileMenu.add(new JSeparator());
@@ -101,7 +101,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem exportItem = new AlcMenuItem(exportAction);
         exportItem.setup(exportTitle, KeyEvent.VK_E);
         // Shortcut - Modifier e
-        root.setHotKey(KeyEvent.VK_E, exportTitle, exportAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_E, exportTitle, exportAction);
         fileMenu.add(exportItem);
 
         fileMenu.add(new JSeparator());
@@ -128,7 +128,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem printItem = new AlcMenuItem(printAction);
         printItem.setup(printTitle, KeyEvent.VK_P);
         // Shortcut - Modifier p
-        root.setHotKey(KeyEvent.VK_P, printTitle, printAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_P, printTitle, printAction);
         fileMenu.add(printItem);
 
 
@@ -167,7 +167,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem copyItem = new AlcMenuItem(copyAction);
         copyItem.setup(copyTitle, KeyEvent.VK_C);
         // Shortcut - Modifier c
-        root.setHotKey(KeyEvent.VK_C, copyTitle, copyAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_C, copyTitle, copyAction);
         editMenu.add(copyItem);
 
         this.add(editMenu);
@@ -194,7 +194,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         fullScreenItem.setAction(fullScreenAction);
         fullScreenItem.setup(fullScreenTitle, KeyEvent.VK_F);
         // Shortcut - Modifier f
-        root.setHotKey(KeyEvent.VK_F, fullScreenTitle, fullScreenAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_F, fullScreenTitle, fullScreenAction);
         viewMenu.add(fullScreenItem);
 
         this.add(viewMenu);
@@ -215,7 +215,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
         savePageItem.setup(savePageTitle, KeyEvent.VK_S);
         // Shortcut - Modifier s
-        root.setHotKey(KeyEvent.VK_S, savePageTitle, savePageAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_S, savePageTitle, savePageAction);
         sessionMenu.add(savePageItem);
 
         // Save and clear PDF page
@@ -228,7 +228,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
         saveClearPageItem.setup(saveClearTitle, KeyEvent.VK_D);
-        root.setHotKey(KeyEvent.VK_D, saveClearTitle, saveClearPageAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_D, saveClearTitle, saveClearPageAction);
         sessionMenu.add(saveClearPageItem);
 
 
@@ -253,7 +253,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         recordingItem.setup(recordingTitle, KeyEvent.VK_R);
 
         // Shortcut - Modifier r
-        root.setHotKey(KeyEvent.VK_R, recordingTitle, recordingAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_R, recordingTitle, recordingAction);
 
         recordingItem.setState(root.prefs.getRecordingState());
         if (root.prefs.getRecordingState()) {
@@ -363,7 +363,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem switchVectorItem = new AlcMenuItem(switchVectorAction);
         switchVectorItem.setup(switchVectorTitle, KeyEvent.VK_V);
         // Shortcut - Modifier v
-        root.setHotKey(KeyEvent.VK_V, switchVectorTitle, switchVectorAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_V, switchVectorTitle, switchVectorAction);
         switchMenu.add(switchVectorItem);
 
         // Switch Bitmaps
@@ -377,7 +377,7 @@ public class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem switchBitmapItem = new AlcMenuItem(switchBitmapAction);
         switchBitmapItem.setup(switchBitmapTitle, KeyEvent.VK_B);
         // Shortcut - Modifier v
-        root.setHotKey(KeyEvent.VK_B, switchBitmapTitle, switchBitmapAction);
+        root.shortcuts.setShortcut(KeyEvent.VK_B, switchBitmapTitle, switchBitmapAction);
         switchMenu.add(switchBitmapItem);
 
         switchMenu.add(new JSeparator());
