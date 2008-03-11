@@ -33,15 +33,15 @@ import java.awt.geom.PathIterator;
 public class AlcShape implements AlcConstants, Cloneable {
 
     /** The main path stored as a GeneralPath */
-    private GeneralPath path;
+    protected GeneralPath path;
     /** Colour of this shape */
-    private Color colour = Color.BLACK;
+    protected Color colour = Color.BLACK;
     /** Alpha of this shape */
     private int alpha = 255;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    private int style = LINE;
+    protected int style = LINE;
     /** Line Weight if the style is line */
-    private float lineWidth = 1F;
+    protected float lineWidth = 1F;
     /** Store the last point */
     private Point lastPt;
     /** For drawing smaller marks - draw lines until x points have been made */
@@ -144,6 +144,9 @@ public class AlcShape implements AlcConstants, Cloneable {
      * @param p Point to curve to
      */
     public void addCurvePoint(Point p) {
+        
+        // TODO - Toggle for line smoothing off
+        // Extend an abstract class?
 
         // At the start just draw lines so smaller marks can be made
         if (totalPoints < startPoints) {
@@ -165,8 +168,6 @@ public class AlcShape implements AlcConstants, Cloneable {
                 // Average the points
                 pt.x = (lastPt.x + p.x) >> 1;
                 pt.y = (lastPt.y + p.y) >> 1;
-
-                //System.out.println("Last Point: " + lastPt.x + " " + lastPt.y + " - Edited Point: " + pt.x + " " + pt.y + " - Original Point: " + p.x + " " + p.y);
 
                 // Add the Quadratic curve - control point x1, y1 and actual point x2, y2
                 path.quadTo(lastPt.x, lastPt.y, pt.x, pt.y);

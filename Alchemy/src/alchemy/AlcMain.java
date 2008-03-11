@@ -135,7 +135,7 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // LOAD PREFERENCES
         prefs = new AlcPreferences(this);
-        
+
         // LOAD SHORTCUTS
         shortcuts = new AlcShortcutManager(this);
 
