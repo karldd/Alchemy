@@ -71,6 +71,8 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
     public AlcToolBar toolBar;
     /** Preferences class */
     public AlcPreferences prefs;
+    /** Shortcut manager class */
+    public AlcShortcutManager shortcuts;
     /** Custom colour chooser */
     public final AlcColourChooser colourChooser;
     /** Session class - controls automatic saving of the canvas */
@@ -133,6 +135,9 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
 
         // LOAD PREFERENCES
         prefs = new AlcPreferences(this);
+        
+        // LOAD SHORTCUTS
+        shortcuts = new AlcShortcutManager(this);
 
         // Colour chooser
         colourChooser = new AlcColourChooser(Color.WHITE);
@@ -766,19 +771,6 @@ public class AlcMain extends JFrame implements AlcConstants, ComponentListener, 
                 }
             }
         }
-    }
-
-    /** Set the hotkey to trigger an application wide action
-     * 
-     * @param key       The key to trigger the action
-     * @param title     A unique title for the action
-     * @param action    The name of the action to call
-     */
-    public void setHotKey(int key, String title, Action action) {
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key, MENU_SHORTCUT), title);
-        palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(key, MENU_SHORTCUT), title);
-        getRootPane().getActionMap().put(title, action);
-        palette.getRootPane().getActionMap().put(title, action);
     }
 
     public void componentHidden(ComponentEvent e) {

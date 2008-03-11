@@ -68,32 +68,32 @@ public class AlcColourPicker extends JMenuItem {
         // Use a graphics object to scale the array and draw the black and white sections in
         colourArray = new BufferedImage(w, 115, BufferedImage.TYPE_INT_ARGB);
 
-        Graphics2D g2 = colourArray.createGraphics();
+        Graphics g = colourArray.createGraphics();
 
-        g2.setColor(Color.BLACK);
-        g2.fillRect(0, 0, 25, 15);
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, 25, 15);
 
-        g2.setColor(Color.WHITE);
-        g2.fillRect(50, 0, 50, 15);
+        g.setColor(Color.WHITE);
+        g.fillRect(50, 0, 50, 15);
 
         // 50% Grey
-        g2.setColor(new Color(0.5F, 0.5F, 0.5F));
-        g2.fillRect(25, 0, 25, 15);
+        g.setColor(new Color(0.5F, 0.5F, 0.5F));
+        g.fillRect(25, 0, 25, 15);
 
-        g2.setColor(Color.LIGHT_GRAY);
-        g2.drawRect(75, 0, 24, 14);
+        g.setColor(Color.LIGHT_GRAY);
+        g.drawRect(75, 0, 24, 14);
 
         // Draw the edges of the base colours
-        g2.drawLine(50, 14, 100, 14);
-        g2.drawLine(50, 0, 100, 0);
+        g.drawLine(50, 14, 100, 14);
+        g.drawLine(50, 0, 100, 0);
 
         // Draw some dots
-        g2.fillRect(82, 10, 2, 2);
-        g2.fillRect(86, 10, 2, 2);
-        g2.fillRect(90, 10, 2, 2);
+        g.fillRect(82, 10, 2, 2);
+        g.fillRect(86, 10, 2, 2);
+        g.fillRect(90, 10, 2, 2);
 
-        g2.drawImage(temp, 0, 15, 100, 100, null);
-        g2.dispose();
+        g.drawImage(temp, 0, 15, 100, 100, null);
+        g.dispose();
 
 
         // CURSOR

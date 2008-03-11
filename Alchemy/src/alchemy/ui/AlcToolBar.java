@@ -22,6 +22,7 @@ package alchemy.ui;
 import alchemy.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 import javax.swing.event.ChangeEvent;
@@ -69,6 +70,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     public JPanel toolBars;
     /** Detach toolbar button */
     public JButton detachButton;
+    /** Style button */
+    private AlcToggleButton styleButton;
     /** Sections within the sub toolbar - either loaded or not */
     private AlcSubToolBarSection[] affectSubToolBarSections;
     /** The create section within the sub toolbar - index of the loaded section */
@@ -148,7 +151,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
         String styleTitle = getS("styleTitle");
-        final AlcToggleButton styleButton = new AlcToggleButton();
+        styleButton = new AlcToggleButton();
         AbstractAction styleAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -161,7 +164,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         };
 
         styleButton.setAction(styleAction);
-        styleButton.setup(styleTitle, getS("styleDescription"), AlcUtil.getUrlPath("data/style.png"));
+        styleButton.setup(styleTitle, getS("styleDescription"), null);
+        // Set the style buttons dynamic images to the current colour
+        refreshStyleButton();
         // Shortcut - s
         root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
         root.canvas.getActionMap().put(styleTitle, styleAction);
@@ -212,31 +217,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // COLOUR  BUTTON
         //////////////////////////////////////////////////////////////
-//        AbstractAction colourAction = new AbstractAction() {
-//
-//            public void actionPerformed(ActionEvent e) {
-//
-//                //root.canvas.toggleBlackWhite();
-//                root.canvas.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//
-////                Color bwColour = root.canvas.getColour();
-////                if (bwColour == Color.BLACK) {
-////                    bwButton.setSelected(false);
-////                } else {
-////                    bwButton.setSelected(true);
-////                }
-//
-//
-//            // Only toogle the button manually if it is triggered by a key
-////                if (e.getActionCommand().equals("x")) {
-////                    bwButton.setSelected(!bwButton.isSelected());
-////                }
-//            }
-//        };
-//        colourButton = new AlcPopupButton(colourAction);
-        //colourButton.setAction(bwAction);
-        //colourButton.setup(colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("data/colour.png"));
-
         String colourTitle = getS("colourTitle");
         colourButton = new AlcPopupButton(root, colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("data/colour.png"));
         final AlcColourPicker picker = new AlcColourPicker(root);
@@ -252,6 +232,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
                         public void actionPerformed(ActionEvent event) {
                             root.canvas.setColour(root.colourChooser.getColor());
+                            refreshStyleButton();
                         }
                     };
 
@@ -267,12 +248,14 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 } else {
                     root.canvas.setColour(picker.getColor(e.getX(), e.getY()));
                     colourButton.hidePopup();
+                    refreshStyleButton();
                 }
             }
         });
 
         colourButton.addItem(picker);
 
+        // TODO - Shortcut for toggling between foreground and background colour
         // Shortcut - x
 //        root.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), colourTitle);
 //        root.canvas.getActionMap().put(colourTitle, colourAction);
@@ -429,8 +412,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                     }
                 });
 
-
-
         topAlign.add(detachButton);
 
         toolBarGroup.add(toolBar, BorderLayout.LINE_START);
@@ -439,18 +420,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         return toolBarGroup;
     }
 
-    private AlcSubToolBar loadSubToolBar() {
-        // Initialise the references to the sub toolbar sections
-        affectSubToolBarSections = new AlcSubToolBarSection[root.getNumberOfAffectModules()];
-        // Set to a negative value to indicate no initially loaded sections
-        createSubToolBarSection = null;
-
-        // Add the SubToolBar
-        AlcSubToolBar toolBar = new AlcSubToolBar(root);
-
-        return toolBar;
-    }
-
+    //////////////////////////////////////////////////////////////
+    // TOOLBAR
+    //////////////////////////////////////////////////////////////
     public void resizeToolBar() {
         Dimension toolBarWindowSize = new Dimension(this.windowSize.width, totalHeight);
         resizeToolBar(toolBarWindowSize);
@@ -534,44 +506,48 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         }
     }
 
-    /** Sets and manages a timer used to delay hiding of the toolbar */
-    private void setTimer() {
-        if (toolBarTimer == null) {
-            //System.out.println("Timer created");
-            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
+    /** Return the visibility of the UI Toolbar */
+    public boolean getToolBarVisible() {
+        return toolBarVisible;
+    }
 
-                public void actionPerformed(ActionEvent e) {
-                    //System.out.println("Timer called");
+    /** Return the height of the UI Toolbar */
+    public int getToolBarHeight() {
+        return toolBarHeight;
+    }
 
-                    if (!insideToolBar) {
-                        if (isPopupMenusVisible()) {
-                            if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
-                                //System.out.println("Timer setting visibility");
-                                setToolBarVisible(false);
-                                insideToolBar = false;
-                            }
-                        } else {
-                            //System.out.println("Timer setting visibility");
-                            setToolBarVisible(false);
-                            insideToolBar = false;
-                        }
-                    //System.out.println(isPopupMenusVisible());
-                    }
-                    // Else when inside the toolbar just hide the popup menu
-//                            } else {
-//                                if (!createButton.isInside()) {
-//                                    createButton.hidePopup();
-//                                }
-//                                if (!affectButton.isInside()) {
-//                                    affectButton.hidePopup();
-//                                }
-//                            }
-                    toolBarTimer.stop();
-                    toolBarTimer = null;
-                }
-            });
-            toolBarTimer.start();
+    /** Calculate the total height of the toolbar and its subtoolbars */
+    public void calculateTotalHeight() {
+        // Start with the main toolbar height
+        int newTotalHeight = mainToolBar.getHeight();
+        if (subToolBar.isVisible()) {
+            newTotalHeight += subToolBar.getHeight();
         }
+        if (AlcMain.PLATFORM != MACOSX) {
+            // Add the height of the menubar if this is not a mac
+            newTotalHeight += root.menuBar.getHeight();
+        }
+        this.totalHeight = newTotalHeight;
+    }
+
+    /** Return the total height of the toolbar and its subtoolbars */
+    public int getTotalHeight() {
+        return totalHeight;
+    }
+
+    //////////////////////////////////////////////////////////////
+    // SUBTOOLBAR
+    //////////////////////////////////////////////////////////////
+    private AlcSubToolBar loadSubToolBar() {
+        // Initialise the references to the sub toolbar sections
+        affectSubToolBarSections = new AlcSubToolBarSection[root.getNumberOfAffectModules()];
+        // Set to a negative value to indicate no initially loaded sections
+        createSubToolBarSection = null;
+
+        // Add the SubToolBar
+        AlcSubToolBar toolBar = new AlcSubToolBar(root);
+
+        return toolBar;
     }
 
     /** Add a Create Module sub-toolbar */
@@ -669,6 +645,59 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         refreshToolBar();
     }
 
+    //////////////////////////////////////////////////////////////
+    // POPUP MENUS
+    //////////////////////////////////////////////////////////////
+    /** Check if any of the popup menus are visible */
+    public boolean isPopupMenusVisible() {
+
+        if (colourButton.isPopupVisible()) {
+            return true;
+        }
+
+        //if (createButton != null) {
+        if (createButton.isPopupVisible()) {
+            return true;
+        }
+        //}
+        if (affectButton != null) {
+            if (affectButton.isPopupVisible()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Sets and manages a timer used to delay hiding of the toolbar */
+    private void setTimer() {
+        if (toolBarTimer == null) {
+            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
+
+                public void actionPerformed(ActionEvent e) {
+                    if (!insideToolBar) {
+                        if (isPopupMenusVisible()) {
+                            if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
+                                //System.out.println("Timer setting visibility");
+                                setToolBarVisible(false);
+                                insideToolBar = false;
+                            }
+                        } else {
+                            setToolBarVisible(false);
+                            insideToolBar = false;
+                        }
+                    }
+                    toolBarTimer.stop();
+                    toolBarTimer = null;
+                }
+            });
+            toolBarTimer.start();
+        }
+    }
+
+
+    //////////////////////////////////////////////////////////////
+    // PALETTE
+    //////////////////////////////////////////////////////////////
     /** Called when detaching the toolbar into the palette */
     public void detachToolBar() {
         if (!subToolBar.isVisible()) {
@@ -699,58 +728,43 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         this.requestFocus();
     }
 
-    // GETTERS
+    //////////////////////////////////////////////////////////////
+    // UTLITY
+    //////////////////////////////////////////////////////////////
     /** Get a string from the resource bundle */
     private String getS(String stringName) {
         return root.bundle.getString(stringName);
     }
 
-    /** Return the visibility of the UI Toolbar */
-    public boolean getToolBarVisible() {
-        return toolBarVisible;
-    }
+    /** Refreshes the style buttons icons based on the current colour */
+    private void refreshStyleButton() {
+        // Get a full and half alpha version of the current colour
+        Color colour = root.canvas.getColour();
+        Color fullColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 255);
+        Color semiColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 100);
 
-    /** Check if any of the popup menus are visible */
-    public boolean isPopupMenusVisible() {
+        // STYLE BUTTON
+        BufferedImage style = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = style.createGraphics();
+        // Left hand line
+        g.setColor(fullColour);
+        g.fillRect(1, 1, 2, 23);
+        // Right hand rect
+        g.setColor(semiColour);
+        g.fillRect(8, 0, 16, 24);
+        g.dispose();
+        styleButton.setIcon(new ImageIcon(style));
 
-        if (colourButton.isPopupVisible()) {
-            return true;
-        }
-
-        //if (createButton != null) {
-        if (createButton.isPopupVisible()) {
-            return true;
-        }
-        //}
-        if (affectButton != null) {
-            if (affectButton.isPopupVisible()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** Return the height of the UI Toolbar */
-    public int getToolBarHeight() {
-        return toolBarHeight;
-    }
-
-    /** Calculate the total height of the toolbar and its subtoolbars */
-    public void calculateTotalHeight() {
-        // Start with the main toolbar height
-        int newTotalHeight = mainToolBar.getHeight();
-        if (subToolBar.isVisible()) {
-            newTotalHeight += subToolBar.getHeight();
-        }
-        if (AlcMain.PLATFORM != MACOSX) {
-            // Add the height of the menubar if this is not a mac
-            newTotalHeight += root.menuBar.getHeight();
-        }
-        this.totalHeight = newTotalHeight;
-    }
-
-    /** Return the total height of the toolbar and its subtoolbars */
-    public int getTotalHeight() {
-        return totalHeight;
+        // STYLE ON BUTTON
+        BufferedImage styleOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+        g = styleOn.createGraphics();
+        // Left hand line
+        g.setColor(semiColour);
+        g.fillRect(0, 0, 2, 24);
+        // Right hand rect
+        g.setColor(fullColour);
+        g.fillRect(8, 0, 16, 24);
+        g.dispose();
+        styleButton.setSelectedIcon(new ImageIcon(styleOn));
     }
 }
