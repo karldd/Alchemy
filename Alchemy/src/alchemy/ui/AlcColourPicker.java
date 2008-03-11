@@ -18,15 +18,15 @@
  */
 package alchemy.ui;
 
+import alchemy.AlcConstants;
 import alchemy.AlcMain;
 import alchemy.AlcUtil;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -36,7 +36,7 @@ import javax.swing.JMenuItem;
  * AlcColourPicker
  * @author Karl D.D. Willis
  */
-public class AlcColourPicker extends JMenuItem {
+public class AlcColourPicker extends JMenuItem implements AlcConstants {
 
     private BufferedImage colourArray;
 
@@ -95,24 +95,48 @@ public class AlcColourPicker extends JMenuItem {
         g.drawImage(temp, 0, 15, 100, 100, null);
         g.dispose();
 
-
         // CURSOR
-        final Cursor pickerCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-                AlcUtil.getImage("data/cursor-picker.gif", root),
-                new Point(3, 3),
-                "Picker");
+        // Cursor size differs depending on the platform
+        // Add padding based on the best cursor size
+        final Cursor pickerCursor;
+        Image smallPicker = AlcUtil.getImage("data/cursor-picker.gif", root);
+        Dimension smallPickerSize = new Dimension(smallPicker.getWidth(null), smallPicker.getHeight(null));
+        Dimension cursorSize = TOOLKIT.getBestCursorSize(smallPickerSize.width, smallPickerSize.height);
+
+        if (cursorSize.equals(smallPickerSize)) {
+            pickerCursor = TOOLKIT.createCustomCursor(
+                    smallPicker,
+                    new Point(smallPickerSize.width / 2, smallPickerSize.height / 2),
+                    "Picker");
+        } else {
+            int leftGap = (cursorSize.width - smallPickerSize.width) / 2;
+            int topGap = (cursorSize.height - smallPickerSize.height) / 2;
+
+            BufferedImage bigPicker = new BufferedImage(cursorSize.width, cursorSize.height, BufferedImage.TYPE_INT_ARGB);
+            g = bigPicker.createGraphics();
+            g.drawImage(smallPicker, leftGap, topGap, null);
+            g.dispose();
+
+            pickerCursor = TOOLKIT.createCustomCursor(
+                    bigPicker,
+                    new Point(cursorSize.width / 2, cursorSize.height / 2),
+                    "Picker");
+        }
+
+        this.setCursor(pickerCursor);
 
         this.addMouseListener(new MouseAdapter() {
 
             public void mouseEntered(MouseEvent e) {
-                if (contains(e.getPoint())) {
+                // OSX does not seem to obey the set cursor so set the other cursors
+                if (AlcMain.PLATFORM == MACOSX) {
                     root.canvas.setCursor(pickerCursor);
                     root.toolBar.setCursor(pickerCursor);
                 }
             }
 
             public void mouseExited(MouseEvent e) {
-                if (!contains(e.getPoint())) {
+                if (AlcMain.PLATFORM == MACOSX) {
                     root.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
                     root.toolBar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
                 }
