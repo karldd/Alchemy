@@ -96,6 +96,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public ArrayList affectShapes;
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList guideShapes;
+    /** Each shape array in a group */
+    ArrayList[] theShapes = new ArrayList[4];
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
@@ -109,8 +111,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private Image bufferImage;
     /** Display the image or not */
     private boolean displayBufferImage = true;
-    /** Record indicator */
-    private Ellipse2D.Double recordCircle;
     /** Record indicator on/off */
     boolean recordIndicator = false;
 
@@ -134,12 +134,16 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
         shapes = new ArrayList(100);
         shapes.ensureCapacity(100);
+        theShapes[0] = shapes;
         createShapes = new ArrayList(25);
         createShapes.ensureCapacity(25);
+        theShapes[1] = createShapes;
         affectShapes = new ArrayList(25);
         affectShapes.ensureCapacity(25);
+        theShapes[2] = affectShapes;
         guideShapes = new ArrayList(25);
         guideShapes.ensureCapacity(25);
+        theShapes[3] = guideShapes;
 
 //       PDF READER
 //        try {
@@ -177,6 +181,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         // Hints that don't seem to offer any extra performance on OSX
         //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
         //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+
         //... Paint background.
         g2.setColor(bgColour);
         g2.fillRect(0, 0, w, h);
@@ -200,32 +205,29 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         }
 
         // Draw both lots of shapes
-        ArrayList[] theShapes = {shapes, createShapes, affectShapes, guideShapes};
-
         for (int j = 0; j < theShapes.length; j++) {
 
             // Draw all the shapes
-            if (theShapes[j] != null) {
+//            if (theShapes[j] != null) {
+
                 for (int i = 0; i < theShapes[j].size(); i++) {
 
                     AlcShape currentShape = (AlcShape) theShapes[j].get(i);
 
                     // LINE
-                    if (currentShape.getStyle() == LINE) {
-
-                        //g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
-                        g2.setStroke(new BasicStroke(currentShape.getLineWidth(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                        g2.setColor(currentShape.getColour());
-                        g2.draw(currentShape.getPath());
+                    if (currentShape.style == LINE) {
+                        //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                        g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                        g2.setColor(currentShape.colour);
+                        g2.draw(currentShape.path);
 
                     // SOLID
                     } else {
-
-                        g2.setColor(currentShape.getColour());
-                        g2.fill(currentShape.getPath());
+                        g2.setColor(currentShape.colour);
+                        g2.fill(currentShape.path);
                     }
                 }
-            }
+//            }
         }
 
         // Buffer image drawn over everything else temporarily
@@ -235,8 +237,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             }
         }
 
+        // Draw a red circle when saving a frame
         if (recordIndicator) {
-            recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
+            Ellipse2D.Double recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
             g2.setColor(Color.RED);
             g2.fill(recordCircle);
         }
