@@ -35,7 +35,7 @@ import javax.swing.ImageIcon;
  */
 public class AlcUtil implements AlcConstants {
 
-    private final static Clipboard CLIPBOARD = Toolkit.getDefaultToolkit().getSystemClipboard();
+    private final static Clipboard CLIPBOARD = TOOLKIT.getSystemClipboard();
 
 
     //////////////////////////////////////////////////////////////
@@ -181,9 +181,7 @@ public class AlcUtil implements AlcConstants {
 
     public static Image getImage(String name, Component who) {
         Image image = null;
-        Toolkit tk = Toolkit.getDefaultToolkit();
-
-        image = tk.getImage(getUrlPath(name));
+        image = TOOLKIT.getImage(getUrlPath(name));
         MediaTracker tracker = new MediaTracker(who);
         tracker.addImage(image, 0);
         try {
