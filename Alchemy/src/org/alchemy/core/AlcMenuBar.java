@@ -425,9 +425,26 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcCheckBoxMenuItem smoothingItem = new AlcCheckBoxMenuItem(smoothingAction);
-        smoothingItem.setSelected(Alchemy.canvas.getSmoothing());
+        smoothingItem.setSelected(Alchemy.preferences.getSmoothing());
         smoothingItem.setup(getS("smoothingTitle"));
         settingsMenu.add(smoothingItem);
+
+        // Line Smoothing
+        AbstractAction lineSmoothingAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
+                AlcShape.lineSmoothing = source.getState();
+
+            }
+        };
+        AlcCheckBoxMenuItem lineSmoothingItem = new AlcCheckBoxMenuItem(lineSmoothingAction);
+        lineSmoothingItem.setSelected(Alchemy.preferences.getLineSmoothing());
+        AlcShape.lineSmoothing = Alchemy.preferences.getLineSmoothing();
+        lineSmoothingItem.setup(getS("lineSmoothingTitle"));
+        settingsMenu.add(lineSmoothingItem);
+
+        settingsMenu.add(new JSeparator());
 
         // Background Colour
         AbstractAction bgColourAction = new AbstractAction() {
