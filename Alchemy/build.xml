@@ -8,7 +8,8 @@
     <!--<import file="nbproject/profiler-build-impl.xml"/>-->
     
     <import file="nbproject/build-impl.xml"/>
-    
+
+    <import file="nbproject/profiler-build-impl.xml"/>    
     <!--
 
     There exist several targets which are by default empty and which can be 
@@ -83,96 +84,95 @@
     <target name="-post-jar">
         
         <!-- Copy the compiled Plugin classes  - Need to find a better way to do this! -->
-        <!--
-        <copy file="${build.classes.dir}/alchemy/AlcCore.class" todir="${basedir}/modules/core/alchemy"/>
-        -->
+        <copy file="${build.classes.dir}/org/alchemy/core/AlcCore.class" todir="${basedir}/modules/core/org/alchemy"/>
+        
         
         <!-- CREATES -->
         <!-- Shapes -->
-        <copy file="${build.classes.dir}/alchemy/create/Shapes.class" todir="${basedir}/modules/shapes/alchemy/create"/>
-        <copy file="${build.classes.dir}/alchemy/create/Shapes$1.class" todir="${basedir}/modules/shapes/alchemy/create"/>
+        <copy file="${build.classes.dir}/org/alchemy/create/Shapes.class" todir="${basedir}/modules/shapes/org/alchemy/create"/>
+        <copy file="${build.classes.dir}/org/alchemy/create/Shapes$1.class" todir="${basedir}/modules/shapes/org/alchemy/create"/>
         
         <!-- Type Shapes -->
-        <copy todir="${basedir}/modules/typeShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/typeShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="TypeShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Inverse Shapes -->
-        <copy todir="${basedir}/modules/inverseShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/inverseShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="InverseShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Microphone Shapes -->
-        <copy todir="${basedir}/modules/micShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/micShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="MicShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Median Shapes -->
-        <copy todir="${basedir}/modules/medianShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/medianShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="MedianShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Speed Shapes -->
-        <copy todir="${basedir}/modules/speedShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/speedShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="SpeedShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- X Shapes -->
-        <copy todir="${basedir}/modules/xShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/xShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="XShapes" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Trace Shapes -->
-        <copy todir="${basedir}/modules/traceShapes/alchemy/create">
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/traceShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="TraceShape" casesensitive="no"/>
             </fileset>
-            <fileset dir="${build.classes.dir}/alchemy/create/" includes="**/*.class">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
                 <contains text="Flickr" casesensitive="no"/>
             </fileset>
         </copy>
         
         <!-- AFFECTS -->
         <!-- Mirror -->
-        <copy todir="${basedir}/modules/mirror/alchemy/affect">
-            <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
+        <copy todir="${basedir}/modules/mirror/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="Mirror" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Blindness -->
-        <copy todir="${basedir}/modules/blindness/alchemy/affect">
-            <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
+        <copy todir="${basedir}/modules/blindness/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="Blindness" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Random -->
-        <copy todir="${basedir}/modules/random/alchemy/affect">
-            <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
+        <copy todir="${basedir}/modules/random/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="Random" casesensitive="no"/>
             </fileset>
         </copy>
         <!-- Mic Expand -->
-        <copy todir="${basedir}/modules/micExpand/alchemy/affect">
-            <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
+        <copy todir="${basedir}/modules/micExpand/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="MicExpand" casesensitive="no"/>
             </fileset>
         </copy>
         
         <!-- Repeat -->
-        <copy todir="${basedir}/modules/repeat/alchemy/affect">
-            <fileset dir="${build.classes.dir}/alchemy/affect/" includes="**/*.class">
+        <copy todir="${basedir}/modules/repeat/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="Repeat" casesensitive="no"/>
             </fileset>
         </copy>
         
         <!--
-        <move file="${build.classes.dir}/alchemy/create/ImageShapes.class" todir="${basedir}/modules/imageShapes/alchemy/create"/>
+        <move file="${build.classes.dir}/org/alchemy/create/ImageShapes.class" todir="${basedir}/modules/imageShapes/alchemy/create"/>
         -->
 
         <!-- Copy the Data folder to the Dist directory -->
@@ -214,8 +214,8 @@
         <!-- Unzip and remove the plugin class files from the Alchemy Jar -->
         <unzip src="${dist.jar}" dest="${dist.dir}/Alchemy" />
         <delete includeemptydirs="true">
-            <fileset dir="${dist.dir}/Alchemy/alchemy/affect" includes="**/*"/>
-            <fileset dir="${dist.dir}/Alchemy/alchemy/create" includes="**/*"/>
+            <fileset dir="${dist.dir}/Alchemy/org/alchemy/affect" includes="**/*"/>
+            <fileset dir="${dist.dir}/Alchemy/org/alchemy/create" includes="**/*"/>
         </delete>
         <!-- Delete the original jar -->
         <delete dir="${dist.jar}"/>
