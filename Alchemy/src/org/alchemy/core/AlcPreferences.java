@@ -59,6 +59,8 @@ class AlcPreferences implements AlcConstants {
     private Dimension canvasSize;
     /** Canvas smoothing */
     private boolean smoothing;
+    /** Line smoothing */
+    private boolean lineSmoothing;
     /** Canvas background colour */
     private int bgColour;
     /** Colour */
@@ -81,6 +83,7 @@ class AlcPreferences implements AlcConstants {
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
         smoothing = prefs.getBoolean("Smoothing", true);
+        lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
 
@@ -138,6 +141,7 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Auto Clear Canvas", autoClear);
         prefs.putBoolean("Palette Attached", paletteAttached);
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
+        prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
         prefs.putInt("Background Colour", Alchemy.canvas.getBgColour().getRGB());
         prefs.putInt("Colour", Alchemy.canvas.getColour().getRGB());
 
@@ -251,6 +255,10 @@ class AlcPreferences implements AlcConstants {
 
     boolean getSmoothing() {
         return smoothing;
+    }
+
+    boolean getLineSmoothing() {
+        return lineSmoothing;
     }
 
     int getBgColour() {

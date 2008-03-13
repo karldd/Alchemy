@@ -42,6 +42,8 @@ public class AlcShape implements AlcConstants, Cloneable {
     protected int style;
     /** Line Weight if the style is line */
     protected float lineWidth;
+    /** Line smoothing global setting */
+    static boolean lineSmoothing = true;
     /** Store the last point */
     private Point lastPt;
     /** For drawing smaller marks - draw lines until x points have been made */
@@ -152,35 +154,37 @@ public class AlcShape implements AlcConstants, Cloneable {
      */
     public void addCurvePoint(Point p) {
 
-        // TODO - Toggle for line smoothing off
-        // Extend an abstract class?
+        if (lineSmoothing) {
 
-        // At the start just draw lines so smaller marks can be made
-        if (totalPoints < startPoints) {
+            // At the start just draw lines so smaller marks can be made
+            if (totalPoints < startPoints) {
 
-            path.lineTo(p.x, p.y);
-            savePoints(p);
-
-        } else {
-
-            // Movement since the last point was drawn
-            int movement = Math.abs(p.x - lastPt.x) + Math.abs(p.y - lastPt.y);
-
-            // Test to see if this point has moved far enough
-            if (movement > minMovement) {
-
-                // New control point value
-                Point pt = new Point();
-
-                // Average the points
-                pt.x = (lastPt.x + p.x) >> 1;
-                pt.y = (lastPt.y + p.y) >> 1;
-
-                // Add the Quadratic curve - control point x1, y1 and actual point x2, y2
-                path.quadTo(lastPt.x, lastPt.y, pt.x, pt.y);
+                path.lineTo(p.x, p.y);
                 savePoints(p);
 
+            } else {
+
+                // Movement since the last point was drawn
+                int movement = Math.abs(p.x - lastPt.x) + Math.abs(p.y - lastPt.y);
+
+                // Test to see if this point has moved far enough
+                if (movement > minMovement) {
+
+                    // New control point value
+                    Point pt = new Point();
+
+                    // Average the points
+                    pt.x = (lastPt.x + p.x) >> 1;
+                    pt.y = (lastPt.y + p.y) >> 1;
+
+                    // Add the Quadratic curve - control point x1, y1 and actual point x2, y2
+                    path.quadTo(lastPt.x, lastPt.y, pt.x, pt.y);
+                    savePoints(p);
+
+                }
             }
+        } else {
+            addLinePoint(p);
         }
     }
 
