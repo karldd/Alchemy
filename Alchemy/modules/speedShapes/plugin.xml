@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<plugin id="alchemy.create.speedShapes" version="1.0.0">
+<plugin id="org.alchemy.create.speedShapes" version="1.0.0">
     
     <requires> 
-        <import plugin-id="alchemy.core"/> 
+        <import plugin-id="org.alchemy.core"/> 
     </requires> 
     
     <runtime>
@@ -14,8 +14,8 @@
         <library type="resources" path="data/" id="data" />
     </runtime>
     
-    <extension plugin-id="alchemy.core" point-id="Create" id="speedShapesCreate"> 
-        <parameter id="class" value="alchemy.create.SpeedShapes"/> 
+    <extension plugin-id="org.alchemy.core" point-id="Create" id="speedShapesCreate"> 
+        <parameter id="class" value="org.alchemy.create.SpeedShapes"/> 
         <parameter id="name" value="Speed Shapes"/> 
         <parameter id="description" value="Create shapes that alter based on the speed of cursor movement" />
         <parameter id="icon" value="icon.png" />
