@@ -446,6 +446,21 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         settingsMenu.add(new JSeparator());
 
+        
+        // Flatten Canvas
+        AbstractAction flattenAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.canvas.flattenCanvas();
+            }
+        };
+        AlcMenuItem flattenItem = new AlcMenuItem(flattenAction);
+        flattenItem.setup(getS("flattenTitle"));
+        settingsMenu.add(flattenItem);
+
+        
+        settingsMenu.add(new JSeparator());
+
         // Background Colour
         AbstractAction bgColourAction = new AbstractAction() {
 

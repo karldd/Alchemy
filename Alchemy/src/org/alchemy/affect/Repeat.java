@@ -138,7 +138,7 @@ public class Repeat extends AlcModule {
         moveTransform.translate(offset.x, offset.y);
         GeneralPath movedPath = (GeneralPath) path.createTransformedShape(moveTransform);
         shape.setPath(movedPath);
-        canvas.shapes.add(shape);
+        canvas.affectShapes.add(shape);
 
         //GeneralPath randomisedShape = randomise(shape.getShape(), currentLoc);
         //shape.setPath(randomisedShape);
@@ -187,6 +187,7 @@ public class Repeat extends AlcModule {
             outside++;
             // if outside the shape for a certain period then update the offset next time
             if (outside > 2) {
+                canvas.commitShapes();
                 update = true;
             }
         //System.out.println(outside);
@@ -195,6 +196,11 @@ public class Repeat extends AlcModule {
 
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
+        // If clicked when still repeating
+        if (outside <= 2) {
+            canvas.commitAffectShapes();
+            update = true;
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
