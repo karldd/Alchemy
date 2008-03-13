@@ -40,6 +40,7 @@ import com.lowagie.text.pdf.PdfReader;
 //
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import java.awt.print.Printable;
 import java.io.File;
 import java.util.ArrayList;
@@ -63,10 +64,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private boolean mouseEvents = true;
     private boolean createMouseEvents = true;
     private boolean affectMouseEvents = true;
-    /** Mouse down */
-    private boolean mouseDown;
-    /** Mouse Location */
-//    private Point mouseLoc;
     /** Smoothing on or off */
     private boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
@@ -93,6 +90,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public ArrayList affectShapes;
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList guideShapes;
+    /** Array list containing old shapes */
+    public ArrayList oldShapes;
     /** Each shape array in a group */
     private ArrayList[] theShapes = new ArrayList[4];
     //////////////////////////////////////////////////////////////
@@ -100,14 +99,18 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     /** Graphics */
     private Graphics2D g2;
-    /** Image to draw on the canvas */
+    /** Flattened image drawn behind the canvas */
+    private VolatileImage flatImage;
+    /** Display the flatImage or not */
+    private boolean displayFlatImage = false;
+    /** Image than can be drawn on the canvas */
     private Image image;
-    /** Display the image or not */
-    private boolean displayImage = true;
+    /** Display the Image or not */
+    private boolean displayImage = false;
     /** Image to draw on the canvas */
     private Image bufferImage;
-    /** Display the image or not */
-    private boolean displayBufferImage = true;
+    /** Display the flatImage or not */
+    private boolean displayBufferImage = false;
     /** Record indicator on/off */
     boolean recordIndicator = false;
 
@@ -138,6 +141,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         guideShapes = new ArrayList(25);
         guideShapes.ensureCapacity(25);
         theShapes[3] = guideShapes;
+        oldShapes = new ArrayList(100);
+        oldShapes.ensureCapacity(100);
 
 //       PDF READER
 //        try {
@@ -190,9 +195,22 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 //        }
 
         // Paint the buffImage is available
-        if (displayImage) {
-            if (image != null) {
-                g2.drawImage(image, 0, 0, null);
+        if (displayFlatImage) {
+            if (flatImage != null) {
+                do {
+                    int valCode = flatImage.validate(getGraphicsConfiguration());
+                    if (valCode == VolatileImage.IMAGE_INCOMPATIBLE) {
+                        flatImage = getVolatileImage();
+                    }
+                    g2.drawImage(flatImage, 0, 0, null);
+
+                } while (flatImage.contentsLost());
+            }
+        } else {
+            if (displayImage) {
+                if (image != null) {
+                    g2.drawImage(image, 0, 0, null);
+                }
             }
         }
 
@@ -222,7 +240,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 //            }
         }
 
-        // Buffer image drawn over everything else temporarily
+        // Buffer flatImage drawn over everything else temporarily
         if (displayBufferImage) {
             if (bufferImage != null) {
                 g2.drawImage(bufferImage, 0, 0, null);
@@ -240,6 +258,59 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     //////////////////////////////////////////////////////////////
     // CANVAS FUNCTIONALITY
     //////////////////////////////////////////////////////////////
+    /** Set the canvas redraw state */
+    public void setRedraw(boolean redraw) {
+        this.redraw = redraw;
+    }
+
+    /** Get the canvas redraw state */
+    public boolean isRedraw() {
+        return redraw;
+    }
+
+    /** Get the Background Colour */
+    public Color getBgColour() {
+        return bgColour;
+    }
+
+    /** Set the Background Colour */
+    public void setBgColour(Color bgColour) {
+        this.bgColour = bgColour;
+    }
+
+    /** Set Antialiasing */
+    public void setSmoothing(boolean b) {
+        if (b) { // ON
+            if (!smoothing) {
+                smoothing = true;
+            }
+
+        } else { // OFF
+            if (smoothing) {
+                smoothing = false;
+            }
+        }
+    }
+
+    /** Get Antialiasing */
+    public boolean getSmoothing() {
+        return smoothing;
+    }
+
+    public Dimension getCanvasSize() {
+        return this.getSize();
+    }
+
+    /** Return if there has been activity on the canvas since the last time the timer checked */
+    boolean canvasChange() {
+        return canvasChanged;
+    }
+
+    /** Reset the activity flag - called by the timer */
+    void resetCanvasChange() {
+        canvasChanged = false;
+    }
+
     /** Redraw the canvas */
     public void redraw() {
         applyAffects();
@@ -287,6 +358,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         createShapes.clear();
         affectShapes.clear();
         guideShapes.clear();
+        oldShapes.clear();
+
+        this.flatImage = null;
+        displayFlatImage = false;
 
 
         if (redraw) {
@@ -309,36 +384,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         System.gc();
     }
 
-//    /** Checks if the pen is inside any shapes on the canvas
-//     *  If so, passes an array of shapes along with the mouse location
-//     * @param p     The location of the pen
-//     */
-//    private void checkMouseInside(Point p) {
-//        if (root.hasCurrentAffects()) {
-//            int[] shapeListFull = new int[shapes.size()];
-//            int shapeCount = 0;
-//            //ArrayList shapeList = new ArrayList(shapes.size());
-//            for (int i = 0; i < shapes.size(); i++) {
-//                AlcShape thisShape = (AlcShape) shapes.get(i);
-//                if (thisShape.getPath().contains(p)) {
-//                    shapeListFull[shapeCount] = i;
-//                    shapeCount++;
-//                }
-//            }
-//
-//            int[] shapeList = null;
-//            if (shapeCount > 0) {
-//                shapeList = new int[shapeCount];
-//                System.arraycopy(shapeListFull, 0, shapeList, 0, shapeCount);
-//            }
-//            for (int i = 0; i < root.currentAffects.length; i++) {
-//                if (root.currentAffects[i]) {
-//                    Alchemy.affects[i].affectShapes(shapeList, p);
-//                }
-//            }
-//
-//        }
-//    }
     /** Apply affects to the current shape and redraw the canvas */
     private void applyAffects() {
         if (Alchemy.plugins.hasCurrentAffects()) {
@@ -429,7 +474,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     /** Commit all create shapes to the main shapes array */
-    private void commitCreateShapes() {
+    public void commitCreateShapes() {
         for (int i = 0; i < createShapes.size(); i++) {
             shapes.add(createShapes.get(i));
         }
@@ -467,7 +512,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     /** Commit all affect shapes to the main shapes array */
-    private void commitAffectShapes() {
+    public void commitAffectShapes() {
         for (int i = 0; i < affectShapes.size(); i++) {
             shapes.add(affectShapes.get(i));
         }
@@ -503,121 +548,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             guideShapes.remove(guideShapes.size() - 1);
         }
     }
-
-    //////////////////////////////////////////////////////////////
-    // CANVAS SETTINGS
-    //////////////////////////////////////////////////////////////
-    /** Set the canvas redraw state */
-    public void setRedraw(boolean redraw) {
-        this.redraw = redraw;
-    }
-
-    /** Get the canvas redraw state */
-    public boolean isRedraw() {
-        return redraw;
-    }
-
-    /** Return if the mouse is down - this does not take into account left/right buttons */
-    public boolean isMouseDown() {
-        return mouseDown;
-    }
-
-//    /** Get the location of the mouse if within the canvas */
-//    public Point getMouseLoc() {
-//        // Return null if the mouse is outside the canvas or in the toolbar?
-//        return mouseLoc;
-//    }
-    /** Get the Background Colour */
-    public Color getBgColour() {
-        return bgColour;
-    }
-
-    /** Set the Background Colour */
-    public void setBgColour(Color bgColour) {
-        this.bgColour = bgColour;
-    }
-
-    /** Set Antialiasing */
-    public void setSmoothing(boolean b) {
-        if (b) { // ON
-            if (!smoothing) {
-                smoothing = true;
-            }
-
-        } else { // OFF
-            if (smoothing) {
-                smoothing = false;
-            }
-        }
-    }
-
-    /** Get Antialiasing */
-    public boolean getSmoothing() {
-        return smoothing;
-    }
-
-    public Dimension getCanvasSize() {
-        return this.getSize();
-    }
-
-    /** Return if there has been activity on the canvas since the last time the timer checked */
-    boolean canvasChange() {
-        return canvasChanged;
-    }
-
-    /** Reset the activity flag - called by the timer */
-    void resetCanvasChange() {
-        canvasChanged = false;
-    }
-
-    //////////////////////////////////////////////////////////////
-    // IMAGE
-    //////////////////////////////////////////////////////////////
-    /** Set the Image to be drawn on the canvas
-     * 
-     * @param buffImage Image to be drawn
-     */
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    /** Clear the buffImage from the canvas */
-    public void clearImage() {
-        this.image = null;
-    }
-
-    /** Check if the image display is on
-     * 
-     * @return Image display on or off
-     */
-    public boolean isDisplayImage() {
-        return displayImage;
-    }
-
-    /** Set image display to on or off
-     * 
-     * @param displayImage Image display on or off
-     */
-    public void setDisplayImage(boolean displayImage) {
-        this.displayImage = displayImage;
-    }
-
-    /** Set the buffer image 
-     *  A temporary snap shot of the canvas used instead of the canvas.
-     *  This is used to prevent the area under the canvas redrawing
-     *  when the redraw is set to off ie Blindness module
-     * 
-     */
-    public void assignBufferImage() {
-        this.bufferImage = getBufferedImage();
-        this.displayBufferImage = false;
-    }
-
-    /** Set the buffer image to be displayed or not */
-    public void setDisplayBufferImage(boolean displayBufferImage) {
-        this.displayBufferImage = displayBufferImage;
-    }
-
 
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
@@ -678,7 +608,117 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
+    //////////////////////////////////////////////////////////////
+    // IMAGE
+    //////////////////////////////////////////////////////////////
+    /** Set the Image to be drawn on the canvas
+     * 
+     * @param buffImage Image to be drawn
+     */
+    public void setImage(Image image) {
+        this.image = image;
+    }
 
+    /** Clear the buffImage from the canvas */
+    public void clearImage() {
+        this.image = null;
+    }
+
+    /** Check if the flatImage display is on
+     * 
+     * @return Image display on or off
+     */
+    public boolean isDisplayImage() {
+        return displayImage;
+    }
+
+    /** Set flatImage display to on or off
+     * 
+     * @param displayFlatImage Image display on or off
+     */
+    public void setDisplayImage(boolean displayImage) {
+        this.displayImage = displayImage;
+    }
+
+    /** Set the buffer flatImage 
+     *  A temporary snap shot of the canvas used instead of the canvas.
+     *  This is used to prevent the area under the canvas redrawing
+     *  when the redraw is set to off ie Blindness module
+     * 
+     */
+    public void assignBufferImage() {
+        this.bufferImage = getBufferedImage();
+        this.displayBufferImage = false;
+    }
+
+    /** Set the buffer flatImage to be displayed or not */
+    public void setDisplayBufferImage(boolean displayBufferImage) {
+        this.displayBufferImage = displayBufferImage;
+    }
+
+    /** Flatten the canvas into a Image drawn behind any new shapes on the canvas */
+    public void flattenCanvas() {
+        if (affectShapes.size() > 0) {
+            commitAffectShapes();
+        }
+        if (createShapes.size() > 0) {
+            commitCreateShapes();
+        }
+        for (int i = 0; i < shapes.size(); i++) {
+            oldShapes.add(shapes.get(i));
+        }
+        //this.flatImage = getBufferedImage();
+        this.flatImage = getVolatileImage();
+        this.displayFlatImage = true;
+        shapes.clear();
+    }
+
+    /** Create a VolatileImage from the canvas */
+    VolatileImage getVolatileImage() {
+        // Get the canvas size with out the frame/decorations
+        java.awt.Rectangle visibleRect = this.getVisibleRect();
+        GraphicsConfiguration gc = getGraphicsConfiguration();
+        VolatileImage volatileImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
+        Graphics g = volatileImage.getGraphics();
+        this.paint(g);
+        g.dispose();
+        return volatileImage;
+    }
+
+    /** Create a BufferedImage from the canvas */
+    BufferedImage getBufferedImage() {
+        // Get the canvas size with out the frame/decorations
+        java.awt.Rectangle visibleRect = this.getVisibleRect();
+        BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
+        //BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = buffImage.getGraphics();
+        //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
+        //this.print(g);
+        this.paint(g);
+        //System.out.println(this.getVisibleRect());
+        g.dispose();
+        return buffImage;
+    }
+
+    //////////////////////////////////////////////////////////////
+    // SAVE PNG
+    //////////////////////////////////////////////////////////////
+    /** Save the canvas to a PNG file
+     * 
+     * @param file  The file object to save the PNG to
+     * @return      True if save worked, otherwise false
+     */
+    boolean savePng(File file) {
+        try {
+            //File file = new File("saveToThisFile.jpg");
+            BufferedImage buffImage = getBufferedImage();
+            ImageIO.write(buffImage, "png", file);
+            return true;
+        } catch (IOException ex) {
+            System.err.println(ex);
+            return false;
+        }
+    }
 
     //////////////////////////////////////////////////////////////
     // PDF STUFF
@@ -706,7 +746,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
             singleDocument.open();
             PdfContentByte singleContent = singleWriter.getDirectContent();
 
-            // Turn off the buffer image if present
+            // Turn off the buffer flatImage if present
             boolean bufferOff = false;
             if (displayBufferImage) {
                 displayBufferImage = false;
@@ -797,47 +837,78 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     //////////////////////////////////////////////////////////////
-    // SAVE BITMAP STUFF
+    // PRINT STUFF
     //////////////////////////////////////////////////////////////
-    /** Save the canvas to a PNG file
+    /**
+     * This is the method defined by the Printable interface.  It prints the
+     * canvas to the specified Graphics object, respecting the paper size
+     * and margins specified by the PageFormat.  If the specified page number
+     * is not page 0, it returns a code saying that printing is complete.  The
+     * method must be prepared to be called multiple times per printing request
      * 
-     * @param file  The file object to save the PNG to
-     * @return      True if save worked, otherwise false
-     */
-    boolean savePng(File file) {
-        try {
-            //File file = new File("saveToThisFile.jpg");
-            BufferedImage buffImage = getBufferedImage();
-            ImageIO.write(buffImage, "png", file);
-            return true;
-        } catch (IOException ex) {
-            System.err.println(ex);
-            return false;
+     * This code is from the book Java Examples in a Nutshell, 2nd Edition. Copyright (c) 2000 David Flanagan. 
+     * 
+     **/
+    public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
+        // We are only one page long; reject any other page numbers
+        if (pageIndex > 0) {
+            return Printable.NO_SUCH_PAGE;
         }
-    }
 
-    /** Create a bufferedImage from the canvas */
-    BufferedImage getBufferedImage() {
-        // Get the canvas size with out the frame/decorations
-        java.awt.Rectangle visibleRect = this.getVisibleRect();
-        BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
-        //BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics g = buffImage.getGraphics();
-        //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
-        //this.print(g);
-        this.paint(g);
-        //System.out.println(this.getVisibleRect());
-        g.dispose();
-        return buffImage;
-    }
+        // The Java 1.2 printing API passes us a Graphics object, but we
+        // can always cast it to a Graphics2D object
+        Graphics2D g2p = (Graphics2D) g;
 
+        // Translate to accomodate the requested top and left margins.
+        g2p.translate(format.getImageableX(), format.getImageableY());
+
+
+        // Figure out how big the drawing is, and how big the page (excluding margins) is
+        Dimension size = this.getSize();                  // Canvas size
+        double pageWidth = format.getImageableWidth();    // Page width
+        double pageHeight = format.getImageableHeight();  // Page height
+
+        // If the canvas is too wide or tall for the page, scale it down
+        if (size.width > pageWidth) {
+            double factor = pageWidth / size.width;  // How much to scale
+            System.out.println("Width Scale: " + factor);
+            g2p.scale(factor, factor);              // Adjust coordinate system
+            pageWidth /= factor;                   // Adjust page size up
+            pageHeight /= factor;
+        }
+
+        if (size.height > pageHeight) {   // Do the same thing for height
+            double factor = pageHeight / size.height;
+            System.out.println("Height Scale: " + factor);
+            g2p.scale(factor, factor);
+            pageWidth /= factor;
+            pageHeight /= factor;
+
+        }
+
+        // Now we know the canvas will fit on the page.  Center it by translating as necessary.
+        g2p.translate((pageWidth - size.width) / 2, (pageHeight - size.height) / 2);
+
+        // Draw a line around the outside of the drawing area
+        //g2.drawRect(-1, -1, size.width + 2, size.height + 2);
+
+        // Set a clipping region so the canvas doesn't go out of bounds
+        g2p.setClip(0, 0, size.width, size.height);
+
+        // Finally, print the component by calling the paintComponent() method.
+        // Or, call paint() to paint the component, its background, border, and
+        // children, including the Print JButton
+        this.paintComponent(g);
+
+        // Tell the PrinterJob that the page number was valid
+        return Printable.PAGE_EXISTS;
+
+    }
 
     //////////////////////////////////////////////////////////////
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
-//        mouseLoc = event.getPoint();
-        // Toogle visibility of the Toolbar
         if (!Alchemy.preferences.paletteAttached) {
             Alchemy.toolBar.toggleToolBar(event.getY());
         }
@@ -860,7 +931,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mousePressed(MouseEvent event) {
-        mouseDown = true;
         // Turn off the toolbar on canvas click
         if (Alchemy.toolBar.toolBarTimer != null) {
             Alchemy.toolBar.setToolBarVisible(false);
@@ -942,7 +1012,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     }
 
     public void mouseReleased(MouseEvent event) {
-        mouseDown = false;
         if (mouseEvents) {
             // Pass to the current create module
             if (createMouseEvents) {
@@ -978,104 +1047,5 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 }
             }
         }
-    }
-
-//    /** Calls a mouse event in each active module */
-//    private void passMouseEvent(MouseEvent event, String eventType) {
-//        // Reflection is used here to simplify passing events to each module
-//        try {
-//            if (mouseEvents) {
-//                // Pass to the current create module
-//                if (createMouseEvents) {
-//                    if (root.currentCreate >= 0) {
-//                        Method method = Alchemy.creates[root.currentCreate].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
-//                        method.invoke(Alchemy.creates[root.currentCreate], new Object[]{event});
-//                    }
-//                }
-//                // Pass to all active affect modules
-//                if (affectMouseEvents) {
-//                    if (root.hasCurrentAffects()) {
-//                        for (int i = 0; i < root.currentAffects.length; i++) {
-//                            if (root.currentAffects[i]) {
-//                                Method method = Alchemy.affects[i].getClass().getMethod(eventType, new Class[]{MouseEvent.class});
-//                                method.invoke(Alchemy.affects[i], new Object[]{event});
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.err.println("passMouseEvent: " + eventType);
-//        }
-//    }
-
-    //////////////////////////////////////////////////////////////
-    // PRINT STUFF
-    //////////////////////////////////////////////////////////////
-    /**
-     * This is the method defined by the Printable interface.  It prints the
-     * canvas to the specified Graphics object, respecting the paper size
-     * and margins specified by the PageFormat.  If the specified page number
-     * is not page 0, it returns a code saying that printing is complete.  The
-     * method must be prepared to be called multiple times per printing request
-     * 
-     * This code is from the book Java Examples in a Nutshell, 2nd Edition. Copyright (c) 2000 David Flanagan. 
-     * 
-     **/
-    public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
-        // We are only one page long; reject any other page numbers
-        if (pageIndex > 0) {
-            return Printable.NO_SUCH_PAGE;
-        }
-
-        // The Java 1.2 printing API passes us a Graphics object, but we
-        // can always cast it to a Graphics2D object
-        Graphics2D g2p = (Graphics2D) g;
-
-        // Translate to accomodate the requested top and left margins.
-        g2p.translate(format.getImageableX(), format.getImageableY());
-
-
-        // Figure out how big the drawing is, and how big the page (excluding margins) is
-        Dimension size = this.getSize();                  // Canvas size
-        double pageWidth = format.getImageableWidth();    // Page width
-        double pageHeight = format.getImageableHeight();  // Page height
-
-        // If the canvas is too wide or tall for the page, scale it down
-        if (size.width > pageWidth) {
-            double factor = pageWidth / size.width;  // How much to scale
-            System.out.println("Width Scale: " + factor);
-            g2p.scale(factor, factor);              // Adjust coordinate system
-            pageWidth /= factor;                   // Adjust page size up
-            pageHeight /= factor;
-        }
-
-        if (size.height > pageHeight) {   // Do the same thing for height
-            double factor = pageHeight / size.height;
-            System.out.println("Height Scale: " + factor);
-            g2p.scale(factor, factor);
-            pageWidth /= factor;
-            pageHeight /= factor;
-
-        }
-
-        // Now we know the canvas will fit on the page.  Center it by translating as necessary.
-        g2p.translate((pageWidth - size.width) / 2, (pageHeight - size.height) / 2);
-
-        // Draw a line around the outside of the drawing area
-        //g2.drawRect(-1, -1, size.width + 2, size.height + 2);
-
-        // Set a clipping region so the canvas doesn't go out of bounds
-        g2p.setClip(0, 0, size.width, size.height);
-
-        // Finally, print the component by calling the paintComponent() method.
-        // Or, call paint() to paint the component, its background, border, and
-        // children, including the Print JButton
-        this.paintComponent(g);
-
-        // Tell the PrinterJob that the page number was valid
-        return Printable.PAGE_EXISTS;
-
     }
 }

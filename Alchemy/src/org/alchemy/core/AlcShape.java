@@ -144,7 +144,7 @@ public class AlcShape implements AlcConstants, Cloneable {
         this.alpha = Alchemy.canvas.getAlpha();
         setColour(Alchemy.canvas.getColour());
         this.style = Alchemy.canvas.getStyle();
-        this.lineWidth = Alchemy.canvas.getStyle();
+        this.lineWidth = Alchemy.canvas.getLineWidth();
     }
 
     /** 
