@@ -51,13 +51,13 @@ import javax.imageio.ImageIO;
  * Stores all shapes created and handles all graphics related stuff
  * Think saving pdfs, printing, and of course displaying! 
  */
-public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionListener, MouseListener, Printable {
+public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListener, MouseListener, Printable {
 
     //////////////////////////////////////////////////////////////
     // GLOBAL SETTINGS
     ////////////////////////////////////////////////////////////// 
     /** Background colour */
-    private Color bgColour;
+    Color bgColour;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
@@ -65,7 +65,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private boolean createMouseEvents = true;
     private boolean affectMouseEvents = true;
     /** Smoothing on or off */
-    private boolean smoothing;
+    boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
     private boolean canvasChanged = false;
     //////////////////////////////////////////////////////////////
@@ -91,47 +91,41 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList guideShapes;
     /** Full shape array of each array list */
-    private ArrayList[] fullShapeList = new ArrayList[3];
+    ArrayList[] fullShapeList = new ArrayList[3];
     /** Active shape list plus guides */
-    private ArrayList[] activeShapeList = new ArrayList[2];
+    ArrayList[] activeShapeList = new ArrayList[2];
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
-    /** Graphics */
-    private Graphics2D g2;
     /** Flattened image drawn behind the canvas */
-    private VolatileImage flatImage;
-    /** Display the flatImage or not */
-    private boolean displayFlatImage = false;
+    VolatileImage flatImage;
     /** Image than can be drawn on the canvas */
-    private Image image;
+    Image image;
     /** Display the Image or not */
-    private boolean displayImage = false;
+    boolean displayImage = false;
     /** Image to draw on the canvas */
-    private Image bufferImage;
+    Image bufferImage;
     /** Display the flatImage or not */
-    private boolean displayBufferImage = false;
+    boolean displayBufferImage = false;
     /** Record indicator on/off */
     boolean recordIndicator = false;
 
     //////////////////////////////////////////////////////////////
     // RENDERING
     //////////////////////////////////////////////////////////////
-    /** Rendering mode to draw the flattened image, current shapes, and guides */
-    private static final int BITMAP = 0;
-    /** Rendering mode to draw EVERYTHING in vector */
-    private static final int VECTOR = 1;
-    /** Default rendering mode is BITMAP */
-    private int renderMode = BITMAP;
     /** Draw guides */
-    private boolean guides = true;
+    boolean guides = true;
+    /** Graphics Envrionment - updated everytime the volatile image is refreshed */
     GraphicsEnvironment ge;
+    /** Graphics Configuration - updated everytime the volatile image is refreshed */
     GraphicsConfiguration gc;
+    /** A Vector based canvas for full redrawing */
+    static VectorCanvas vectorCanvas;
+//  PDF READER
+//  PDFFile pdffile;
 
-// PDF READER
-//    PDFFile pdffile;
-    /** Creates a new instance of AlcCanvas
-     */
+    
+    /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
@@ -159,6 +153,10 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         activeShapeList[0] = createShapes;
         activeShapeList[1] = affectShapes;
 
+
+        vectorCanvas = new VectorCanvas();
+
+
 //        renderMode = VECTOR;
 //        flatImage = getVolatileImage();
 //        renderMode = BITMAP;
@@ -184,106 +182,63 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     /** Paint Component that draws all shapes to the canvas */
     public void paintComponent(Graphics g) {
 
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
         int w = this.getWidth();
         int h = this.getHeight();
 
-        g2 = (Graphics2D) g;
-
-        switch (renderMode) {
-
-            case BITMAP:
-
-                // Paint background.
-                g2.setColor(bgColour);
-                g2.fillRect(0, 0, w, h);
-
-
-                if (smoothing) {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                } else {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                }
-
-                // Draw the flattened image
-                if (flatImage != null) {
-                    do {
-                        int valid = flatImage.validate(gc);
-                        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
-                            renderMode = VECTOR;
-                            flatImage = getVolatileImage();
-                        }
-                        g2.drawImage(flatImage, 0, 0, null);
-
-                    } while (flatImage.contentsLost());
-                }
-
-                // Draw the create, affect, and guide lists
-                for (int j = 0; j < activeShapeList.length; j++) {
-                    for (int i = 0; i < activeShapeList[j].size(); i++) {
-                        AlcShape currentShape = (AlcShape) activeShapeList[j].get(i);
-                        // LINE
-                        if (currentShape.style == LINE) {
-                            //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
-                            g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                            g2.setColor(currentShape.colour);
-                            g2.draw(currentShape.path);
-                        // SOLID
-                        } else {
-                            g2.setColor(currentShape.colour);
-                            g2.fill(currentShape.path);
-                        }
-                    }
-                }
-
-                // Draw a red circle when saving a frame
-                if (recordIndicator) {
-                    Ellipse2D.Double recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
-                    g2.setColor(Color.RED);
-                    g2.fill(recordCircle);
-                }
-                break;
-
-            case VECTOR:
-
-                System.out.println("VECTOR CALLED");
-                if (smoothing) {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                } else {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                }
-
-                // Paint background.
-                g2.setColor(bgColour);
-                g2.fillRect(0, 0, w, h);
-
-                // Draw image
-                if (displayImage) {
-                    if (image != null) {
-                        g2.drawImage(image, 0, 0, null);
-                    }
-                }
-
-                // Draw the create, affect, and shapes lists
-                for (int j = 0; j < fullShapeList.length; j++) {
-                    for (int i = 0; i < fullShapeList[j].size(); i++) {
-                        AlcShape currentShape = (AlcShape) fullShapeList[j].get(i);
-                        // LINE
-                        if (currentShape.style == LINE) {
-                            //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
-                            g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                            g2.setColor(currentShape.colour);
-                            g2.draw(currentShape.path);
-                        // SOLID
-                        } else {
-                            g2.setColor(currentShape.colour);
-                            g2.fill(currentShape.path);
-                        }
-                    }
-                }
-                renderMode = BITMAP;
-                System.out.println("RenderMode = Bitmap");
-                break;
+        if (displayImage && image != null) {
+            g2.drawImage(image, 0, 0, null);
+        } else {
+            // Paint background.
+            g2.setColor(bgColour);
+            g2.fillRect(0, 0, w, h);
         }
+
+        if (smoothing) {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        } else {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
+
+        // Draw the flattened image
+        if (flatImage != null) {
+            do {
+                int valid = flatImage.validate(gc);
+                if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
+                    System.out.println("LOST");
+                    flatImage = getVolatileImage(true);
+                }
+                g2.drawImage(flatImage, 0, 0, null);
+
+            } while (flatImage.contentsLost());
+        }
+
+        // Draw the create, affect, and guide lists
+        for (int j = 0; j < activeShapeList.length; j++) {
+            for (int i = 0; i < activeShapeList[j].size(); i++) {
+                AlcShape currentShape = (AlcShape) activeShapeList[j].get(i);
+                // LINE
+                if (currentShape.style == LINE) {
+                    //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                    g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                    g2.setColor(currentShape.colour);
+                    g2.draw(currentShape.path);
+                // SOLID
+                } else {
+                    g2.setColor(currentShape.colour);
+                    g2.fill(currentShape.path);
+                }
+            }
+        }
+
+        // Draw a red circle when saving a frame
+        if (recordIndicator) {
+            Ellipse2D.Double recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
+            g2.setColor(Color.RED);
+            g2.fill(recordCircle);
+        }
+
 
         // Draw the guides as required
         if (guides) {
@@ -302,6 +257,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 }
             }
         }
+
+        g2.dispose();
 
     // Hints that don't seem to offer any extra performance on OSX
     //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
@@ -344,27 +301,13 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     public void redraw(boolean vector) {
         applyAffects();
         if (redraw) {
-//            if (displayBufferImage) {
-//                bufferImage = null;
-//            }
             if (vector) {
-                if (renderMode != VECTOR) {
-                    System.out.println("Vector true");
-                    renderMode = VECTOR;
-                    flatImage = getVolatileImage();
-                    this.repaint();
-                }
-            } else {
-                if (flatImage == null) {
-                    renderMode = VECTOR;
-                    flatImage = getVolatileImage();
-                }
-                this.repaint();
+                flatImage = getVolatileImage(true);
             }
+            this.repaint();
+
             // Something has happened on the canvas and the user is still active
             canvasChanged = true;
-
-            this.repaint();
         }
     }
 
@@ -457,8 +400,6 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         guideShapes.clear();
 
         this.flatImage = null;
-        displayFlatImage = false;
-
 
         if (redraw) {
             this.redraw();
@@ -493,8 +434,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Commit all shapes to the main shapes array */
     public void commitShapes() {
-        renderMode = BITMAP;
-        flatImage = getVolatileImage();
+        flatImage = getVolatileImage(false);
 
         for (int i = 0; i < createShapes.size(); i++) {
             shapes.add(createShapes.get(i));
@@ -580,9 +520,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Commit all create shapes to the main shapes array */
     public void commitCreateShapes() {
-        renderMode = BITMAP;
-        flatImage = getVolatileImage();
-
+        flatImage = getVolatileImage(false);
         for (int i = 0; i < createShapes.size(); i++) {
             shapes.add(createShapes.get(i));
         }
@@ -621,8 +559,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
 
     /** Commit all affect shapes to the main shapes array */
     public void commitAffectShapes() {
-        renderMode = BITMAP;
-        flatImage = getVolatileImage();
+        flatImage = getVolatileImage(false);
 
         for (int i = 0; i < affectShapes.size(); i++) {
             shapes.add(affectShapes.get(i));
@@ -728,6 +665,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public void setImage(Image image) {
         this.image = image;
+        flatImage = getVolatileImage(true);
     }
 
     /** Clear the buffImage from the canvas */
@@ -749,6 +687,7 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
      */
     public void setDisplayImage(boolean displayImage) {
         this.displayImage = displayImage;
+        flatImage = getVolatileImage(true);
     }
 
     /** Set the buffer flatImage 
@@ -767,24 +706,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         this.displayBufferImage = displayBufferImage;
     }
 
-    /** Flatten the canvas into a Image drawn behind any new shapes on the canvas */
-    public void flattenCanvas() {
-        if (affectShapes.size() > 0) {
-            commitAffectShapes();
-        }
-        if (createShapes.size() > 0) {
-            commitCreateShapes();
-        }
-
-        //this.flatImage = getBufferedImage();
-        this.flatImage = getVolatileImage();
-        this.displayFlatImage = true;
-        shapes.clear();
-    }
-
     /** Create a VolatileImage from the canvas */
-    VolatileImage getVolatileImage() {
-        System.out.println("MAKING volatile image");
+    VolatileImage getVolatileImage(boolean vectorMode) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -793,12 +716,17 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         // Check this image is valid
         int valid = volatileImage.validate(gc);
         if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
-            volatileImage = this.getVolatileImage();
+            System.out.println("Volatile Image Incompatible");
+            volatileImage = this.getVolatileImage(true);
         }
         // Paint the image with the canvas
-        Graphics g = volatileImage.getGraphics();
-        this.paint(g);
-        g.dispose();
+        Graphics2D g2 = volatileImage.createGraphics();
+        if (vectorMode) {
+            vectorCanvas.paintComponent(g2);
+        } else {
+            this.paintComponent(g2);
+        }
+        g2.dispose();
         return volatileImage;
     }
 
@@ -1164,5 +1092,73 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 }
             }
         }
+    }
+}
+
+/** Vector Canvas
+ *  Draws the canvas is full, including all shapes,
+ *  the background and image if any.
+ */
+class VectorCanvas extends JPanel implements AlcConstants {
+
+    public void paintComponent(Graphics g) {
+
+        super.paintComponent(g);
+
+        int w = Alchemy.canvas.getWidth();
+        int h = Alchemy.canvas.getHeight();
+
+        Graphics2D g2 = (Graphics2D) g;
+
+        if (Alchemy.canvas.smoothing) {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        } else {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
+
+        // Paint background.
+        g2.setColor(Alchemy.canvas.bgColour);
+        g2.fillRect(0, 0, w, h);
+
+        // Draw image
+        if (Alchemy.canvas.displayImage && Alchemy.canvas.image != null) {
+            g2.drawImage(Alchemy.canvas.image, 0, 0, null);
+        }
+
+        // Draw the create, affect, and shapes lists
+        for (int j = 0; j < Alchemy.canvas.fullShapeList.length; j++) {
+            for (int i = 0; i < Alchemy.canvas.fullShapeList[j].size(); i++) {
+                AlcShape currentShape = (AlcShape) Alchemy.canvas.fullShapeList[j].get(i);
+                // LINE
+                if (currentShape.style == LINE) {
+                    //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                    g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                    g2.setColor(currentShape.colour);
+                    g2.draw(currentShape.path);
+                // SOLID
+                } else {
+                    g2.setColor(currentShape.colour);
+                    g2.fill(currentShape.path);
+                }
+            }
+        }
+        if (Alchemy.canvas.guides) {
+            for (int i = 0; i < Alchemy.canvas.guideShapes.size(); i++) {
+                AlcShape currentShape = (AlcShape) Alchemy.canvas.guideShapes.get(i);
+                // LINE
+                if (currentShape.style == LINE) {
+                    //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                    g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                    g2.setColor(currentShape.colour);
+                    g2.draw(currentShape.path);
+                // SOLID
+                } else {
+                    g2.setColor(currentShape.colour);
+                    g2.fill(currentShape.path);
+                }
+            }
+        }
+
+        g2.dispose();
     }
 }

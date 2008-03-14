@@ -44,7 +44,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private int[] samples;
     private boolean running = false;
     // Timing
-    private long delayGap = 25;
+    // Have decent gap here to allow the shapes to be drawn before the next call
+    private long delayGap = 50;
     private boolean firstRun = true;
     private long delayTime;
 //    private long mouseDelayGap = 500;
@@ -170,6 +171,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                     activeShape = -1;
                     currentShape = null;
                     canvas.redraw(true);
+
                 }
                 stopExpand();
             //System.out.println("CONTAINED");
@@ -294,6 +296,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         if (running) {
             micIn.stopMicInput();
             running = false;
+        //canvas.commitShapes();
         }
     }
 
@@ -339,10 +342,14 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                 stopExpand();
             // If the spacebar is down
             } else {
-                // If there has been enough delay
-                if (System.currentTimeMillis() - delayTime >= delayGap) {
-                    delayTime = System.currentTimeMillis();
-                    alterShape();
+                if (!mouseDown) {
+                    // If there has been enough delay
+                    if (System.currentTimeMillis() - delayTime >= delayGap) {
+                        delayTime = System.currentTimeMillis();
+                        alterShape();
+                    }
+                } else {
+                    stopExpand();
                 }
             }
         }
