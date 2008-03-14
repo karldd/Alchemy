@@ -33,7 +33,7 @@ class AlcAbout extends Window implements AlcConstants {
     AlcAbout(Window owner) {
         super(owner);
 
-        image = AlcUtil.getImage("about.png", Alchemy.window);
+        image = AlcUtil.getImage("about.png");
         size = new Dimension(image.getWidth(null), image.getHeight(null));
 
         this.addMouseListener(new MouseAdapter() {

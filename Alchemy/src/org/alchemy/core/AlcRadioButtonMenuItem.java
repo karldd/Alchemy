@@ -70,7 +70,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstant
         //this.setState(true);
 
         // Set the main Icon
-        this.setIcon(AlcUtil.createImageIcon(module.getIconUrl()));
+        this.setIcon(AlcUtil.getImageIcon(module.getIconUrl()));
     }
 
     private void setup(int index, String title) {

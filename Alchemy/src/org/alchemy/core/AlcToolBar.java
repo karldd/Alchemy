@@ -386,8 +386,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         topAlign.setOpaque(false);
         topAlign.setLayout(new BoxLayout(topAlign, BoxLayout.PAGE_AXIS));
 
-        detachButton = new JButton(AlcUtil.createImageIcon("palette-detach.png"));
-        detachButton.setRolloverIcon(AlcUtil.createImageIcon("palette-detach-over.png"));
+        detachButton = new JButton(AlcUtil.getImageIcon("palette-detach.png"));
+        detachButton.setRolloverIcon(AlcUtil.getImageIcon("palette-detach-over.png"));
         detachButton.setToolTipText("Detach the toolbar to a seperate palette");
 
         // Compensate for the windows border
@@ -476,16 +476,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     /** Set the visibility of the UI Toolbar */
     void setToolBarVisible(boolean visible) {
         if (visible != toolBarVisible) {
-
-//            // Fix here to make sure the area under the toolbar is not redrawn
-//            // When redraw is off (ie Blindness Module)
-//            if (!Alchemy.canvas.isRedraw()) {
-//                if (visible) {
-//                    // Entering the toolbar
-//                    Alchemy.canvas.setDisplayBufferImage(true);
-//                }
-//            }
-
             this.setVisible(visible);
             toolBarVisible = visible;
             Alchemy.canvas.setMouseEvents(!visible);

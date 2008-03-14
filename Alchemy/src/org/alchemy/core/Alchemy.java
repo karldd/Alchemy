@@ -85,7 +85,7 @@ public class Alchemy implements AlcConstants {
     public Alchemy() {
 
         if (PLATFORM == MACOSX) {
-            Object appIcon = LookAndFeel.makeIcon(getClass(), "../data/alchemy-logo64.png");
+            Object appIcon = LookAndFeel.makeIcon(getClass(), "/org/alchemy/data/alchemy-logo64.png");
             UIManager.put("OptionPane.errorIcon", appIcon);
             UIManager.put("OptionPane.informationIcon", appIcon);
             UIManager.put("OptionPane.questionIcon", appIcon);

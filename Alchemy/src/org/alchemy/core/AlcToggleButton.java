@@ -39,19 +39,19 @@ class AlcToggleButton extends JToggleButton {
     void setup(String text, String toolTip, URL iconUrl) {
         if (iconUrl != null) {
             // Set the main icon
-            this.setIcon(AlcUtil.createImageIcon(iconUrl));
+            this.setIcon(AlcUtil.getImageIcon(iconUrl));
             // Set the rollover icon
             URL rolloverIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-over");
-            this.setRolloverIcon(AlcUtil.createImageIcon(rolloverIconUrl));
+            this.setRolloverIcon(AlcUtil.getImageIcon(rolloverIconUrl));
             // Set the selected icon
             URL selectedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-on");
-            this.setSelectedIcon(AlcUtil.createImageIcon(selectedIconUrl));
+            this.setSelectedIcon(AlcUtil.getImageIcon(selectedIconUrl));
             // Set the rollover - selected icon
             URL rolloverSelectedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-on-over");
-            this.setRolloverSelectedIcon(AlcUtil.createImageIcon(rolloverSelectedIconUrl));
+            this.setRolloverSelectedIcon(AlcUtil.getImageIcon(rolloverSelectedIconUrl));
 
             URL pressedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-down");
-            this.setPressedIcon(AlcUtil.createImageIcon(pressedIconUrl));
+            this.setPressedIcon(AlcUtil.getImageIcon(pressedIconUrl));
         }
 
         this.setFont(AlcToolBar.toolBarFont);
