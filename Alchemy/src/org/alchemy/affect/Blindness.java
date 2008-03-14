@@ -36,7 +36,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     protected void setup() {
-        canvas.assignBufferImage();
+//        canvas.assignBufferImage();
         canvas.setRedraw(false);
 
         // Create the toolbar section
@@ -49,7 +49,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     protected void reselect() {
         // Readd the toolbar section
         toolBar.addSubToolBarSection(subToolBarSection);
-        canvas.assignBufferImage();
+//        canvas.assignBufferImage();
         canvas.setRedraw(false);
     }
 
@@ -60,7 +60,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     protected void cleared() {
-        canvas.assignBufferImage();
+//        canvas.assignBufferImage();
     }
 
     public void createSubToolBarSection() {
@@ -75,7 +75,7 @@ public class Blindness extends AlcModule implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         canvas.forceRedraw();
-                        canvas.assignBufferImage();
+//                        canvas.assignBufferImage();
                     // Save this to a buffer to stop the toolbar refreshing the canvas
                     }
                 });
@@ -101,7 +101,7 @@ public class Blindness extends AlcModule implements AlcConstants {
         if (autoReveal) {
             // TODO - Deal with straight shapes and autoreveal bug
             canvas.forceRedraw();
-            canvas.assignBufferImage();
+//            canvas.assignBufferImage();
         }
     }
 
@@ -109,7 +109,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_R) {
             canvas.forceRedraw();
-            canvas.assignBufferImage();
+//            canvas.assignBufferImage();
         }
     }
 }

@@ -721,7 +721,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         // A bug on mac with older versions of java can scramble the clipboard
         // fixed in Java 1.5 Release 3 (4238470)
-        AlcUtil.setClipboard(new AlcImageTransferable(Alchemy.canvas.getBufferedImage()), Alchemy.window);
+        AlcUtil.setClipboard(new AlcImageTransferable(Alchemy.canvas.renderCanvas(true)), Alchemy.window);
     }
 
     /** Make a temporary file, create a PDF, and then open it */

@@ -477,14 +477,14 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     void setToolBarVisible(boolean visible) {
         if (visible != toolBarVisible) {
 
-            // Fix here to make sure the area under the toolbar is not redrawn
-            // When redraw is off (ie Blindness Module)
-            if (!Alchemy.canvas.isRedraw()) {
-                if (visible) {
-                    // Entering the toolbar
-                    Alchemy.canvas.setDisplayBufferImage(true);
-                }
-            }
+//            // Fix here to make sure the area under the toolbar is not redrawn
+//            // When redraw is off (ie Blindness Module)
+//            if (!Alchemy.canvas.isRedraw()) {
+//                if (visible) {
+//                    // Entering the toolbar
+//                    Alchemy.canvas.setDisplayBufferImage(true);
+//                }
+//            }
 
             this.setVisible(visible);
             toolBarVisible = visible;
