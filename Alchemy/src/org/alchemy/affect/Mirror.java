@@ -124,6 +124,8 @@ public class Mirror extends AlcModule implements AlcConstants {
     }
 
     protected void affect() {
+        
+        // TODO - Check mirror bug, extra path added on first click?
 
         if (!selectAxis) {
 

@@ -99,7 +99,7 @@ public class Random extends AlcModule {
         AlcShape shape = (AlcShape) canvas.shapes.get(shapeNumber);
         GeneralPath randomisedShape = randomise(shape.getPath(), currentLoc);
         shape.setPath(randomisedShape);
-        canvas.redraw();
+        canvas.redraw(true);
     }
 
     private GeneralPath randomise(GeneralPath shape, Point p) {
