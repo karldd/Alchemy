@@ -40,7 +40,6 @@ import com.lowagie.text.pdf.PdfReader;
 //
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
 import java.awt.print.Printable;
 import java.io.File;
 import java.util.ArrayList;
@@ -97,7 +96,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
-    /** Flattened image drawn behind the canvas */
+    /** Flattened buffImage drawn behind the canvas */
     Image flatImage;
     /** Image than can be drawn on the canvas */
     Image image;
@@ -115,9 +114,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     //////////////////////////////////////////////////////////////
     /** Draw guides */
     boolean guides = true;
-    /** Graphics Envrionment - updated everytime the volatile image is refreshed */
+    /** Graphics Envrionment - updated everytime the volatile buffImage is refreshed */
     GraphicsEnvironment ge;
-    /** Graphics Configuration - updated everytime the volatile image is refreshed */
+    /** Graphics Configuration - updated everytime the volatile buffImage is refreshed */
     GraphicsConfiguration gc;
     /** A Vector based canvas for full redrawing */
     static VectorCanvas vectorCanvas;
@@ -201,7 +200,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
 
-        // Draw the flattened image
+        // Draw the flattened buffImage
         if (flatImage != null) {
 //            do {
 //                int valid = flatImage.validate(gc);
@@ -276,7 +275,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 //            ex.printStackTrace();
 //        }
 
-    // Paint the flattened image if available
+    // Paint the flattened buffImage if available
 
 
     // Buffer flatImage drawn over everything else temporarily
@@ -710,32 +709,33 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     Image getVolatileImage(boolean vectorMode) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
-//        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//        gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
-//        Image volatileImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
-        BufferedImage volatileImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
-        // Check this image is valid
-//        int valid = volatileImage.validate(gc);
+        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+//        Image buffImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
+        //BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height);
+        // Check this buffImage is valid
+//        int valid = buffImage.validate(gc);
 //        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
 //            System.out.println("Volatile Image Incompatible");
-//            volatileImage = this.getVolatileImage(true);
+//            buffImage = this.getVolatileImage(true);
 //        }
-        // Paint the image with the canvas
-        Graphics2D g2 = volatileImage.createGraphics();
+        // Paint the buffImage with the canvas
+        Graphics2D g2 = buffImage.createGraphics();
         if (vectorMode) {
             vectorCanvas.paintComponent(g2);
         } else {
             this.paintComponent(g2);
         }
         g2.dispose();
-        return volatileImage;
+        return buffImage;
     }
 
     /** Create a BufferedImage from the canvas */
     BufferedImage getBufferedImage() {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
-        BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_RGB);
         //BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = buffImage.createGraphics();
         //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
@@ -1098,7 +1098,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
 /** Vector Canvas
  *  Draws the canvas is full, including all shapes,
- *  the background and image if any.
+ *  the background and buffImage if any.
  */
 class VectorCanvas extends JPanel implements AlcConstants {
 
@@ -1121,7 +1121,7 @@ class VectorCanvas extends JPanel implements AlcConstants {
         g2.setColor(Alchemy.canvas.bgColour);
         g2.fillRect(0, 0, w, h);
 
-        // Draw image
+        // Draw buffImage
         if (Alchemy.canvas.displayImage && Alchemy.canvas.image != null) {
             g2.drawImage(Alchemy.canvas.image, 0, 0, null);
         }
