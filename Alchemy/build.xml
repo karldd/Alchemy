@@ -8,7 +8,7 @@
     <!--<import file="nbproject/profiler-build-impl.xml"/>-->
     
     <import file="nbproject/build-impl.xml"/>
-
+    
     <import file="nbproject/profiler-build-impl.xml"/>    
     <!--
 
@@ -206,7 +206,10 @@
         <mkdir dir="${dist.dir}/modules" />
         
         <copy todir="${dist.dir}/modules">
-            <fileset dir="${basedir}/modules" includes="**/*.zip"/>
+            <fileset dir="${basedir}/modules">
+                <include name="**/*.zip"/>
+                <exclude name="**/*core*"/>
+            </fileset>
         </copy>     
         
         
