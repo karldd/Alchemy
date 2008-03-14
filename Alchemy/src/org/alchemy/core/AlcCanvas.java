@@ -98,7 +98,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     // DISPLAY
     //////////////////////////////////////////////////////////////
     /** Flattened image drawn behind the canvas */
-    VolatileImage flatImage;
+    Image flatImage;
     /** Image than can be drawn on the canvas */
     Image image;
     /** Display the Image or not */
@@ -203,15 +203,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         // Draw the flattened image
         if (flatImage != null) {
-            do {
-                int valid = flatImage.validate(gc);
-                if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
-                    System.out.println("LOST");
-                    flatImage = getVolatileImage(true);
-                }
+//            do {
+//                int valid = flatImage.validate(gc);
+//                if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
+//                    System.out.println("LOST");
+//                    flatImage = getVolatileImage(true);
+//                }
                 g2.drawImage(flatImage, 0, 0, null);
 
-            } while (flatImage.contentsLost());
+//            } while (flatImage.contentsLost());
         }
 
         // Draw the create, affect, and guide lists
@@ -707,18 +707,19 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     /** Create a VolatileImage from the canvas */
-    VolatileImage getVolatileImage(boolean vectorMode) {
+    Image getVolatileImage(boolean vectorMode) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
-        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
-        VolatileImage volatileImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
+//        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//        gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
+//        Image volatileImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
+        BufferedImage volatileImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
         // Check this image is valid
-        int valid = volatileImage.validate(gc);
-        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
-            System.out.println("Volatile Image Incompatible");
-            volatileImage = this.getVolatileImage(true);
-        }
+//        int valid = volatileImage.validate(gc);
+//        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
+//            System.out.println("Volatile Image Incompatible");
+//            volatileImage = this.getVolatileImage(true);
+//        }
         // Paint the image with the canvas
         Graphics2D g2 = volatileImage.createGraphics();
         if (vectorMode) {
@@ -736,12 +737,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
         //BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics g = buffImage.getGraphics();
+        Graphics2D g2 = buffImage.createGraphics();
         //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
         //this.print(g);
-        this.paint(g);
+        this.paintComponent(g2);
         //System.out.println(this.getVisibleRect());
-        g.dispose();
+        g2.dispose();
         return buffImage;
     }
 
