@@ -44,7 +44,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private int[] samples;
     private boolean running = false;
     // Timing
-    private long delayGap = 10;
+    private long delayGap = 25;
     private boolean firstRun = true;
     private long delayTime;
 //    private long mouseDelayGap = 500;
@@ -163,12 +163,13 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             GeneralPath currentPath = currentShape.getPath();
             Rectangle rect = currentPath.getBounds();
             Dimension windowSize = canvas.getCanvasSize();
+            // If the shape is out of the window, remove it
             if (rect.contains(0, 0, windowSize.width, windowSize.height)) {
                 if (activeShape >= 0) {
                     canvas.shapes.remove(activeShape);
                     activeShape = -1;
                     currentShape = null;
-                    canvas.redraw();
+                    canvas.redraw(true);
                 }
                 stopExpand();
             //System.out.println("CONTAINED");
@@ -186,7 +187,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
                 }
                 currentShape.setPath(expandedPath);
                 //canvas.setCurrentCreateShape(currentShape);
-                canvas.redraw();
+                canvas.redraw(true);
             }
         }
     }
