@@ -125,6 +125,8 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
     private int renderMode = BITMAP;
     /** Draw guides */
     private boolean guides = true;
+    GraphicsEnvironment ge;
+    GraphicsConfiguration gc;
 
 // PDF READER
 //    PDFFile pdffile;
@@ -190,7 +192,12 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         switch (renderMode) {
 
             case BITMAP:
-                
+
+                // Paint background.
+                g2.setColor(bgColour);
+                g2.fillRect(0, 0, w, h);
+
+
                 if (smoothing) {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 } else {
@@ -200,8 +207,9 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
                 // Draw the flattened image
                 if (flatImage != null) {
                     do {
-                        int valCode = flatImage.validate(getGraphicsConfiguration());
-                        if (valCode == VolatileImage.IMAGE_INCOMPATIBLE) {
+                        int valid = flatImage.validate(gc);
+                        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
+                            renderMode = VECTOR;
                             flatImage = getVolatileImage();
                         }
                         g2.drawImage(flatImage, 0, 0, null);
@@ -779,8 +787,15 @@ public class AlcCanvas extends JComponent implements AlcConstants, MouseMotionLi
         System.out.println("MAKING volatile image");
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
-        GraphicsConfiguration gc = getGraphicsConfiguration();
+        ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
         VolatileImage volatileImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
+        // Check this image is valid
+        int valid = volatileImage.validate(gc);
+        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
+            volatileImage = this.getVolatileImage();
+        }
+        // Paint the image with the canvas
         Graphics g = volatileImage.getGraphics();
         this.paint(g);
         g.dispose();
