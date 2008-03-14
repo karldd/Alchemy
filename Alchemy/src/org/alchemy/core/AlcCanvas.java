@@ -79,7 +79,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Line Weight if the style is line */
     private float lineWidth = 1F;
     //////////////////////////////////////////////////////////////
-    // DRAWING
+    // SHAPES
     //////////////////////////////////////////////////////////////
     /** Array list containing shapes that have been archived */
     public ArrayList shapes;
@@ -94,24 +94,19 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Active shape list plus guides */
     ArrayList[] activeShapeList = new ArrayList[2];
     //////////////////////////////////////////////////////////////
-    // DISPLAY
+    // IMAGE
     //////////////////////////////////////////////////////////////
-    /** Flattened buffImage drawn behind the canvas */
-    Image flatImage;
+    /** An image of the canvas drawn behind active shapes */
+    BufferedImage canvasImage;
     /** Image than can be drawn on the canvas */
     Image image;
     /** Display the Image or not */
     boolean displayImage = false;
-    /** Image to draw on the canvas */
-    Image bufferImage;
-    /** Display the flatImage or not */
-    boolean displayBufferImage = false;
+    //////////////////////////////////////////////////////////////
+    // DISPLAY
+    //////////////////////////////////////////////////////////////
     /** Record indicator on/off */
     boolean recordIndicator = false;
-
-    //////////////////////////////////////////////////////////////
-    // RENDERING
-    //////////////////////////////////////////////////////////////
     /** Draw guides */
     boolean guides = true;
     /** Graphics Envrionment - updated everytime the volatile buffImage is refreshed */
@@ -120,10 +115,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     GraphicsConfiguration gc;
     /** A Vector based canvas for full redrawing */
     static VectorCanvas vectorCanvas;
+
 //  PDF READER
 //  PDFFile pdffile;
-
-    
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
 
@@ -157,7 +151,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
 
 //        renderMode = VECTOR;
-//        flatImage = getVolatileImage();
+//        canvasImage = renderCanvas();
 //        renderMode = BITMAP;
 
 
@@ -201,32 +195,25 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         }
 
         // Draw the flattened buffImage
-        if (flatImage != null) {
-//            do {
-//                int valid = flatImage.validate(gc);
-//                if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
-//                    System.out.println("LOST");
-//                    flatImage = getVolatileImage(true);
-//                }
-                g2.drawImage(flatImage, 0, 0, null);
-
-//            } while (flatImage.contentsLost());
+        if (canvasImage != null) {
+            g2.drawImage(canvasImage, 0, 0, null);
         }
-
-        // Draw the create, affect, and guide lists
-        for (int j = 0; j < activeShapeList.length; j++) {
-            for (int i = 0; i < activeShapeList[j].size(); i++) {
-                AlcShape currentShape = (AlcShape) activeShapeList[j].get(i);
-                // LINE
-                if (currentShape.style == LINE) {
-                    //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
-                    g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                    g2.setColor(currentShape.colour);
-                    g2.draw(currentShape.path);
-                // SOLID
-                } else {
-                    g2.setColor(currentShape.colour);
-                    g2.fill(currentShape.path);
+        if (redraw) {
+            // Draw the create, affect, and guide lists
+            for (int j = 0; j < activeShapeList.length; j++) {
+                for (int i = 0; i < activeShapeList[j].size(); i++) {
+                    AlcShape currentShape = (AlcShape) activeShapeList[j].get(i);
+                    // LINE
+                    if (currentShape.style == LINE) {
+                        //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                        g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                        g2.setColor(currentShape.colour);
+                        g2.draw(currentShape.path);
+                    // SOLID
+                    } else {
+                        g2.setColor(currentShape.colour);
+                        g2.fill(currentShape.path);
+                    }
                 }
             }
         }
@@ -274,19 +261,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 //        } catch (InterruptedException ex) {
 //            ex.printStackTrace();
 //        }
-
-    // Paint the flattened buffImage if available
-
-
-    // Buffer flatImage drawn over everything else temporarily
-//        if (displayBufferImage) {
-//            if (bufferImage != null) {
-//                g2.drawImage(bufferImage, 0, 0, null);
-//            }
-//        }
-
-
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -301,7 +275,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         applyAffects();
         if (redraw) {
             if (vector) {
-                flatImage = getVolatileImage(true);
+                canvasImage = renderCanvas(true);
             }
             this.repaint();
 
@@ -313,7 +287,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Force the canvas to redraw regardless of the current redraw setting */
     public void forceRedraw() {
         this.setRedraw(true);
-        this.redraw();
+        this.redraw(true);
         this.setRedraw(false);
         canvasChanged = true;
     }
@@ -338,17 +312,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.bgColour = bgColour;
     }
 
-    /** Set Antialiasing */
+    /** Set Smoothing (AntiAliasing) on or off */
     public void setSmoothing(boolean b) {
-        if (b) { // ON
-            if (!smoothing) {
-                smoothing = true;
-            }
-
-        } else { // OFF
-            if (smoothing) {
-                smoothing = false;
-            }
+        this.smoothing = b;
+        if (redraw) {
+            this.redraw(true);
+        // If redraw is off, just update the canvas image
+        } else {
+            canvasImage = renderCanvas(true);
         }
     }
 
@@ -398,7 +369,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         affectShapes.clear();
         guideShapes.clear();
 
-        this.flatImage = null;
+        this.canvasImage = null;
 
         if (redraw) {
             this.redraw();
@@ -433,7 +404,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Commit all shapes to the main shapes array */
     public void commitShapes() {
-        flatImage = getVolatileImage(false);
+        canvasImage = renderCanvas(false);
 
         for (int i = 0; i < createShapes.size(); i++) {
             shapes.add(createShapes.get(i));
@@ -519,7 +490,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Commit all create shapes to the main shapes array */
     public void commitCreateShapes() {
-        flatImage = getVolatileImage(false);
+        canvasImage = renderCanvas(false);
         for (int i = 0; i < createShapes.size(); i++) {
             shapes.add(createShapes.get(i));
         }
@@ -558,7 +529,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Commit all affect shapes to the main shapes array */
     public void commitAffectShapes() {
-        flatImage = getVolatileImage(false);
+        canvasImage = renderCanvas(false);
 
         for (int i = 0; i < affectShapes.size(); i++) {
             shapes.add(affectShapes.get(i));
@@ -664,7 +635,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      */
     public void setImage(Image image) {
         this.image = image;
-        flatImage = getVolatileImage(true);
+        canvasImage = renderCanvas(true);
     }
 
     /** Clear the buffImage from the canvas */
@@ -672,7 +643,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.image = null;
     }
 
-    /** Check if the flatImage display is on
+    /** Check if the canvasImage display is on
      * 
      * @return Image display on or off
      */
@@ -680,46 +651,27 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return displayImage;
     }
 
-    /** Set flatImage display to on or off
+    /** Set canvasImage display to on or off
      * 
      * @param displayFlatImage Image display on or off
      */
     public void setDisplayImage(boolean displayImage) {
         this.displayImage = displayImage;
-        flatImage = getVolatileImage(true);
+        canvasImage = renderCanvas(true);
     }
 
-    /** Set the buffer flatImage 
-     *  A temporary snap shot of the canvas used instead of the canvas.
-     *  This is used to prevent the area under the canvas redrawing
-     *  when the redraw is set to off ie Blindness module
+    /** Create an image from the canvas
      * 
+     * @param vectorMode    In vector mode all shapes are rendered from scratch.
+     *                      Otherwise the active shapes are rendered on top of the current canvas image
+     * @return
      */
-    public void assignBufferImage() {
-        this.bufferImage = getBufferedImage();
-        this.displayBufferImage = false;
-    }
-
-    /** Set the buffer flatImage to be displayed or not */
-    public void setDisplayBufferImage(boolean displayBufferImage) {
-        this.displayBufferImage = displayBufferImage;
-    }
-
-    /** Create a VolatileImage from the canvas */
-    Image getVolatileImage(boolean vectorMode) {
+    BufferedImage renderCanvas(boolean vectorMode) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
-//        Image buffImage = gc.createCompatibleVolatileImage(visibleRect.width, visibleRect.height);
-        //BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_ARGB);
         BufferedImage buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height);
-        // Check this buffImage is valid
-//        int valid = buffImage.validate(gc);
-//        if (valid == VolatileImage.IMAGE_INCOMPATIBLE) {
-//            System.out.println("Volatile Image Incompatible");
-//            buffImage = this.getVolatileImage(true);
-//        }
         // Paint the buffImage with the canvas
         Graphics2D g2 = buffImage.createGraphics();
         if (vectorMode) {
@@ -727,21 +679,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         } else {
             this.paintComponent(g2);
         }
-        g2.dispose();
-        return buffImage;
-    }
-
-    /** Create a BufferedImage from the canvas */
-    BufferedImage getBufferedImage() {
-        // Get the canvas size with out the frame/decorations
-        java.awt.Rectangle visibleRect = this.getVisibleRect();
-        BufferedImage buffImage = new BufferedImage(visibleRect.width, visibleRect.height, BufferedImage.TYPE_INT_RGB);
-        //BufferedImage buffImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = buffImage.createGraphics();
-        //g.fillRect(0, 0, buffImage.getWidth(), buffImage.getHeight());
-        //this.print(g);
-        this.paintComponent(g2);
-        //System.out.println(this.getVisibleRect());
         g2.dispose();
         return buffImage;
     }
@@ -757,7 +694,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     boolean savePng(File file) {
         try {
             //File file = new File("saveToThisFile.jpg");
-            BufferedImage buffImage = getBufferedImage();
+            BufferedImage buffImage = renderCanvas(true);
             ImageIO.write(buffImage, "png", file);
             return true;
         } catch (IOException ex) {
@@ -792,21 +729,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             singleDocument.open();
             PdfContentByte singleContent = singleWriter.getDirectContent();
 
-            // Turn off the buffer flatImage if present
-            boolean bufferOff = false;
-            if (displayBufferImage) {
-                displayBufferImage = false;
-                bufferOff = true;
-            }
-
             Graphics2D g2pdf = singleContent.createGraphics(singlePdfWidth, singlePdfHeight);
-            this.paint(g2pdf);
+            vectorCanvas.paintComponent(g2pdf);
             g2pdf.dispose();
-
-            // Turn the buffer back on again
-            if (bufferOff) {
-                displayBufferImage = true;
-            }
 
             singleDocument.close();
             return true;
@@ -944,7 +869,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         // Finally, print the component by calling the paintComponent() method.
         // Or, call paint() to paint the component, its background, border, and
         // children, including the Print JButton
-        this.paintComponent(g);
+        vectorCanvas.paintComponent(g);
 
         // Tell the PrinterJob that the page number was valid
         return Printable.PAGE_EXISTS;
