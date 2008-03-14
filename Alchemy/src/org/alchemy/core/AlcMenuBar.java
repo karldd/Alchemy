@@ -443,21 +443,6 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcShape.lineSmoothing = Alchemy.preferences.getLineSmoothing();
         lineSmoothingItem.setup(getS("lineSmoothingTitle"));
         settingsMenu.add(lineSmoothingItem);
-
-        settingsMenu.add(new JSeparator());
-
-        
-        // Flatten Canvas
-        AbstractAction flattenAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                Alchemy.canvas.flattenCanvas();
-            }
-        };
-        AlcMenuItem flattenItem = new AlcMenuItem(flattenAction);
-        flattenItem.setup(getS("flattenTitle"));
-        settingsMenu.add(flattenItem);
-
         
         settingsMenu.add(new JSeparator());
 

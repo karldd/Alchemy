@@ -186,7 +186,7 @@ public class Repeat extends AlcModule {
         } else {
             outside++;
             // if outside the shape for a certain period then update the offset next time
-            if (outside > 2) {
+            if (outside == 3) {
                 canvas.commitShapes();
                 update = true;
             }
