@@ -46,8 +46,8 @@ import javax.swing.JPanel;
         this.setBackground(Color.LIGHT_GRAY);
         this.setPreferredSize(new Dimension(12, 88));
 
-        JButton closeButton = new JButton(AlcUtil.createImageIcon("palette.png"));
-        closeButton.setRolloverIcon(AlcUtil.createImageIcon("palette-over.png"));
+        JButton closeButton = new JButton(AlcUtil.getImageIcon("palette.png"));
+        closeButton.setRolloverIcon(AlcUtil.getImageIcon("palette-over.png"));
         closeButton.setToolTipText("Close the palette and restore the toolbar to the main window");
 
         // Insets(int top, int left, int bottom, int right)

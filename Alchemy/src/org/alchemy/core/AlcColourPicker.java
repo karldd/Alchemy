@@ -96,7 +96,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
         // Cursor size differs depending on the platform
         // Add padding based on the best cursor size
         final Cursor pickerCursor;
-        Image smallPicker = AlcUtil.getImage("cursor-picker.gif", Alchemy.window);
+        Image smallPicker = AlcUtil.getImage("cursor-picker.gif");
         Dimension smallPickerSize = new Dimension(smallPicker.getWidth(null), smallPicker.getHeight(null));
         Dimension cursorSize = TOOLKIT.getBestCursorSize(smallPickerSize.width, smallPickerSize.height);
 

@@ -41,7 +41,7 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // STRING FUNCTIONS
     //////////////////////////////////////////////////////////////
-    /** Checks a path for a file extension and adds one if not present */
+    /** Checks a name for a file extension and adds one if not present */
     public static File addFileExtension(File file, String ext) {
         //String fileName = file.getName();
         String filePath = file.getPath();
@@ -113,18 +113,18 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // FILE FUNCTIONS
     //////////////////////////////////////////////////////////////
-    /** Returns a URL from a String, or null if the path was invalid.
+    /** Returns a URL from a String, or null if the name was invalid.
      * 
-     * @param path  The path to the resource
+     * @param name  The name to the resource
      * @return      URL to the resource or null if invalid
      */
     public static URL getUrlPath(String path) {
         return getUrlPath(path, null);
     }
 
-    /** Returns a URL from a String, or null if the path was invalid.
+    /** Returns a URL from a String, or null if the name was invalid.
      * 
-     * @param path          The path to the resource
+     * @param name          The name to the resource
      * @param classLoader   The classloader
      * @return              URL to the resource or null if invalid
      */
@@ -133,7 +133,7 @@ public class AlcUtil implements AlcConstants {
         URL resourceUrl = null;
         if (classLoader == null) {
             // If unspecified look from the main class
-            resourceUrl = Alchemy.class.getResource("../data/"+path);
+            resourceUrl = Alchemy.class.getResource("/org/alchemy/data/" + path);
         } else {
             resourceUrl = classLoader.getResource(path);
         }
@@ -146,27 +146,27 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
-    /** Returns an ImageIcon from a String, or null if the path was invalid.
+    /** Returns an ImageIcon from a String, or null if the name was invalid.
      * 
-     * @param path  The path to the image
+     * @param name  The name to the image
      * @return      ImageIcon or null if invalid
      */
-    public static ImageIcon createImageIcon(String path) {
-        URL imgUrl = Alchemy.class.getResource("../data/" + path);
+    public static ImageIcon getImageIcon(String name) {
+        URL imgUrl = Alchemy.class.getResource("/org/alchemy/data/" + name);
         if (imgUrl != null) {
-            return createImageIcon(imgUrl);
+            return getImageIcon(imgUrl);
         } else {
-            System.err.println("Couldn't find file: " + path);
+            System.err.println("Couldn't find file: " + name);
             return null;
         }
     }
 
-    /** Returns an ImageIcon from a URL, or null if the path was invalid.
+    /** Returns an ImageIcon from a URL, or null if the name was invalid.
      * 
      * @param imgUrl    The URL to the image
      * @return          ImageIcon or null if invalid
      */
-    public static ImageIcon createImageIcon(URL imgUrl) {
+    public static ImageIcon getImageIcon(URL imgUrl) {
         if (imgUrl != null) {
             ImageIcon icon = new ImageIcon(imgUrl);
             // Check the icon actually exists - bit of a hack!
@@ -178,16 +178,26 @@ public class AlcUtil implements AlcConstants {
         return null;
     }
 
-    public static Image getImage(String name, Component who) {
-        Image image = null;
-        image = TOOLKIT.getImage(getUrlPath(name));
-        MediaTracker tracker = new MediaTracker(who);
-        tracker.addImage(image, 0);
-        try {
-            tracker.waitForAll();
-        } catch (InterruptedException e) {
+    public static Image getImage(String name) {
+        URL imgUrl = Alchemy.class.getResource("/org/alchemy/data/" + name);
+        if (imgUrl != null) {
+            return getImageIcon(imgUrl).getImage();
+        } else {
+            System.err.println("Couldn't find file: " + name);
+            return null;
         }
-        return image;
+    }
+
+    public static Image getImage(URL imgUrl) {
+        if (imgUrl != null) {
+            ImageIcon icon = new ImageIcon(imgUrl);
+            // Check the icon actually exists - bit of a hack!
+            if (icon.getIconWidth() > 0) {
+                return icon.getImage();
+            }
+        }
+        //System.err.println("Couldn't find file: " + resourceUrl.toString());
+        return null;
     }
 
     /** Copies the source file to destination file.

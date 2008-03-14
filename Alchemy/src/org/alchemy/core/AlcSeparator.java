@@ -30,7 +30,7 @@ class AlcSeparator extends JLabel {
 
     AlcSeparator() {
 
-        this.setIcon(AlcUtil.createImageIcon("separator.png"));
+        this.setIcon(AlcUtil.getImageIcon("separator.png"));
         this.setAlignmentY(Component.TOP_ALIGNMENT);
 
     // Top Left Bottom Right

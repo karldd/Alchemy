@@ -64,7 +64,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
         //this.setState(true);
 
         // Set the main Icon
-        this.setIcon(AlcUtil.createImageIcon(module.getIconUrl()));
+        this.setIcon(AlcUtil.getImageIcon(module.getIconUrl()));
     }
 
     void setup(String title) {

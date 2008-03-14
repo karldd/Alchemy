@@ -75,13 +75,15 @@ class AlcPlugins implements AlcConstants {
          */
 
         //Get the Core Plugin as as a resource from the JAR
-        InputStream coreStream = Alchemy.class.getResourceAsStream("../data/org.alchemy.core-1.0.0.zip");
+        InputStream coreStream = this.getClass().getResourceAsStream("/org/alchemy/data/org.alchemy.core-1.0.0.zip");
 
         File tempCore = null;
 
         try {
             // Create temp file.
             tempCore = new File(TEMP_DIR, "org.alchemy.core-1.0.0.zip");
+            
+            System.out.println("Exists: " + tempCore.exists());
 
             // Delete temp file when program exits.
             tempCore.deleteOnExit();
