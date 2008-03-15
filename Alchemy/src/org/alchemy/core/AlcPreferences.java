@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 class AlcPreferences implements AlcConstants {
 
     /** Preferences package */
-    private Preferences prefs;
+    private final Preferences prefs;
     /** The preferences window */
     private JDialog prefsWindow;
     /** Recording on or off at startup */

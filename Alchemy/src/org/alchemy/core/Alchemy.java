@@ -33,25 +33,25 @@ public class Alchemy implements AlcConstants {
     /** Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER. */
     public static int PLATFORM;
     /** Modifier Key to show for tool tips - This looks like '\u2318' for Apple or 'Ctrl' otherwise */
-    public static String MODIFIER_KEY;
+    public static String MODIFIER_KEY_STRING;
 
     static {
         if (PLATFORM_NAME.indexOf("Mac") != -1) {
             PLATFORM = MACOSX;
             // Mac command key symbol
-            MODIFIER_KEY = "\u2318";
+            MODIFIER_KEY_STRING = "\u2318";
 
         } else if (PLATFORM_NAME.indexOf("Windows") != -1) {
             PLATFORM = WINDOWS;
-            MODIFIER_KEY = "Ctrl";
+            MODIFIER_KEY_STRING = "Ctrl";
 
         } else if (PLATFORM_NAME.equals("Linux")) {  // true for the ibm vm
             PLATFORM = LINUX;
-            MODIFIER_KEY = "Ctrl";
+            MODIFIER_KEY_STRING = "Ctrl";
 
         } else {
             PLATFORM = OTHER;
-            MODIFIER_KEY = "Modifier";
+            MODIFIER_KEY_STRING = "Modifier";
         }
     }
     //////////////////////////////////////////////////////////////

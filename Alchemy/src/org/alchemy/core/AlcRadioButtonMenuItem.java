@@ -56,7 +56,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstant
     AlcRadioButtonMenuItem(int index, String title, int accelerator) {
         setup(index, title);
         if (accelerator > 0) {
-            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
+            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));
         }
 
     }

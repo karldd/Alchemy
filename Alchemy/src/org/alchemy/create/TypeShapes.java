@@ -317,7 +317,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         }
 
         AffineTransform centre = new AffineTransform();
-        centre.translate(math.random(canvas.getCanvasSize().width), math.random(canvas.getCanvasSize().height));
+        centre.translate(math.random(canvas.getSize().width), math.random(canvas.getSize().height));
         union = (GeneralPath) union.createTransformedShape(centre);
 
         // Convert the random shape into a general path
@@ -424,13 +424,13 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
             if (auto) {
                 // Move the shape to the middle of the screen
-                int offsetX = canvas.getCanvasSize().width >> explode;
-                int offsetY = canvas.getCanvasSize().width >> explode;
+                int offsetX = canvas.getSize().width >> explode;
+                int offsetY = canvas.getSize().width >> explode;
                 newTr.translate(math.random(offsetX * -1, offsetX), math.random(offsetY * -1, offsetY));
             } else {
                 // Move the shape to a random location
-                int offsetX = canvas.getCanvasSize().width;
-                int offsetY = canvas.getCanvasSize().width;
+                int offsetX = canvas.getSize().width;
+                int offsetY = canvas.getSize().width;
                 newTr.translate(math.random(0, offsetX), math.random(0, offsetY));
             }
 

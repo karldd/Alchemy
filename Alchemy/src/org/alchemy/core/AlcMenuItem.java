@@ -51,7 +51,7 @@ class AlcMenuItem extends JMenuItem implements AlcConstants {
 
         this.setText(title);
         if (accelerator > 0) {
-            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
+            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));
         }
 
         //this.setMnemonic(KeyEvent.VK_A);
