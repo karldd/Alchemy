@@ -206,7 +206,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     }
 
     private void resetAxis() {
-        Dimension size = canvas.getCanvasSize();
+        Dimension size = canvas.getSize();
         horizontalAxis = size.width / 2;
         verticalAxis = size.height / 2;
     }
@@ -214,7 +214,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     public void mouseMoved(MouseEvent e) {
         if (selectAxis) {
 
-            Dimension size = canvas.getCanvasSize();
+            Dimension size = canvas.getSize();
             
             GeneralPath line = new GeneralPath(new Line2D.Float(e.getX(), 0, e.getX(), size.height));
             line.append(new Line2D.Float(0, e.getY(), size.width, e.getY()), false);

@@ -163,7 +163,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
             GeneralPath currentPath = currentShape.getPath();
             Rectangle rect = currentPath.getBounds();
-            Dimension windowSize = canvas.getCanvasSize();
+            Dimension windowSize = canvas.getSize();
             // If the shape is out of the window, remove it
             if (rect.contains(0, 0, windowSize.width, windowSize.height)) {
                 if (activeShape >= 0) {

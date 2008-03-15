@@ -19,7 +19,6 @@
 package org.alchemy.create;
 
 import org.alchemy.core.*;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,7 +26,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import foxtrot.*;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import java.awt.Rectangle;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,7 +39,7 @@ public class TraceShapes extends AlcModule {
 
     private int halfArea = 30;
     private int tolerance = 100;
-    private int imageW,  imageH;
+    private Rectangle imageSize;
     private AlcSubToolBarSection subToolBarSection;
     private int[] pixels;
     private boolean pixelsLoaded = false;
@@ -50,7 +49,7 @@ public class TraceShapes extends AlcModule {
     }
 
     protected void setup() {
-        canvas.setDisplayImage(false);
+        canvas.setImageDisplay(false);
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
         loadImage();
@@ -63,7 +62,10 @@ public class TraceShapes extends AlcModule {
     }
 
     protected void deselect() {
-        canvas.clearImage();
+        pixelsLoaded = false;
+        pixels = null;
+        canvas.setImage(null);
+        //canvas.setImageDisplay(false);
         canvas.redraw();
     }
 
@@ -71,11 +73,11 @@ public class TraceShapes extends AlcModule {
 
         final String random = AlcUtil.zeroPad((int) math.random(10000), 5);
         //System.out.println(random);
-        Image flickrImage = null;
+        BufferedImage flickrImage = null;
         pixelsLoaded = false;
 
         try {
-            flickrImage = (Image) Worker.post(new Task() {
+            flickrImage = (BufferedImage) Worker.post(new Task() {
 
                 public Object run() throws Exception {
                     return Flickr.getInstance().search(random);
@@ -86,22 +88,17 @@ public class TraceShapes extends AlcModule {
 
 
         if (flickrImage != null) {
-            BufferedImage flickrBufferedImage = (BufferedImage) flickrImage;
-
             // Scale the image to the screen size
-            imageW = canvas.getCanvasSize().width;
-            imageH = canvas.getCanvasSize().height;
-            BufferedImage scaledImage = new BufferedImage(imageW, imageH, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = scaledImage.createGraphics();
-            AffineTransform scaleTransform = AffineTransform.getScaleInstance(
-                    (double) imageW / flickrBufferedImage.getWidth(),
-                    (double) imageH / flickrBufferedImage.getHeight());
-            g.drawRenderedImage(flickrBufferedImage, scaleTransform);
+            imageSize = canvas.getBounds();
+            BufferedImage scaledImage = new BufferedImage(imageSize.width, imageSize.height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = scaledImage.createGraphics();
+            g2.drawImage(flickrImage, 0, 0, imageSize.width, imageSize.height, null);
+            g2.dispose();
+            flickrImage = null;
 
             // Load the pixels into an array
-            pixels = new int[imageW * imageH];
-            //int[] rgbs = new int[areaArraySize];
-            scaledImage.getRGB(0, 0, imageW, imageH, pixels, 0, imageW);
+            pixels = new int[imageSize.width * imageSize.height];
+            scaledImage.getRGB(0, 0, imageSize.width, imageSize.height, pixels, 0, imageSize.width);
             // Then convert them all to grey for easy access
             for (int i = 0; i < pixels.length; i++) {
                 pixels[i] = convertToGrey(pixels[i]);
@@ -115,7 +112,7 @@ public class TraceShapes extends AlcModule {
     }
 
     private Point checkSnap(Point p) {
-        if (pixelsLoaded && p.x < imageW && p.y < imageH) {
+        if (pixelsLoaded && imageSize.contains(p)) {
             // The pixel value under the cursor
             int xy = getPixel(p.x, p.y);
 
@@ -129,12 +126,12 @@ public class TraceShapes extends AlcModule {
                 startY = 0;
             }
             int endX = p.x + halfArea;
-            if (endX > imageW) {
-                endX = imageW;
+            if (endX > imageSize.width) {
+                endX = imageSize.width;
             }
             int endY = p.y + halfArea;
-            if (endY > imageH) {
-                endY = imageH;
+            if (endY > imageSize.height) {
+                endY = imageSize.height;
             }
 
             int contrast = 0;
@@ -169,7 +166,7 @@ public class TraceShapes extends AlcModule {
     }
 
     private int getPixel(int x, int y) {
-        return pixels[y * imageW + x];
+        return pixels[y * imageSize.width + x];
     }
 
     public void createSubToolBarSection() {
@@ -182,7 +179,7 @@ public class TraceShapes extends AlcModule {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        canvas.setDisplayImage(imageDisplayButton.isSelected());
+                        canvas.setImageDisplay(imageDisplayButton.isSelected());
                         canvas.redraw();
                     }
                 });

@@ -82,7 +82,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
         this.setFont(AlcToolBar.toolBarFont);
 
         if (accelerator > 0) {
-            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MENU_SHORTCUT));
+            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));
         }
     }
 

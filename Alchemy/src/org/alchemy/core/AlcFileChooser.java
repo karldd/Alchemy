@@ -32,6 +32,10 @@ class AlcFileChooser extends JFileChooser {
         super();
     }
 
+    AlcFileChooser(String currentDirectoryPath) {
+        super(currentDirectoryPath);
+    }
+
     AlcFileChooser(File currentDirectory) {
         super(currentDirectory);
     }

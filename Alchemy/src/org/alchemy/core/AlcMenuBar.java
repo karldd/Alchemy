@@ -79,9 +79,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem newItem = new AlcMenuItem(newAction);
-        newItem.setup(newTitle, KeyEvent.VK_N);
         // Shortcut - Modifier n
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_N, newTitle, newAction);
+        int newKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_N, newTitle, newAction, true);
+        newItem.setup(newTitle, newKey);
         fileMenu.add(newItem);
 
         fileMenu.add(new JSeparator());
@@ -91,13 +91,14 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction exportAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                askExportPath();
+                export();
             }
         };
         AlcMenuItem exportItem = new AlcMenuItem(exportAction);
-        exportItem.setup(exportTitle, KeyEvent.VK_E);
         // Shortcut - Modifier e
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_E, exportTitle, exportAction);
+        int exportKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_E, exportTitle, exportAction, true);
+        exportItem.setup(exportTitle, exportKey);
+
         fileMenu.add(exportItem);
 
         fileMenu.add(new JSeparator());
@@ -122,9 +123,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem printItem = new AlcMenuItem(printAction);
-        printItem.setup(printTitle, KeyEvent.VK_P);
         // Shortcut - Modifier p
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_P, printTitle, printAction);
+        int printKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_P, printTitle, printAction, true);
+        printItem.setup(printTitle, printKey);
         fileMenu.add(printItem);
 
 
@@ -161,9 +162,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem copyItem = new AlcMenuItem(copyAction);
-        copyItem.setup(copyTitle, KeyEvent.VK_C);
         // Shortcut - Modifier c
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_C, copyTitle, copyAction);
+        int copyKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_C, copyTitle, copyAction, true);
+        copyItem.setup(copyTitle, copyKey);
         editMenu.add(copyItem);
 
         this.add(editMenu);
@@ -188,9 +189,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
 
         fullScreenItem.setAction(fullScreenAction);
-        fullScreenItem.setup(fullScreenTitle, KeyEvent.VK_F);
         // Shortcut - Modifier f
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_F, fullScreenTitle, fullScreenAction);
+        int fullScreenKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_F, fullScreenTitle, fullScreenAction, true);
+        fullScreenItem.setup(fullScreenTitle, fullScreenKey);
         viewMenu.add(fullScreenItem);
 
         this.add(viewMenu);
@@ -209,9 +210,11 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
-        savePageItem.setup(savePageTitle, KeyEvent.VK_S);
         // Shortcut - Modifier s
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, savePageTitle, savePageAction);
+        int savePageKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, savePageTitle, savePageAction, true);
+        savePageItem.setup(savePageTitle, savePageKey);
+
+
         sessionMenu.add(savePageItem);
 
         // Save and clear PDF page
@@ -223,10 +226,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
-        saveClearPageItem.setup(saveClearTitle, KeyEvent.VK_D);
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_D, saveClearTitle, saveClearPageAction);
+        int saveClearKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_D, saveClearTitle, saveClearPageAction, true);
+        saveClearPageItem.setup(saveClearTitle, saveClearKey);
         sessionMenu.add(saveClearPageItem);
-
 
         sessionMenu.add(new JSeparator());
 
@@ -246,10 +248,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         recordingItem.setAction(recordingAction);
-        recordingItem.setup(recordingTitle, KeyEvent.VK_R);
-
         // Shortcut - Modifier r
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_R, recordingTitle, recordingAction);
+        int recordingKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_R, recordingTitle, recordingAction, true);
+        recordingItem.setup(recordingTitle, recordingKey);
 
         recordingItem.setState(Alchemy.preferences.getRecordingState());
         if (Alchemy.preferences.getRecordingState()) {
@@ -357,9 +358,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem switchVectorItem = new AlcMenuItem(switchVectorAction);
-        switchVectorItem.setup(switchVectorTitle, KeyEvent.VK_V);
         // Shortcut - Modifier v
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_V, switchVectorTitle, switchVectorAction);
+        int vectorKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_V, switchVectorTitle, switchVectorAction, true);
+        switchVectorItem.setup(switchVectorTitle, vectorKey);
         switchMenu.add(switchVectorItem);
 
         // Switch Bitmaps
@@ -371,9 +372,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem switchBitmapItem = new AlcMenuItem(switchBitmapAction);
-        switchBitmapItem.setup(switchBitmapTitle, KeyEvent.VK_B);
         // Shortcut - Modifier v
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_B, switchBitmapTitle, switchBitmapAction);
+        int bitmapKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_B, switchBitmapTitle, switchBitmapAction, true);
+        switchBitmapItem.setup(switchBitmapTitle, bitmapKey);
         switchMenu.add(switchBitmapItem);
 
         switchMenu.add(new JSeparator());
@@ -443,7 +444,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcShape.lineSmoothing = Alchemy.preferences.getLineSmoothing();
         lineSmoothingItem.setup(getS("lineSmoothingTitle"));
         settingsMenu.add(lineSmoothingItem);
-        
+
         settingsMenu.add(new JSeparator());
 
         // Background Colour
@@ -644,33 +645,33 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     }
 
     /** Ask for a path and filename to export a PDF to */
-    private void askExportPath() {
+    private void export() {
 
         //FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
         //fileDialog.setVisible(true);
         //String fileString = fileDialog.getFile();
 
 
-        final AlcFileChooser fc = new AlcFileChooser();
-        fc.setDialogTitle("Export Pdf");
+        final AlcFileChooser fc = new AlcFileChooser(DESKTOP_DIR);
+        fc.setDialogTitle("Export");
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setFileFilter(new ExportFileFilter("PNG"));
+        fc.setFileFilter(new ExportFileFilter("PDF"));
+
         // in response to a button click:
         int returnVal = fc.showSaveDialog(this);
         if (returnVal == AlcFileChooser.APPROVE_OPTION) {
 
-            // Make sure that something was selected
-            //if (fileString != null) {
-            //String directory = fileDialog.getDirectory();
-            //File file = new File(directory, fileString);
-
             File file = fc.getSelectedFile();
-            File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
+            String format = fc.getFileFilter().getDescription();
 
-            if (Alchemy.canvas.saveSinglePdf(fileWithExtension)) {
-                System.out.println(fileWithExtension.toString());
-            } else {
-                System.out.println("Didn't save??? : " + fileWithExtension.toString());
+            if (format.equals("PDF")) {
+                File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
+                Alchemy.canvas.saveSinglePdf(fileWithExtension);
+            } else if (format.equals("PNG")) {
+                File fileWithExtension = AlcUtil.addFileExtension(file, "png");
+                Alchemy.canvas.savePng(fileWithExtension);
             }
-
         }
     }
 
@@ -784,5 +785,22 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             // The mac menubar is used instead
             super.paintComponent(g);
         }
+    }
+}
+
+class ExportFileFilter extends javax.swing.filechooser.FileFilter {
+
+    private final String format;
+
+    ExportFileFilter(String format) {
+        this.format = format;
+    }
+
+    public boolean accept(File f) {
+        return true;
+    }
+
+    public String getDescription() {
+        return format;
     }
 }

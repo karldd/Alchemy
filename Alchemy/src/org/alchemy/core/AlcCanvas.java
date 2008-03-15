@@ -101,7 +101,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Image than can be drawn on the canvas */
     Image image;
     /** Display the Image or not */
-    boolean displayImage = false;
+    boolean imageDisplay = false;
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         int w = this.getWidth();
         int h = this.getHeight();
 
-        if (displayImage && image != null) {
+        if (imageDisplay && image != null) {
             g2.drawImage(image, 0, 0, null);
         } else {
             // Paint background.
@@ -326,10 +326,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Get Antialiasing */
     public boolean getSmoothing() {
         return smoothing;
-    }
-
-    public Dimension getCanvasSize() {
-        return this.getSize();
     }
 
     /** Return if there has been activity on the canvas since the last time the timer checked */
@@ -638,26 +634,25 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         canvasImage = renderCanvas(true);
     }
 
-    /** Clear the buffImage from the canvas */
-    public void clearImage() {
-        this.image = null;
-    }
-
     /** Check if the canvasImage display is on
      * 
      * @return Image display on or off
      */
-    public boolean isDisplayImage() {
-        return displayImage;
+    public boolean isImageSet() {
+        return image == null ? false : true;
     }
 
     /** Set canvasImage display to on or off
      * 
      * @param displayFlatImage Image display on or off
      */
-    public void setDisplayImage(boolean displayImage) {
-        this.displayImage = displayImage;
+    public void setImageDisplay(boolean imageDisplay) {
+        this.imageDisplay = imageDisplay;
         canvasImage = renderCanvas(true);
+    }
+
+    public boolean isImageDisplayed() {
+        return imageDisplay;
     }
 
     /** Create an image from the canvas
@@ -1047,7 +1042,7 @@ class VectorCanvas extends JPanel implements AlcConstants {
         g2.fillRect(0, 0, w, h);
 
         // Draw buffImage
-        if (Alchemy.canvas.displayImage && Alchemy.canvas.image != null) {
+        if (Alchemy.canvas.imageDisplay && Alchemy.canvas.image != null) {
             g2.drawImage(Alchemy.canvas.image, 0, 0, null);
         }
 

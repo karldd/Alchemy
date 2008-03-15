@@ -76,7 +76,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
     /** The number of rows in the sub toolbar */
-    private int subToolBarRows;
+//    private int subToolBarRows;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
     //////////////////////////////////////////////////////////////
@@ -164,8 +164,10 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // Set the style buttons dynamic images to the current colour
         refreshStyleButton();
         // Shortcut - s
-        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
-        Alchemy.canvas.getActionMap().put(styleTitle, styleAction);
+
+        Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, styleTitle, styleAction);
+//        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
+//        Alchemy.canvas.getActionMap().put(styleTitle, styleAction);
 
         toolBar.add(styleButton);
 
@@ -180,10 +182,10 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             }
         };
         AlcButton clearButton = new AlcButton(clearAction);
-        clearButton.setup(clearTitle, getS("clearDescription") + " (" + Alchemy.MODIFIER_KEY + getS("clearKey") + ")", AlcUtil.getUrlPath("clear.png"));
+        clearButton.setup(clearTitle, getS("clearDescription") + " (" + Alchemy.MODIFIER_KEY_STRING +" "+ getS("clearKey") + ")", AlcUtil.getUrlPath("clear.png"));
         // Shortcuts - Modifier Delete/Backspace
-        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MENU_SHORTCUT), clearTitle);
-        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MENU_SHORTCUT), clearTitle);
+        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MODIFIER_KEY), clearTitle);
+        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MODIFIER_KEY), clearTitle);
         Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
         toolBar.add(clearButton);
 
