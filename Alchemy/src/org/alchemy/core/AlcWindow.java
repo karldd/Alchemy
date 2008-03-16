@@ -385,12 +385,16 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             }
 
             //TODO - Quit dialog appears on the wrong monitor on mac
-            int result = JOptionPane.showConfirmDialog(
+            Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
+            int result = JOptionPane.showOptionDialog(
                     this,
                     exitMessage,
                     exitTitle,
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
 
             if (result == JOptionPane.YES_OPTION) {
                 exit();

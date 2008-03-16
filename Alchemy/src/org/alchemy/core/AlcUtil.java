@@ -298,14 +298,30 @@ public class AlcUtil implements AlcConstants {
         return result;
     }
 
+    //////////////////////////////////////////////////////////////
+    // COLOUR
+    //////////////////////////////////////////////////////////////
+    public static int getColorBrightness(int rgb) {
+        int oldR = (rgb >>> 16) & 255;
+        int oldG = (rgb >>> 8) & 255;
+        int oldB = (rgb >>> 0) & 255;
+        return (222 * oldR + 707 * oldG + 71 * oldB) / 1000;
+    }
 
     //////////////////////////////////////////////////////////////
     // DEBUGGING
     //////////////////////////////////////////////////////////////
-    /** Print an array */
-    public static void printArray(float[] array) {
+    /** Print a float array */
+    public static void printFloatArray(float[] array) {
         for (int i = 0; i < array.length; i++) {
             System.out.println("Array [" + String.valueOf(i) + "] = " + String.valueOf(array[i]));
+        }
+    }
+
+    /** Print a string array */
+    public static void printStringArray(String[] array) {
+        for (int i = 0; i < array.length; i++) {
+            System.out.println("Array [" + String.valueOf(i) + "] = " + array[i]);
         }
     }
 }

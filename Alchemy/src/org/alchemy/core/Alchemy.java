@@ -99,7 +99,7 @@ public class Alchemy implements AlcConstants {
         window = new AlcWindow();
 
         // Create the preferences window
-        preferences.initialisePreferencesWindow(window);
+        preferences.setupWindow(window);
 
         // LOAD RESOURCE BUNDLE
         bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
@@ -126,9 +126,8 @@ public class Alchemy implements AlcConstants {
         menuBar = new AlcMenuBar();
 
         window.setupWindow();
-
+        shortcuts.setupWindow();
         plugins.initialiseModules();
-
         window.setVisible(true);
     }
 
@@ -138,6 +137,7 @@ public class Alchemy implements AlcConstants {
 
             if (PLATFORM == MACOSX) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
+                //System.setProperty("com.apple.mrj.application.growbox.intrudes","false");
                 UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
 
                 String css = "<head>" +

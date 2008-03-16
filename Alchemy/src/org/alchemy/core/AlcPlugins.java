@@ -82,8 +82,6 @@ class AlcPlugins implements AlcConstants {
         try {
             // Create temp file.
             tempCore = new File(TEMP_DIR, "org.alchemy.core-1.0.0.zip");
-            
-            System.out.println("Exists: " + tempCore.exists());
 
             // Delete temp file when program exits.
             tempCore.deleteOnExit();
