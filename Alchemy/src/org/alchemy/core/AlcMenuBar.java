@@ -456,7 +456,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
                     public void actionPerformed(ActionEvent event) {
                         Alchemy.canvas.setBgColour(Alchemy.colourChooser.getColor());
-                        Alchemy.canvas.redraw();
+                        Alchemy.toolBar.picker.updateColourPicker();
+                        Alchemy.toolBar.refreshSwapButton();
+                        Alchemy.canvas.redraw(true);
                     }
                 };
 
@@ -472,6 +474,19 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenuItem bgColourItem = new AlcMenuItem(bgColourAction);
         bgColourItem.setup(getS("bgColourTitle"));
         settingsMenu.add(bgColourItem);
+
+        //settingsMenu.add(new JSeparator());
+
+        // Keyboard Shortcuts
+        AbstractAction keyboardShortcutsAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.shortcuts.showWindow();
+            }
+        };
+        AlcMenuItem keyboardShortcutsItem = new AlcMenuItem(keyboardShortcutsAction);
+        keyboardShortcutsItem.setup(getS("keyboardShortcutsTitle"));
+        settingsMenu.add(keyboardShortcutsItem);
 
         this.add(settingsMenu);
 
@@ -722,7 +737,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         // A bug on mac with older versions of java can scramble the clipboard
         // fixed in Java 1.5 Release 3 (4238470)
+        Alchemy.canvas.setGuide(false);
         AlcUtil.setClipboard(new AlcImageTransferable(Alchemy.canvas.renderCanvas(true)), Alchemy.window);
+        Alchemy.canvas.setGuide(true);
     }
 
     /** Make a temporary file, create a PDF, and then open it */

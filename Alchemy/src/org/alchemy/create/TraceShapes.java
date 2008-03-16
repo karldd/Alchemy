@@ -101,7 +101,7 @@ public class TraceShapes extends AlcModule {
             scaledImage.getRGB(0, 0, imageSize.width, imageSize.height, pixels, 0, imageSize.width);
             // Then convert them all to grey for easy access
             for (int i = 0; i < pixels.length; i++) {
-                pixels[i] = convertToGrey(pixels[i]);
+                pixels[i] = AlcUtil.getColorBrightness(pixels[i]);
             }
             pixelsLoaded = true;
 
@@ -156,13 +156,6 @@ public class TraceShapes extends AlcModule {
         }
 
         return p;
-    }
-
-    private int convertToGrey(int rgb) {
-        int r = (rgb >> 16) & 0xff;
-        int g = (rgb >> 8) & 0xff;
-        int b = rgb & 0xff;
-        return (r + g + b) / 3;
     }
 
     private int getPixel(int x, int y) {

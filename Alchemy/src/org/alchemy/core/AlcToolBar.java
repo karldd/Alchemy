@@ -67,8 +67,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     JPanel toolBars;
     /** Detach toolbar button */
     JButton detachButton;
-    /** Style button */
-    private AlcToggleButton styleButton;
+    /** Swap Button */
+    private AlcToggleButton swapButton;
     /** Sections within the sub toolbar - either loaded or not */
     private AlcSubToolBarSection[] affectSubToolBarSections;
     /** The create section within the sub toolbar - index of the loaded section */
@@ -77,6 +77,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     private int currentSubToolBarSections = 0;
     /** The number of rows in the sub toolbar */
 //    private int subToolBarRows;
+    /** Colour picker - gets updated each time the bg colour is changed */
+    AlcColourPicker picker;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
     //////////////////////////////////////////////////////////////
@@ -147,7 +149,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
         String styleTitle = getS("styleTitle");
-        styleButton = new AlcToggleButton();
+        final AlcToggleButton styleButton = new AlcToggleButton();
         AbstractAction styleAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -160,9 +162,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         };
 
         styleButton.setAction(styleAction);
-        styleButton.setup(styleTitle, getS("styleDescription"), null);
+        styleButton.setup(styleTitle, getS("styleDescription"), AlcUtil.getUrlPath("style.png"));
         // Set the style buttons dynamic images to the current colour
-        refreshStyleButton();
+        //refreshStyleButton();
         // Shortcut - s
 
         Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, styleTitle, styleAction);
@@ -182,10 +184,11 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             }
         };
         AlcButton clearButton = new AlcButton(clearAction);
-        clearButton.setup(clearTitle, getS("clearDescription") + " (" + Alchemy.MODIFIER_KEY_STRING +" "+ getS("clearKey") + ")", AlcUtil.getUrlPath("clear.png"));
+        clearButton.setup(clearTitle, getS("clearDescription") + " (" + Alchemy.MODIFIER_KEY_STRING + " " + getS("clearKey") + ")", AlcUtil.getUrlPath("clear.png"));
         // Shortcuts - Modifier Delete/Backspace
-        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MODIFIER_KEY), clearTitle);
-        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MODIFIER_KEY), clearTitle);
+        Alchemy.shortcuts.setShortcut(KeyEvent.VK_BACK_SPACE, clearTitle, clearAction, true);
+        //Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MODIFIER_KEY), clearTitle);
+        //Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MODIFIER_KEY), clearTitle);
         Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
         toolBar.add(clearButton);
 
@@ -213,16 +216,22 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         toolBar.add(lineWidthSpinner);
 
         //////////////////////////////////////////////////////////////
+        // SEPARATOR
+        //////////////////////////////////////////////////////////////
+        toolBar.add(new AlcSeparator());
+
+
+        //////////////////////////////////////////////////////////////
         // COLOUR  BUTTON
         //////////////////////////////////////////////////////////////
         String colourTitle = getS("colourTitle");
         colourButton = new AlcPopupButton(colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("colour.png"));
-        final AlcColourPicker picker = new AlcColourPicker();
+        picker = new AlcColourPicker();
         picker.addMouseListener(new MouseAdapter() {
 
             public void mouseReleased(MouseEvent e) {
 
-                // Check if the colour choose needs to be launched
+                // Check if the colour chooser needs to be launched
                 if (e.getX() >= 75 && e.getY() <= 15) {
 
                     // Action to change the colour
@@ -230,7 +239,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
                         public void actionPerformed(ActionEvent event) {
                             Alchemy.canvas.setColour(Alchemy.colourChooser.getColor());
-                            refreshStyleButton();
+                            refreshSwapButton();
                         }
                     };
 
@@ -246,19 +255,62 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 } else {
                     Alchemy.canvas.setColour(picker.getColor(e.getX(), e.getY()));
                     colourButton.hidePopup();
-                    refreshStyleButton();
+                    if (Alchemy.PLATFORM == MACOSX) {
+                        Alchemy.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+                        Alchemy.toolBar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    }
+                    refreshSwapButton();
                 }
             }
         });
 
         colourButton.addItem(picker);
+        toolBar.add(colourButton);
+
+        //////////////////////////////////////////////////////////////
+        // SWAP BUTTON
+        //////////////////////////////////////////////////////////////
+
+        String swapTitle = getS("swapTitle");
+        swapButton = new AlcToggleButton();
+        AbstractAction swapAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.canvas.toggleColour();
+                // Only toogle the button manually if it is triggered by a key
+                // TODO deal with this hard coding of a keycode
+                if (e.getActionCommand().equals("s")) {
+                    swapButton.setSelected(!swapButton.isSelected());
+                }
+            }
+        };
+
+        swapButton.setAction(swapAction);
+        swapButton.setup(swapTitle, getS("swapDescription"), null);
+        // Set the swap buttons dynamic images to the current colour
+        refreshSwapButton();
+        // Shortcut - s
+        //Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, styleTitle, styleAction);
+//        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('s'), styleTitle);
+//        Alchemy.canvas.getActionMap().put(styleTitle, styleAction);
+
+        toolBar.add(swapButton);
+
+
 
         // TODO - Shortcut for toggling between foreground and background colour
         // Shortcut - x
 //        Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke('x'), colourTitle);
 //        Alchemy.canvas.getActionMap().put(colourTitle, colourAction);
+        //Alchemy.shortcuts.setShortcut(KeyEvent.VK_BACK_SPACE, clearTitle, clearAction, true);
+//        AbstractAction changeColourAction = new AbstractAction() {
+//
+//            public void actionPerformed(ActionEvent e) {
+//            //Alchemy.canvas.clear();
+//            }
+//        };
 
-        toolBar.add(colourButton);
+
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -725,34 +777,70 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Refreshes the style buttons icons based on the current colour */
-    private void refreshStyleButton() {
-        // Get a full and half alpha version of the current colour
+//    private void refreshStyleButton() {
+//        // Get a full and half alpha version of the current colour
+//        Color colour = Alchemy.canvas.getColour();
+//        Color fullColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 255);
+//        Color semiColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 100);
+//
+//        // STYLE BUTTON
+//        BufferedImage style = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+//        Graphics g = style.createGraphics();
+//        // Left hand line
+//        g.setColor(fullColour);
+//        g.fillRect(1, 1, 2, 23);
+//        // Right hand rect
+//        g.setColor(semiColour);
+//        g.fillRect(8, 0, 16, 24);
+//        g.dispose();
+//        styleButton.setIcon(new ImageIcon(style));
+//
+//        // STYLE ON BUTTON
+//        BufferedImage styleOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+//        g = styleOn.createGraphics();
+//        // Left hand line
+//        g.setColor(semiColour);
+//        g.fillRect(0, 0, 2, 24);
+//        // Right hand rect
+//        g.setColor(fullColour);
+//        g.fillRect(8, 0, 16, 24);
+//        g.dispose();
+//        styleButton.setSelectedIcon(new ImageIcon(styleOn));
+//    }
+    void refreshSwapButton() {
         Color colour = Alchemy.canvas.getColour();
+        // Make sure there is no transparency
         Color fullColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 255);
-        Color semiColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 100);
+        Color bgColour = Alchemy.canvas.getBgColour();
 
-        // STYLE BUTTON
-        BufferedImage style = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = style.createGraphics();
-        // Left hand line
-        g.setColor(fullColour);
-        g.fillRect(1, 1, 2, 23);
-        // Right hand rect
-        g.setColor(semiColour);
-        g.fillRect(8, 0, 16, 24);
-        g.dispose();
-        styleButton.setIcon(new ImageIcon(style));
+        BufferedImage swap = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = swap.createGraphics();
 
-        // STYLE ON BUTTON
-        BufferedImage styleOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
-        g = styleOn.createGraphics();
-        // Left hand line
-        g.setColor(semiColour);
-        g.fillRect(0, 0, 2, 24);
-        // Right hand rect
+        g.setColor(bgColour);
+        g.fillRect(6, 6, 18, 18);
+        g.setColor(AlcToolBar.toolBarLineColour);
+        g.drawRect(6, 6, 17, 17);
+
         g.setColor(fullColour);
-        g.fillRect(8, 0, 16, 24);
-        g.dispose();
-        styleButton.setSelectedIcon(new ImageIcon(styleOn));
+        g.fillRect(0, 0, 18, 18);
+        g.setColor(AlcToolBar.toolBarLineColour);
+        g.drawRect(0, 0, 18, 18);
+
+        swapButton.setIcon(new ImageIcon(swap));
+
+        BufferedImage swapOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
+        g = swapOn.createGraphics();
+
+        g.setColor(fullColour);
+        g.fillRect(0, 0, 18, 18);
+        g.setColor(AlcToolBar.toolBarLineColour);
+        g.drawRect(0, 0, 18, 18);
+
+        g.setColor(bgColour);
+        g.fillRect(6, 6, 18, 18);
+        g.setColor(AlcToolBar.toolBarLineColour);
+        g.drawRect(6, 6, 17, 17);
+
+        swapButton.setSelectedIcon(new ImageIcon(swapOn));
     }
 }

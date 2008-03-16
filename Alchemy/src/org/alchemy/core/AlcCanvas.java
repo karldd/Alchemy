@@ -56,7 +56,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     // GLOBAL SETTINGS
     ////////////////////////////////////////////////////////////// 
     /** Background colour */
-    Color bgColour;
+    private Color bgColour;
+    /** Old colour set when the colours are swapped */
+    private Color oldColour;
+    /** Swap state - true if the background is currently swapped in */
+    private boolean swapState = false;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
@@ -97,24 +101,24 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     // IMAGE
     //////////////////////////////////////////////////////////////
     /** An image of the canvas drawn behind active shapes */
-    BufferedImage canvasImage;
+    private BufferedImage canvasImage;
     /** Image than can be drawn on the canvas */
-    Image image;
+    private Image image;
     /** Display the Image or not */
-    boolean imageDisplay = false;
+    private boolean imageDisplay = false;
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
     /** Record indicator on/off */
-    boolean recordIndicator = false;
+    private boolean recordIndicator = false;
     /** Draw guides */
-    boolean guides = true;
+    private boolean guides = true;
     /** Graphics Envrionment - updated everytime the volatile buffImage is refreshed */
-    GraphicsEnvironment ge;
+    private GraphicsEnvironment ge;
     /** Graphics Configuration - updated everytime the volatile buffImage is refreshed */
-    GraphicsConfiguration gc;
+    private GraphicsConfiguration gc;
     /** A Vector based canvas for full redrawing */
-    static VectorCanvas vectorCanvas;
+    private static VectorCanvas vectorCanvas;
 
 //  PDF READER
 //  PDFFile pdffile;
@@ -566,20 +570,36 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
+    /** Get the current colour */
     public Color getColour() {
         return colour;
     }
 
-    public void setColour(Color colour) {
-        this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+    /** Set the current colour */
+    void setColour(Color colour) {
+        if (swapState) {
+            this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        } else {
+            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        }
+
+    }
+
+    /** Set the old colour when swap state is true */
+    void setOldColour(Color colour) {
+        this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
     }
 
     /** Toggle the colour between black and white */
-    public void toggleBlackWhite() {
-        if (this.colour == Color.BLACK) {
-            this.colour = Color.WHITE;
+    void toggleColour() {
+        //TODO - fix the colour toggling
+        if (swapState) {
+            colour = oldColour;
+            swapState = false;
         } else {
-            this.colour = Color.BLACK;
+            oldColour = colour;
+            colour = bgColour;
+            swapState = true;
         }
     }
 
@@ -589,7 +609,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     /** Set the current alpha value */
-    public void setAlpha(int alpha) {
+    void setAlpha(int alpha) {
         this.alpha = alpha;
         setColour(this.colour);
     }
@@ -622,6 +642,27 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
+
+
+    //////////////////////////////////////////////////////////////
+    // DISPLAY
+    //////////////////////////////////////////////////////////////
+    boolean isGuideEnabled() {
+        return guides;
+    }
+
+    void setGuide(boolean guides) {
+        this.guides = guides;
+    }
+
+    public boolean isRecordIndicatorEnabled() {
+        return recordIndicator;
+    }
+
+    public void setRecordIndicator(boolean recordIndicator) {
+        this.recordIndicator = recordIndicator;
+    }
+
     //////////////////////////////////////////////////////////////
     // IMAGE
     //////////////////////////////////////////////////////////////
@@ -632,6 +673,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     public void setImage(Image image) {
         this.image = image;
         canvasImage = renderCanvas(true);
+    }
+
+    /** Get the current image
+     * 
+     * @return  The current image
+     */
+    public Image getImage() {
+        return this.image;
     }
 
     /** Check if the canvasImage display is on
@@ -651,7 +700,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         canvasImage = renderCanvas(true);
     }
 
-    public boolean isImageDisplayed() {
+    public boolean isImageEnabled() {
         return imageDisplay;
     }
 
@@ -669,6 +718,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         BufferedImage buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height);
         // Paint the buffImage with the canvas
         Graphics2D g2 = buffImage.createGraphics();
+        // Make sure the record indicator is off
+        recordIndicator = false;
         if (vectorMode) {
             vectorCanvas.paintComponent(g2);
         } else {
@@ -689,7 +740,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     boolean savePng(File file) {
         try {
             //File file = new File("saveToThisFile.jpg");
+            setGuide(false);
             BufferedImage buffImage = renderCanvas(true);
+            setGuide(true);
             ImageIO.write(buffImage, "png", file);
             return true;
         } catch (IOException ex) {
@@ -725,7 +778,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             PdfContentByte singleContent = singleWriter.getDirectContent();
 
             Graphics2D g2pdf = singleContent.createGraphics(singlePdfWidth, singlePdfHeight);
+
+            setGuide(false);
             vectorCanvas.paintComponent(g2pdf);
+            setGuide(true);
+
             g2pdf.dispose();
 
             singleDocument.close();
@@ -1038,12 +1095,12 @@ class VectorCanvas extends JPanel implements AlcConstants {
         }
 
         // Paint background.
-        g2.setColor(Alchemy.canvas.bgColour);
+        g2.setColor(Alchemy.canvas.getBgColour());
         g2.fillRect(0, 0, w, h);
 
         // Draw buffImage
-        if (Alchemy.canvas.imageDisplay && Alchemy.canvas.image != null) {
-            g2.drawImage(Alchemy.canvas.image, 0, 0, null);
+        if (Alchemy.canvas.isImageEnabled() && Alchemy.canvas.isImageSet()) {
+            g2.drawImage(Alchemy.canvas.getImage(), 0, 0, null);
         }
 
         // Draw the create, affect, and shapes lists
@@ -1063,7 +1120,7 @@ class VectorCanvas extends JPanel implements AlcConstants {
                 }
             }
         }
-        if (Alchemy.canvas.guides) {
+        if (Alchemy.canvas.isGuideEnabled()) {
             for (int i = 0; i < Alchemy.canvas.guideShapes.size(); i++) {
                 AlcShape currentShape = (AlcShape) Alchemy.canvas.guideShapes.get(i);
                 // LINE

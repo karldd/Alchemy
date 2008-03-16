@@ -185,25 +185,18 @@ class AlcSession implements ActionListener, AlcConstants {
         // If the canvas has changed
         if (Alchemy.canvas.canvasChange()) {
 
-//            This should potentially be in a thread...
-//            try {
-//                Worker.post(new Task() {
-//
-//                    public Object run() throws Exception {
-            //System.out.println("SAVE FRAME CALL FROM TIMER");
-
             // If the page has been saved
             if (savePage()) {
                 // Show this with a small red circle on the canvas
-                Alchemy.canvas.recordIndicator = true;
+                Alchemy.canvas.setRecordIndicator(true);
 
                 if (indicatorTimer == null) {
                     indicatorTimer = new javax.swing.Timer(500, new ActionListener() {
 
                         public void actionPerformed(ActionEvent e) {
                             //System.out.println("indicatorTimer action called");
-                            Alchemy.canvas.recordIndicator = false;
-                            Alchemy.canvas.repaint();
+                            Alchemy.canvas.setRecordIndicator(false);
+                            Alchemy.canvas.redraw();
                             indicatorTimer.stop();
                             indicatorTimer = null;
                         }
@@ -212,15 +205,8 @@ class AlcSession implements ActionListener, AlcConstants {
                 }
                 Alchemy.canvas.redraw();
             }
-//                        return null;
-//                    }
-//                });
-//            } catch (Exception ignored) {
-//            }
-
 
             Alchemy.canvas.resetCanvasChange();
-            //Alchemy.canvas.savePdfPage();
             if (Alchemy.preferences.getAutoClear()) {
                 Alchemy.canvas.clear();
             }
