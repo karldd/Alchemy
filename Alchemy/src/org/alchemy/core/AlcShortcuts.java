@@ -18,14 +18,19 @@
  */
 package org.alchemy.core;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.prefs.BackingStoreException;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 /**
  * AlcShortcuts
@@ -35,6 +40,8 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
     private ArrayList mapper;
     private int index = 0;
+    private JTable table;
+    private TableModel model;
 
     AlcShortcuts(AlcWindow owner) {
         super(owner, Alchemy.bundle.getString("keyboardShortcutsWindowTitle"), true);
@@ -56,24 +63,33 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
         masterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] columnNames = {"Command", "Shortcut"};
-        Object[][] data = new Object[mapper.size()][2];
-
-        for (int i = 0; i < mapper.size(); i++) {
-            AlcShortcutMapper shortcut = (AlcShortcutMapper) mapper.get(i);
-            data[i][0] = shortcut.title;
-            String keyText = KeyEvent.getKeyText(shortcut.key);
-            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier);
-            if (keyModifier.equals("Command")) {
-                keyModifier = Alchemy.MODIFIER_KEY_STRING;
-            }
-            data[i][1] = keyModifier + keyText;
-        }
-        JTable table = new JTable(data, columnNames);
+        model = new AlcTableModel(mapper);
+        table = new JTable(model);
         table.setPreferredScrollableViewportSize(new Dimension(350, 200));
         table.setFocusable(false);
         table.setShowHorizontalLines(true);
-        table.putClientProperty("Quaqua.Table.style", "striped");
+        table.addMouseListener(new MouseAdapter() {
+
+            public void mouseClicked(MouseEvent e) {
+                // if (e.getClickCount() == 2) {
+                //if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
+                JTable target = (JTable) e.getSource();
+                int row = target.getSelectedRow();
+                int column = target.getSelectedColumn();
+                if (column >= 1) {
+                    //table.setEditingColumn(column);
+                    table.setEditingRow(row);
+                    model.setValueAt(new String(""), row, column);
+                }
+            //e.consume();
+            //}
+            }
+        });
+
+
+        if (Alchemy.PLATFORM == MACOSX) {
+            table.putClientProperty("Quaqua.Table.style", "striped");
+        }
 
         //Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table);
@@ -111,12 +127,10 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPane.add(okButton);
 
-//        table.setPreferredSize(new Dimension(400, 240));
         masterPanel.add(buttonPane);
 
         this.getContentPane().add(masterPanel);
         this.pack();
-        //this.setTitle(Alchemy.bundle.getString("keyboardShortcutsWindowTitle"));
         this.setResizable(false);
     }
 
@@ -156,7 +170,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
             modifierKey = MODIFIER_KEY;
         }
         // Store the mappings
-        mapper.add(new AlcShortcutMapper(index, key, title, action, modifierKey));
+        mapper.add(new AlcShortcutMapper(index, userKey, title, action, modifierKey));
         index++;
         Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), title);
         Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), title);
@@ -164,6 +178,22 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         Alchemy.palette.getRootPane().getActionMap().put(title, action);
         // Return the key that will be used.
         return userKey;
+    }
+
+    /** Clear and reload all shortcuts */
+    private void changeShortcuts() {
+        // Remove all shortcut mappings
+        Alchemy.window.getRootPane().resetKeyboardActions();
+        Alchemy.palette.getRootPane().resetKeyboardActions();
+
+        for (int i = 0; i < mapper.size(); i++) {
+            AlcShortcutMapper shortcut = (AlcShortcutMapper) mapper.get(i);
+            Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.title);
+            Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.title);
+            Alchemy.window.getRootPane().getActionMap().put(shortcut.title, shortcut.action);
+            Alchemy.palette.getRootPane().getActionMap().put(shortcut.title, shortcut.action);
+        }
+
     }
 }
 
@@ -187,3 +217,136 @@ class AlcShortcutMapper {
         this.modifier = modifier;
     }
 }
+
+class AlcTableModel extends AbstractTableModel {
+
+    final ArrayList mapper;
+    final String[] columnNames = {"Command", "Shortcut"};
+    final Object[][] data;
+
+    AlcTableModel(ArrayList mapper) {
+        this.mapper = mapper;
+
+        data = new Object[mapper.size()][2];
+
+        for (int i = 0; i < mapper.size(); i++) {
+            AlcShortcutMapper shortcut = (AlcShortcutMapper) mapper.get(i);
+            data[i][0] = shortcut.title;
+            String keyText = KeyEvent.getKeyText(shortcut.key);
+            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier);
+            if (keyModifier.equals("Command")) {
+                keyModifier = Alchemy.MODIFIER_KEY_STRING;
+            }
+            data[i][1] = keyModifier + keyText;
+        }
+    }
+
+    public int getColumnCount() {
+        return columnNames.length;
+    }
+
+    public int getRowCount() {
+        return data.length;
+    }
+
+    public String getColumnName(int col) {
+        return columnNames[col];
+    }
+
+    public Object getValueAt(int row, int col) {
+        return data[row][col];
+    }
+
+    /*
+     * JTable uses this method to determine the default renderer/
+     * editor for each cell.  If we didn't implement this method,
+     * then the last column would contain text ("true"/"false"),
+     * rather than a check box.
+     */
+    public Class getColumnClass(int c) {
+        return getValueAt(0, c).getClass();
+    }
+
+    /*
+     * Don't need to implement this method unless your table's
+     * editable.
+     */
+    public boolean isCellEditable(int row, int col) {
+        //Note that the data/cell address is constant,
+        //no matter where the cell appears onscreen.
+        if (col >= 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*
+     * Don't need to implement this method unless your table's
+     * data can change.
+     */
+    public void setValueAt(Object value, int row, int col) {
+
+        //if (DEBUG) {
+        System.out.println("Setting value at " + row + "," + col + " to " + value + " (an instance of " + value.getClass() + ")");
+        //}
+
+        data[row][col] = value;
+        fireTableCellUpdated(row, col);
+//
+//        if (DEBUG) {
+//            System.out.println("New value of data:");
+//            printDebugData();
+//        }
+    }
+
+    private void printDebugData() {
+        int numRows = getRowCount();
+        int numCols = getColumnCount();
+
+        for (int i = 0; i < numRows; i++) {
+            System.out.print("    row " + i + ":");
+            for (int j = 0; j < numCols; j++) {
+                System.out.print("  " + data[i][j]);
+            }
+            System.out.println();
+        }
+        System.out.println("--------------------------");
+    }
+    }
+
+class AlcCellEditor extends DefaultCellEditor {
+
+    /**
+     * Constructs a DefaultCellEditor that uses a text field.
+     *
+     * @param textField  a JTextField object
+     */
+    AlcCellEditor(JTextField textField) {
+        super(textField);
+        textField.setBorder(new LineBorder(Color.black));
+    }
+
+    /**
+     * Constructs a DefaultCellEditor object that uses 
+     * a check box.
+     *
+     * @param checkBox  a JCheckBox object
+     */
+    AlcCellEditor(JCheckBox checkBox) {
+        super(checkBox);
+        checkBox.setBorder(new LineBorder(Color.black));
+    }
+
+    /**
+     * Constructs a DefaultCellEditor object that uses a
+     * combo box.
+     *
+     * @param comboBox  a JComboBox object
+     */
+    AlcCellEditor(JComboBox comboBox) {
+        super(comboBox);
+        comboBox.setBorder(new LineBorder(Color.black));
+    }
+}
+
