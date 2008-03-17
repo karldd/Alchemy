@@ -20,17 +20,16 @@ package org.alchemy.core;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
+import javax.swing.JTextField;
+import javax.swing.JTextField;
+import javax.swing.JTextField;
+import javax.swing.JTextField;
 
 /**
  * AlcShortcuts
@@ -38,15 +37,21 @@ import javax.swing.table.TableModel;
  */
 class AlcShortcuts extends JDialog implements AlcConstants {
 
-    private ArrayList mapper;
+    private ArrayList userShortcuts;
+    private ArrayList defaultShortcuts;
+    private JTextField[] textfields;
     private int index = 0;
-    private JTable table;
-    private TableModel model;
+    private boolean listenerActive = false;
+    private JButton okButton;
+    private boolean reloadShortcuts = false;
+    private static final Font shortcutFont = new Font("sansserif", Font.PLAIN, 12);
+    private JPanel shortcutPanel;
 
     AlcShortcuts(AlcWindow owner) {
         super(owner, Alchemy.bundle.getString("keyboardShortcutsWindowTitle"), true);
-        mapper = new ArrayList(50);
-//        try {
+        userShortcuts = new ArrayList(50);
+        defaultShortcuts = new ArrayList(50);
+    //        try {
 //            String[] prefKeys = AlcPreferences.prefs.keys();
 //            AlcUtil.printStringArray(prefKeys);
 //
@@ -56,51 +61,42 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     }
 
     void setupWindow() {
-        JPanel masterPanel = new JPanel();
+        final JPanel masterPanel = new JPanel();
         //masterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
         masterPanel.setOpaque(true);
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
         masterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        model = new AlcTableModel(mapper);
-        table = new JTable(model);
-        table.setPreferredScrollableViewportSize(new Dimension(350, 200));
-        table.setFocusable(false);
-        table.setShowHorizontalLines(true);
-        table.addMouseListener(new MouseAdapter() {
-
-            public void mouseClicked(MouseEvent e) {
-                // if (e.getClickCount() == 2) {
-                //if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
-                JTable target = (JTable) e.getSource();
-                int row = target.getSelectedRow();
-                int column = target.getSelectedColumn();
-                if (column >= 1) {
-                    //table.setEditingColumn(column);
-                    table.setEditingRow(row);
-                    model.setValueAt(new String(""), row, column);
-                }
-            //e.consume();
-            //}
-            }
-        });
-
-
-        if (Alchemy.PLATFORM == MACOSX) {
-            table.putClientProperty("Quaqua.Table.style", "striped");
-        }
-
-        //Create the scroll pane and add the table to it.
-        JScrollPane scrollPane = new JScrollPane(table);
+        shortcutPanel = setupShortcutPanel();
+        //Create the scroll pane and add the panel to it.
+        final JScrollPane scrollPane = new JScrollPane(shortcutPanel);
+        //scrollPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(400, 240));
+        scrollPane.setPreferredSize(new Dimension(500, 300));
         //Add the scroll pane to this panel.
         masterPanel.add(scrollPane);
 
+        //////////////////////////////////////////////////////////////
+        // RESTORE DEFAULT BUTTON
+        //////////////////////////////////////////////////////////////
+        JButton defaultButton = new JButton(Alchemy.bundle.getString("restoreDefaults"));
+        defaultButton.addActionListener(
+                new ActionListener() {
 
-        //Create and initialize the buttons.
+                    public void actionPerformed(ActionEvent e) {
+                        userShortcuts = (ArrayList) defaultShortcuts.clone();
+                        reloadShortcuts();
+                        refreshTextfields();
+                        okButton.requestFocus();
+                        reloadShortcuts = true;
+                    }
+                });
+
+        //////////////////////////////////////////////////////////////
+        // CANCEL BUTTON
+        //////////////////////////////////////////////////////////////
         JButton cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
         cancelButton.addActionListener(
                 new ActionListener() {
@@ -109,19 +105,31 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                         setVisible(false);
                     }
                 });
-        JButton okButton = new JButton(Alchemy.bundle.getString("ok"));
+
+        //////////////////////////////////////////////////////////////
+        // OK BUTTON
+        //////////////////////////////////////////////////////////////
+        okButton = new JButton(Alchemy.bundle.getString("ok"));
         okButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
+                        // If there have been changes
+                        if (reloadShortcuts) {
+                            reloadShortcuts();
+                            saveShortcuts();
+                        }
+                        reloadShortcuts = false;
                         setVisible(false);
                     }
                 });
         getRootPane().setDefaultButton(okButton);
+
         //Lay out the buttons from left to right.
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        buttonPane.add(defaultButton);
         buttonPane.add(Box.createHorizontalGlue());
         buttonPane.add(cancelButton);
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -132,12 +140,171 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         this.getContentPane().add(masterPanel);
         this.pack();
         this.setResizable(false);
+
+        okButton.requestFocus();
     }
 
+    /** Show and centre the shorcut window */
     void showWindow() {
         Point loc = AlcUtil.calculateCenter(this);
         this.setLocation(loc.x, loc.y);
         this.setVisible(true);
+    }
+
+    /** Create and return the shortcut panel*/
+    JPanel setupShortcutPanel() {
+
+        textfields = new JTextField[userShortcuts.size()];
+
+        JPanel panel = new JPanel();
+        panel.setOpaque(true);
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        panel.setBackground(AlcToolBar.toolBarBgStartColour);
+        panel.setLayout(new GridLayout(userShortcuts.size(), 2));
+
+        for (int i = 0; i < userShortcuts.size(); i++) {
+            final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            JLabel label = new JLabel(shortcut.title);
+            label.setFont(shortcutFont);
+            panel.add(label);
+
+            String keyText = KeyEvent.getKeyText(shortcut.key).toUpperCase();
+            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier).toUpperCase();
+            if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
+                keyModifier = Alchemy.MODIFIER_KEY_STRING;
+            }
+            if (shortcut.modifier > 0) {
+                keyModifier += "+";
+            }
+            final String originalShortcut = keyModifier + keyText;
+            final JTextField textfield = new JTextField(originalShortcut);
+            textfield.setBackground(Color.WHITE);
+            textfield.setFont(shortcutFont);
+
+            textfield.addMouseListener(new MouseAdapter() {
+
+                public void mousePressed(MouseEvent e) {
+                    listenerActive = true;
+                    textfield.setText("");
+                    textfield.setBackground(AlcToolBar.toolBarBgColour);
+                }
+                });
+
+            textfield.addKeyListener(new KeyAdapter() {
+
+                public void keyReleased(KeyEvent e) {
+
+                    if (listenerActive) {
+                        int key = e.getKeyCode();
+                        int modifier = e.getModifiers();
+
+                        String keyText = KeyEvent.getKeyText(key).toUpperCase();
+                        String keyModifier = KeyEvent.getKeyModifiersText(modifier).toUpperCase();
+
+                        if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
+                            keyModifier = Alchemy.MODIFIER_KEY_STRING;
+                        }
+
+                        if (modifier > 0) {
+                            keyModifier += "+";
+                        }
+
+                        int changeShortcut = validateShortcut(key, modifier, shortcut.index);
+
+                        // Shortcut is valid
+                        if (changeShortcut == 0) {
+                            textfield.setText(keyModifier + keyText);
+                            shortcut.key = key;
+                            shortcut.modifier = modifier;
+                            reloadShortcuts = true;
+                            textfield.setBackground(Color.WHITE);
+                        } else {
+                            textfield.setBackground(Color.PINK);
+
+                            if (changeShortcut == 1) {
+                                textfield.setText(Alchemy.bundle.getString("invalidKeyError"));
+                            } else if (changeShortcut == 2) {
+                                textfield.setText(Alchemy.bundle.getString("keyAlreadyAssignedError"));
+                            }
+                            javax.swing.Timer timer = new javax.swing.Timer(1500, new ActionListener() {
+
+                                public void actionPerformed(ActionEvent e) {
+                                    textfield.setBackground(Color.WHITE);
+                                    textfield.setText(originalShortcut);
+                                }
+                            });
+
+                            timer.start();
+                            timer.setRepeats(false);
+                        }
+
+                        //System.out.println(key + " " + modifier + " " + MODIFIER_KEY);
+
+                        listenerActive = false;
+                        okButton.requestFocus();
+
+                    }
+
+                }
+                });
+
+            textfield.addFocusListener(new FocusAdapter() {
+
+                public void focusLost(FocusEvent e) {
+                    if (textfield.getText().equals("")) {
+                        textfield.setText(originalShortcut);
+                        textfield.setBackground(Color.WHITE);
+                    }
+                }
+                });
+
+
+            textfields[i] = textfield;
+            panel.add(textfield);
+        }
+        return panel;
+    }
+
+    private int validateShortcut(int key, int modifier, int index) {
+        if (modifier == 0) {
+            // Make sure these keys are not used alone
+            if (key == KeyEvent.VK_META ||
+                    key == KeyEvent.VK_ALT ||
+                    key == KeyEvent.VK_CONTROL ||
+                    key == KeyEvent.VK_SHIFT) {
+                return 1;
+            }
+        }
+
+        // Check the shortcut is not the same as any other
+        for (int i = 0; i < userShortcuts.size(); i++) {
+            final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            if (i != index) {
+                if (shortcut.modifier == modifier && shortcut.key == key) {
+                    return 2;
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /** Reload the shortcuts into the textfields */
+    private void refreshTextfields() {
+        for (int i = 0; i < textfields.length; i++) {
+            final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            String keyText = KeyEvent.getKeyText(shortcut.key).toUpperCase();
+            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier).toUpperCase();
+            if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
+                keyModifier = Alchemy.MODIFIER_KEY_STRING;
+            }
+            if (shortcut.modifier > 0) {
+                keyModifier += "+";
+            }
+            textfields[i].setText(keyModifier + keyText);
+            textfields[i].setBackground(Color.WHITE);
+        }
+
     }
 
     /** Set the keyboard shortcut to trigger an application wide action
@@ -148,7 +315,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      * @return          The key actually used for this shortcut - user specified or default
      */
     int setShortcut(int key, String title, Action action) {
-        return setShortcut(key, title, action, false);
+        return setShortcut(key, title, action, 0);
     }
 
     /** Set the keyboard shortcut to trigger an application wide action
@@ -160,18 +327,19 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      * @param modifier  Use the system modifier key - Win=Ctrl or Mac=Command
      * @return          The key actually used for this shortcut - user specified or default
      */
-    int setShortcut(int key, String title, Action action, boolean modifier) {
+    int setShortcut(int key, String title, Action action, int modifier) {
+        // Keep track of the default shortcuts
+        defaultShortcuts.add(new AlcShortcutMapper(index, key, title, action, modifier));
+
         // Look for the users key stored in the preferences
         // If not found go with the default
         int userKey = AlcPreferences.prefs.getInt(title, key);
-        // Set the modifier key - 0 means no modifier, else use the system modifier
-        int modifierKey = 0;
-        if (modifier) {
-            modifierKey = MODIFIER_KEY;
-        }
-        // Store the mappings
-        mapper.add(new AlcShortcutMapper(index, userKey, title, action, modifierKey));
+        // Look for the modifier key
+        int modifierKey = AlcPreferences.prefs.getInt(title + " Modifier", modifier);
+        // Store the mappings into the user set of shortcuts
+        userShortcuts.add(new AlcShortcutMapper(index, userKey, title, action, modifierKey));
         index++;
+
         Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), title);
         Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), title);
         Alchemy.window.getRootPane().getActionMap().put(title, action);
@@ -181,19 +349,27 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     }
 
     /** Clear and reload all shortcuts */
-    private void changeShortcuts() {
+    private void reloadShortcuts() {
         // Remove all shortcut mappings
         Alchemy.window.getRootPane().resetKeyboardActions();
         Alchemy.palette.getRootPane().resetKeyboardActions();
 
-        for (int i = 0; i < mapper.size(); i++) {
-            AlcShortcutMapper shortcut = (AlcShortcutMapper) mapper.get(i);
+        for (int i = 0; i < userShortcuts.size(); i++) {
+            AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
             Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.title);
             Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.title);
             Alchemy.window.getRootPane().getActionMap().put(shortcut.title, shortcut.action);
             Alchemy.palette.getRootPane().getActionMap().put(shortcut.title, shortcut.action);
         }
+    }
 
+    /** Store the shortcuts in the preferences persistant storage */
+    private void saveShortcuts() {
+        for (int i = 0; i < userShortcuts.size(); i++) {
+            AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            AlcPreferences.prefs.putInt(shortcut.title, shortcut.key);
+            AlcPreferences.prefs.putInt(shortcut.title + " Modifier", shortcut.modifier);
+        }
     }
 }
 
@@ -217,136 +393,3 @@ class AlcShortcutMapper {
         this.modifier = modifier;
     }
 }
-
-class AlcTableModel extends AbstractTableModel {
-
-    final ArrayList mapper;
-    final String[] columnNames = {"Command", "Shortcut"};
-    final Object[][] data;
-
-    AlcTableModel(ArrayList mapper) {
-        this.mapper = mapper;
-
-        data = new Object[mapper.size()][2];
-
-        for (int i = 0; i < mapper.size(); i++) {
-            AlcShortcutMapper shortcut = (AlcShortcutMapper) mapper.get(i);
-            data[i][0] = shortcut.title;
-            String keyText = KeyEvent.getKeyText(shortcut.key);
-            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier);
-            if (keyModifier.equals("Command")) {
-                keyModifier = Alchemy.MODIFIER_KEY_STRING;
-            }
-            data[i][1] = keyModifier + keyText;
-        }
-    }
-
-    public int getColumnCount() {
-        return columnNames.length;
-    }
-
-    public int getRowCount() {
-        return data.length;
-    }
-
-    public String getColumnName(int col) {
-        return columnNames[col];
-    }
-
-    public Object getValueAt(int row, int col) {
-        return data[row][col];
-    }
-
-    /*
-     * JTable uses this method to determine the default renderer/
-     * editor for each cell.  If we didn't implement this method,
-     * then the last column would contain text ("true"/"false"),
-     * rather than a check box.
-     */
-    public Class getColumnClass(int c) {
-        return getValueAt(0, c).getClass();
-    }
-
-    /*
-     * Don't need to implement this method unless your table's
-     * editable.
-     */
-    public boolean isCellEditable(int row, int col) {
-        //Note that the data/cell address is constant,
-        //no matter where the cell appears onscreen.
-        if (col >= 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /*
-     * Don't need to implement this method unless your table's
-     * data can change.
-     */
-    public void setValueAt(Object value, int row, int col) {
-
-        //if (DEBUG) {
-        System.out.println("Setting value at " + row + "," + col + " to " + value + " (an instance of " + value.getClass() + ")");
-        //}
-
-        data[row][col] = value;
-        fireTableCellUpdated(row, col);
-//
-//        if (DEBUG) {
-//            System.out.println("New value of data:");
-//            printDebugData();
-//        }
-    }
-
-    private void printDebugData() {
-        int numRows = getRowCount();
-        int numCols = getColumnCount();
-
-        for (int i = 0; i < numRows; i++) {
-            System.out.print("    row " + i + ":");
-            for (int j = 0; j < numCols; j++) {
-                System.out.print("  " + data[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println("--------------------------");
-    }
-    }
-
-class AlcCellEditor extends DefaultCellEditor {
-
-    /**
-     * Constructs a DefaultCellEditor that uses a text field.
-     *
-     * @param textField  a JTextField object
-     */
-    AlcCellEditor(JTextField textField) {
-        super(textField);
-        textField.setBorder(new LineBorder(Color.black));
-    }
-
-    /**
-     * Constructs a DefaultCellEditor object that uses 
-     * a check box.
-     *
-     * @param checkBox  a JCheckBox object
-     */
-    AlcCellEditor(JCheckBox checkBox) {
-        super(checkBox);
-        checkBox.setBorder(new LineBorder(Color.black));
-    }
-
-    /**
-     * Constructs a DefaultCellEditor object that uses a
-     * combo box.
-     *
-     * @param comboBox  a JComboBox object
-     */
-    AlcCellEditor(JComboBox comboBox) {
-        super(comboBox);
-        comboBox.setBorder(new LineBorder(Color.black));
-    }
-}
-
