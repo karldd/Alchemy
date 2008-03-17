@@ -60,7 +60,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Old colour set when the colours are swapped */
     private Color oldColour;
     /** Swap state - true if the background is currently swapped in */
-    private boolean swapState = false;
+    private boolean backgroundActive = false;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
@@ -304,16 +304,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Get the canvas redraw state */
     public boolean isRedraw() {
         return redraw;
-    }
-
-    /** Get the Background Colour */
-    public Color getBgColour() {
-        return bgColour;
-    }
-
-    /** Set the Background Colour */
-    public void setBgColour(Color bgColour) {
-        this.bgColour = bgColour;
     }
 
     /** Set Smoothing (AntiAliasing) on or off */
@@ -568,7 +558,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     //////////////////////////////////////////////////////////////
-    // GLOBAL SHAPE SETTINGS
+    // SHAPE/COLOUR SETTINGS
     //////////////////////////////////////////////////////////////
     /** Get the current colour */
     public Color getColour() {
@@ -577,29 +567,74 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Set the current colour */
     void setColour(Color colour) {
-        if (swapState) {
-            this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        if (backgroundActive) {
+            bgColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
+            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
+            redraw(true);
         } else {
             this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
         }
-
     }
 
-    /** Set the old colour when swap state is true */
+    /** Get the old colour */
+    Color getOldColour() {
+        return oldColour;
+    }
+
+    /** Set the old colour when backgroundActive state is true */
     void setOldColour(Color colour) {
         this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
     }
 
     /** Toggle the colour between black and white */
     void toggleColour() {
-        //TODO - fix the colour toggling
-        if (swapState) {
-            colour = oldColour;
-            swapState = false;
+        if (backgroundActive) {
+            colour = new Color(oldColour.getRed(), oldColour.getGreen(), oldColour.getBlue(), alpha);
+            backgroundActive = false;
         } else {
             oldColour = colour;
-            colour = bgColour;
-            swapState = true;
+            colour = new Color(bgColour.getRGB());
+            backgroundActive = true;
+        }
+    }
+
+    /** Get the Background Colour */
+    public Color getBgColour() {
+        return bgColour;
+    }
+
+    /** Set the Background Colour */
+    public void setBgColour(Color bgColour) {
+        this.bgColour = bgColour;
+        if (backgroundActive) {
+            colour = new Color(bgColour.getRGB());
+        }
+    }
+
+    /** Set the foreground colour
+     *  This method sets the foreground colour 
+     *  even if it is not currently active.
+     *  E.g. The active colour is the background colour
+     */
+    public void setForegroundColour() {
+        if (backgroundActive) {
+            this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        } else {
+            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        }
+    }
+
+    /** Get the current forground colour
+     *  This method returns the foreground colour 
+     *  even if it is not currently active.
+     *  E.g. The active colour is the background colour
+     * @return
+     */
+    public Color getForegroundColour() {
+        if (backgroundActive) {
+            return oldColour;
+        } else {
+            return colour;
         }
     }
 
@@ -611,7 +646,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Set the current alpha value */
     void setAlpha(int alpha) {
         this.alpha = alpha;
-        setColour(this.colour);
+        if (backgroundActive) {
+            setOldColour(this.oldColour);
+        } else {
+            setColour(this.colour);
+        }
     }
 
     /** Get the current style */
@@ -955,9 +994,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     public void mousePressed(MouseEvent event) {
         // Turn off the toolbar on canvas click
-        if (Alchemy.toolBar.toolBarTimer != null) {
-            Alchemy.toolBar.setToolBarVisible(false);
-        }
+        Alchemy.toolBar.setToolBarVisible(false);
 
         if (mouseEvents) {
             // Pass to the current create module

@@ -143,7 +143,7 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
         prefs.putInt("Background Colour", Alchemy.canvas.getBgColour().getRGB());
-        prefs.putInt("Colour", Alchemy.canvas.getColour().getRGB());
+        prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());
 
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", switchVectorApp);

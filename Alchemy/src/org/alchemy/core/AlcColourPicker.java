@@ -25,7 +25,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -72,12 +71,12 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, 25, 15);
 
-        g2.setColor(Color.WHITE);
-        g2.fillRect(25, 0, 75, 15);
+        // 50% Gray
+        g2.setColor(new Color(0.5F, 0.5F, 0.5F));
+        g2.fillRect(25, 0, 25, 15);
 
-        // Bg Colour
-        g2.setColor(Alchemy.canvas.getBgColour());
-        g2.fillRect(50, 0, 25, 15);
+        g2.setColor(Color.WHITE);
+        g2.fillRect(50, 0, 50, 15);
 
 
         g2.setColor(Color.LIGHT_GRAY);
@@ -87,8 +86,8 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
         g2.drawLine(50, 0, 50, 15);
 
         // Draw the edges of the base colours
-        g2.drawLine(25, 14, 100, 14);
-        g2.drawLine(25, 0, 100, 0);
+        g2.drawLine(50, 14, 100, 14);
+        g2.drawLine(50, 0, 100, 0);
 
         // Draw some dots
         g2.fillRect(82, 10, 2, 2);
@@ -151,40 +150,39 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
         return new Color(colourArray.getRGB(x, y));
     }
 
-    void updateColourPicker() {
-        Graphics2D g2 = colourArray.createGraphics();
-        // Bg Colour
-        g2.setColor(Alchemy.canvas.getBgColour());
-        g2.fillRect(50, 0, 25, 15);
-
-        g2.setColor(Color.LIGHT_GRAY);
-        g2.drawRect(75, 0, 24, 14);
-
-        // Draw the edges of the base colours
-        g2.drawLine(25, 14, 100, 14);
-        g2.drawLine(25, 0, 100, 0);
-
-        g2.dispose();
-    }
-
+//    void updateColourPicker() {
+//        Graphics2D g2 = colourArray.createGraphics();
+//        // Bg Colour
+//        g2.setColor(Alchemy.canvas.getBgColour());
+//        g2.fillRect(50, 0, 25, 15);
+//
+//        g2.setColor(Color.LIGHT_GRAY);
+//        g2.drawRect(75, 0, 24, 14);
+//
+//        // Draw the edges of the base colours
+//        g2.drawLine(25, 14, 100, 14);
+//        g2.drawLine(25, 0, 100, 0);
+//
+//        g2.dispose();
+//    }
     protected void paintComponent(Graphics g) {
         //super.paintComponent(g2);
         Graphics2D g2 = (Graphics2D) g;
         g2.drawImage(colourArray, 0, 0, null);
 
-        // Set the colour of the text based on the bg colour
-        Color bg = Alchemy.canvas.getBgColour();
-        int bgGrey = AlcUtil.getColorBrightness(bg.getRGB());
-        if (bgGrey > 127) {
-            int grey = bgGrey - 75;
-            g2.setColor(new Color(grey, grey, grey));
-        } else {
-            int grey = bgGrey + 75;
-            g2.setColor(new Color(grey, grey, grey));
-        }
-
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-        g2.setFont(AlcToolBar.subToolBarFont);
-        g2.drawString("BG", 56, 11);
+//        // Set the colour of the text based on the bg colour
+//        Color bg = Alchemy.canvas.getBgColour();
+//        int bgGrey = AlcUtil.getColorBrightness(bg.getRGB());
+//        if (bgGrey > 127) {
+//            int grey = bgGrey - 75;
+//            g2.setColor(new Color(grey, grey, grey));
+//        } else {
+//            int grey = bgGrey + 75;
+//            g2.setColor(new Color(grey, grey, grey));
+//        }
+//
+//        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+//        g2.setFont(AlcToolBar.subToolBarFont);
+//        g2.drawString("BG", 56, 11);
     }
 }

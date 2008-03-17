@@ -447,36 +447,6 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         settingsMenu.add(new JSeparator());
 
-        // Background Colour
-        AbstractAction bgColourAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                // Action to change the colour
-                ActionListener colorAction = new ActionListener() {
-
-                    public void actionPerformed(ActionEvent event) {
-                        Alchemy.canvas.setBgColour(Alchemy.colourChooser.getColor());
-                        Alchemy.toolBar.picker.updateColourPicker();
-                        Alchemy.toolBar.refreshSwapButton();
-                        Alchemy.canvas.redraw(true);
-                    }
-                };
-
-                // Set the current colour to the bg
-                Alchemy.colourChooser.setColor(Alchemy.canvas.getBgColour());
-                // Dialog to hold the colour chooser
-                JDialog dialog = JColorChooser.createDialog(Alchemy.window, getS("bgColourDialogTitle"), true, Alchemy.colourChooser, colorAction, null);
-                dialog.setBackground(AlcToolBar.toolBarBgColour);
-                dialog.setResizable(false);
-                dialog.setVisible(true);
-            }
-        };
-        AlcMenuItem bgColourItem = new AlcMenuItem(bgColourAction);
-        bgColourItem.setup(getS("bgColourTitle"));
-        settingsMenu.add(bgColourItem);
-
-        //settingsMenu.add(new JSeparator());
-
         // Keyboard Shortcuts
         AbstractAction keyboardShortcutsAction = new AbstractAction() {
 
