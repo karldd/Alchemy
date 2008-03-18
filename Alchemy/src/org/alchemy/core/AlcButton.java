@@ -68,9 +68,6 @@ class AlcButton extends JButton implements AlcShortcutInterface {
     }
 
     public void refreshShortcut(int key, int modifier) {
-        // Make a string from the shortcut keys
-        String shortcutString = AlcShortcuts.getShortcutString(key, modifier);
-        
-        this.setToolTipText(shortcutString);
+        this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
     }
 }

@@ -139,7 +139,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         };
 
         // Shortcut - TAB
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_SPACE, "toggleToolBar", toolBarAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_SPACE, "toggleToolBar", toolBarAction);
 
 
         // Turn off the visibility until the mouse enters the top of the screen
@@ -176,7 +176,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         styleButton.setup(styleTitle, getS("styleDescription"), AlcUtil.getUrlPath("style.png"));
 
         // Shortcut - s
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, "styleTitle", styleAction);
+        Alchemy.shortcuts.setShortcut(styleButton, KeyEvent.VK_S, "styleTitle", styleAction);
         toolBar.add(styleButton);
 
         //////////////////////////////////////////////////////////////
@@ -192,9 +192,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         AlcButton clearButton = new AlcButton(clearAction);
         clearButton.setup(clearTitle, getS("clearDescription"), AlcUtil.getUrlPath("clear.png"));
         // Shortcuts - Modifier Delete/Backspace
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
-        //Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MODIFIER_KEY), clearTitle);
-        //Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MODIFIER_KEY), clearTitle);
+        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
         Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
         toolBar.add(clearButton);
 
@@ -203,8 +201,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // currentValue, min, max, stepsize
         SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int) Alchemy.canvas.getLineWidth(), 1, 50, 1);
-        AlcSpinner lineWidthSpinner = new AlcSpinner(getS("lineWeightTitle"), lineWidthNumberModel);
-        lineWidthSpinner.setToolTipText(getS("lineWeightDescription"));
+        AlcSpinner lineWidthSpinner = new AlcSpinner(getS("lineWeightTitle"), lineWidthNumberModel, getS("lineWeightDescription"));
         lineWidthSpinner.spinner.addChangeListener(
                 new ChangeListener() {
 
@@ -314,14 +311,13 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         fgbgButton.setText(fgTitle);
 
         // Shortcut - X
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_X, "fgbgTitle", fgbgAction);
+        Alchemy.shortcuts.setShortcut(fgbgButton, KeyEvent.VK_X, "fgbgTitle", fgbgAction);
         toolBar.add(fgbgButton);
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        AlcSlider alphaSlider = new AlcSlider(getS("transparencyTitle"), 0, 255, 255);
-        alphaSlider.setToolTipText(getS("transparencyDescription"));
+        AlcSlider alphaSlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 255);
         alphaSlider.slider.addChangeListener(
                 new ChangeListener() {
 

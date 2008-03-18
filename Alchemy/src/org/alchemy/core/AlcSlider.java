@@ -29,12 +29,15 @@ import javax.swing.*;
  * 
  * 
  */
- class AlcSlider extends JPanel {
+class AlcSlider extends JPanel implements AlcShortcutInterface {
 
     protected JSlider slider;
     private JLabel label;
+    private String toolTip;
 
-     AlcSlider(String name, int minValue, int maxValue, int startValue) {
+    AlcSlider(String name, String toolTip, int minValue, int maxValue, int startValue) {
+
+        this.toolTip = toolTip;
 
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -63,11 +66,16 @@ import javax.swing.*;
         //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(label);
 
+        setToolTipText(toolTip);
 
     }
 
-     public void setToolTipText(String toolTip) {
+    public void setToolTipText(String toolTip) {
         slider.setToolTipText(toolTip);
         label.setToolTipText(toolTip);
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
     }
 }
