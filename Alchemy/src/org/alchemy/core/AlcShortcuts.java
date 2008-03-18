@@ -25,6 +25,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.prefs.BackingStoreException;
 import javax.swing.*;
 import javax.swing.JTextField;
 import javax.swing.JTextField;
@@ -51,13 +52,14 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         super(owner, Alchemy.bundle.getString("keyboardShortcutsWindowTitle"), true);
         userShortcuts = new ArrayList(50);
         defaultShortcuts = new ArrayList(50);
-    //        try {
-//            String[] prefKeys = AlcPreferences.prefs.keys();
-//            AlcUtil.printStringArray(prefKeys);
-//
-//        } catch (BackingStoreException ex) {
-//            ex.printStackTrace();
-//        }
+
+        try {
+            String[] prefKeys = AlcPreferences.prefs.keys();
+            AlcUtil.printStringArray(prefKeys);
+
+        } catch (BackingStoreException ex) {
+            ex.printStackTrace();
+        }
     }
 
     void setupWindow() {
@@ -139,7 +141,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
         this.getContentPane().add(masterPanel);
         this.pack();
-        this.setResizable(false);
+        //this.setResizable(false);
 
         okButton.requestFocus();
     }
@@ -168,15 +170,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
             label.setFont(shortcutFont);
             panel.add(label);
 
-            String keyText = KeyEvent.getKeyText(shortcut.key).toUpperCase();
-            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier).toUpperCase();
-            if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
-                keyModifier = Alchemy.MODIFIER_KEY_STRING;
-            }
-            if (shortcut.modifier > 0) {
-                keyModifier += "+";
-            }
-            final String originalShortcut = keyModifier + keyText;
+            final String originalShortcut = getShortcutString(shortcut.key, shortcut.modifier);
             final JTextField textfield = new JTextField(originalShortcut);
             textfield.setBackground(Color.WHITE);
             textfield.setFont(shortcutFont);
@@ -197,23 +191,14 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                     if (listenerActive) {
                         int key = e.getKeyCode();
                         int modifier = e.getModifiers();
-
-                        String keyText = KeyEvent.getKeyText(key).toUpperCase();
-                        String keyModifier = KeyEvent.getKeyModifiersText(modifier).toUpperCase();
-
-                        if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
-                            keyModifier = Alchemy.MODIFIER_KEY_STRING;
-                        }
-
-                        if (modifier > 0) {
-                            keyModifier += "+";
-                        }
-
+                        // Make a text string of the shortcut
+                        String shortcutString = getShortcutString(key, modifier);
+                        // Check the shortcut is valid
                         int changeShortcut = validateShortcut(key, modifier, shortcut.index);
 
                         // Shortcut is valid
                         if (changeShortcut == 0) {
-                            textfield.setText(keyModifier + keyText);
+                            textfield.setText(shortcutString);
                             shortcut.key = key;
                             shortcut.modifier = modifier;
                             reloadShortcuts = true;
@@ -293,15 +278,9 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     private void refreshTextfields() {
         for (int i = 0; i < textfields.length; i++) {
             final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
-            String keyText = KeyEvent.getKeyText(shortcut.key).toUpperCase();
-            String keyModifier = KeyEvent.getKeyModifiersText(shortcut.modifier).toUpperCase();
-            if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
-                keyModifier = Alchemy.MODIFIER_KEY_STRING;
-            }
-            if (shortcut.modifier > 0) {
-                keyModifier += "+";
-            }
-            textfields[i].setText(keyModifier + keyText);
+            // Make a text string of the shortcut
+            String shortcutString = getShortcutString(shortcut.key, shortcut.modifier);
+            textfields[i].setText(shortcutString);
             textfields[i].setBackground(Color.WHITE);
         }
 
@@ -328,48 +307,75 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      * @return          The key actually used for this shortcut - user specified or default
      */
     int setShortcut(int key, String title, Action action, int modifier) {
+        // Get the localised string to display
+        String bundleTitle = Alchemy.bundle.getString(title);
+        // Get the english string to store as a reference - the two may or may not be the same
+        String bundleTitleEn = Alchemy.bundleEn.getString(title);
+
         // Keep track of the default shortcuts
-        defaultShortcuts.add(new AlcShortcutMapper(index, key, title, action, modifier));
+        defaultShortcuts.add(new AlcShortcutMapper(index, key, bundleTitle, bundleTitleEn, action, modifier));
 
         // Look for the users key stored in the preferences
         // If not found go with the default
-        int userKey = AlcPreferences.prefs.getInt(title, key);
+        int userKey = AlcPreferences.prefs.getInt(bundleTitleEn, key);
         // Look for the modifier key
-        int modifierKey = AlcPreferences.prefs.getInt(title + " Modifier", modifier);
+        int modifierKey = AlcPreferences.prefs.getInt(bundleTitleEn + " Modifier", modifier);
         // Store the mappings into the user set of shortcuts
-        userShortcuts.add(new AlcShortcutMapper(index, userKey, title, action, modifierKey));
+        userShortcuts.add(new AlcShortcutMapper(index, userKey, bundleTitle, bundleTitleEn, action, modifierKey));
         index++;
 
-        Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), title);
-        Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), title);
-        Alchemy.window.getRootPane().getActionMap().put(title, action);
-        Alchemy.palette.getRootPane().getActionMap().put(title, action);
+        Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), bundleTitleEn);
+        Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), bundleTitleEn);
+        Alchemy.window.getRootPane().getActionMap().put(bundleTitleEn, action);
+        Alchemy.palette.getRootPane().getActionMap().put(bundleTitleEn, action);
         // Return the key that will be used.
         return userKey;
     }
 
     /** Clear and reload all shortcuts */
     private void reloadShortcuts() {
+
         // Remove all shortcut mappings
         Alchemy.window.getRootPane().resetKeyboardActions();
         Alchemy.palette.getRootPane().resetKeyboardActions();
 
         for (int i = 0; i < userShortcuts.size(); i++) {
             AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
-            Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.title);
-            Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.title);
-            Alchemy.window.getRootPane().getActionMap().put(shortcut.title, shortcut.action);
-            Alchemy.palette.getRootPane().getActionMap().put(shortcut.title, shortcut.action);
+            Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.titleEn);
+            Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.titleEn);
+            Alchemy.window.getRootPane().getActionMap().put(shortcut.titleEn, shortcut.action);
+            Alchemy.palette.getRootPane().getActionMap().put(shortcut.titleEn, shortcut.action);
         }
     }
 
     /** Store the shortcuts in the preferences persistant storage */
     private void saveShortcuts() {
+        System.out.println("Saving shortcuts to user preferences");
         for (int i = 0; i < userShortcuts.size(); i++) {
             AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
-            AlcPreferences.prefs.putInt(shortcut.title, shortcut.key);
-            AlcPreferences.prefs.putInt(shortcut.title + " Modifier", shortcut.modifier);
+            AlcPreferences.prefs.putInt(shortcut.titleEn, shortcut.key);
+            AlcPreferences.prefs.putInt(shortcut.titleEn + " Modifier", shortcut.modifier);
         }
+    }
+
+    /** Make a shortcut string from the shortcut key and modifier
+     * 
+     * @param key       The main key
+     * @param modifier  Modifier key
+     * @return          String in the format MODIFIER+KEY
+     */
+    static String getShortcutString(int key, int modifier) {
+        String keyText = KeyEvent.getKeyText(key).toUpperCase();
+        String keyModifier = KeyEvent.getKeyModifiersText(modifier).toUpperCase();
+
+        if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
+            keyModifier = Alchemy.MODIFIER_KEY_STRING;
+        }
+
+        if (modifier > 0) {
+            keyModifier += "+";
+        }
+        return keyText + keyModifier;
     }
 }
 
@@ -383,12 +389,14 @@ class AlcShortcutMapper {
 
     int index, key, modifier;
     String title;
+    String titleEn;
     Action action;
 
-    AlcShortcutMapper(int index, int key, String title, Action action, int modifier) {
+    AlcShortcutMapper(int index, int key, String title, String titleEn, Action action, int modifier) {
         this.index = index;
         this.key = key;
         this.title = title;
+        this.titleEn = titleEn;
         this.action = action;
         this.modifier = modifier;
     }

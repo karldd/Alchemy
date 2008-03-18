@@ -58,7 +58,10 @@ class AlcSpinner extends JPanel {
     }
 
     public void setToolTipText(String toolTip) {
+        super.setToolTipText(toolTip);
         spinner.setToolTipText(toolTip);
+        // Hack here for Swing bug http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4680204
+        ((JSpinner.NumberEditor)spinner.getEditor()).getTextField().setToolTipText(toolTip);
         label.setToolTipText(toolTip);
     }
 }

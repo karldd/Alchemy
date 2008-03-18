@@ -139,7 +139,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         };
 
         // Shortcut - TAB
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_SPACE, getS("toggleToolBar"), toolBarAction);
+        Alchemy.shortcuts.setShortcut(KeyEvent.VK_SPACE, "toggleToolBar", toolBarAction);
 
 
         // Turn off the visibility until the mouse enters the top of the screen
@@ -176,7 +176,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         styleButton.setup(styleTitle, getS("styleDescription"), AlcUtil.getUrlPath("style.png"));
 
         // Shortcut - s
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, styleTitle, styleAction);
+        Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, "styleTitle", styleAction);
         toolBar.add(styleButton);
 
         //////////////////////////////////////////////////////////////
@@ -190,9 +190,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             }
         };
         AlcButton clearButton = new AlcButton(clearAction);
-        clearButton.setup(clearTitle, getS("clearDescription") + " (" + Alchemy.MODIFIER_KEY_STRING + " " + getS("clearKey") + ")", AlcUtil.getUrlPath("clear.png"));
+        clearButton.setup(clearTitle, getS("clearDescription"), AlcUtil.getUrlPath("clear.png"));
         // Shortcuts - Modifier Delete/Backspace
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_BACK_SPACE, clearTitle, clearAction, MODIFIER_KEY);
+        Alchemy.shortcuts.setShortcut(KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
         //Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, MODIFIER_KEY), clearTitle);
         //Alchemy.canvas.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, MODIFIER_KEY), clearTitle);
         Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
@@ -314,7 +314,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         fgbgButton.setText(fgTitle);
 
         // Shortcut - X
-        Alchemy.shortcuts.setShortcut(KeyEvent.VK_X, fgTitle, fgbgAction);
+        Alchemy.shortcuts.setShortcut(KeyEvent.VK_X, "fgbgTitle", fgbgAction);
         toolBar.add(fgbgButton);
 
         //////////////////////////////////////////////////////////////
