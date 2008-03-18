@@ -176,6 +176,7 @@ public class AlcMicInput {
      *  @return     Current Microphone Level
      */
     public double getMicLevel() {
+        // TODO - Figure out how to manage the sound level intelligently
         double sum = 0;
         for (int i = 0; i < audioSamples.length; i++) {
             sum += Math.abs(audioSamples[i]);

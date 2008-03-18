@@ -23,7 +23,9 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-class AlcToggleButton extends JToggleButton {
+class AlcToggleButton extends JToggleButton implements AlcShortcutInterface {
+
+    private String toolTip;
 
     AlcToggleButton() {
     }
@@ -37,6 +39,9 @@ class AlcToggleButton extends JToggleButton {
     }
 
     void setup(String text, String toolTip, URL iconUrl) {
+        
+        this.toolTip = toolTip;
+        
         if (iconUrl != null) {
             // Set the main icon
             this.setIcon(AlcUtil.getImageIcon(iconUrl));
@@ -65,5 +70,9 @@ class AlcToggleButton extends JToggleButton {
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button
         this.setFocusPainted(false);       // Draw the highlight when focused
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
     }
 }

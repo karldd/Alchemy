@@ -28,13 +28,15 @@ import javax.swing.*;
  * 
  * 
  */
-class AlcSpinner extends JPanel {
+class AlcSpinner extends JPanel implements AlcShortcutInterface {
 
     protected JSpinner spinner;
     private JLabel label;
+    private String toolTip;
 
-    AlcSpinner(String name, SpinnerNumberModel numberModel) {
+    AlcSpinner(String name, SpinnerNumberModel numberModel, String toolTip) {
 
+        this.toolTip = toolTip;
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(2, 8, 6, 4));
         this.setOpaque(false);
@@ -54,6 +56,8 @@ class AlcSpinner extends JPanel {
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         this.add(label);
+        
+        setToolTipText(toolTip);
 
     }
 
@@ -61,7 +65,11 @@ class AlcSpinner extends JPanel {
         super.setToolTipText(toolTip);
         spinner.setToolTipText(toolTip);
         // Hack here for Swing bug http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4680204
-        ((JSpinner.NumberEditor)spinner.getEditor()).getTextField().setToolTipText(toolTip);
+        ((JSpinner.NumberEditor) spinner.getEditor()).getTextField().setToolTipText(toolTip);
         label.setToolTipText(toolTip);
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
     }
 }

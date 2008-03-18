@@ -288,32 +288,34 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
     /** Set the keyboard shortcut to trigger an application wide action
      * 
+     * @param component The component linked to the shortcut
      * @param key       The key to trigger the action
      * @param title     A unique title for the action
      * @param action    The name of the action to call
      * @return          The key actually used for this shortcut - user specified or default
      */
-    int setShortcut(int key, String title, Action action) {
-        return setShortcut(key, title, action, 0);
+    int setShortcut(JComponent component, int key, String title, Action action) {
+        return setShortcut(component, key, title, action, 0);
     }
 
     /** Set the keyboard shortcut to trigger an application wide action
      *  with the default modifier key
      * 
+     * @param component The component linked to the shortcut
      * @param key       The key to trigger the action
      * @param title     A unique title for the action
      * @param action    The name of the action to call
      * @param modifier  Use the system modifier key - Win=Ctrl or Mac=Command
      * @return          The key actually used for this shortcut - user specified or default
      */
-    int setShortcut(int key, String title, Action action, int modifier) {
+    int setShortcut(JComponent component, int key, String title, Action action, int modifier) {
         // Get the localised string to display
         String bundleTitle = Alchemy.bundle.getString(title);
         // Get the english string to store as a reference - the two may or may not be the same
         String bundleTitleEn = Alchemy.bundleEn.getString(title);
 
         // Keep track of the default shortcuts
-        defaultShortcuts.add(new AlcShortcutMapper(index, key, bundleTitle, bundleTitleEn, action, modifier));
+        defaultShortcuts.add(new AlcShortcutMapper(component, index, key, bundleTitle, bundleTitleEn, action, modifier));
 
         // Look for the users key stored in the preferences
         // If not found go with the default
@@ -321,7 +323,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         // Look for the modifier key
         int modifierKey = AlcPreferences.prefs.getInt(bundleTitleEn + " Modifier", modifier);
         // Store the mappings into the user set of shortcuts
-        userShortcuts.add(new AlcShortcutMapper(index, userKey, bundleTitle, bundleTitleEn, action, modifierKey));
+        userShortcuts.add(new AlcShortcutMapper(component, index, userKey, bundleTitle, bundleTitleEn, action, modifierKey));
         index++;
 
         Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(userKey, modifierKey), bundleTitleEn);
@@ -353,6 +355,11 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         System.out.println("Saving shortcuts to user preferences");
         for (int i = 0; i < userShortcuts.size(); i++) {
             AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            // Check the component is not null and that it implements the shortcut interface
+            if (shortcut.component != null && shortcut.component instanceof AlcShortcutInterface) {
+                AlcShortcutInterface shortcutComponent = (AlcShortcutInterface) shortcut.component;
+                shortcutComponent.refreshShortcut(shortcut.key, shortcut.modifier);
+            }
             AlcPreferences.prefs.putInt(shortcut.titleEn, shortcut.key);
             AlcPreferences.prefs.putInt(shortcut.titleEn + " Modifier", shortcut.modifier);
         }
@@ -366,16 +373,20 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      */
     static String getShortcutString(int key, int modifier) {
         String keyText = KeyEvent.getKeyText(key).toUpperCase();
-        String keyModifier = KeyEvent.getKeyModifiersText(modifier).toUpperCase();
+        String keyModifier = KeyEvent.getKeyModifiersText(modifier);
 
-        if (Alchemy.PLATFORM == MACOSX && keyModifier.equals("COMMAND")) {
+        if (Alchemy.PLATFORM == MACOSX && modifier == KeyEvent.META_MASK) {
             keyModifier = Alchemy.MODIFIER_KEY_STRING;
         }
 
         if (modifier > 0) {
             keyModifier += "+";
         }
-        return keyText + keyModifier;
+        return keyModifier + keyText;
+    }
+
+    static String getShortcutString(int key, int modifier, String title) {
+        return title + " (" + getShortcutString(key, modifier) + ")";
     }
 }
 
@@ -387,12 +398,13 @@ class AlcShortcuts extends JDialog implements AlcConstants {
  */
 class AlcShortcutMapper {
 
+    JComponent component;
     int index, key, modifier;
-    String title;
-    String titleEn;
+    String title, titleEn;
     Action action;
 
-    AlcShortcutMapper(int index, int key, String title, String titleEn, Action action, int modifier) {
+    AlcShortcutMapper(JComponent component, int index, int key, String title, String titleEn, Action action, int modifier) {
+        this.component = component;
         this.index = index;
         this.key = key;
         this.title = title;
