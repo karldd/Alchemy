@@ -70,6 +70,13 @@ class AlcPreferences implements AlcConstants {
         //super(owner);
 
         prefs = Preferences.userNodeForPackage(getClass());
+        // Reset the preferences
+//        try {
+//            prefs.removeNode();
+//        } catch (BackingStoreException ex) {
+//            ex.printStackTrace();
+//        }
+//        prefs = Preferences.userNodeForPackage(getClass());
 
         recordingState = prefs.getBoolean("Recording State", false);
         recordingWarning = prefs.getBoolean("Recording Warning", true);
@@ -86,6 +93,8 @@ class AlcPreferences implements AlcConstants {
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
+
+
 
 
     /*

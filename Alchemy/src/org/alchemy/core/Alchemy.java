@@ -22,6 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -77,6 +78,9 @@ public class Alchemy implements AlcConstants {
     static AlcSession session;
     /** Resource Bundle containing language specific text */
     static ResourceBundle bundle;
+    /** Resource bundle containing English language text
+     *  Used for storing variable names in standard ascii characters */
+    static ResourceBundle bundleEn;
     /** Class of utility math functions */
     static AlcMath math = new AlcMath();
     /** Custom reusable colour chooser */
@@ -103,6 +107,7 @@ public class Alchemy implements AlcConstants {
 
         // LOAD RESOURCE BUNDLE
         bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
+        bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en_US"));
 
         // LOAD SHORTCUTS
         shortcuts = new AlcShortcuts(window);

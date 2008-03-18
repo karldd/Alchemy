@@ -23,7 +23,9 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-class AlcButton extends JButton {
+class AlcButton extends JButton implements AlcShortcutInterface {
+
+    private String toolTip;
 
     AlcButton(Action action) {
         this.setAction(action);
@@ -38,6 +40,9 @@ class AlcButton extends JButton {
     }
 
     void setup(String text, String toolTip, URL iconUrl) {
+
+        this.toolTip = toolTip;
+
         if (iconUrl != null) {
             // Set the main icon
             this.setIcon(AlcUtil.getImageIcon(iconUrl));
@@ -60,5 +65,12 @@ class AlcButton extends JButton {
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button
         this.setFocusPainted(false);       // Draw the highlight when focused
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        // Make a string from the shortcut keys
+        String shortcutString = AlcShortcuts.getShortcutString(key, modifier);
+        
+        this.setToolTipText(shortcutString);
     }
 }

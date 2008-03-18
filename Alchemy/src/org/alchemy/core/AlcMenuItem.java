@@ -24,7 +24,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-class AlcMenuItem extends JMenuItem implements AlcConstants {
+class AlcMenuItem extends JMenuItem implements AlcShortcutInterface, AlcConstants {
 
     AlcMenuItem(Action action) {
         this.setAction(action);
@@ -64,5 +64,9 @@ class AlcMenuItem extends JMenuItem implements AlcConstants {
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         this.setFont(AlcToolBar.toolBarFont);
 
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        this.setAccelerator(KeyStroke.getKeyStroke(key, modifier));
     }
 }

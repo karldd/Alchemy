@@ -80,7 +80,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem newItem = new AlcMenuItem(newAction);
         // Shortcut - Modifier n
-        int newKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_N, newTitle, newAction, MODIFIER_KEY);
+        int newKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_N, "newTitle", newAction, MODIFIER_KEY);
         newItem.setup(newTitle, newKey);
         fileMenu.add(newItem);
 
@@ -96,7 +96,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem exportItem = new AlcMenuItem(exportAction);
         // Shortcut - Modifier e
-        int exportKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_E, exportTitle, exportAction, MODIFIER_KEY);
+        int exportKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_E, "exportTitle", exportAction, MODIFIER_KEY);
         exportItem.setup(exportTitle, exportKey);
 
         fileMenu.add(exportItem);
@@ -124,7 +124,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem printItem = new AlcMenuItem(printAction);
         // Shortcut - Modifier p
-        int printKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_P, printTitle, printAction, MODIFIER_KEY);
+        int printKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_P, "printTitle", printAction, MODIFIER_KEY);
         printItem.setup(printTitle, printKey);
         fileMenu.add(printItem);
 
@@ -163,7 +163,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem copyItem = new AlcMenuItem(copyAction);
         // Shortcut - Modifier c
-        int copyKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_C, copyTitle, copyAction, MODIFIER_KEY);
+        int copyKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_C, "copyTitle", copyAction, MODIFIER_KEY);
         copyItem.setup(copyTitle, copyKey);
         editMenu.add(copyItem);
 
@@ -190,7 +190,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         fullScreenItem.setAction(fullScreenAction);
         // Shortcut - Modifier f
-        int fullScreenKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_F, fullScreenTitle, fullScreenAction, MODIFIER_KEY);
+        int fullScreenKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_F, "fullScreenTitle", fullScreenAction, MODIFIER_KEY);
         fullScreenItem.setup(fullScreenTitle, fullScreenKey);
         viewMenu.add(fullScreenItem);
 
@@ -211,7 +211,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
         // Shortcut - Modifier s
-        int savePageKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, savePageTitle, savePageAction, MODIFIER_KEY);
+        int savePageKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_S, "savePageTitle", savePageAction, MODIFIER_KEY);
         savePageItem.setup(savePageTitle, savePageKey);
 
 
@@ -226,7 +226,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
-        int saveClearKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_D, saveClearTitle, saveClearPageAction, MODIFIER_KEY);
+        int saveClearKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_D, "saveClearTitle", saveClearPageAction, MODIFIER_KEY);
         saveClearPageItem.setup(saveClearTitle, saveClearKey);
         sessionMenu.add(saveClearPageItem);
 
@@ -249,7 +249,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         recordingItem.setAction(recordingAction);
         // Shortcut - Modifier r
-        int recordingKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_R, recordingTitle, recordingAction, MODIFIER_KEY);
+        int recordingKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_R, "recordingTitle", recordingAction, MODIFIER_KEY);
         recordingItem.setup(recordingTitle, recordingKey);
 
         recordingItem.setState(Alchemy.preferences.getRecordingState());
@@ -359,7 +359,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem switchVectorItem = new AlcMenuItem(switchVectorAction);
         // Shortcut - Modifier v
-        int vectorKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_V, switchVectorTitle, switchVectorAction, MODIFIER_KEY);
+        int vectorKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_V, "switchVectorTitle", switchVectorAction, MODIFIER_KEY);
         switchVectorItem.setup(switchVectorTitle, vectorKey);
         switchMenu.add(switchVectorItem);
 
@@ -373,7 +373,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem switchBitmapItem = new AlcMenuItem(switchBitmapAction);
         // Shortcut - Modifier v
-        int bitmapKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_B, switchBitmapTitle, switchBitmapAction, MODIFIER_KEY);
+        int bitmapKey = Alchemy.shortcuts.setShortcut(KeyEvent.VK_B, "switchBitmapTitle", switchBitmapAction, MODIFIER_KEY);
         switchBitmapItem.setup(switchBitmapTitle, bitmapKey);
         switchMenu.add(switchBitmapItem);
 

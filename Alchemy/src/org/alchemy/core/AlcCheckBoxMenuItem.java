@@ -25,7 +25,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.KeyStroke;
 
-class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
+class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterface, AlcConstants {
 
     private int index;
     private int moduleType = -1;
@@ -107,5 +107,9 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcConstants {
                 g.drawRect(checkX, 10, 7, 7);
             }
         }
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        this.setAccelerator(KeyStroke.getKeyStroke(key, modifier));
     }
 }
