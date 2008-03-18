@@ -162,7 +162,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         panel.setOpaque(true);
         panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         panel.setBackground(AlcToolBar.toolBarBgStartColour);
-        panel.setLayout(new GridLayout(userShortcuts.size(), 2));
+        panel.setLayout(new GridLayout(userShortcuts.size(), 2, 5, 5));
 
         for (int i = 0; i < userShortcuts.size(); i++) {
             final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
