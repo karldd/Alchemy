@@ -153,7 +153,7 @@ class AlcPlugins implements AlcConstants {
         if (getNumberOfAffectModules() > 0) {
             // Initialise the on/off array for current affects
             currentAffects = new boolean[getNumberOfAffectModules()];
-            String[] affectsOrder = {"Mirror", "Blindness", "Random"};
+            String[] affectsOrder = {"Displace", "Mirror", "Blindness", "Random"};
             // Extension Point Name, Array Size, Module Type
             affects = addPlugins("Affect", getNumberOfAffectModules(), AFFECT, affectsOrder);
         }
@@ -174,8 +174,6 @@ class AlcPlugins implements AlcConstants {
 
             System.exit(0);
         }
-
-    // INITIALISE THE MODULES
     }
 
     void initialiseModules() {

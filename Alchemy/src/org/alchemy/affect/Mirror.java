@@ -38,8 +38,8 @@ public class Mirror extends AlcModule implements AlcConstants {
     private boolean vertical = false;
     private int horizontalAxis,  verticalAxis;
     private boolean selectAxis = false;
-    private boolean horizontalSelected;
     private boolean firstSelect = false;
+    private int shapeCount;
 
     /** Creates a new instance of Mirror */
     public Mirror() {
@@ -48,7 +48,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     protected void setup() {
         // Set the initial axis to the middle
         resetAxis();
-
+        countShapes();
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -74,6 +74,7 @@ public class Mirror extends AlcModule implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         horizontal = !horizontal;
+                        countShapes();
                     }
                 });
         subToolBarSection.add(horizontalButton);
@@ -87,6 +88,7 @@ public class Mirror extends AlcModule implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         vertical = !vertical;
+                        countShapes();
                     }
                 });
         subToolBarSection.add(verticalButton);
@@ -124,47 +126,56 @@ public class Mirror extends AlcModule implements AlcConstants {
     }
 
     protected void affect() {
-        
-        // TODO - Check mirror bug, extra path added on first click?
-
         if (!selectAxis) {
 
-            for (int i = 0; i < canvas.createShapes.size(); i++) {
-                AlcShape shape = (AlcShape) canvas.createShapes.get(i);
+            int numOfCreateShapes = canvas.createShapes.size();
+            // int shapeTally = shapeCount * numOfCreateShapes;
 
+
+            for (int i = 0; i < numOfCreateShapes; i++) {
+                AlcShape shape = (AlcShape) canvas.createShapes.get(i);
                 // Original Path with which we reflect
                 GeneralPath originalPath = shape.getPath();
 
-                GeneralPath[] paths = new GeneralPath[3];
-                int pathCount = 0;
-
                 if (horizontal) {
-                    paths[0] = makeHorizontalReflectedShape(originalPath);
-                    pathCount++;
+                    GeneralPath hPath = makeHorizontalReflectedShape(originalPath);
+                    int index = i * shapeCount;
+                    if (canvas.affectShapes.size() == index) {
+                        canvas.affectShapes.add(shape.customClone(hPath));
+                    } else {
+                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(index));
+                        thisShape.setPath(hPath);
+                        // Make sure the points tally is up to date
+                        thisShape.setTotalPoints(shape.getTotalPoints());
+                    }
                 }
+
+                GeneralPath vPath = null;
                 if (vertical) {
-                    paths[1] = makeVerticalReflectedShape(originalPath);
-                    pathCount++;
+                    vPath = makeVerticalReflectedShape(originalPath);
+                    int index = i * shapeCount;
+                    // Add 1 on if horizontal is also on
+                    index += horizontal ? 1 : 0;
+                    if (canvas.affectShapes.size() == index) {
+                        canvas.affectShapes.add(shape.customClone(vPath));
+                    } else {
+                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(index));
+                        thisShape.setPath(vPath);
+                        // Make sure the points tally is up to date
+                        thisShape.setTotalPoints(shape.getTotalPoints());
+                    }
                 }
                 if (horizontal && vertical) {
-                    paths[2] = makeHorizontalReflectedShape(paths[1]);
-                    pathCount++;
-                }
-
-                for (int j = 0; j < paths.length; j++) {
-                    // If the reflected shape is actually there
-                    if (paths[j] != null) {
-                        // If we are starting a new shape or adding to an existing one
-                        if (canvas.affectShapes.size() < paths.length) {
-                            canvas.affectShapes.add(shape.customClone(paths[j]));
-                        } else {
-                            AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(j));
-                            // Make sure the points tally is up to date
-                            thisShape.setPath(paths[j]);
-                            thisShape.setTotalPoints(shape.getTotalPoints());
-                        }
+                    GeneralPath hvPath = makeHorizontalReflectedShape(vPath);
+                    int index = i * shapeCount + 2;
+                    if (canvas.affectShapes.size() == index) {
+                        canvas.affectShapes.add(shape.customClone(hvPath));
+                    } else {
+                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(index));
+                        thisShape.setPath(hvPath);
+                        // Make sure the points tally is up to date
+                        thisShape.setTotalPoints(shape.getTotalPoints());
                     }
-
                 }
             }
         }
@@ -211,11 +222,20 @@ public class Mirror extends AlcModule implements AlcConstants {
         verticalAxis = size.height / 2;
     }
 
+    private void countShapes() {
+        // Add one for every axis currently on
+        // And an extra one if they are both on
+        shapeCount = 0;
+        shapeCount += horizontal ? 1 : 0;
+        shapeCount += vertical ? 1 : 0;
+        shapeCount += horizontal && vertical ? 1 : 0;
+    }
+
     public void mouseMoved(MouseEvent e) {
         if (selectAxis) {
 
             Dimension size = canvas.getSize();
-            
+
             GeneralPath line = new GeneralPath(new Line2D.Float(e.getX(), 0, e.getX(), size.height));
             line.append(new Line2D.Float(0, e.getY(), size.width, e.getY()), false);
 

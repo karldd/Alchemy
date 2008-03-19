@@ -27,7 +27,9 @@ import java.awt.image.BufferedImage;
 import foxtrot.*;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import javax.swing.JOptionPane;
 import javax.swing.JSlider;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -35,7 +37,7 @@ import javax.swing.event.ChangeListener;
  * TraceShapes
  * @author Karl D.D. Willis
  */
-public class TraceShapes extends AlcModule {
+public class TraceShapes extends AlcModule implements AlcConstants {
 
     private int halfArea = 30;
     private int tolerance = 100;
@@ -107,6 +109,26 @@ public class TraceShapes extends AlcModule {
 
             canvas.setImage(scaledImage);
             canvas.redraw();
+        } else {
+            // Tell the user that there was a problem loading the image
+            String exitTitle, exitMessage;
+            if (Alchemy.PLATFORM == MACOSX) {
+                exitTitle = "";
+                exitMessage =
+                        "<html>" + UIManager.get("OptionPane.css") +
+                        "<b>" + "Error connecting" + "</b>" +
+                        "<p>" + "Please check your internet connection";
+            } else {
+                exitTitle = "Error connecting";
+                exitMessage = "Please check your internet connection";
+            }
+
+            JOptionPane.showConfirmDialog(
+                    null,
+                    exitMessage,
+                    exitTitle,
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
         }
 
     }
