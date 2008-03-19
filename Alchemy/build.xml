@@ -171,6 +171,13 @@
             </fileset>
         </copy>
         
+        <!-- Displace -->
+        <copy todir="${basedir}/modules/displace/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
+                <contains text="Displace" casesensitive="no"/>
+            </fileset>
+        </copy>
+        
         <!--
         <move file="${build.classes.dir}/org/alchemy/create/ImageShapes.class" todir="${basedir}/modules/imageShapes/alchemy/create"/>
         -->

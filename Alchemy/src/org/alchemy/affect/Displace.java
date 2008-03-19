@@ -1,0 +1,173 @@
+/*
+ * This file is part of the Alchemy project - http://al.chemy.org
+ * 
+ * Copyright (c) 2007 Karl D.D. Willis
+ * 
+ * Alchemy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Alchemy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.alchemy.affect;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.geom.*;
+import java.awt.geom.Point2D.Float;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import org.alchemy.core.*;
+
+/**
+ * Displace
+ * @author Karl D.D. Willis
+ */
+public class Displace extends AlcModule implements AlcConstants {
+
+    private AlcSubToolBarSection subToolBarSection;
+    private Point oldP;
+    private int speed;
+    private int displacement = 7;
+
+    public Displace() {
+
+    }
+
+    protected void setup() {
+
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void cleared() {
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+
+        AlcSubSlider speedSlider = new AlcSubSlider("Displacement", 1, 15, displacement);
+        speedSlider.setToolTipText("Change the amount of displacement");
+        speedSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            displacement = source.getValue();
+                            System.out.println(displacement);
+                        }
+                    }
+                });
+        subToolBarSection.add(speedSlider);
+    }
+
+    protected void affect() {
+        for (int i = 0; i < canvas.createShapes.size(); i++) {
+            AlcShape shape = (AlcShape) canvas.createShapes.get(i);
+            GeneralPath originalPath = shape.getPath();
+            Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
+            // System.out.println(lastPt);
+
+            GeneralPath newPath = new GeneralPath();
+            PathIterator iterator = originalPath.getPathIterator(null);
+            float[] currentPoints = new float[6];
+            //float[] nextPoints = new float[6];
+            int currentPointType;
+
+            while (!iterator.isDone()) {
+                currentPointType = iterator.currentSegment(currentPoints);
+
+                switch (currentPointType) {
+                    case PathIterator.SEG_MOVETO:
+                        float[] displacedMove = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                        newPath.moveTo(displacedMove[0], displacedMove[1]);
+                        break;
+                    case PathIterator.SEG_LINETO:
+                        float[] displacedLine = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                        newPath.lineTo(displacedLine[0], displacedLine[1]);
+                        break;
+                    case PathIterator.SEG_QUADTO:
+                        float[] displacedQuad1 = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                        float[] displacedQuad2 = getAngle(new Point2D.Float(currentPoints[2], currentPoints[3]), lastPt, speed);
+                        newPath.quadTo(displacedQuad1[0], displacedQuad1[1], displacedQuad2[0], displacedQuad2[1]);
+                        break;
+                    case PathIterator.SEG_CUBICTO:
+                        newPath.curveTo(currentPoints[0], currentPoints[1], currentPoints[2], currentPoints[3], currentPoints[4], currentPoints[5]);
+                        break;
+                    case PathIterator.SEG_CLOSE:
+                        newPath.closePath();
+                        break;
+                }
+                //System.arraycopy(currentPoints, 0, nextPoints, 0, 6);
+                iterator.next();
+            }
+            shape.setPath(newPath);
+        }
+    }
+
+    public void mousePressed(MouseEvent e) {
+        Point p = e.getPoint();
+        canvas.createShapes.add(new AlcShape(p));
+        canvas.redraw();
+        oldP = p;
+    }
+
+    public void mouseDragged(MouseEvent e) {
+        Point p = e.getPoint();
+        speed = displacement - getCursorSpeed(p, oldP);
+        oldP = p;
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        oldP = null;
+    }
+
+    private static int getCursorSpeed(Point p1, Point p2) {
+        int diffX = Math.abs(p1.x - p2.x);
+        int diffY = Math.abs(p1.y - p2.y);
+        return diffX + diffY;
+    }
+
+    private float[] getAngle(Point2D.Float p1, Point2D.Float p2, double distance) {
+        //double adjustedDistance = distance * multiplier;
+        // Calculate the angle between the last point and the new point
+        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
+        //double angle = Math.atan2(p1.getX() - p2.getY(), p1.getX() - p2.getY());
+        //System.out.println(angle);
+        //System.out.println(angle);
+        // Conver the polar coordinates to cartesian
+        double x = p1.getX() + (distance * Math.cos(angle));
+        double y = p1.getY() + (distance * Math.sin(angle));
+        float[] points = {(float) x, (float) y};
+
+        // System.out.println(p1 + " " + p2 + " " + points);
+        return points;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
