@@ -63,6 +63,10 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     }
 
     void setupWindow() {
+
+        // Update the tooltips with the user defined shortcuts
+        refreshInterfaceElements();
+
         final JPanel masterPanel = new JPanel();
         //masterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
@@ -120,6 +124,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                         if (reloadShortcuts) {
                             reloadShortcuts();
                             saveShortcuts();
+                            refreshInterfaceElements();
                         }
                         reloadShortcuts = false;
                         setVisible(false);
@@ -142,7 +147,6 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         this.getContentPane().add(masterPanel);
         this.pack();
         //this.setResizable(false);
-
         okButton.requestFocus();
     }
 
@@ -283,7 +287,6 @@ class AlcShortcuts extends JDialog implements AlcConstants {
             textfields[i].setText(shortcutString);
             textfields[i].setBackground(Color.WHITE);
         }
-
     }
 
     /** Set the keyboard shortcut to trigger an application wide action
@@ -352,7 +355,14 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
     /** Store the shortcuts in the preferences persistant storage */
     private void saveShortcuts() {
-        System.out.println("Saving shortcuts to user preferences");
+        for (int i = 0; i < userShortcuts.size(); i++) {
+            AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            AlcPreferences.prefs.putInt(shortcut.titleEn, shortcut.key);
+            AlcPreferences.prefs.putInt(shortcut.titleEn + " Modifier", shortcut.modifier);
+        }
+    }
+
+    private void refreshInterfaceElements() {
         for (int i = 0; i < userShortcuts.size(); i++) {
             AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
             // Check the component is not null and that it implements the shortcut interface
@@ -360,8 +370,6 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                 AlcShortcutInterface shortcutComponent = (AlcShortcutInterface) shortcut.component;
                 shortcutComponent.refreshShortcut(shortcut.key, shortcut.modifier);
             }
-            AlcPreferences.prefs.putInt(shortcut.titleEn, shortcut.key);
-            AlcPreferences.prefs.putInt(shortcut.titleEn + " Modifier", shortcut.modifier);
         }
     }
 
