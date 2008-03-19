@@ -43,7 +43,6 @@ public class Displace extends AlcModule implements AlcConstants {
     }
 
     protected void setup() {
-
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -68,7 +67,6 @@ public class Displace extends AlcModule implements AlcConstants {
                         JSlider source = (JSlider) e.getSource();
                         if (!source.getValueIsAdjusting()) {
                             displacement = source.getValue();
-                            System.out.println(displacement);
                         }
                     }
                 });
@@ -80,12 +78,10 @@ public class Displace extends AlcModule implements AlcConstants {
             AlcShape shape = (AlcShape) canvas.createShapes.get(i);
             GeneralPath originalPath = shape.getPath();
             Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
-            // System.out.println(lastPt);
 
             GeneralPath newPath = new GeneralPath();
             PathIterator iterator = originalPath.getPathIterator(null);
             float[] currentPoints = new float[6];
-            //float[] nextPoints = new float[6];
             int currentPointType;
 
             while (!iterator.isDone()) {
@@ -112,7 +108,6 @@ public class Displace extends AlcModule implements AlcConstants {
                         newPath.closePath();
                         break;
                 }
-                //System.arraycopy(currentPoints, 0, nextPoints, 0, 6);
                 iterator.next();
             }
             shape.setPath(newPath);
@@ -143,31 +138,12 @@ public class Displace extends AlcModule implements AlcConstants {
     }
 
     private float[] getAngle(Point2D.Float p1, Point2D.Float p2, double distance) {
-        //double adjustedDistance = distance * multiplier;
         // Calculate the angle between the last point and the new point
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);
-        //double angle = Math.atan2(p1.getX() - p2.getY(), p1.getX() - p2.getY());
-        //System.out.println(angle);
-        //System.out.println(angle);
-        // Conver the polar coordinates to cartesian
+        // Convert the polar coordinates to cartesian
         double x = p1.getX() + (distance * Math.cos(angle));
         double y = p1.getY() + (distance * Math.sin(angle));
         float[] points = {(float) x, (float) y};
-
-        // System.out.println(p1 + " " + p2 + " " + points);
         return points;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

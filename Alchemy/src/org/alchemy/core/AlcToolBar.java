@@ -200,21 +200,50 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // LINE WIDTH SPINNER
         //////////////////////////////////////////////////////////////
         // currentValue, min, max, stepsize
-        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int) Alchemy.canvas.getLineWidth(), 1, 50, 1);
+        final int lineWidthSpinnerMin = 1;
+        final int lineWidthSpinnerMax = 75;
+
+        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int) Alchemy.canvas.getLineWidth(), lineWidthSpinnerMin, lineWidthSpinnerMax, 1);
         AlcSpinner lineWidthSpinner = new AlcSpinner(getS("lineWeightTitle"), lineWidthNumberModel, getS("lineWeightDescription"));
+        final SpinnerModel lineWidthSpinnerModel = lineWidthSpinner.spinner.getModel();
         lineWidthSpinner.spinner.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
 
-                        JSpinner source = (JSpinner) e.getSource();
-                        Number number = (Number) source.getModel().getValue();
+                        Number number = (Number) lineWidthSpinnerModel.getValue();
                         int value = number.intValue();
-
-                        //System.out.println("Line Width: " + value);
                         Alchemy.canvas.setLineWidth(value);
                     }
                 });
+
+        AbstractAction lineWidthDownAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Number number = (Number) lineWidthSpinnerModel.getPreviousValue();
+                if (number != null) {
+                    int value = number.intValue();
+
+                    lineWidthSpinnerModel.setValue(number);
+                    Alchemy.canvas.setLineWidth(value);
+                }
+            }
+        };
+
+        AbstractAction lineWidthUpAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Number number = (Number) lineWidthSpinnerModel.getNextValue();
+                if (number != null) {
+                    int value = number.intValue();
+                    lineWidthSpinnerModel.setValue(number);
+                    Alchemy.canvas.setLineWidth(value);
+                }
+            }
+        };
+
+        Alchemy.shortcuts.setShortcut(lineWidthSpinner, KeyEvent.VK_OPEN_BRACKET, "lineWeightDownTitle", lineWidthDownAction);
+        Alchemy.shortcuts.setShortcut(lineWidthSpinner, KeyEvent.VK_CLOSE_BRACKET, "lineWeightUpTitle", lineWidthUpAction);
 
         toolBar.add(lineWidthSpinner);
 

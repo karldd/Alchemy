@@ -33,6 +33,7 @@ class AlcSpinner extends JPanel implements AlcShortcutInterface {
     protected JSpinner spinner;
     private JLabel label;
     private String toolTip;
+    private int key1 = -1;
 
     AlcSpinner(String name, SpinnerNumberModel numberModel, String toolTip) {
 
@@ -56,7 +57,7 @@ class AlcSpinner extends JPanel implements AlcShortcutInterface {
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         this.add(label);
-        
+
         setToolTipText(toolTip);
 
     }
@@ -70,6 +71,15 @@ class AlcSpinner extends JPanel implements AlcShortcutInterface {
     }
 
     public void refreshShortcut(int key, int modifier) {
-        this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
+        // Becuase there are two shortcuts for the spinner
+        // Wait till the second call then add the tooltip
+        if (key1 < 0) {
+            key1 = key;
+        } else {
+            String doubleKey = "(" + AlcShortcuts.getShortcutString(key1, modifier) +
+                    " " + AlcShortcuts.getShortcutString(key, modifier) + ")";
+            this.setToolTipText(toolTip + " " + doubleKey);
+            key1 = -1;
+        }
     }
 }
