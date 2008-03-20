@@ -45,12 +45,14 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     private AlcSubToolBarSection subToolBarSection;
     private int[] pixels;
     private boolean pixelsLoaded = false;
+    private boolean moduleActive = false;
 
     public TraceShapes() {
 
     }
 
     protected void setup() {
+        moduleActive = true;
         canvas.setImageDisplay(false);
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
@@ -58,12 +60,14 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     }
 
     protected void reselect() {
+        moduleActive = true;
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(subToolBarSection);
         loadImage();
     }
 
     protected void deselect() {
+        moduleActive = false;
         pixelsLoaded = false;
         pixels = null;
         canvas.setImage(null);
@@ -90,25 +94,28 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
 
         if (flickrImage != null) {
-            // Scale the image to the screen size
-            imageSize = canvas.getBounds();
-            BufferedImage scaledImage = new BufferedImage(imageSize.width, imageSize.height, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2 = scaledImage.createGraphics();
-            g2.drawImage(flickrImage, 0, 0, imageSize.width, imageSize.height, null);
-            g2.dispose();
-            flickrImage = null;
+            // Make sure the module has not been deselected while loading
+            if (moduleActive) {
+                // Scale the image to the screen size
+                imageSize = canvas.getBounds();
+                BufferedImage scaledImage = new BufferedImage(imageSize.width, imageSize.height, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g2 = scaledImage.createGraphics();
+                g2.drawImage(flickrImage, 0, 0, imageSize.width, imageSize.height, null);
+                g2.dispose();
+                flickrImage = null;
 
-            // Load the pixels into an array
-            pixels = new int[imageSize.width * imageSize.height];
-            scaledImage.getRGB(0, 0, imageSize.width, imageSize.height, pixels, 0, imageSize.width);
-            // Then convert them all to grey for easy access
-            for (int i = 0; i < pixels.length; i++) {
-                pixels[i] = AlcUtil.getColorBrightness(pixels[i]);
+                // Load the pixels into an array
+                pixels = new int[imageSize.width * imageSize.height];
+                scaledImage.getRGB(0, 0, imageSize.width, imageSize.height, pixels, 0, imageSize.width);
+                // Then convert them all to grey for easy access
+                for (int i = 0; i < pixels.length; i++) {
+                    pixels[i] = AlcUtil.getColorBrightness(pixels[i]);
+                }
+                pixelsLoaded = true;
+
+                canvas.setImage(scaledImage);
+                canvas.redraw();
             }
-            pixelsLoaded = true;
-
-            canvas.setImage(scaledImage);
-            canvas.redraw();
         } else {
             // Tell the user that there was a problem loading the image
             String exitTitle, exitMessage;
