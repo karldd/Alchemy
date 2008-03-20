@@ -107,8 +107,8 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         subToolBarSection.add(volumeSlider);
 
         // Level/Wave button
-        AlcSubToggleButton levelWaveButton = new AlcSubToggleButton("Level/Wave", AlcUtil.getUrlPath("levelwave.png", getClassLoader()));
-        levelWaveButton.setToolTipText("Toggle between level and wave mode");
+        AlcSubToggleButton levelWaveButton = new AlcSubToggleButton("Mode", AlcUtil.getUrlPath("levelwave.png", getClassLoader()));
+        levelWaveButton.setToolTipText("Toggle between wave and level mode");
 
         levelWaveButton.addActionListener(
                 new ActionListener() {

@@ -469,10 +469,19 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             public void actionPerformed(ActionEvent e) {
 
                 File manual = new File("Alchemy.pdf");
-                if (manual.exists()) {
+                if (manual.exists() && Alchemy.PLATFORM != LINUX) {
                     AlcUtil.openPDF(manual);
                 } else {
                     System.err.println("Error locating the Alchemy manual");
+
+                    // Try now to open the Alchemy documentation website instead
+                    // Check which site to send them to
+                    String locale = LOCALE.getLanguage().toLowerCase();
+                    if (locale.startsWith("ja")) {
+                        AlcUtil.openURL("http://al.chemy.org/ja/documentation/");
+                    } else {
+                        AlcUtil.openURL("http://al.chemy.org/documentation/");
+                    }
                 }
 
             }
@@ -488,7 +497,13 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction wwwAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                AlcUtil.openURL("http://al.chemy.org");
+                // Check which site to send them to
+                String locale = LOCALE.getLanguage().toLowerCase();
+                if (locale.startsWith("ja")) {
+                    AlcUtil.openURL("http://al.chemy.org/ja/");
+                } else {
+                    AlcUtil.openURL("http://al.chemy.org/");
+                }
             }
         };
         AlcMenuItem wwwItem = new AlcMenuItem(wwwAction);

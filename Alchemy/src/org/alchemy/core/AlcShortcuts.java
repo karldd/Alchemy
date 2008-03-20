@@ -25,7 +25,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.prefs.BackingStoreException;
 import javax.swing.*;
 import javax.swing.JTextField;
 import javax.swing.JTextField;
@@ -53,13 +52,13 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         userShortcuts = new ArrayList(50);
         defaultShortcuts = new ArrayList(50);
 
-        try {
-            String[] prefKeys = AlcPreferences.prefs.keys();
-            AlcUtil.printStringArray(prefKeys);
-
-        } catch (BackingStoreException ex) {
-            ex.printStackTrace();
-        }
+//        try {
+//            String[] prefKeys = AlcPreferences.prefs.keys();
+//            AlcUtil.printStringArray(prefKeys);
+//
+//        } catch (BackingStoreException ex) {
+//            ex.printStackTrace();
+//        }
     }
 
     void setupWindow() {
