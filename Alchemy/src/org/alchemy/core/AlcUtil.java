@@ -281,6 +281,24 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
+    /** Open a local pdf in the default application
+     * 
+     * @param pdf   A file pointing to the pdf to open
+     */
+    public static void openPDF(File pdf) {
+        final String errMsg = "Error attempting to launch pdf";
+        try {
+            if (Alchemy.PLATFORM == MACOSX) {
+                Runtime.getRuntime().exec("open " + pdf.getAbsolutePath());
+            } else if (Alchemy.PLATFORM == WINDOWS) {
+                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + pdf.getAbsolutePath());
+            } else if (Alchemy.PLATFORM == LINUX) {
+            }
+        } catch (Exception e) {
+            System.err.println(errMsg + ":\n" + e.getLocalizedMessage());
+        }
+    }
+
     /**
      * Sets the current contents of the clipboard to the specified transferable object and registers the specified clipboard owner as the owner of the new contents. 
      * Shows warning message if an exception occured

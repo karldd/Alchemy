@@ -24,7 +24,6 @@ import java.awt.event.*;
 import java.awt.print.*;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import javax.swing.*;
 
 /** 
@@ -469,71 +468,13 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
 
-                switch (Alchemy.PLATFORM) {
-                    case MACOSX:
-                        HelpHook.showHelp();
-                        break;
-                    case WINDOWS:
+                File manual = new File("Alchemy.pdf");
+                if (manual.exists()) {
+                    AlcUtil.openPDF(manual);
+                } else {
+                    System.err.println("Error locating the Alchemy manual");
+                }
 
-                        if (tempHelp == null) {
-
-                            // English is the default
-                            String helpFile = "AlchemyHelp.chm";
-                            String helpFile_ja = "AlchemyHelp_ja.chm";
-                            boolean useJapanese = false;
-
-                            String locale = LOCALE.getLanguage().toLowerCase();
-                            System.out.println(locale);
-                            if (locale.startsWith("ja")) {
-                                useJapanese = true;
-                                System.out.println("Japanese Help");
-                            } else {
-                                System.out.println("English Help");
-                            }
-
-                            InputStream helpStream = null;
-
-                            if (useJapanese) {
-                                System.out.println("Loading Japanese Help");
-                                helpStream = Alchemy.class.getResourceAsStream("../data/" + helpFile_ja);
-                            }
-                            // If set to English or Japanese help is not found
-                            if (helpStream == null) {
-                                System.out.println("Loading English Help");
-                                helpStream = Alchemy.class.getResourceAsStream("../data/" + helpFile);
-                            }
-                            // Create temp file.
-                            tempHelp = new File(TEMP_DIR, helpFile);
-
-                            // Delete temp file when program exits.
-                            tempHelp.deleteOnExit();
-
-
-                            try {
-                                AlcUtil.copyFile(helpStream, tempHelp);
-
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
-
-                        }
-
-                        if (tempHelp.exists()) {
-                            try {
-                                Runtime.getRuntime().exec("hh.exe " + tempHelp.getAbsolutePath());
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
-                        } else {
-                            System.err.println("ERROR - Help could not be copied to the temp dir: " + TEMP_DIR);
-                        }
-
-
-                        break;
-                    default:
-                        System.out.println("Alchemy Help on Linux is not currently supported");
-                        break;
-                    }
             }
             };
 
