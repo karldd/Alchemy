@@ -121,8 +121,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private static VectorCanvas vectorCanvas;
     /** Previous cursor */
     Cursor oldCursor;
-    /** Init boolean set false after initialised */
-    private boolean init = true;
 
 //  PDF READER
 //  PDFFile pdffile;
@@ -187,8 +185,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        int w = this.getWidth();
-        int h = this.getHeight();
+        java.awt.Rectangle visibleRect = this.getVisibleRect();
+        int w = visibleRect.width;
+        int h = visibleRect.height;
 
         if (imageDisplay && image != null) {
             g2.drawImage(image, 0, 0, null);
@@ -230,7 +229,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         // Draw a red circle when saving a frame
         if (recordIndicator) {
-            Ellipse2D.Double recordCircle = new Ellipse2D.Double(5, h - 35, 7, 7);
+            Ellipse2D.Double recordCircle = new Ellipse2D.Double(5, h - 12, 7, 7);
             g2.setColor(Color.RED);
             g2.fill(recordCircle);
         }
