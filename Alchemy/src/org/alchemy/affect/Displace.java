@@ -37,6 +37,7 @@ public class Displace extends AlcModule implements AlcConstants {
     private Point oldP;
     private int speed;
     private int displacement = 7;
+    private boolean mouseDown = false;
 
     public Displace() {
 
@@ -74,49 +75,55 @@ public class Displace extends AlcModule implements AlcConstants {
     }
 
     protected void affect() {
-        for (int i = 0; i < canvas.createShapes.size(); i++) {
-            AlcShape shape = (AlcShape) canvas.createShapes.get(i);
-            GeneralPath originalPath = shape.getPath();
-            Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
+        if (mouseDown) {
+            for (int i = 0; i < canvas.createShapes.size(); i++) {
+                AlcShape shape = (AlcShape) canvas.createShapes.get(i);
+                GeneralPath originalPath = shape.getPath();
+                Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
 
-            GeneralPath newPath = new GeneralPath();
-            PathIterator iterator = originalPath.getPathIterator(null);
-            float[] currentPoints = new float[6];
-            int currentPointType;
+                GeneralPath newPath = new GeneralPath();
+                PathIterator iterator = originalPath.getPathIterator(null);
+                float[] currentPoints = new float[6];
+                int currentPointType;
 
-            while (!iterator.isDone()) {
-                currentPointType = iterator.currentSegment(currentPoints);
+                while (!iterator.isDone()) {
+                    currentPointType = iterator.currentSegment(currentPoints);
 
-                switch (currentPointType) {
-                    case PathIterator.SEG_MOVETO:
-                        float[] displacedMove = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
-                        newPath.moveTo(displacedMove[0], displacedMove[1]);
-                        break;
-                    case PathIterator.SEG_LINETO:
-                        float[] displacedLine = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
-                        newPath.lineTo(displacedLine[0], displacedLine[1]);
-                        break;
-                    case PathIterator.SEG_QUADTO:
-                        float[] displacedQuad1 = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
-                        float[] displacedQuad2 = getAngle(new Point2D.Float(currentPoints[2], currentPoints[3]), lastPt, speed);
-                        newPath.quadTo(displacedQuad1[0], displacedQuad1[1], displacedQuad2[0], displacedQuad2[1]);
-                        break;
-                    case PathIterator.SEG_CUBICTO:
-                        newPath.curveTo(currentPoints[0], currentPoints[1], currentPoints[2], currentPoints[3], currentPoints[4], currentPoints[5]);
-                        break;
-                    case PathIterator.SEG_CLOSE:
-                        newPath.closePath();
-                        break;
+                    switch (currentPointType) {
+                        case PathIterator.SEG_MOVETO:
+                            float[] displacedMove = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                            //System.out.println("MOVE");
+                            newPath.moveTo(displacedMove[0], displacedMove[1]);
+                            break;
+                        case PathIterator.SEG_LINETO:
+                            //System.out.println("LINE");
+                            float[] displacedLine = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                            newPath.lineTo(displacedLine[0], displacedLine[1]);
+                            break;
+                        case PathIterator.SEG_QUADTO:
+                            //System.out.println("QUAD");
+                            float[] displacedQuad1 = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                            float[] displacedQuad2 = getAngle(new Point2D.Float(currentPoints[2], currentPoints[3]), lastPt, speed);
+                            newPath.quadTo(displacedQuad1[0], displacedQuad1[1], displacedQuad2[0], displacedQuad2[1]);
+                            break;
+                        case PathIterator.SEG_CUBICTO:
+                            newPath.curveTo(currentPoints[0], currentPoints[1], currentPoints[2], currentPoints[3], currentPoints[4], currentPoints[5]);
+                            break;
+                        case PathIterator.SEG_CLOSE:
+                            newPath.closePath();
+                            break;
+                    }
+                    iterator.next();
                 }
-                iterator.next();
+                shape.setPath(newPath);
             }
-            shape.setPath(newPath);
         }
     }
 
     public void mousePressed(MouseEvent e) {
+        mouseDown = true;
         Point p = e.getPoint();
-        canvas.createShapes.add(new AlcShape(p));
+//        canvas.createShapes.add(new AlcShape(p));
         canvas.redraw();
         oldP = p;
     }
@@ -128,6 +135,7 @@ public class Displace extends AlcModule implements AlcConstants {
     }
 
     public void mouseReleased(MouseEvent e) {
+        mouseDown = false;
         oldP = null;
     }
 

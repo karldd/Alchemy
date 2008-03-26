@@ -94,8 +94,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
-    /** Init boolean set false after initialised */
-    private boolean init = true;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -161,8 +159,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
-        init = false;
-
+        
     }
 
     /** Load the tool bar */
