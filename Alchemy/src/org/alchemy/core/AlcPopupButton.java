@@ -20,7 +20,6 @@
 package org.alchemy.core;
 
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -38,7 +37,6 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
     /** Creates a new instance of AlcPopupButton */
     AlcPopupButton(String text, String toolTip, URL iconUrl) {
         super(text, toolTip, iconUrl);
-
         makePopup();
     }
 
@@ -50,7 +48,7 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
 
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
-                Alchemy.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                Alchemy.canvas.setTempCursor(ARROW);
             }
         });
 

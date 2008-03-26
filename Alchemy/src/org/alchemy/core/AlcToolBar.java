@@ -94,6 +94,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
+    /** Init boolean set false after initialised */
+    private boolean init = true;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -123,6 +125,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             this.add("South", toolBars);
         }
 
+        // Hide the toolbar with the space key
         AbstractAction toolBarAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -138,12 +141,27 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             }
         };
 
-        // Shortcut - TAB
+        // Shortcut - SPACE
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_SPACE, "toggleToolBar", toolBarAction);
+
+        // Hide the cursor with the H key
+        AbstractAction hideCursorAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (Alchemy.canvas.getCursor() == BLANK) {
+                    Alchemy.canvas.setCursor(CROSS);
+                } else {
+                    Alchemy.canvas.setCursor(BLANK);
+                }
+            }
+        };
+
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_H, "toggleCursor", hideCursorAction);
 
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
+        init = false;
 
     }
 
@@ -288,8 +306,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                     Alchemy.canvas.setColour(picker.getColor(e.getX(), e.getY()));
                     colourButton.hidePopup();
                     if (Alchemy.PLATFORM == MACOSX) {
-                        Alchemy.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-                        Alchemy.toolBar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        Alchemy.canvas.restoreCursor();
+                        //Alchemy.canvas.setCursor(CROSS);
+                        Alchemy.toolBar.setCursor(ARROW);
                     }
                     refreshSwapButton();
                 }
@@ -568,8 +587,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             Alchemy.canvas.setMouseEvents(!visible);
             if (!visible) {
                 // Be sure to set the cursor back to the cross hair
-                Alchemy.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-                this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                Alchemy.canvas.restoreCursor();
+                //Alchemy.canvas.setCursor(CROSS);
+                this.setCursor(ARROW);
                 colourButton.hidePopup();
                 createButton.hidePopup();
                 if (affectButton != null) {

@@ -119,13 +119,18 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private GraphicsConfiguration gc;
     /** A Vector based canvas for full redrawing */
     private static VectorCanvas vectorCanvas;
+    /** Previous cursor */
+    Cursor oldCursor;
+    /** Init boolean set false after initialised */
+    private boolean init = true;
 
 //  PDF READER
 //  PDFFile pdffile;
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
 
-        this.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+
+
         this.smoothing = Alchemy.preferences.getSmoothing();
         this.bgColour = new Color(Alchemy.preferences.getBgColour());
         this.colour = new Color(Alchemy.preferences.getColour());
@@ -153,6 +158,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         vectorCanvas = new VectorCanvas();
 
+        this.setCursor(CROSS);
 
 //        renderMode = VECTOR;
 //        canvasImage = renderCanvas();
@@ -379,6 +385,22 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         }
         // Now is a good time to clean up memory
         System.gc();
+    }
+
+    /** Set the cursor */
+    public void setTempCursor(Cursor cursor) {
+        if (oldCursor == null) {
+            oldCursor = this.getCursor();
+            this.setCursor(cursor);
+        }
+    }
+
+    /** Restore the cursor */
+    public void restoreCursor() {
+        if (oldCursor != null) {
+            this.setCursor(oldCursor);
+            oldCursor = null;
+        }
     }
 
     /** Apply affects to the current shape and redraw the canvas */

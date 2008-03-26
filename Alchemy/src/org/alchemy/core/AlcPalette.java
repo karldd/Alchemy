@@ -28,7 +28,7 @@ import javax.swing.border.LineBorder;
  * AlcPalette
  * @author Karl D.D. Willis
  */
-class AlcPalette extends JWindow implements KeyListener, MouseListener {
+class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConstants {
 
     //private JPanel paletteContent;
     public JPanel mainPalette;
@@ -50,7 +50,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener {
         mainPalette.setBackground(AlcToolBar.toolBarBgColour);
         mainPalette.setBorder(new LineBorder(AlcToolBar.toolBarLineColour, 1));
         mainPalette.setLayout(new BorderLayout());
-        mainPalette.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        mainPalette.setCursor(ARROW);
         this.addKeyListener(this);
         this.addMouseListener(this);
 
@@ -108,13 +108,14 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener {
 
     public void mouseEntered(MouseEvent event) {
         // Set the default cursor
-        Alchemy.canvas.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        Alchemy.canvas.setTempCursor(ARROW);
     }
 
     public void mouseExited(MouseEvent event) {
         // Set the cursor back to a cross hair when leaving the palette
         if (!this.contains(event.getPoint())) {
-            Alchemy.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+            Alchemy.canvas.restoreCursor();
+            //Alchemy.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         }
     }
 
