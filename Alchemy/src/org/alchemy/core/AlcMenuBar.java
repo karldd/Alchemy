@@ -180,7 +180,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction fullScreenAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                if (e.getActionCommand().equals("f")) {
+                String source = e.getSource().getClass().getName();
+                if(!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")){
                     fullScreenItem.setState(!fullScreenItem.getState());
                 }
                 Alchemy.window.setFullscreen(!Alchemy.window.isFullscreen());
