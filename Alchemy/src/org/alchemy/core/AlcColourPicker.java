@@ -132,15 +132,16 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
             public void mouseEntered(MouseEvent e) {
                 // OSX does not seem to obey the set cursor so set the other cursors
                 if (Alchemy.PLATFORM == MACOSX) {
-                    Alchemy.canvas.setCursor(pickerCursor);
+                    Alchemy.canvas.setTempCursor(pickerCursor);
                     Alchemy.toolBar.setCursor(pickerCursor);
                 }
             }
 
             public void mouseExited(MouseEvent e) {
                 if (Alchemy.PLATFORM == MACOSX) {
-                    Alchemy.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-                    Alchemy.toolBar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    Alchemy.canvas.restoreCursor();
+                    //Alchemy.canvas.setCursor(CROSS);
+                    Alchemy.toolBar.setCursor(ARROW);
                 }
             }
             });

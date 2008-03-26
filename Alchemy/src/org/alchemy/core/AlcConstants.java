@@ -19,7 +19,11 @@
  */
 package org.alchemy.core;
 
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.image.MemoryImageSource;
 import java.util.Locale;
 
 /**
@@ -93,4 +97,17 @@ public interface AlcConstants {
     static final int CREATE = 0;
     /** Module Type: AFFECT (1)  */
     static final int AFFECT = 1;
+    //
+    //////////////////////////////////////////////////////////////
+    // CURSORS 
+    //////////////////////////////////////////////////////////////
+    static final Cursor ARROW = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    static final Cursor CROSS = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    static final Cursor HAND = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    static final Cursor MOVE = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+    static final Cursor TEXT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+    int[] blankPixels = new int[16 * 16];
+    Image blankImage = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, blankPixels, 0, 16));
+    static final Cursor BLANK = TOOLKIT.createCustomCursor(blankImage, new Point(0, 0), "Blank");
 }
