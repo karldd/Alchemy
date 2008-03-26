@@ -123,7 +123,6 @@ public class Displace extends AlcModule implements AlcConstants {
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
         Point p = e.getPoint();
-//        canvas.createShapes.add(new AlcShape(p));
         canvas.redraw();
         oldP = p;
     }
