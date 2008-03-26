@@ -231,14 +231,16 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         sessionMenu.add(new JSeparator());
 
-        // Toggle Recording
+        // Recording
         String recordingTitle = getS("recordingTitle");
         final AlcCheckBoxMenuItem recordingItem = new AlcCheckBoxMenuItem();
         AbstractAction recordingAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                // If the command has come from the key then we need to change the state of the menu item as well
-                if (e.getActionCommand().equals("r")) {
+                // If the source is from the key then we need to change the state of the menu item as well
+                String source = e.getSource().getClass().getName();
+                if(!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")){
+                //if (e.getActionCommand().equals("r")) {
                     recordingItem.setState(!recordingItem.getState());
                 }
                 Alchemy.session.setRecording(recordingItem.getState());
