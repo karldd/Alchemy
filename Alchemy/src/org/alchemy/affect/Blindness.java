@@ -35,6 +35,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     public Blindness() {
     }
 
+    @Override
     protected void setup() {
         canvas.setRedraw(false);
 
@@ -45,18 +46,21 @@ public class Blindness extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     protected void reselect() {
         // Readd the toolbar section
         toolBar.addSubToolBarSection(subToolBarSection);
         canvas.setRedraw(false);
     }
 
+    @Override
     protected void deselect() {
         // Turn drawing back on and show what is underneath
         canvas.setRedraw(true);
         canvas.redraw();
     }
 
+    @Override
     protected void cleared() {
     }
 
@@ -92,6 +96,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     // MOUSE EVENTS
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (autoReveal) {
             // TODO - Deal with straight shapes and autoreveal bug
@@ -100,6 +105,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     // KEY EVENTS
+    @Override
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_R) {
             canvas.forceRedraw();

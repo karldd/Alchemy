@@ -117,6 +117,7 @@ public class AlcMicInput {
         running = true;
         micThread = new Thread() {
 
+            @Override
             public void run() {
                 try {
                     //Loop until running is turned off

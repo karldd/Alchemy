@@ -70,6 +70,7 @@ import javax.swing.JPanel;
 
         this.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 originalX = e.getX();
                 originalY = e.getY();
@@ -78,6 +79,7 @@ import javax.swing.JPanel;
 
         this.addMouseMotionListener(new MouseMotionAdapter() {
 
+            @Override
             public void mouseDragged(MouseEvent e) {
                 parent.shiftPalette(e.getX() - originalX, e.getY() - originalY);
             }
@@ -85,6 +87,7 @@ import javax.swing.JPanel;
     }
 
     // Override the paint component to draw the gradient bg    
+    @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 

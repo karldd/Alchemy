@@ -129,6 +129,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
 
         this.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseEntered(MouseEvent e) {
                 // OSX does not seem to obey the set cursor so set the other cursors
                 if (Alchemy.PLATFORM == MACOSX) {
@@ -137,6 +138,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
                 }
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                 if (Alchemy.PLATFORM == MACOSX) {
                     Alchemy.canvas.restoreCursor();
@@ -166,6 +168,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
 //
 //        g2.dispose();
 //    }
+    @Override
     protected void paintComponent(Graphics g) {
         //super.paintComponent(g2);
         Graphics2D g2 = (Graphics2D) g;

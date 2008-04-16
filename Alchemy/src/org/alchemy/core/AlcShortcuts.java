@@ -37,8 +37,8 @@ import javax.swing.JTextField;
  */
 class AlcShortcuts extends JDialog implements AlcConstants {
 
-    private ArrayList userShortcuts;
-    private ArrayList defaultShortcuts;
+    private ArrayList <AlcShortcutMapper> userShortcuts;
+    private ArrayList <AlcShortcutMapper> defaultShortcuts;
     private JTextField[] textfields;
     private int index = 0;
     private boolean listenerActive = false;
@@ -49,8 +49,8 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
     AlcShortcuts(AlcWindow owner) {
         super(owner, Alchemy.bundle.getString("keyboardShortcutsWindowTitle"), true);
-        userShortcuts = new ArrayList(50);
-        defaultShortcuts = new ArrayList(50);
+        userShortcuts = new ArrayList<AlcShortcutMapper>(50);
+        defaultShortcuts = new ArrayList<AlcShortcutMapper>(50);
 
 //        try {
 //            String[] prefKeys = AlcPreferences.prefs.keys();
@@ -91,7 +91,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        userShortcuts = (ArrayList) defaultShortcuts.clone();
+                        userShortcuts =  new ArrayList<AlcShortcutMapper>(defaultShortcuts);
                         reloadShortcuts();
                         refreshTextfields();
                         okButton.requestFocus();
@@ -180,6 +180,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
             textfield.addMouseListener(new MouseAdapter() {
 
+                @Override
                 public void mousePressed(MouseEvent e) {
                     listenerActive = true;
                     textfield.setText("");
@@ -189,6 +190,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
             textfield.addKeyListener(new KeyAdapter() {
 
+                @Override
                 public void keyReleased(KeyEvent e) {
 
                     if (listenerActive) {
@@ -238,6 +240,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
             textfield.addFocusListener(new FocusAdapter() {
 
+                @Override
                 public void focusLost(FocusEvent e) {
                     if (textfield.getText().equals("")) {
                         textfield.setText(originalShortcut);

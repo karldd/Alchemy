@@ -51,6 +51,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     protected void setup() {
         moduleActive = true;
         canvas.setImageDisplay(false);
@@ -59,6 +60,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         loadImage();
     }
 
+    @Override
     protected void reselect() {
         moduleActive = true;
         // Add this modules toolbar to the main ui
@@ -66,6 +68,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         loadImage();
     }
 
+    @Override
     protected void deselect() {
         moduleActive = false;
         pixelsLoaded = false;
@@ -252,12 +255,14 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(toleranceSlider);
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.createShapes.add(new AlcShape(p));
         canvas.redraw();
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
 
         // Need to test if it is null incase the shape has been auto-cleared
@@ -269,6 +274,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         canvas.commitShapes();
     }

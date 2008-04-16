@@ -46,6 +46,7 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
         // Add a mouse listener to detect when the button is pressed and display the popup menu
         this.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
                 Alchemy.canvas.setTempCursor(ARROW);
@@ -54,10 +55,12 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
 
         popup.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseEntered(MouseEvent e) {
                 inside = popup.contains(e.getPoint());
             }
 
+            @Override
             public void mouseExited(MouseEvent e) {
                 inside = popup.contains(e.getPoint());
             }

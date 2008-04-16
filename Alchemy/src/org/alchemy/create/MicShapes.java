@@ -40,13 +40,14 @@ public class MicShapes extends AlcModule implements AlcConstants {
     private float volume;
     private AlcSubToolBarSection subToolBarSection;
     private boolean shake = false;
-    private ArrayList points = new ArrayList(1000);
-    private ArrayList levels = new ArrayList(1000);
+    private ArrayList<Point> points = new ArrayList<Point>(1000);
+    private ArrayList<Float> levels = new ArrayList<Float>(1000);
 
     /** Creates a new instance of MicShapes */
     public MicShapes() {
     }
 
+    @Override
     protected void setup() {
         points.ensureCapacity(1000);
         // Create a new MicInput Object with a buffer of 10
@@ -56,23 +57,26 @@ public class MicShapes extends AlcModule implements AlcConstants {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void deselect() {
+    @Override
+    protected void deselect() {
         micIn.stopMicInput();
         micIn = null;
     }
 
-    public void reselect() {
+    @Override
+    protected void reselect() {
         micIn = new AlcMicInput(2);
         micIn.startMicInput();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void cleared() {
+    @Override
+    protected void cleared() {
         points.clear();
         levels.clear();
     }
 
-    public void createSubToolBarSection() {
+    private void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Draw mode button
@@ -87,7 +91,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
                     }
                 });
         subToolBarSection.add(drawModeButton);
-        
+
 
         // Volume Slider
         int initialSliderValue = 50;
@@ -112,14 +116,14 @@ public class MicShapes extends AlcModule implements AlcConstants {
 
     private void makeBlob(AlcShape shape) {
 
-        Point p0 = (Point) points.get(0);
+        Point p0 = points.get(0);
         shape.setPoint(p0);
 
         // Draw the outer points
         for (int i = 1; i < points.size(); i++) {
-            Point p2 = (Point) points.get(i - 1);
-            Point p1 = (Point) points.get(i);
-            float level = ((Float) levels.get(i)).floatValue();
+            Point p2 = points.get(i - 1);
+            Point p1 = points.get(i);
+            float level = ( levels.get(i)).floatValue();
             Point pOut = rightAngle(p1, p2, level);
             shape.addCurvePoint(pOut);
         }
@@ -128,21 +132,23 @@ public class MicShapes extends AlcModule implements AlcConstants {
         for (int j = 1; j < points.size(); j++) {
             int index = (points.size() - j);
             //System.out.print(index + " ");
-            Point p2 = (Point) points.get(index);
-            Point p1 = (Point) points.get(index - 1);
-            float level = ((Float) levels.get(index)).floatValue();
+            Point p2 = points.get(index);
+            Point p1 = points.get(index - 1);
+            float level = ( levels.get(index)).floatValue();
             Point pIn = rightAngle(p1, p2, level);
             shape.addCurvePoint(pIn);
         }
     //System.out.println(" ");
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.createShapes.add(new AlcShape(p));
         lastPt = p;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
         AlcShape currentShape = canvas.getCurrentCreateShape();
@@ -168,6 +174,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         AlcShape currentShape = canvas.getCurrentCreateShape();

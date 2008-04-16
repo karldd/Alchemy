@@ -54,16 +54,19 @@ public class Repeat extends AlcModule {
 
     }
 
+    @Override
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
 
     }
 
+    @Override
     public void deselect() {
 
     }
 
+    @Override
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -194,6 +197,7 @@ public class Repeat extends AlcModule {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
         // If clicked when still repeating
@@ -203,11 +207,13 @@ public class Repeat extends AlcModule {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     //            canvas.setCurrentShape(randomiseShape(currentShape));
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
             // Dispatch checking for intersection at a slow rate
@@ -225,6 +231,7 @@ public class Repeat extends AlcModule {
         }
     }
 
+    @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_B) {
             repeat = !repeat;
