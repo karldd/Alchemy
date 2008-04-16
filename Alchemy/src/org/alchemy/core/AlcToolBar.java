@@ -276,6 +276,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         picker = new AlcColourPicker();
         picker.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mouseReleased(MouseEvent e) {
 
                 // Check if the colour chooser needs to be launched

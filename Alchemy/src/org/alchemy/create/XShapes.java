@@ -37,23 +37,25 @@ public class XShapes extends AlcModule implements AlcConstants {
     private int multiplier = 25;
     private AlcSubToolBarSection subToolBarSection;
 //    private boolean freeform = true;
-    private ArrayList averageSpeed = new ArrayList();
+    private ArrayList<Integer> averageSpeed = new ArrayList<Integer>();
     private int counter = 0;
 
     public XShapes() {
 
     }
 
+    @Override
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void reselect() {
+    @Override
+    protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void createSubToolBarSection() {
+    private void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 //
 //        // Shake/Fatten button
@@ -87,6 +89,7 @@ public class XShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(speedSlider);
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.createShapes.add(new AlcShape(p));
@@ -94,6 +97,7 @@ public class XShapes extends AlcModule implements AlcConstants {
         oldP = null;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
 
         Point p = e.getPoint();
@@ -123,6 +127,7 @@ public class XShapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         oldP = null;
         canvas.commitShapes();
@@ -142,13 +147,13 @@ public class XShapes extends AlcModule implements AlcConstants {
 
         //averageSpeed[counter % averageSpeed.length] = speed;
         return mean(averageSpeed);
-        //return speed;
+    //return speed;
     }
 
-    private double mean(ArrayList list) {
+    private double mean(ArrayList<Integer> list) {
         int sum = 0;  // sum of all the elements
         for (int i = 0; i < list.size(); i++) {
-            Integer thisInteger = (Integer) list.get(i);
+            Integer thisInteger = list.get(i);
             sum += thisInteger.intValue();
         }
         return sum / list.size();

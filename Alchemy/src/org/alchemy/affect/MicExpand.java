@@ -63,6 +63,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
     }
 
+    @Override
     protected void setup() {
         // Create the mic input object
         micIn = new AlcMicInput(this);
@@ -70,11 +71,13 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
+    @Override
     public void deselect() {
         stopExpand();
         micIn = null;
     }
 
+    @Override
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
         micIn = new AlcMicInput(this);
@@ -300,6 +303,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         }
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
             int firstShape = -1;
@@ -323,10 +327,12 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     }

@@ -59,16 +59,14 @@ public class Random extends AlcModule {
 
     }
 
+    @Override
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void deselect() {
-
-    }
-
-    public void reselect() {
+    @Override
+    protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
@@ -180,6 +178,7 @@ public class Random extends AlcModule {
 //        }
 //    }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (!mouseDown) {
             int firstShape = -1;
@@ -198,10 +197,12 @@ public class Random extends AlcModule {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
     }

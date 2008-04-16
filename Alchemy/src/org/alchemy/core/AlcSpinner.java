@@ -62,6 +62,7 @@ class AlcSpinner extends JPanel implements AlcShortcutInterface {
 
     }
 
+    @Override
     public void setToolTipText(String toolTip) {
         super.setToolTipText(toolTip);
         spinner.setToolTipText(toolTip);

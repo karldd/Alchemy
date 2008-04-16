@@ -34,8 +34,8 @@ public class MedianShapes extends AlcModule {
     /** Capture a gesture or not */
     private boolean captureControlGesture = true;
     /** Array list to store the points of the control shape */
-    private ArrayList controlShapePoints = new ArrayList(1000);
-    private ArrayList controlShapePointsBuffer = new ArrayList(1000);
+    private ArrayList<Point> controlShapePoints = new ArrayList<Point>(1000);
+    private ArrayList<Point> controlShapePointsBuffer = new ArrayList<Point>(1000);
     /** Origin Point - when redrawing, where the mouse starts from */
     Point originPoint;
     /** Origin Difference - when redrawing, how far between the origin of the current shape 
@@ -47,10 +47,12 @@ public class MedianShapes extends AlcModule {
     public MedianShapes() {
     }
 
+    @Override
     protected void cleared() {
         captureControlGesture = true;
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         if (captureControlGesture) {
@@ -70,7 +72,7 @@ public class MedianShapes extends AlcModule {
             controlShapePoints.add(p);
 
         } else {
-            Point controlOrigin = (Point) controlShapePoints.get(0);
+            Point controlOrigin = controlShapePoints.get(0);
             pointCount = 0;
             originPoint = p;
 
@@ -87,6 +89,7 @@ public class MedianShapes extends AlcModule {
         canvas.redraw();
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
@@ -103,7 +106,7 @@ public class MedianShapes extends AlcModule {
                 pointCount++;
                 // If there are enough recorded points
                 if (controlShapePoints.size() > pointCount) {
-                    Point controlPoint = (Point) controlShapePoints.get(pointCount);
+                    Point controlPoint = controlShapePoints.get(pointCount);
                     // Difference between this point and the parallel control point
                     int xOffset = p.x - (p.x - controlPoint.x) / 2;
                     int yOffset = p.y - (p.y - controlPoint.y) / 2;
@@ -124,6 +127,7 @@ public class MedianShapes extends AlcModule {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
@@ -141,7 +145,7 @@ public class MedianShapes extends AlcModule {
 
             } else {
                 controlShapePoints = controlShapePointsBuffer;
-                controlShapePointsBuffer = new ArrayList(1000);
+                controlShapePointsBuffer = new ArrayList<Point>(1000);
                 //canvas.getCurrentShape().addLastPoint(p);
 
 

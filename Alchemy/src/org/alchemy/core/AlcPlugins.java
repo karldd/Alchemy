@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.swing.JOptionPane;
+import org.alchemy.core.AlcModule;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
@@ -263,6 +264,7 @@ class AlcPlugins implements AlcConstants {
             e.printStackTrace();
         }
 
+        //Arrays.sort(plugins, (Comparator<AlcModule>)new PluginComparator());
         Arrays.sort(plugins, new PluginComparator());
 
         // Loop through once again and set the index
@@ -343,7 +345,7 @@ class AlcPlugins implements AlcConstants {
     }
 }
 
-class PluginComparator implements Comparator {
+class PluginComparator implements Comparator<Object> {
 
     public int compare(Object o1, Object o2) {
         AlcModule module1 = ((AlcModule) o1);

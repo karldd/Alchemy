@@ -43,15 +43,18 @@ public class Displace extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
+    @Override
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
+    @Override
     public void cleared() {
     }
 
@@ -74,6 +77,7 @@ public class Displace extends AlcModule implements AlcConstants {
         subToolBarSection.add(speedSlider);
     }
 
+    @Override
     protected void affect() {
         if (mouseDown) {
             for (int i = 0; i < canvas.createShapes.size(); i++) {
@@ -120,6 +124,7 @@ public class Displace extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         mouseDown = true;
         Point p = e.getPoint();
@@ -127,12 +132,14 @@ public class Displace extends AlcModule implements AlcConstants {
         oldP = p;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
         speed = displacement - getCursorSpeed(p, oldP);
         oldP = p;
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         mouseDown = false;
         oldP = null;

@@ -20,8 +20,7 @@
 package org.alchemy.core;
 
 import java.awt.*;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
+import java.awt.print.*;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -29,21 +28,24 @@ import java.awt.Graphics2D;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-// iText
+// ITEXT
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.PdfCopy;
-import com.lowagie.text.pdf.PdfImportedPage;
-import com.lowagie.text.pdf.PdfReader;
-//
+import com.lowagie.text.pdf.*;
+
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+
+// PDF READER
+import com.sun.pdfview.*;
 
 /** 
  * The Alchemy canvas
@@ -86,13 +88,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     // SHAPES
     //////////////////////////////////////////////////////////////
     /** Array list containing shapes that have been archived */
-    public ArrayList shapes;
+    public ArrayList<AlcShape> shapes;
     /** Array list containing shapes made by create modules */
-    public ArrayList createShapes;
+    public ArrayList<AlcShape> createShapes;
     /** Array list containing shapes made by affect modules */
-    public ArrayList affectShapes;
+    public ArrayList<AlcShape> affectShapes;
     /** Array list containing shapes used as visual guides - not actual geometry */
-    public ArrayList guideShapes;
+    public ArrayList<AlcShape> guideShapes;
     /** Full shape array of each array list */
     ArrayList[] fullShapeList = new ArrayList[3];
     /** Active shape list plus guides */
@@ -123,7 +125,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     Cursor oldCursor;
 
 //  PDF READER
-//  PDFFile pdffile;
+    PDFFile pdffile;
+
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
 
@@ -137,13 +140,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         addMouseMotionListener(this);
         this.setBounds(0, 0, Alchemy.window.getWindowSize().width, Alchemy.window.getWindowSize().height);
 
-        shapes = new ArrayList(100);
+        shapes = new ArrayList<AlcShape>(100);
         shapes.ensureCapacity(100);
-        createShapes = new ArrayList(25);
+        createShapes = new ArrayList<AlcShape>(25);
         createShapes.ensureCapacity(25);
-        affectShapes = new ArrayList(25);
+        affectShapes = new ArrayList<AlcShape>(25);
         affectShapes.ensureCapacity(25);
-        guideShapes = new ArrayList(25);
+        guideShapes = new ArrayList<AlcShape>(25);
         guideShapes.ensureCapacity(25);
 
         fullShapeList[0] = shapes;
@@ -158,29 +161,25 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         this.setCursor(CROSS);
 
-//        renderMode = VECTOR;
-//        canvasImage = renderCanvas();
-//        renderMode = BITMAP;
+        // PDF READER
+        try {
+            File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
 
+            // set up the PDF reading
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            FileChannel channel = raf.getChannel();
+            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            pdffile = new PDFFile(buf);
 
-//       PDF READER
-//        try {
-//            File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
-//
-//            // set up the PDF reading
-//            RandomAccessFile raf = new RandomAccessFile(file, "r");
-//            FileChannel channel = raf.getChannel();
-//            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-//            pdffile = new PDFFile(buf);
-//
-//        } catch (FileNotFoundException ex) {
-//            ex.printStackTrace();
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /** Paint Component that draws all shapes to the canvas */
+    @Override
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
@@ -255,21 +254,21 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         g2.dispose();
 
-    // Hints that don't seem to offer any extra performance on OSX
-    //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-    //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+        // Hints that don't seem to offer any extra performance on OSX
+        //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
 
 
 //        PDF READER
 //        get the first page
-//        PDFPage page = pdffile.getPage(0);
-//        PDFRenderer renderer = new PDFRenderer(page, g2, new Rectangle(0, 0, w, h), null, Color.RED);
-//        try {
-//            page.waitForFinish();
-//            renderer.run();
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//        }
+        PDFPage page = pdffile.getPage(0);
+        PDFRenderer renderer = new PDFRenderer(page, g2, new Rectangle(0, 0, w, h), null, Color.RED);
+        try {
+            page.waitForFinish();
+            renderer.run();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
     }
 
     //////////////////////////////////////////////////////////////
@@ -1137,6 +1136,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
  */
 class VectorCanvas extends JPanel implements AlcConstants {
 
+    @Override
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);

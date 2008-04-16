@@ -64,6 +64,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     public TypeShapes() {
     }
 
+    @Override
     protected void setup() {
 
         loadFonts();
@@ -76,15 +77,18 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     protected void reselect() {
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
+    @Override
     protected void deselect() {
     //canvas.commitTempShape();
     }
 
+    @Override
     protected void cleared() {
 //        addShape = true;
     }
@@ -457,6 +461,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         return diffX + diffY;
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         shuffle();
@@ -464,6 +469,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         oldP = p;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
 
@@ -481,6 +487,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         oldP = p;
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         oldP = null;
     //canvas.commitShapes();
@@ -506,6 +513,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     // KEY EVENTS
+    @Override
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
         String keyText = KeyEvent.getKeyText(keyCode);

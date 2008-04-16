@@ -547,6 +547,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     }
 
     /** Return the height of the menubar */
+    @Override
     public int getHeight() {
         return height;
     }
@@ -725,6 +726,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         }
     }
 
+    @Override
     protected void paintComponent(Graphics g) {
         if (Alchemy.PLATFORM != MACOSX) {
             // Make sure this is not painted on Mac

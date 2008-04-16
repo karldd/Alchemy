@@ -40,28 +40,34 @@ public class InverseShapes extends AlcModule {
     public InverseShapes() {
     }
 
+    @Override
     protected void setup() {
     }
 
+    @Override
     protected void reselect() {
         mouseUp = true;
         moveTo = true;
     }
 
+    @Override
     protected void deselect() {
         canvas.commitShapes();
     }
 
+    @Override
     protected void cleared() {
         moveTo = true;
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         mouseUp = false;
         canvas.redraw();
         canvas.commitShapes();
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (mouseUp) {
             Point p = e.getPoint();
@@ -79,6 +85,7 @@ public class InverseShapes extends AlcModule {
 
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         mouseUp = true;
         moveTo = true;

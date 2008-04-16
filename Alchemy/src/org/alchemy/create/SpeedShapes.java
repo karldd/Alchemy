@@ -42,16 +42,18 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void reselect() {
+    @Override
+    protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void createSubToolBarSection() {
+    private void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Shake/Fatten button
@@ -85,6 +87,7 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(speedSlider);
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         Point p = e.getPoint();
         canvas.createShapes.add(new AlcShape(p));
@@ -92,6 +95,7 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
         oldP = p;
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         // Need to test if it is null incase the shape has been auto-cleared
         if (canvas.getCurrentCreateShape() != null) {
@@ -110,6 +114,7 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         oldP = null;
         canvas.commitShapes();

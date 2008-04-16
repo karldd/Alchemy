@@ -45,6 +45,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     public Mirror() {
     }
 
+    @Override
     protected void setup() {
         // Set the initial axis to the middle
         resetAxis();
@@ -53,11 +54,13 @@ public class Mirror extends AlcModule implements AlcConstants {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void reselect() {
+    @Override
+    protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void cleared() {
+    @Override
+    protected void cleared() {
         firstSelect = true;
     }
 
@@ -125,6 +128,7 @@ public class Mirror extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     protected void affect() {
         if (!selectAxis) {
 
@@ -231,6 +235,7 @@ public class Mirror extends AlcModule implements AlcConstants {
         shapeCount += horizontal && vertical ? 1 : 0;
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         if (selectAxis) {
 
@@ -253,9 +258,11 @@ public class Mirror extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (selectAxis) {
             canvas.removeCurrentGuideShape();

@@ -94,9 +94,9 @@ public class Flickr {
     private List elementsWithTag(Document doc, String tag) {
         NodeList nodes = doc.getElementsByTagName(tag);
         if ((nodes != null) && (nodes.getLength() > 0)) {
-            List elements = new ArrayList(nodes.getLength());
+            ArrayList<Element> elements = new ArrayList<Element>(nodes.getLength());
             for (int i = 0; i < nodes.getLength(); i++) {
-                elements.add((Element) (nodes.item(i)));
+                elements.add((Element)nodes.item(i));
             }
             return elements;
         } else {

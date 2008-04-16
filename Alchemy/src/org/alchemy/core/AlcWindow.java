@@ -59,6 +59,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // Exit Function
         addWindowListener(new WindowAdapter() {
 
+            @Override
             public void windowClosing(WindowEvent e) {
                 exitAlchemy();
             }

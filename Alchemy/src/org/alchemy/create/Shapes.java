@@ -46,16 +46,19 @@ public class Shapes extends AlcModule implements AlcConstants {
     public Shapes() {
     }
 
+    @Override
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
-    public void cleared() {
+    @Override
+    protected void cleared() {
         reset();
     }
 
-    public void reselect() {
+    @Override
+    protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
         reset();
     }
@@ -91,6 +94,7 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
         if (e.getClickCount() == 1) {
             if (!straightShapes) {
@@ -101,6 +105,7 @@ public class Shapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
         // Detect a doubleclick
         if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
@@ -111,6 +116,7 @@ public class Shapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseMoved(MouseEvent e) {
         // If in freeform mode, not on the first click and if there is a valid lastPoint
         // then draw a guide line
@@ -137,6 +143,7 @@ public class Shapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseDragged(MouseEvent e) {
         if (!straightShapes) {
             Point p = e.getPoint();
@@ -151,6 +158,7 @@ public class Shapes extends AlcModule implements AlcConstants {
         }
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Only if this is a single click

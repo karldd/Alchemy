@@ -40,6 +40,7 @@ class AlcFileChooser extends JFileChooser {
         super(currentDirectory);
     }
 
+    @Override
     protected JDialog createDialog(Component parent) throws HeadlessException {
         JDialog dialog = super.createDialog(parent);
         Point p = AlcUtil.calculateCenter(dialog);
