@@ -181,7 +181,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
                 String source = e.getSource().getClass().getName();
-                if(!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")){
+                if (!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")) {
                     fullScreenItem.setState(!fullScreenItem.getState());
                 }
                 Alchemy.window.setFullscreen(!Alchemy.window.isFullscreen());
@@ -240,8 +240,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             public void actionPerformed(ActionEvent e) {
                 // If the source is from the key then we need to change the state of the menu item as well
                 String source = e.getSource().getClass().getName();
-                if(!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")){
-                //if (e.getActionCommand().equals("r")) {
+                if (!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")) {
+                    //if (e.getActionCommand().equals("r")) {
                     recordingItem.setState(!recordingItem.getState());
                 }
                 Alchemy.session.setRecording(recordingItem.getState());
@@ -317,6 +317,64 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         sessionMenu.add(new JSeparator());
 
+        // Load Session PDF
+        final String loadSessionTitle = getS("loadSessionTitle");
+        AbstractAction loadSessionAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                File file = askLocation(loadSessionTitle, false);
+                if (file != null && file.exists()) {
+                    Alchemy.session.loadSessionFile(file);
+                }
+            }
+        };
+        AlcMenuItem loadSessionItem = new AlcMenuItem(loadSessionAction);
+        loadSessionItem.setup(loadSessionTitle);
+        sessionMenu.add(loadSessionItem);
+
+        // Next Page
+        final String nextPageTitle = getS("nextPageTitle");
+        AbstractAction nextPageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.session.nextPage();
+            }
+        };
+        AlcMenuItem nextPageItem = new AlcMenuItem(nextPageAction);
+        int nextPageKey = Alchemy.shortcuts.setShortcut(nextPageItem, KeyEvent.VK_RIGHT, "nextPageTitle", nextPageAction, MODIFIER_KEY);
+        nextPageItem.setup(nextPageTitle, nextPageKey);
+        sessionMenu.add(nextPageItem);
+
+        // Previous Page
+        final String previousPageTitle = getS("previousPageTitle");
+        AbstractAction previousPageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.session.previousPage();
+            }
+        };
+        AlcMenuItem previousPageItem = new AlcMenuItem(previousPageAction);
+        int previousPageKey = Alchemy.shortcuts.setShortcut(previousPageItem, KeyEvent.VK_LEFT, "previousPageTitle", previousPageAction, MODIFIER_KEY);
+        previousPageItem.setup(previousPageTitle, previousPageKey);
+        sessionMenu.add(previousPageItem);
+
+        // TODO - Translate these titles into Japanese
+
+        // Unload Session PDF
+        final String unloadSessionTitle = getS("unloadSessionTitle");
+        AbstractAction unloadSessionAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.session.unloadSessionFile();
+            }
+        };
+        AlcMenuItem unloadSessionItem = new AlcMenuItem(unloadSessionAction);
+        unloadSessionItem.setup(unloadSessionTitle);
+        sessionMenu.add(unloadSessionItem);
+
+
+        sessionMenu.add(new JSeparator());
+
         // Restart Session
         String restartTitle = getS("restartTitle");
         AbstractAction restartAction = new AbstractAction() {
@@ -330,10 +388,11 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         sessionMenu.add(restartItem);
 
         // Default Directory
+        final String setSessionDirTitle = getS("setSessionDirTitle");
         AbstractAction directoryAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation("Select Session Directory", true);
+                File file = askLocation(setSessionDirTitle, true);
                 if (file != null) {
                     System.out.println(file.getPath());
                     Alchemy.preferences.setSessionPath(file.getPath());
@@ -341,7 +400,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem directoryItem = new AlcMenuItem(directoryAction);
-        directoryItem.setup(getS("setSessionDirTitle"));
+        directoryItem.setup(setSessionDirTitle);
         sessionMenu.add(directoryItem);
         this.add(sessionMenu);
 
@@ -382,10 +441,11 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         switchMenu.add(new JSeparator());
 
         // Switch Vector App
+        final String setVectorApp = getS("setVectorApp");
         AbstractAction switchVectorAppAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation("Select Vector Application", platformAppDir);
+                File file = askLocation(setVectorApp, platformAppDir);
                 if (file != null) {
                     System.out.println(file.toString());
                     Alchemy.preferences.setSwitchVectorApp(file.toString());
@@ -393,15 +453,16 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem switchVectorAppItem = new AlcMenuItem(switchVectorAppAction);
-        switchVectorAppItem.setup(getS("setVectorApp"));
+        switchVectorAppItem.setup(setVectorApp);
         switchMenu.add(switchVectorAppItem);
 
 
         // Switch Bitmap App
+        final String setBitmapApp = getS("setBitmapApp");
         AbstractAction switchBitmapAppAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation("Select Bitmap Application", platformAppDir);
+                File file = askLocation(setBitmapApp, platformAppDir);
                 if (file != null) {
                     System.out.println(file.toString());
                     Alchemy.preferences.setSwitchBitmapApp(file.toString());
@@ -409,7 +470,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem switchBitmapAppItem = new AlcMenuItem(switchBitmapAppAction);
-        switchBitmapAppItem.setup(getS("setBitmapApp"));
+        switchBitmapAppItem.setup(setBitmapApp);
         switchMenu.add(switchBitmapAppItem);
         this.add(switchMenu);
 

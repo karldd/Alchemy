@@ -37,10 +37,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
@@ -124,9 +120,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Previous cursor */
     Cursor oldCursor;
 
-//  PDF READER
-    PDFFile pdffile;
-
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
 
@@ -160,25 +153,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         vectorCanvas = new VectorCanvas();
 
         this.setCursor(CROSS);
-
-        // PDF READER
-        try {
-            File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
-
-            // set up the PDF reading
-            RandomAccessFile raf = new RandomAccessFile(file, "r");
-            FileChannel channel = raf.getChannel();
-            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            pdffile = new PDFFile(buf);
-
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
-    /** Paint Component that draws all shapes to the canvas */
+    /** Bitmap Canvas
+     *  Draws all current shapes on top of the buffered image
+     */
     @Override
     public void paintComponent(Graphics g) {
 
@@ -254,21 +233,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         g2.dispose();
 
-        // Hints that don't seem to offer any extra performance on OSX
-        //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+    // Hints that don't seem to offer any extra performance on OSX
+    //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+    //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
 
-
-//        PDF READER
-//        get the first page
-        PDFPage page = pdffile.getPage(0);
-        PDFRenderer renderer = new PDFRenderer(page, g2, new Rectangle(0, 0, w, h), null, Color.RED);
-        try {
-            page.waitForFinish();
-            renderer.run();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
     }
 
     //////////////////////////////////////////////////////////////
@@ -1156,6 +1124,18 @@ class VectorCanvas extends JPanel implements AlcConstants {
         g2.setColor(Alchemy.canvas.getBgColour());
         g2.fillRect(0, 0, w, h);
 
+        // PDF READER
+        if (Alchemy.session.drawoverFile != null) {
+            PDFPage page = Alchemy.session.drawoverFile.getPage(0);
+            PDFRenderer renderer = new PDFRenderer(page, g2, new Rectangle(0, 0, w, h), null, Color.RED);
+            try {
+                page.waitForFinish();
+                renderer.run();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
         // Draw buffImage
         if (Alchemy.canvas.isImageEnabled() && Alchemy.canvas.isImageSet()) {
             g2.drawImage(Alchemy.canvas.getImage(), 0, 0, null);

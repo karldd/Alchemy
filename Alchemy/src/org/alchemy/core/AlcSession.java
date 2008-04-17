@@ -23,7 +23,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import foxtrot.*;
+import com.sun.pdfview.*;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * Class to control Alchemy 'sessions'
@@ -39,6 +43,10 @@ class AlcSession implements ActionListener, AlcConstants {
     private File currentPdfFile;
     /** Record Indicator Timer */
     private javax.swing.Timer indicatorTimer;
+    /** PDF Overwrite File */
+    PDFFile drawoverFile;
+    /** Current page of the loaded PDF */
+    int drawoverPage = 0;
 
     AlcSession() {
     }
@@ -175,8 +183,53 @@ class AlcSession implements ActionListener, AlcConstants {
         }
     }
 
-    public void restartSession() {
+    void restartSession() {
         currentPdfFile = null;
+    }
+
+    //////////////////////////////////////////////////////////////
+    // PDF READER STUFF
+    //////////////////////////////////////////////////////////////
+    /** Load a session file to draw on top of */
+    void loadSessionFile(File file) {
+        try {
+            //File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
+
+            // set up the PDF reading
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            FileChannel channel = raf.getChannel();
+            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            drawoverFile = new PDFFile(buf);
+            drawoverPage = 0;
+            Alchemy.canvas.redraw(true);
+
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /** Move to the next page in the session file */
+    void nextPage() {
+        if (drawoverFile != null) {
+            // TODO - Check the number of pages in the pdf is valid
+            drawoverPage++;
+        }
+    }
+
+    /** Move to the previous page in the session file */
+    void previousPage() {
+        if (drawoverFile != null) {
+            // TODO - Check the number of pages in the pdf is valid
+            drawoverPage--;
+        }
+    }
+
+    /** Unload the session file and redraw the canvas */
+    void unloadSessionFile() {
+        drawoverFile = null;
+        Alchemy.canvas.redraw(true);
     }
 
 
@@ -211,6 +264,5 @@ class AlcSession implements ActionListener, AlcConstants {
                 Alchemy.canvas.clear();
             }
         }
-
     }
 }
