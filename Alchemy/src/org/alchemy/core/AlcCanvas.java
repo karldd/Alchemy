@@ -42,6 +42,7 @@ import javax.imageio.ImageIO;
 
 // PDF READER
 import com.sun.pdfview.*;
+import java.awt.geom.AffineTransform;
 
 /** 
  * The Alchemy canvas
@@ -824,11 +825,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         }
     }
 
-    /** Adds a page to an existing pdf file
+    /** Adds a pdfReadPage to an existing pdf file
      * 
      * @param mainPdf   The main pdf with multiple pages.
      *                  Also used as the destination file.
-     * @param tempPdf   The 'new' pdf with one page to be added to the main pdf
+     * @param tempPdf   The 'new' pdf with one pdfReadPage to be added to the main pdf
      * @return
      */
     boolean addPageToPdf(File mainPdf, File tempPdf) {
@@ -851,7 +852,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
                 PdfImportedPage page = copy.getImportedPage(reader, i);
                 copy.addPage(page);
             }
-            // Add the last (new) page
+            // Add the last (new) pdfReadPage
             PdfImportedPage lastPage = copy.getImportedPage(newPdf, 1);
             copy.addPage(lastPage);
 
@@ -892,15 +893,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /**
      * This is the method defined by the Printable interface.  It prints the
      * canvas to the specified Graphics object, respecting the paper size
-     * and margins specified by the PageFormat.  If the specified page number
-     * is not page 0, it returns a code saying that printing is complete.  The
+     * and margins specified by the PageFormat.  If the specified pdfReadPage number
+     * is not pdfReadPage 0, it returns a code saying that printing is complete.  The
      * method must be prepared to be called multiple times per printing request
      * 
      * This code is from the book Java Examples in a Nutshell, 2nd Edition. Copyright (c) 2000 David Flanagan. 
      * 
      **/
     public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
-        // We are only one page long; reject any other page numbers
+        // We are only one pdfReadPage long; reject any other pdfReadPage numbers
         if (pageIndex > 0) {
             return Printable.NO_SUCH_PAGE;
         }
@@ -913,17 +914,17 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         g2p.translate(format.getImageableX(), format.getImageableY());
 
 
-        // Figure out how big the drawing is, and how big the page (excluding margins) is
+        // Figure out how big the drawing is, and how big the pdfReadPage (excluding margins) is
         Dimension size = this.getSize();                  // Canvas size
         double pageWidth = format.getImageableWidth();    // Page width
         double pageHeight = format.getImageableHeight();  // Page height
 
-        // If the canvas is too wide or tall for the page, scale it down
+        // If the canvas is too wide or tall for the pdfReadPage, scale it down
         if (size.width > pageWidth) {
             double factor = pageWidth / size.width;  // How much to scale
             System.out.println("Width Scale: " + factor);
             g2p.scale(factor, factor);              // Adjust coordinate system
-            pageWidth /= factor;                   // Adjust page size up
+            pageWidth /= factor;                   // Adjust pdfReadPage size up
             pageHeight /= factor;
         }
 
@@ -936,7 +937,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         }
 
-        // Now we know the canvas will fit on the page.  Center it by translating as necessary.
+        // Now we know the canvas will fit on the pdfReadPage.  Center it by translating as necessary.
         g2p.translate((pageWidth - size.width) / 2, (pageHeight - size.height) / 2);
 
         // Draw a line around the outside of the drawing area
@@ -950,7 +951,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         // children, including the Print JButton
         vectorCanvas.paintComponent(g);
 
-        // Tell the PrinterJob that the page number was valid
+        // Tell the PrinterJob that the pdfReadPage number was valid
         return Printable.PAGE_EXISTS;
 
     }
@@ -1124,18 +1125,28 @@ class VectorCanvas extends JPanel implements AlcConstants {
         g2.setColor(Alchemy.canvas.getBgColour());
         g2.fillRect(0, 0, w, h);
 
+
         // PDF READER
-        if (Alchemy.session.drawoverFile != null) {
-            PDFPage page = Alchemy.session.drawoverFile.getPage(0);
-            PDFRenderer renderer = new PDFRenderer(page, g2, new Rectangle(0, 0, w, h), null, Color.RED);
+        if (Alchemy.session.pdfReadPage != null) {
+            
+            // Remember the old transform settings
+            AffineTransform at = g2.getTransform();
+            
+            int pageWidth = (int) Alchemy.session.pdfReadPage.getWidth();
+            int pageHeight = (int) Alchemy.session.pdfReadPage.getHeight();
+            PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBgColour());
             try {
-                page.waitForFinish();
+                Alchemy.session.pdfReadPage.waitForFinish();
                 renderer.run();
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
+            
+            // Revert to the old transform settings
+            g2.setTransform(at);
+
         }
-        
+
         // Draw buffImage
         if (Alchemy.canvas.isImageEnabled() && Alchemy.canvas.isImageSet()) {
             g2.drawImage(Alchemy.canvas.getImage(), 0, 0, null);

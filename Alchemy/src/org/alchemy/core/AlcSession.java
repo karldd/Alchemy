@@ -39,14 +39,18 @@ class AlcSession implements ActionListener, AlcConstants {
     private javax.swing.Timer timer;
     /** Recording on or off */
     private boolean recordState;
-    /** Current file path */
-    private File currentPdfFile;
+    /** PDF write file */
+    private File pdfWriteFile;
     /** Record Indicator Timer */
     private javax.swing.Timer indicatorTimer;
-    /** PDF Overwrite File */
-    PDFFile drawoverFile;
-    /** Current page of the loaded PDF */
-    int drawoverPage = 0;
+    /** PDF read file */
+    private PDFFile pdfReadFile;
+    /** PDF read page */
+    PDFPage pdfReadPage;
+    /**  Current page of the read PDF */
+    private int currentPdfReadPage = 1;
+    /** Number of pages of the read PDF */
+    private int maxPdfReadPage;
 
     AlcSession() {
     }
@@ -119,29 +123,29 @@ class AlcSession implements ActionListener, AlcConstants {
 
     /** Return the current file being created by the pdf */
     File getCurrentPdfPath() {
-        return currentPdfFile;
+        return pdfWriteFile;
     }
 
-    /** Manually save a page then restart the timer */
+    /** Manually save a pdfReadPage then restart the timer */
     void manualSavePage() {
         savePage();
         restartTimer();
     }
 
-    /** Manually save and clear a page then restart the timer */
+    /** Manually save and clear a pdfReadPage then restart the timer */
     void manualSaveClearPage() {
         saveClearPage();
         restartTimer();
     }
 
-    /** Save a single page to the current pdf being created */
+    /** Save a single pdfReadPage to the current pdf being created */
     boolean savePage() {
         // If this is the first time or if the file is not actually there
-        if (currentPdfFile == null || !currentPdfFile.exists()) {
+        if (pdfWriteFile == null || !pdfWriteFile.exists()) {
             String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-HH-mm-ss") + ".pdf";
-            currentPdfFile = new File(Alchemy.preferences.getSessionPath(), fileName);
-            System.out.println("Current PDF file: " + currentPdfFile.getPath());
-            return Alchemy.canvas.saveSinglePdf(currentPdfFile);
+            pdfWriteFile = new File(Alchemy.preferences.getSessionPath(), fileName);
+            System.out.println("Current PDF file: " + pdfWriteFile.getPath());
+            return Alchemy.canvas.saveSinglePdf(pdfWriteFile);
 
         // Else save a temp file then join the two together
         } else {
@@ -152,7 +156,7 @@ class AlcSession implements ActionListener, AlcConstants {
                 //temp.deleteOnExit();
                 // Make the temp pdf
                 Alchemy.canvas.saveSinglePdf(temp);
-                boolean jointUp = Alchemy.canvas.addPageToPdf(currentPdfFile, temp);
+                boolean jointUp = Alchemy.canvas.addPageToPdf(pdfWriteFile, temp);
                 if (jointUp) {
                     //System.out.println("Pdf files joint");
                     temp.delete();
@@ -167,7 +171,7 @@ class AlcSession implements ActionListener, AlcConstants {
         return false;
     }
 
-    /** Save a single page to the current pdf being created, then clear the canvas */
+    /** Save a single pdfReadPage to the current pdf being created, then clear the canvas */
     void saveClearPage() {
         savePage();
         //Alchemy.canvas.savePdfPage();
@@ -184,7 +188,7 @@ class AlcSession implements ActionListener, AlcConstants {
     }
 
     void restartSession() {
-        currentPdfFile = null;
+        pdfWriteFile = null;
     }
 
     //////////////////////////////////////////////////////////////
@@ -199,8 +203,10 @@ class AlcSession implements ActionListener, AlcConstants {
             RandomAccessFile raf = new RandomAccessFile(file, "r");
             FileChannel channel = raf.getChannel();
             ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            drawoverFile = new PDFFile(buf);
-            drawoverPage = 0;
+            pdfReadFile = new PDFFile(buf);
+            currentPdfReadPage = 1;
+            maxPdfReadPage = pdfReadFile.getNumPages();
+            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
             Alchemy.canvas.redraw(true);
 
         } catch (FileNotFoundException ex) {
@@ -210,25 +216,38 @@ class AlcSession implements ActionListener, AlcConstants {
         }
     }
 
-    /** Move to the next page in the session file */
+    /** Move to the next pdfReadPage in the session file */
     void nextPage() {
-        if (drawoverFile != null) {
-            // TODO - Check the number of pages in the pdf is valid
-            drawoverPage++;
+        if (pdfReadFile != null) {
+            if (currentPdfReadPage + 1 <= maxPdfReadPage) {
+                currentPdfReadPage++;
+                //System.out.println(currentPdfReadPage + " " + maxPdfReadPage);
+                pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+                Alchemy.canvas.redraw(true);
+            } else {
+                TOOLKIT.beep();
+            }
         }
     }
 
-    /** Move to the previous page in the session file */
+    /** Move to the previous pdfReadPage in the session file */
     void previousPage() {
-        if (drawoverFile != null) {
-            // TODO - Check the number of pages in the pdf is valid
-            drawoverPage--;
+        if (pdfReadFile != null) {
+            if (currentPdfReadPage - 1 >= 1) {
+                currentPdfReadPage--;
+                //System.out.println(currentPdfReadPage + " " + maxPdfReadPage);
+                pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+                Alchemy.canvas.redraw(true);
+            } else {
+                TOOLKIT.beep();
+            }
         }
     }
 
     /** Unload the session file and redraw the canvas */
     void unloadSessionFile() {
-        drawoverFile = null;
+        pdfReadFile = null;
+        pdfReadPage = null;
         Alchemy.canvas.redraw(true);
     }
 
@@ -238,7 +257,7 @@ class AlcSession implements ActionListener, AlcConstants {
         // If the canvas has changed
         if (Alchemy.canvas.canvasChange()) {
 
-            // If the page has been saved
+            // If the pdfReadPage has been saved
             if (savePage()) {
                 // Show this with a small red circle on the canvas
                 Alchemy.canvas.setRecordIndicator(true);
