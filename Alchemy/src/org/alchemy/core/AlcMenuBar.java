@@ -358,8 +358,6 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         previousPageItem.setup(previousPageTitle, previousPageKey);
         sessionMenu.add(previousPageItem);
 
-        // TODO - Translate these titles into Japanese
-
         // Unload Session PDF
         final String unloadSessionTitle = getS("unloadSessionTitle");
         AbstractAction unloadSessionAction = new AbstractAction() {
