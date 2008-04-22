@@ -35,36 +35,50 @@ class AlcPreferences implements AlcConstants {
     static Preferences prefs;
     /** The preferences window */
     private JDialog prefsWindow;
+    //////////////////////////////////////////////////////////////
+    // SESSION
+    //////////////////////////////////////////////////////////////
     /** Recording on or off at startup */
-    private boolean recordingState;
+    boolean sessionRecordingState;
     /** Recording warning on or off at startup */
-    private boolean recordingWarning;
+    boolean sessionRecordingWarning;
     /** Directory to save session files too */
-    private String sessionPath;
+    String sessionPath;
     /** Time delay between recording a new page */
-    private int recordingInterval;
+    int sessionRecordingInterval;
     /** Auto clean the canvas after saving */
-    private boolean autoClear;
+    boolean sessionAutoClear;
+    /** Link to current setting */
+    boolean sessionLink;
+    //////////////////////////////////////////////////////////////
+    // SWITCH
+    //////////////////////////////////////////////////////////////
     /** Switch Vector Application */
-    private String switchVectorApp;
+    String switchVectorApp;
     /** Switch Bitmap Application */
-    private String switchBitmapApp;
+    String switchBitmapApp;
+    //////////////////////////////////////////////////////////////
+    // WINDOWS
+    //////////////////////////////////////////////////////////////
     /** State of the palette- attached or not */
-    protected boolean paletteAttached = false;
+    boolean paletteAttached = false;
     /** Palette Location */
-    private Point paletteLocation;
+    Point paletteLocation;
     /** Canvas Window Location */
-    private Point canvasLocation;
+    Point canvasLocation;
     /** Canvas Window size */
-    private Dimension canvasSize;
+    Dimension canvasSize;
+    //////////////////////////////////////////////////////////////
+    // DRAWING
+    //////////////////////////////////////////////////////////////
     /** Canvas smoothing */
-    private boolean smoothing;
+    boolean smoothing;
     /** Line smoothing */
-    private boolean lineSmoothing;
+    boolean lineSmoothing;
     /** Canvas background colour */
-    private int bgColour;
+    int bgColour;
     /** Colour */
-    private int colour;
+    int colour;
 
     AlcPreferences() {
         //super(owner);
@@ -78,11 +92,12 @@ class AlcPreferences implements AlcConstants {
 //        }
 //        prefs = Preferences.userNodeForPackage(getClass());
 
-        recordingState = prefs.getBoolean("Recording State", false);
-        recordingWarning = prefs.getBoolean("Recording Warning", true);
+        sessionRecordingState = prefs.getBoolean("Recording State", false);
+        sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", DESKTOP_DIR);
-        recordingInterval = prefs.getInt("Recording Interval", 5000);
-        autoClear = prefs.getBoolean("Auto Clear Canvas", false);
+        sessionRecordingInterval = prefs.getInt("Recording Interval", 5000);
+        sessionAutoClear = prefs.getBoolean("Auto Clear Canvas", false);
+        sessionLink = prefs.getBoolean("Link to Current Session", true);
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
         paletteAttached = prefs.getBoolean("Palette Attached", false);
@@ -93,26 +108,6 @@ class AlcPreferences implements AlcConstants {
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
-
-
-
-
-    /*
-    JCheckBox resetWarnings = new JCheckBox("Reset Warning Dialogs");
-    resetWarnings.setSelected(recordingWarning);
-    resetWarnings.setToolTipText("Reset the display of warning dialogs");
-    resetWarnings.addItemListener(
-    new ItemListener() {
-    public void itemStateChanged(ItemEvent e) {
-    if (e.getStateChange() == ItemEvent.SELECTED) {
-    recordingWarning = true;
-    } else {
-    recordingWarning = false;
-    }
-    }
-    });
-    masterPanel.add(resetWarnings);
-     */
     }
 
     /** Initialise the preference window */
@@ -143,11 +138,12 @@ class AlcPreferences implements AlcConstants {
 
     /** Save the changes on exit */
     void writeChanges() {
-        prefs.putBoolean("Recording State", recordingState);
-        prefs.putBoolean("Recording Warning", recordingWarning);
+        prefs.putBoolean("Recording State", sessionRecordingState);
+        prefs.putBoolean("Recording Warning", sessionRecordingWarning);
         prefs.put("Session Path", sessionPath);
-        prefs.putInt("Recording Interval", recordingInterval);
-        prefs.putBoolean("Auto Clear Canvas", autoClear);
+        prefs.putInt("Recording Interval", sessionRecordingInterval);
+        prefs.putBoolean("Auto Clear Canvas", sessionAutoClear);
+        prefs.putBoolean("Link to Current Session", sessionLink);
         prefs.putBoolean("Palette Attached", paletteAttached);
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
@@ -170,114 +166,6 @@ class AlcPreferences implements AlcConstants {
             prefs.put("Canvas Size", dimensionToString(canvasSize));
         }
     }
-
-    //////////////////////////////////////////////////////////////
-    // GETTER / SETTERS
-    //////////////////////////////////////////////////////////////
-    boolean getRecordingState() {
-        return recordingState;
-    }
-
-    void setRecordingState(boolean b) {
-        recordingState = b;
-    }
-
-    boolean getRecordingWarning() {
-        return recordingWarning;
-    }
-
-    void setRecordingWarning(boolean b) {
-        recordingWarning = b;
-    }
-
-    String getSessionPath() {
-        return sessionPath;
-    }
-
-    void setSessionPath(String path) {
-        sessionPath = path;
-    }
-
-    int getRecordingInterval() {
-        return recordingInterval;
-    }
-
-    void setRecordingInterval(int i) {
-        recordingInterval = i;
-    }
-
-    boolean getAutoClear() {
-        return autoClear;
-    }
-
-    void setAutoClear(boolean b) {
-        autoClear = b;
-    }
-
-    String getSwitchVectorApp() {
-        return switchVectorApp;
-    }
-
-    void setSwitchVectorApp(String path) {
-        switchVectorApp = path;
-    }
-
-    String getSwitchBitmapApp() {
-        return switchBitmapApp;
-    }
-
-    void setSwitchBitmapApp(String path) {
-        switchBitmapApp = path;
-    }
-
-    boolean getPaletteAttached() {
-        return paletteAttached;
-    }
-
-    void setPaletteAttached(boolean b) {
-        paletteAttached = b;
-    }
-
-    Point getPaletteLocation() {
-        return paletteLocation;
-    }
-
-    void setPaletteLocation(Point location) {
-        paletteLocation = location;
-    }
-
-    Point getCanvasLocation() {
-        return canvasLocation;
-    }
-
-    void setCanvasLocation(Point location) {
-        canvasLocation = location;
-    }
-
-    Dimension getCanvasSize() {
-        return canvasSize;
-    }
-
-    void setCanvasSize(Dimension size) {
-        canvasSize = size;
-    }
-
-    boolean getSmoothing() {
-        return smoothing;
-    }
-
-    boolean getLineSmoothing() {
-        return lineSmoothing;
-    }
-
-    int getBgColour() {
-        return bgColour;
-    }
-
-    int getColour() {
-        return colour;
-    }
-
 
     //////////////////////////////////////////////////////////////
     // UTILITIES
