@@ -32,13 +32,14 @@ import javax.swing.*;
  */
 class AlcMenuBar extends JMenuBar implements AlcConstants {
 
-    /** Reference to the windows help .chm file */
-    private File tempHelp;
     private final static int height = 27;
     private File platformAppDir;
     private PrinterJob printer = null;
     private PageFormat page = null;
     private PageFormat defaultPage = null;
+    /** Session stuff global so it can be enabled/disabled */
+    private AlcMenuItem nextPageItem,  previousPageItem,  unloadSessionItem;
+    private AlcCheckBoxMenuItem linkSessionItem;
 
     /** Creates a new instance of AlcMenuBar */
     AlcMenuBar() {
@@ -254,8 +255,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         int recordingKey = Alchemy.shortcuts.setShortcut(recordingItem, KeyEvent.VK_R, "recordingTitle", recordingAction, MODIFIER_KEY);
         recordingItem.setup(recordingTitle, recordingKey);
 
-        recordingItem.setState(Alchemy.preferences.getRecordingState());
-        if (Alchemy.preferences.getRecordingState()) {
+        recordingItem.setState(Alchemy.preferences.sessionRecordingState);
+        if (Alchemy.preferences.sessionRecordingState) {
             Alchemy.session.setRecording(true);
         }
         sessionMenu.add(recordingItem);
@@ -269,7 +270,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         for (int i = 0; i < recordingIntervalString.length; i++) {
             AlcRadioButtonMenuItem intervalItem = new AlcRadioButtonMenuItem(recordingInterval[i], recordingIntervalString[i]);
             // Set the default value to selected
-            if (Alchemy.preferences.getRecordingInterval() == recordingInterval[i]) {
+            if (Alchemy.preferences.sessionRecordingInterval == recordingInterval[i]) {
                 intervalItem.setSelected(true);
             }
             intervalItem.addActionListener(new ActionListener() {
@@ -294,12 +295,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
                 AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
-                Alchemy.preferences.setAutoClear(source.getState());
+                Alchemy.preferences.sessionAutoClear = source.getState();
             }
         };
         AlcCheckBoxMenuItem autoClearItem = new AlcCheckBoxMenuItem(autoClearAction);
         autoClearItem.setup(getS("autoClearTitle"));
-        autoClearItem.setState(Alchemy.preferences.getAutoClear());
+        autoClearItem.setState(Alchemy.preferences.sessionAutoClear);
         sessionMenu.add(autoClearItem);
 
         // Default Recording
@@ -307,12 +308,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
                 AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
-                Alchemy.preferences.setRecordingState(source.getState());
+                Alchemy.preferences.sessionRecordingState = source.getState();
             }
         };
         AlcCheckBoxMenuItem defaultRecordingItem = new AlcCheckBoxMenuItem(defaultRecordingAction);
         defaultRecordingItem.setup(getS("recordStartUpTitle"));
-        defaultRecordingItem.setState(Alchemy.preferences.getRecordingState());
+        defaultRecordingItem.setState(Alchemy.preferences.sessionRecordingState);
         sessionMenu.add(defaultRecordingItem);
 
         sessionMenu.add(new JSeparator());
@@ -324,7 +325,11 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             public void actionPerformed(ActionEvent e) {
                 File file = askLocation(loadSessionTitle, false);
                 if (file != null && file.exists()) {
-                    Alchemy.session.loadSessionFile(file);
+                    boolean loaded = Alchemy.session.loadSessionFile(file);
+                    nextPageItem.setEnabled(loaded);
+                    previousPageItem.setEnabled(loaded);
+                    unloadSessionItem.setEnabled(loaded);
+                    linkSessionItem.setEnabled(loaded);
                 }
             }
         };
@@ -340,10 +345,11 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 Alchemy.session.nextPage();
             }
         };
-        AlcMenuItem nextPageItem = new AlcMenuItem(nextPageAction);
+        nextPageItem = new AlcMenuItem(nextPageAction);
         int nextPageKey = Alchemy.shortcuts.setShortcut(nextPageItem, KeyEvent.VK_RIGHT, "nextPageTitle", nextPageAction, MODIFIER_KEY);
         nextPageItem.setup(nextPageTitle, nextPageKey);
         sessionMenu.add(nextPageItem);
+        nextPageItem.setEnabled(false);
 
         // Previous Page
         final String previousPageTitle = getS("previousPageTitle");
@@ -353,10 +359,11 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 Alchemy.session.previousPage();
             }
         };
-        AlcMenuItem previousPageItem = new AlcMenuItem(previousPageAction);
+        previousPageItem = new AlcMenuItem(previousPageAction);
         int previousPageKey = Alchemy.shortcuts.setShortcut(previousPageItem, KeyEvent.VK_LEFT, "previousPageTitle", previousPageAction, MODIFIER_KEY);
         previousPageItem.setup(previousPageTitle, previousPageKey);
         sessionMenu.add(previousPageItem);
+        previousPageItem.setEnabled(false);
 
         // Unload Session PDF
         final String unloadSessionTitle = getS("unloadSessionTitle");
@@ -364,12 +371,34 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
                 Alchemy.session.unloadSessionFile();
+                nextPageItem.setEnabled(false);
+                previousPageItem.setEnabled(false);
+                unloadSessionItem.setEnabled(false);
+                linkSessionItem.setEnabled(false);
             }
         };
-        AlcMenuItem unloadSessionItem = new AlcMenuItem(unloadSessionAction);
+        unloadSessionItem = new AlcMenuItem(unloadSessionAction);
         unloadSessionItem.setup(unloadSessionTitle);
         sessionMenu.add(unloadSessionItem);
+        unloadSessionItem.setEnabled(false);
 
+
+        // Link Session
+        String linkSessionTitle = getS("linkSessionTitle");
+        linkSessionItem = new AlcCheckBoxMenuItem();
+        AbstractAction linkSessionAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
+                Alchemy.preferences.sessionLink = source.getState();
+            }
+        };
+
+        linkSessionItem.setAction(linkSessionAction);
+        linkSessionItem.setup(linkSessionTitle);
+        linkSessionItem.setSelected(Alchemy.preferences.sessionLink);
+        sessionMenu.add(linkSessionItem);
+        linkSessionItem.setEnabled(false);
 
         sessionMenu.add(new JSeparator());
 
@@ -393,7 +422,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 File file = askLocation(setSessionDirTitle, true);
                 if (file != null) {
                     System.out.println(file.getPath());
-                    Alchemy.preferences.setSessionPath(file.getPath());
+                    Alchemy.preferences.sessionPath = file.getPath();
                 }
             }
         };
@@ -446,7 +475,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 File file = askLocation(setVectorApp, platformAppDir);
                 if (file != null) {
                     System.out.println(file.toString());
-                    Alchemy.preferences.setSwitchVectorApp(file.toString());
+                    Alchemy.preferences.switchVectorApp = file.toString();
                 }
             }
         };
@@ -463,7 +492,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 File file = askLocation(setBitmapApp, platformAppDir);
                 if (file != null) {
                     System.out.println(file.toString());
-                    Alchemy.preferences.setSwitchBitmapApp(file.toString());
+                    Alchemy.preferences.switchBitmapApp = file.toString();
                 }
             }
         };
@@ -487,7 +516,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcCheckBoxMenuItem smoothingItem = new AlcCheckBoxMenuItem(smoothingAction);
-        smoothingItem.setSelected(Alchemy.preferences.getSmoothing());
+        smoothingItem.setSelected(Alchemy.preferences.smoothing);
         smoothingItem.setup(getS("smoothingTitle"));
         settingsMenu.add(smoothingItem);
 
@@ -501,8 +530,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcCheckBoxMenuItem lineSmoothingItem = new AlcCheckBoxMenuItem(lineSmoothingAction);
-        lineSmoothingItem.setSelected(Alchemy.preferences.getLineSmoothing());
-        AlcShape.lineSmoothing = Alchemy.preferences.getLineSmoothing();
+        lineSmoothingItem.setSelected(Alchemy.preferences.lineSmoothing);
+        AlcShape.lineSmoothing = Alchemy.preferences.lineSmoothing;
         lineSmoothingItem.setup(getS("lineSmoothingTitle"));
         settingsMenu.add(lineSmoothingItem);
 
@@ -737,7 +766,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             File tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
             tempVector.deleteOnExit();
             if (Alchemy.canvas.saveSinglePdf(tempVector)) {
-                openSwitch(tempVector.toString(), Alchemy.preferences.getSwitchVectorApp());
+                openSwitch(tempVector.toString(), Alchemy.preferences.switchVectorApp);
             } else {
                 System.out.println("Didn't save???");
             }
@@ -753,7 +782,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             File tempBitmap = File.createTempFile("AlchemyTempBitmapFile", ".png");
             tempBitmap.deleteOnExit();
             if (Alchemy.canvas.savePng(tempBitmap)) {
-                openSwitch(tempBitmap.toString(), Alchemy.preferences.getSwitchBitmapApp());
+                openSwitch(tempBitmap.toString(), Alchemy.preferences.switchBitmapApp);
             } else {
                 System.out.println("Didn't save???");
             }

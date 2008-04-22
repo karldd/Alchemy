@@ -28,6 +28,8 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  * Class to control Alchemy 'sessions'
@@ -58,7 +60,7 @@ class AlcSession implements ActionListener, AlcConstants {
     void setRecording(boolean record) {
         if (record) {
 
-            int interval = Alchemy.preferences.getRecordingInterval();
+            int interval = Alchemy.preferences.sessionRecordingInterval;
             //Set up timer to save pages into the pdf
             if (timer == null) {
                 timer = new javax.swing.Timer(interval, this);
@@ -67,7 +69,7 @@ class AlcSession implements ActionListener, AlcConstants {
                 if (timer.isRunning()) {
                     timer.stop();
                 }
-                timer.setDelay(Alchemy.preferences.getRecordingInterval());
+                timer.setDelay(Alchemy.preferences.sessionRecordingInterval);
                 timer.start();
 
             }
@@ -90,7 +92,7 @@ class AlcSession implements ActionListener, AlcConstants {
     void setTimerInterval(int interval) {
         System.out.println("Interval: " + interval);
         // Set the interval in the preferences
-        Alchemy.preferences.setRecordingInterval(interval);
+        Alchemy.preferences.sessionRecordingInterval = interval;
         // If recording is on
         if (recordState) {
             // Check if the timer has been initialised, if not don't do anything extra
@@ -126,24 +128,25 @@ class AlcSession implements ActionListener, AlcConstants {
         return pdfWriteFile;
     }
 
-    /** Manually save a pdfReadPage then restart the timer */
+    /** Manually save a pdf page then restart the timer */
     void manualSavePage() {
         savePage();
         restartTimer();
+        progressPage();
     }
 
-    /** Manually save and clear a pdfReadPage then restart the timer */
+    /** Manually save a pdf page, then clear, then restart the timer */
     void manualSaveClearPage() {
         saveClearPage();
         restartTimer();
     }
 
-    /** Save a single pdfReadPage to the current pdf being created */
+    /** Save a single pdf page to the current pdf being created */
     boolean savePage() {
         // If this is the first time or if the file is not actually there
         if (pdfWriteFile == null || !pdfWriteFile.exists()) {
             String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-HH-mm-ss") + ".pdf";
-            pdfWriteFile = new File(Alchemy.preferences.getSessionPath(), fileName);
+            pdfWriteFile = new File(Alchemy.preferences.sessionPath, fileName);
             System.out.println("Current PDF file: " + pdfWriteFile.getPath());
             return Alchemy.canvas.saveSinglePdf(pdfWriteFile);
 
@@ -176,6 +179,7 @@ class AlcSession implements ActionListener, AlcConstants {
         savePage();
         //Alchemy.canvas.savePdfPage();
         Alchemy.canvas.clear();
+        progressPage();
     }
 
     private void restartTimer() {
@@ -195,25 +199,63 @@ class AlcSession implements ActionListener, AlcConstants {
     // PDF READER STUFF
     //////////////////////////////////////////////////////////////
     /** Load a session file to draw on top of */
-    void loadSessionFile(File file) {
+    boolean loadSessionFile(File file) {
         try {
-            //File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
 
-            // set up the PDF reading
-            RandomAccessFile raf = new RandomAccessFile(file, "r");
-            FileChannel channel = raf.getChannel();
-            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            pdfReadFile = new PDFFile(buf);
-            currentPdfReadPage = 1;
-            maxPdfReadPage = pdfReadFile.getNumPages();
-            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
-            Alchemy.canvas.redraw(true);
+            // Make sure we are not loading the current session file
+            if (file.equals(pdfWriteFile)) {
+
+                // Text for the dialog depends on the platform
+                String exitTitle = Alchemy.bundle.getString("loadSessionPDFDialogTitle");
+                String exitMessage = Alchemy.bundle.getString("loadSessionPDFDialogMessage");
+
+                if (Alchemy.PLATFORM == MACOSX) {
+                    exitTitle = "";
+                    exitMessage =
+                            "<html>" + UIManager.get("OptionPane.css") +
+                            "<b>" + Alchemy.bundle.getString("loadSessionPDFDialogTitle") + "</b>" +
+                            "<p>" + Alchemy.bundle.getString("loadSessionPDFDialogMessage");
+                }
+
+                Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
+                int result = JOptionPane.showOptionDialog(
+                        Alchemy.window,
+                        exitMessage,
+                        exitTitle,
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+
+                if (result == JOptionPane.YES_OPTION) {
+                    restartSession();
+                    return loadSessionFile(file);
+                } else {
+                    return false;
+                }
+
+            } else {
+                //File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
+
+                // set up the PDF reading
+                RandomAccessFile raf = new RandomAccessFile(file, "r");
+                FileChannel channel = raf.getChannel();
+                ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+                pdfReadFile = new PDFFile(buf);
+                currentPdfReadPage = 1;
+                maxPdfReadPage = pdfReadFile.getNumPages();
+                pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+                Alchemy.canvas.redraw(true);
+                return true;
+            }
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        return false;
     }
 
     /** Move to the next pdfReadPage in the session file */
@@ -251,8 +293,26 @@ class AlcSession implements ActionListener, AlcConstants {
         Alchemy.canvas.redraw(true);
     }
 
+    /** When a session pdf is loaded and linked to the current pdf
+     *  this function is used to loop through the pages
+     */
+    void progressPage() {
+        // Go to the next page if the session pdf is linked
+        if (Alchemy.preferences.sessionLink && pdfReadFile != null) {
+            if (currentPdfReadPage + 1 <= maxPdfReadPage) {
+                currentPdfReadPage++;
+                //System.out.println(currentPdfReadPage + " " + maxPdfReadPage);
+                pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+                Alchemy.canvas.redraw(true);
+            } else {
+                currentPdfReadPage = 0;
+                pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+                Alchemy.canvas.redraw(true);
+            }
+        }
+    }
 
-    // Called by the timer
+// Called by the timer
     public void actionPerformed(ActionEvent e) {
         // If the canvas has changed
         if (Alchemy.canvas.canvasChange()) {
@@ -275,13 +335,17 @@ class AlcSession implements ActionListener, AlcConstants {
                     });
                     indicatorTimer.start();
                 }
+
                 Alchemy.canvas.redraw();
+
+                Alchemy.canvas.resetCanvasChange();
+                if (Alchemy.preferences.sessionAutoClear) {
+                    Alchemy.canvas.clear();
+                }
+                progressPage();
             }
 
-            Alchemy.canvas.resetCanvasChange();
-            if (Alchemy.preferences.getAutoClear()) {
-                Alchemy.canvas.clear();
-            }
+
         }
     }
 }

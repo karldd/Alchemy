@@ -85,8 +85,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         boolean windowSet = false;
         // If there is a saved window size then us it
-        if (Alchemy.preferences.getCanvasSize() != null) {
-            Dimension savedWindowSize = Alchemy.preferences.getCanvasSize();
+        if (Alchemy.preferences.canvasSize != null) {
+            Dimension savedWindowSize = Alchemy.preferences.canvasSize;
 
             // Make sure the window is not too big
             if (savedWindowSize.width <= currentWindowSize.width && savedWindowSize.height <= currentWindowSize.height) {
@@ -114,7 +114,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         } else {
             // Otherwise add it to the toolbar area
             //Palette
-            if (Alchemy.preferences.getPaletteAttached()) {
+            if (Alchemy.preferences.paletteAttached) {
                 this.setJMenuBar(Alchemy.menuBar);
             //Toolbar
             } else {
@@ -137,18 +137,18 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         // Load the old location if available
         // First check it is not off screen
-        if (Alchemy.preferences.getCanvasLocation() != null) {
+        if (Alchemy.preferences.canvasLocation != null) {
             boolean onscreen = false;
             GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
             for (int i = 0; i < devices.length; i++) {
                 Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
-                if (screenBounds.contains(Alchemy.preferences.getCanvasLocation())) {
+                if (screenBounds.contains(Alchemy.preferences.canvasLocation)) {
                     onscreen = true;
                 //System.out.println("CONTAINED within: " + screenBounds);
                 }
             }
             if (onscreen) {
-                this.setLocation(Alchemy.preferences.getCanvasLocation());
+                this.setLocation(Alchemy.preferences.canvasLocation);
             } else {
                 this.setLocationRelativeTo(null);
             }
@@ -156,7 +156,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             this.setLocationRelativeTo(null);           // Center window on screen.
         }
         // Load the palette after the main window
-        if (Alchemy.preferences.getPaletteAttached()) {
+        if (Alchemy.preferences.paletteAttached) {
             setPalette(true);
         } else {
             this.requestFocus();
@@ -273,7 +273,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
                     this.setVisible(true);                   //show the frame
-                    if (Alchemy.preferences.getPaletteAttached()) {
+                    if (Alchemy.preferences.paletteAttached) {
                         Alchemy.palette.toFront();
                     }
                     this.toFront();
@@ -306,23 +306,23 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // PALETTE
         if (seperate) {
             // If this is not being called at startup
-            if (!Alchemy.preferences.getPaletteAttached()) {
+            if (!Alchemy.preferences.paletteAttached) {
                 Alchemy.toolBar.detachToolBar();
             }
 
             // Make sure the palette will not be offscreen
-            if (Alchemy.preferences.getPaletteLocation() != null) {
+            if (Alchemy.preferences.paletteLocation != null) {
                 boolean onscreen = false;
                 GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
                 for (int i = 0; i < devices.length; i++) {
                     Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
-                    if (screenBounds.contains(Alchemy.preferences.getPaletteLocation())) {
+                    if (screenBounds.contains(Alchemy.preferences.paletteLocation)) {
                         onscreen = true;
                     //System.out.println("CONTAINED within: " + screenBounds);
                     }
                 }
                 if (onscreen) {
-                    Alchemy.palette.setLocation(Alchemy.preferences.getPaletteLocation());
+                    Alchemy.palette.setLocation(Alchemy.preferences.paletteLocation);
                 } else {
                     Alchemy.palette.setLocation(100, 100);
                 }
@@ -334,7 +334,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             //palette.pack();
             //palette.setVisible(true);
 
-            Alchemy.preferences.setPaletteAttached(true);
+            Alchemy.preferences.paletteAttached = true;
 
             if (Alchemy.PLATFORM != MACOSX) {
                 this.setJMenuBar(Alchemy.menuBar);
@@ -351,12 +351,12 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         } else {
             if (Alchemy.palette != null) {
 
-                Alchemy.preferences.setPaletteLocation(Alchemy.palette.getLocation());
+                Alchemy.preferences.paletteLocation = Alchemy.palette.getLocation();
                 Alchemy.palette.setVisible(false);
                 //palette.dispose();
                 //palette = null;
                 Alchemy.toolBar.attachToolBar();
-                Alchemy.preferences.setPaletteAttached(false);
+                Alchemy.preferences.paletteAttached = false;
 
             }
         }
@@ -415,15 +415,15 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         // Save the window location if not in full screen mode
         if (!isFullscreen()) {
-            Alchemy.preferences.setCanvasLocation(this.getLocation());
+            Alchemy.preferences.canvasLocation = this.getLocation();
 
             // Get the size of the canvas without the titlebar and insets
             Rectangle visibleRect = Alchemy.canvas.getVisibleRect();
             // Set the canvas size
-            Alchemy.preferences.setCanvasSize(new Dimension(visibleRect.width, visibleRect.height));
+            Alchemy.preferences.canvasSize = new Dimension(visibleRect.width, visibleRect.height);
         }
-        if (Alchemy.preferences.getPaletteAttached()) {
-            Alchemy.preferences.setPaletteLocation(Alchemy.palette.getLocation());
+        if (Alchemy.preferences.paletteAttached) {
+            Alchemy.preferences.paletteLocation = Alchemy.palette.getLocation();
         }
 
 

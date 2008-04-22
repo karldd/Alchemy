@@ -126,9 +126,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
 
 
-        this.smoothing = Alchemy.preferences.getSmoothing();
-        this.bgColour = new Color(Alchemy.preferences.getBgColour());
-        this.colour = new Color(Alchemy.preferences.getColour());
+        this.smoothing = Alchemy.preferences.smoothing;
+        this.bgColour = new Color(Alchemy.preferences.bgColour);
+        this.colour = new Color(Alchemy.preferences.colour);
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -335,7 +335,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.canvasImage = null;
 
         if (redraw) {
-            this.redraw();
+            // If a session is loaded then make sure to redraw it below
+            if (Alchemy.session.pdfReadPage == null) {
+                this.redraw(false);
+            } else {
+                this.redraw(true);
+            }
         // Redraw to clear the screen even if redrawing is off
         } else {
             forceRedraw();
@@ -1128,10 +1133,10 @@ class VectorCanvas extends JPanel implements AlcConstants {
 
         // PDF READER
         if (Alchemy.session.pdfReadPage != null) {
-            
+
             // Remember the old transform settings
             AffineTransform at = g2.getTransform();
-            
+
             int pageWidth = (int) Alchemy.session.pdfReadPage.getWidth();
             int pageHeight = (int) Alchemy.session.pdfReadPage.getHeight();
             PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBgColour());
@@ -1141,7 +1146,7 @@ class VectorCanvas extends JPanel implements AlcConstants {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            
+
             // Revert to the old transform settings
             g2.setTransform(at);
 

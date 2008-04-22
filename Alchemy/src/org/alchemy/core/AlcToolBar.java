@@ -119,7 +119,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         toolBars.add("South", subToolBar);
         subToolBar.setVisible(true);
 
-        if (!Alchemy.preferences.getPaletteAttached()) {
+        if (!Alchemy.preferences.paletteAttached) {
             this.add("South", toolBars);
         }
 
@@ -127,7 +127,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         AbstractAction toolBarAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                if (!Alchemy.preferences.getPaletteAttached()) {
+                if (!Alchemy.preferences.paletteAttached) {
                     if (toolBarVisible) {
                         setToolBarVisible(false);
                         toolBarKeyedOn = false;
@@ -727,7 +727,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
             subToolBar.setVisible(true);
         } else {
-            if (!Alchemy.preferences.getPaletteAttached()) {
+            if (!Alchemy.preferences.paletteAttached) {
                 subToolBar.setVisible(false);
             }
         }
