@@ -137,6 +137,19 @@
                 <contains text="Flickr" casesensitive="no"/>
             </fileset>
         </copy>
+        <!-- Detach Shapes -->
+        <copy todir="${basedir}/modules/detachShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
+                <contains text="DetachShapes" casesensitive="no"/>
+            </fileset>
+        </copy>
+        <!-- Scrawl Shapes -->
+        <copy todir="${basedir}/modules/scrawlShapes/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
+                <contains text="ScrawlShapes" casesensitive="no"/>
+            </fileset>
+        </copy>
+        
         
         <!-- AFFECTS -->
         <!-- Mirror -->

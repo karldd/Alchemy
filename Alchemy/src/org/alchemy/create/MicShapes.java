@@ -196,7 +196,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
         // Calculate the angle between the last point and the new point
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - HALF_PI;
         //System.out.println(angle);
-        // Conver the polar coordinates to cartesian
+        // Convert the polar coordinates to cartesian
         double x = p1.x + (adjustedDistance * Math.cos(angle));
         double y = p1.y + (adjustedDistance * Math.sin(angle));
 

@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
 import javax.swing.JOptionPane;
-import org.alchemy.core.AlcModule;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
