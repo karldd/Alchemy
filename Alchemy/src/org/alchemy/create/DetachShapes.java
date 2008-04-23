@@ -74,6 +74,7 @@ public class DetachShapes extends AlcModule {
                     }
                 });
         subToolBarSection.add(distanceSlider);
+
     }
 
 //    private static int getCursorSpeed(Point p1, Point p2) {
@@ -87,7 +88,7 @@ public class DetachShapes extends AlcModule {
 //        canvas.createShapes.add(new AlcShape(p));
 //        canvas.redraw();
         newPath = true;
-        //oldP = e.getPoint();
+    //oldP = e.getPoint();
     }
 
     @Override
@@ -114,7 +115,7 @@ public class DetachShapes extends AlcModule {
             if (canvas.getCurrentCreateShape() != null) {
                 canvas.getCurrentCreateShape().addCurvePoint(newPt);
                 canvas.redraw();
-                //oldP = p;
+            //oldP = p;
             }
         }
 //        double xx = x + (segLength * Math.cos(angle1));
@@ -129,6 +130,6 @@ public class DetachShapes extends AlcModule {
     public void mouseReleased(MouseEvent e) {
         canvas.redraw();
         canvas.commitShapes();
-        //oldP = null;
+    //oldP = null;
     }
 }

@@ -92,6 +92,10 @@ public class Shapes extends AlcModule implements AlcConstants {
                 });
         subToolBarSection.add(lineTypeButton);
 
+
+        AlcSliderCustom cs = new AlcSliderCustom(0, 100, 50);
+        subToolBarSection.add(cs);
+
     }
 
     @Override

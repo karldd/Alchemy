@@ -988,7 +988,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     public void mousePressed(MouseEvent event) {
         // Turn off the toolbar on canvas click
-        Alchemy.toolBar.setToolBarVisible(false);
+        //Alchemy.toolBar.setToolBarVisible(false);
 
         if (mouseEvents) {
             // Pass to the current create module
