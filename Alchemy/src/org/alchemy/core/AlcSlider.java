@@ -70,6 +70,7 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
 
     }
 
+    @Override
     public void setToolTipText(String toolTip) {
         slider.setToolTipText(toolTip);
         label.setToolTipText(toolTip);
