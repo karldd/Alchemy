@@ -20,6 +20,9 @@ package org.alchemy.create;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 /**
@@ -28,71 +31,131 @@ import org.alchemy.core.*;
  */
 public class ScrawlShapes extends AlcModule {
 
-    private boolean newPath = true;
     private Point oldP;
+    private int count = 0;
+    private int flow = 10;
+    private int detail = 10;
+    private int noise = 10;
+    private AlcSubToolBarSection subToolBarSection;
 
     public ScrawlShapes() {
 
+    }
+
+    @Override
+    protected void setup() {
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    protected void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcSubToolBarSection(this);
+
+        AlcSubSlider flowSlider = new AlcSubSlider("Flow", 1, 25, flow);
+        flowSlider.setToolTipText("Change the flow speed");
+        flowSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            flow = source.getValue();
+                        }
+                    }
+                });
+        subToolBarSection.add(flowSlider);
+
+        AlcSubSlider detailSlider = new AlcSubSlider("Detail", 2, 50, detail);
+        detailSlider.setToolTipText("Change the shape detail");
+        detailSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            detail = source.getValue();
+                        }
+                    }
+                });
+        subToolBarSection.add(detailSlider);
+
+        AlcSubSlider noiseSlider = new AlcSubSlider("Noise", 1, 50, noise);
+        noiseSlider.setToolTipText("Change the shape noise");
+        noiseSlider.slider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        JSlider source = (JSlider) e.getSource();
+                        if (!source.getValueIsAdjusting()) {
+                            noise = source.getValue();
+                        }
+                    }
+                });
+        subToolBarSection.add(noiseSlider);
     }
 
     private void scrawl(Point p1, Point p2, int steps, float noise) {
         float xStep = (p2.x - p1.x) / steps;
         float yStep = (p2.y - p1.y) / steps;
 
+        //AlcShape shape = new AlcShape(p1);
         AlcShape shape = canvas.getCurrentCreateShape();
 
         if (shape != null) {
 
+            int p1x = p1.x;
+            int p1y = p1.y;
+
             for (int i = 0; i < steps; i++) {
                 if (i < steps - 1) {
-                    float x2 = p1.x += xStep + math.random(-noise, noise);
-                    float y2 = p1.y += yStep + math.random(-noise, noise);
+                    float x2 = p1x += xStep + math.random(-noise, noise);
+                    float y2 = p1y += yStep + math.random(-noise, noise);
                     Point newPt = new Point((int) x2, (int) y2);
                     shape.addCurvePoint(newPt);
                 }
             }
         //shape.addCurvePoint(p2);
         }
+    //canvas.setCurrentCreateShape(shape);
     }
 
-//    @Override
-//    public void mousePressed(MouseEvent e) {
-////        if (e.getClickCount() == 1) {
-////            System.out.println("SINGLE");
-////        }
-//    }
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mousePressed(MouseEvent e) {
+//        if (e.getClickCount() == 1) {
+//            System.out.println("SINGLE");
+//        }
+        Point p = e.getPoint();
+        canvas.createShapes.add(new AlcShape(p));
+        oldP = p;
+    //System.out.println(oldP);
+    }
 
-        // DOUBLE CLICK
-        if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
+    @Override
+    public void mouseDragged(MouseEvent e) {
 
-            //canvas.redraw();
-            //canvas.commitShapes();
-            e.consume();
-            newPath = true;
-
-        // SINGLE CLICK
-        } else {
-
+        if (count % flow == 0) {
             Point p = e.getPoint();
 
-            // First click
-            if (newPath) {
-                canvas.createShapes.add(new AlcShape(p));
-                canvas.redraw();
-                newPath = false;
-                System.out.println("ADD Shape");
-
-            // Second Click onwards
-            } else {
-                //System.out.println("Draw scrawl");
-                scrawl(oldP, p, 50, 10F);
-
-                canvas.redraw();
-            }
+            scrawl(oldP, p, detail, noise);
             oldP = p;
-
+            canvas.redraw();
         }
+        count++;
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+//        Point p = e.getPoint();
+//        scrawl(oldP, p, 50, 10F);
+        //System.out.println(oldP + " " + p);
+        canvas.redraw();
+        canvas.commitShapes();
     }
 }
