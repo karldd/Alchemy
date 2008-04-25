@@ -32,12 +32,8 @@ import java.io.IOException;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.*;
+import com.lowagie.text.xml.xmp.*;
 
-import com.lowagie.text.xml.xmp.PdfSchema;
-import com.lowagie.text.xml.xmp.PdfSchema;
-import com.lowagie.text.xml.xmp.XmpArray;
-import com.lowagie.text.xml.xmp.XmpWriter;
-import com.lowagie.text.xml.xmp.XmpWriter;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
@@ -50,6 +46,7 @@ import com.sun.pdfview.*;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 /** 
  * The Alchemy canvas
@@ -810,24 +807,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             PdfWriter singleWriter = PdfWriter.getInstance(singleDocument, new FileOutputStream(file));
             singleDocument.addTitle("Alchemy Session");
             singleDocument.addAuthor(USER_NAME);
-            //document.addSubject("This example explains how to add metadata.");
-            //document.addKeywords("iText, Hello World, step 3, metadata");
             singleDocument.addCreator("Alchemy <http://al.chemy.org>");
 
             // Add metadata and open the document
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             XmpWriter xmp = new XmpWriter(os);
-//            DublinCoreSchema dc = new DublinCoreSchema();
-//            XmpArray subject = new XmpArray(XmpArray.UNORDERED);
-//            subject.add("Hello World");
-//            subject.add("XMP & Metadata");
-//            subject.add("Metadata");
-//            dc.setProperty(DublinCoreSchema.SUBJECT, subject);
-//            dc.addTitle("Alchemy Session");
-//            dc.addAuthor(USER_NAME);
-//            dc.addPublisher("Alchemy <http://al.chemy.org>");
-//            xmp.addRdfDescription(dc);
-
             PdfSchema pdf = new PdfSchema();
             pdf.setProperty(PdfSchema.KEYWORDS, "Alchemy <http://al.chemy.org>");
             pdf.setProperty(PdfSchema.VERSION, "1.4");
@@ -869,29 +853,38 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         try {
             // Destination file created in the temp dir then we will move it
             File dest = new File(TEMP_DIR, "Alchemy.pdf");
+            OutputStream output = new FileOutputStream(dest);
 
-            // TODO - Copy meta data from the single original pdf
-            
             PdfReader reader = new PdfReader(mainPdf.getPath());
             PdfReader newPdf = new PdfReader(tempPdf.getPath());
-            int n = reader.getNumberOfPages();
-
-            //reader.consolidateNamedDestinations();
-
             Document mainDocument = new Document(reader.getPageSizeWithRotation(1));
-            PdfCopy copy = new PdfCopy(mainDocument, new FileOutputStream(dest));
+            PdfWriter mainWriter = PdfWriter.getInstance(mainDocument, output);
+
+            // Copy the meta data
+            mainDocument.addTitle("Alchemy Session");
+            mainDocument.addAuthor(USER_NAME);
+            mainDocument.addCreator("Alchemy <http://al.chemy.org>");
+            mainWriter.setXmpMetadata(reader.getMetadata());
             mainDocument.open();
 
-            for (int i = 0; i < n;) {
-                ++i;
-                PdfImportedPage page = copy.getImportedPage(reader, i);
-                copy.addPage(page);
-            }
-            // Add the last (new) pdfReadPage
-            PdfImportedPage lastPage = copy.getImportedPage(newPdf, 1);
-            copy.addPage(lastPage);
+            // Holds the PDF
+            PdfContentByte mainContent = mainWriter.getDirectContent();
 
+            // Add each page from the main PDF
+            for (int i = 0; i < reader.getNumberOfPages();) {
+                ++i;
+                mainDocument.newPage();
+                PdfImportedPage page = mainWriter.getImportedPage(reader, i);
+                mainContent.addTemplate(page, 0, 0);
+            }
+            // Add the last (new) page
+            mainDocument.newPage();
+            PdfImportedPage lastPage = mainWriter.getImportedPage(newPdf, 1);
+            mainContent.addTemplate(lastPage, 0, 0);
+
+            output.flush();
             mainDocument.close();
+            output.close();
 
             if (dest.exists()) {
 
