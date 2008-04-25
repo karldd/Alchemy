@@ -19,6 +19,7 @@
  */
 package org.alchemy.core;
 
+import com.lowagie.text.pdf.PdfReader;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -33,7 +34,7 @@ import javax.swing.UIManager;
 
 /**
  * Class to control Alchemy 'sessions'
- * Timing and recording of drawing sessions in a PDF file using the iText Library 
+ * Timing, recording, loading of PDF drawing sessions 
  */
 class AlcSession implements ActionListener, AlcConstants {
 
@@ -200,11 +201,16 @@ class AlcSession implements ActionListener, AlcConstants {
     //////////////////////////////////////////////////////////////
     /** Load a session file to draw on top of */
     boolean loadSessionFile(File file) {
+
+        boolean load = true;
+
         try {
 
-            // Make sure we are not loading the current session file
+            // First make sure we are not loading the current session file
             if (file.equals(pdfWriteFile)) {
 
+                // TODO make a global static function to do show a dialog
+                
                 // Text for the dialog depends on the platform
                 String exitTitle = Alchemy.bundle.getString("loadSessionPDFDialogTitle");
                 String exitMessage = Alchemy.bundle.getString("loadSessionPDFDialogMessage");
@@ -230,25 +236,58 @@ class AlcSession implements ActionListener, AlcConstants {
 
                 if (result == JOptionPane.YES_OPTION) {
                     restartSession();
-                    return loadSessionFile(file);
                 } else {
                     return false;
                 }
 
-            } else {
-                //File file = new File("/Users/karldd/Alchemy/Code/svnAlchemy/ok.pdf");
-
-                // set up the PDF reading
-                RandomAccessFile raf = new RandomAccessFile(file, "r");
-                FileChannel channel = raf.getChannel();
-                ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-                pdfReadFile = new PDFFile(buf);
-                currentPdfReadPage = 1;
-                maxPdfReadPage = pdfReadFile.getNumPages();
-                pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
-                Alchemy.canvas.redraw(true);
-                return true;
             }
+
+            // Secondly check the meta data to see if this is an Alchemy session
+            PdfReader reader = new PdfReader(file.getPath());
+            String metaData = new String(reader.getMetadata());
+
+            if (!metaData.contains("Alchemy")) {
+                // If the pdf is not an Alchemy pdf
+
+                // Text for the dialog depends on the platform
+                String exitTitle = Alchemy.bundle.getString("loadForeignPDFDialogTitle");
+                String exitMessage = Alchemy.bundle.getString("loadForeignPDFDialogMessage");
+
+                if (Alchemy.PLATFORM == MACOSX) {
+                    exitTitle = "";
+                    exitMessage =
+                            "<html>" + UIManager.get("OptionPane.css") +
+                            "<b>" + Alchemy.bundle.getString("loadForeignPDFDialogTitle") + "</b>" +
+                            "<p>" + Alchemy.bundle.getString("loadForeignPDFDialogMessage");
+                }
+
+                Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
+                int result = JOptionPane.showOptionDialog(
+                        Alchemy.window,
+                        exitMessage,
+                        exitTitle,
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+
+                if (result != JOptionPane.YES_OPTION) {
+                    return false;
+                }
+            }
+
+            // set up the PDF reading
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            FileChannel channel = raf.getChannel();
+            ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            pdfReadFile = new PDFFile(buf);
+            currentPdfReadPage = 1;
+            maxPdfReadPage = pdfReadFile.getNumPages();
+            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+            Alchemy.canvas.redraw(true);
+            return true;
+
 
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();

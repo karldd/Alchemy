@@ -33,6 +33,11 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.*;
 
+import com.lowagie.text.xml.xmp.PdfSchema;
+import com.lowagie.text.xml.xmp.PdfSchema;
+import com.lowagie.text.xml.xmp.XmpArray;
+import com.lowagie.text.xml.xmp.XmpWriter;
+import com.lowagie.text.xml.xmp.XmpWriter;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
@@ -43,6 +48,8 @@ import javax.imageio.ImageIO;
 // PDF READER
 import com.sun.pdfview.*;
 import java.awt.geom.AffineTransform;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayOutputStream;
 
 /** 
  * The Alchemy canvas
@@ -796,17 +803,38 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         int singlePdfWidth = Alchemy.window.getWindowSize().width;
         int singlePdfHeight = Alchemy.window.getWindowSize().height;
         Document singleDocument = new Document(new com.lowagie.text.Rectangle(singlePdfWidth, singlePdfHeight), 0, 0, 0, 0);
-        singleDocument.addTitle("Alchemy");
-        singleDocument.addAuthor(USER_NAME);
-        //document.addSubject("This example explains how to add metadata.");
-        //document.addKeywords("iText, Hello World, step 3, metadata");
-        singleDocument.addCreator("al.chemy.org");
-
         System.out.println("Save Single Pdf Called: " + file.toString());
 
         try {
 
             PdfWriter singleWriter = PdfWriter.getInstance(singleDocument, new FileOutputStream(file));
+            singleDocument.addTitle("Alchemy Session");
+            singleDocument.addAuthor(USER_NAME);
+            //document.addSubject("This example explains how to add metadata.");
+            //document.addKeywords("iText, Hello World, step 3, metadata");
+            singleDocument.addCreator("Alchemy <http://al.chemy.org>");
+
+            // Add metadata and open the document
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            XmpWriter xmp = new XmpWriter(os);
+//            DublinCoreSchema dc = new DublinCoreSchema();
+//            XmpArray subject = new XmpArray(XmpArray.UNORDERED);
+//            subject.add("Hello World");
+//            subject.add("XMP & Metadata");
+//            subject.add("Metadata");
+//            dc.setProperty(DublinCoreSchema.SUBJECT, subject);
+//            dc.addTitle("Alchemy Session");
+//            dc.addAuthor(USER_NAME);
+//            dc.addPublisher("Alchemy <http://al.chemy.org>");
+//            xmp.addRdfDescription(dc);
+
+            PdfSchema pdf = new PdfSchema();
+            pdf.setProperty(PdfSchema.KEYWORDS, "Alchemy <http://al.chemy.org>");
+            pdf.setProperty(PdfSchema.VERSION, "1.4");
+            xmp.addRdfDescription(pdf);
+            xmp.close();
+            singleWriter.setXmpMetadata(os.toByteArray());
+
             singleDocument.open();
             PdfContentByte singleContent = singleWriter.getDirectContent();
 
@@ -842,6 +870,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             // Destination file created in the temp dir then we will move it
             File dest = new File(TEMP_DIR, "Alchemy.pdf");
 
+            // TODO - Copy meta data from the single original pdf
+            
             PdfReader reader = new PdfReader(mainPdf.getPath());
             PdfReader newPdf = new PdfReader(tempPdf.getPath());
             int n = reader.getNumberOfPages();
