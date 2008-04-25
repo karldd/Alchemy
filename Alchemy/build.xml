@@ -75,9 +75,10 @@
     <!-- Copy the required libraries into the build file -->
     <target name="-pre-jar"> 
         <unjar src="${file.reference.commons-logging.jar}" dest="${build.classes.dir}"/> 
-        <unjar src="${file.reference.itext-2.0.6.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.itext.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/> 
     </target> 
     
     
