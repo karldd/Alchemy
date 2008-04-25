@@ -372,36 +372,14 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     public boolean exitAlchemy() {
         // Ask to quit
         if (Alchemy.canvas.shapes.size() > 0) {
-            // Text for the dialog depends on the platform
-            String exitTitle, exitMessage;
-            if (Alchemy.PLATFORM == MACOSX) {
-                exitTitle = "";
-                exitMessage =
-                        "<html>" + UIManager.get("OptionPane.css") +
-                        "<b>" + Alchemy.bundle.getString("quitDialogTitle") + "</b>" +
-                        "<p>" + Alchemy.bundle.getString("quitDialogMessage");
-            } else {
-                exitTitle = Alchemy.bundle.getString("exitDialogTitle");
-                exitMessage = Alchemy.bundle.getString("exitDialogMessage");
-            }
 
-            //TODO - Quit dialog appears on the wrong monitor on mac
-            Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
-            int result = JOptionPane.showOptionDialog(
-                    this,
-                    exitMessage,
-                    exitTitle,
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
-
-            if (result == JOptionPane.YES_OPTION) {
+            boolean result = AlcUtil.showConfirmDialog("exitDialogTitle", "exitDialogMessage", "quitDialogTitle", "quitDialogMessage");
+            if (result) {
                 exit();
                 return true;
+            } else {
+                return false;
             }
-            return false;
 
         } else {
             exit();

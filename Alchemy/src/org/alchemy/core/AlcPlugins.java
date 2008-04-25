@@ -25,7 +25,6 @@ import java.net.URL;
 // JAVA PLUGIN FRAMEWORK
 import java.util.Arrays;
 import java.util.Comparator;
-import javax.swing.JOptionPane;
 import org.java.plugin.ObjectFactory;
 import org.java.plugin.PluginManager;
 import org.java.plugin.PluginManager.PluginLocation;
@@ -163,15 +162,8 @@ class AlcPlugins implements AlcConstants {
             // Extension Point Name, Array Size, Module Type
             creates = addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
         } else {
-
             // Tell the user that there must be at least one create module loaded
-            JOptionPane.showConfirmDialog(
-                    null,
-                    Alchemy.bundle.getString("noCreateModulesDialogMessage"),
-                    Alchemy.bundle.getString("noCreateModulesDialogTitle"),
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-
+            AlcUtil.showConfirmDialog("noCreateModulesDialogTitle", "noCreateModulesDialogMessage");
             System.exit(0);
         }
     }

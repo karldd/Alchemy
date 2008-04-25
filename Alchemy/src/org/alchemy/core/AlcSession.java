@@ -29,8 +29,6 @@ import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 /**
  * Class to control Alchemy 'sessions'
@@ -202,39 +200,14 @@ class AlcSession implements ActionListener, AlcConstants {
     /** Load a session file to draw on top of */
     boolean loadSessionFile(File file) {
 
-        boolean load = true;
-
         try {
 
             // First make sure we are not loading the current session file
             if (file.equals(pdfWriteFile)) {
 
-                // TODO make a global static function to do show a dialog
-                
-                // Text for the dialog depends on the platform
-                String exitTitle = Alchemy.bundle.getString("loadSessionPDFDialogTitle");
-                String exitMessage = Alchemy.bundle.getString("loadSessionPDFDialogMessage");
+                boolean result = AlcUtil.showConfirmDialog("loadSessionPDFDialogTitle", "loadSessionPDFDialogMessage");
 
-                if (Alchemy.PLATFORM == MACOSX) {
-                    exitTitle = "";
-                    exitMessage =
-                            "<html>" + UIManager.get("OptionPane.css") +
-                            "<b>" + Alchemy.bundle.getString("loadSessionPDFDialogTitle") + "</b>" +
-                            "<p>" + Alchemy.bundle.getString("loadSessionPDFDialogMessage");
-                }
-
-                Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
-                int result = JOptionPane.showOptionDialog(
-                        Alchemy.window,
-                        exitMessage,
-                        exitTitle,
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
-
-                if (result == JOptionPane.YES_OPTION) {
+                if (result) {
                     restartSession();
                 } else {
                     return false;
@@ -246,33 +219,11 @@ class AlcSession implements ActionListener, AlcConstants {
             PdfReader reader = new PdfReader(file.getPath());
             String metaData = new String(reader.getMetadata());
 
+            // If the pdf is not an Alchemy pdf
             if (!metaData.contains("Alchemy")) {
-                // If the pdf is not an Alchemy pdf
 
-                // Text for the dialog depends on the platform
-                String exitTitle = Alchemy.bundle.getString("loadForeignPDFDialogTitle");
-                String exitMessage = Alchemy.bundle.getString("loadForeignPDFDialogMessage");
-
-                if (Alchemy.PLATFORM == MACOSX) {
-                    exitTitle = "";
-                    exitMessage =
-                            "<html>" + UIManager.get("OptionPane.css") +
-                            "<b>" + Alchemy.bundle.getString("loadForeignPDFDialogTitle") + "</b>" +
-                            "<p>" + Alchemy.bundle.getString("loadForeignPDFDialogMessage");
-                }
-
-                Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
-                int result = JOptionPane.showOptionDialog(
-                        Alchemy.window,
-                        exitMessage,
-                        exitTitle,
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
-
-                if (result != JOptionPane.YES_OPTION) {
+                boolean result = AlcUtil.showConfirmDialog("loadForeignPDFDialogTitle", "loadForeignPDFDialogMessage");
+                if (!result) {
                     return false;
                 }
             }
