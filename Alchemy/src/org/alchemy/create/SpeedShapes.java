@@ -70,15 +70,14 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(lineStyleButton);
 
 
-        AlcSubSlider speedSlider = new AlcSubSlider("Speed", 0, 35, multiplier);
+        final AlcSubSlider speedSlider = new AlcSubSlider("Speed", 0, 35, multiplier);
         speedSlider.setToolTipText("Change the amount cursor movement is sped up by");
-        speedSlider.slider.addChangeListener(
+        speedSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!speedSlider.getValueIsAdjusting()) {
+                            int value = speedSlider.getValue();
                             multiplier = value;
                         //System.out.println(multiplier);
                         }

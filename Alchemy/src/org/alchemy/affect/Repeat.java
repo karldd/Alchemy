@@ -23,7 +23,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -91,15 +90,14 @@ public class Repeat extends AlcModule {
 
         // Repeat Speed Slider
         int initialSliderValue = 50;
-        AlcSubSlider speedSlider = new AlcSubSlider("Interval", 0, 100, initialSliderValue);
+        final AlcSubSlider speedSlider = new AlcSubSlider("Interval", 0, 100, initialSliderValue);
         speedSlider.setToolTipText("Adjust the repeat interval");
-        speedSlider.slider.addChangeListener(
+        speedSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!speedSlider.getValueIsAdjusting()) {
+                            int value = speedSlider.getValue();
                             mouseDelayGap = value * 2 + 50;
                         //System.out.println(volume);
                         }
