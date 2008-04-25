@@ -19,53 +19,70 @@
  */
 package org.alchemy.core;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 
 /**
  * AlcSubSlider
  * 
  * 
  */
-public class AlcSubSlider extends JPanel implements AlcConstants{
+public class AlcSubSlider extends JPanel implements AlcConstants {
 
-    public JSlider slider;
+    private AlcSliderCustom slider;
 
     public AlcSubSlider(String name, int minValue, int maxValue, int startValue) {
 
+        // TODO - Fix layout slider & X-Shapes
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        //this.setBorder(BorderFactory.createEmptyBorder(1, 3, 0, 2));
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-        slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, startValue);
-        //slider.setMajorTickSpacing(85); // sets numbers for biggest tick marks
-        slider.setMinorTickSpacing(10);  // smaller tick marks
-        //slider.setPaintTicks(true);     // display the ticks
-
-        // This causes misalignment on a mac so for now readjust it
-        int sliderHeight = 23;
-        int sliderY = 3;
-        if (Alchemy.PLATFORM == MACOSX) {
-            sliderHeight = 20;
-            sliderY = 4;
-        }
-
-        //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
-        slider.setOpaque(false);
-        //alphaSlider.setBackground(Color.black);
-        //alphaSlider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(75, sliderHeight));
-        slider.setBorder(BorderFactory.createEmptyBorder(sliderY, 0, 0, 0));
+        slider = new AlcSliderCustom(minValue, maxValue, startValue);
         this.add(slider);
 
         JLabel label = new JLabel(name);
         label.setFont(AlcToolBar.subToolBarFont);
-        label.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 2));
-        //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        //label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
         this.add(label);
+    }
 
+    /**
+     * This method returns this slider's isAdjusting trueValue which is true if the
+     * thumb is being dragged.
+     *
+     * @return The slider's isAdjusting trueValue.
+     */
+    public boolean getValueIsAdjusting() {
+        return slider.mouseDown;
+    }
 
+    /**
+     * This method returns the current trueValue of the slider.
+     *
+     * @return The trueValue of the slider stored in the model.
+     */
+    public int getValue() {
+        return slider.trueValue;
+    }
+
+    /**
+     * This method registers a listener to this slider. The listener will be
+     * informed of new ChangeEvents.
+     *
+     * @param listener The listener to register.
+     */
+    public void addChangeListener(ChangeListener listener) {
+        slider.addChangeListener(listener);
+    }
+
+    /**
+     * This method removes a listener from this slider.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeChangeListener(ChangeListener listener) {
+        slider.removeChangeListener(listener);
     }
 }

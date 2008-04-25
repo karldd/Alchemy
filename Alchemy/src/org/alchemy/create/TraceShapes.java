@@ -223,15 +223,14 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(runButton);
 
         // Snap Distance Slider
-        AlcSubSlider snapSlider = new AlcSubSlider("Snap Distance", 1, 100, halfArea);
+        final AlcSubSlider snapSlider = new AlcSubSlider("Snap Distance", 1, 100, halfArea);
         snapSlider.setToolTipText("Adjust the snap distance");
-        snapSlider.slider.addChangeListener(
+        snapSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            halfArea = source.getValue();
+                        if (!snapSlider.getValueIsAdjusting()) {
+                            halfArea = snapSlider.getValue();
 
                         }
                     }
@@ -239,15 +238,14 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(snapSlider);
 
         // Tolerance Slider
-        AlcSubSlider toleranceSlider = new AlcSubSlider("Tolerance", 0, 200, tolerance);
+        final AlcSubSlider toleranceSlider = new AlcSubSlider("Tolerance", 0, 200, tolerance);
         toleranceSlider.setToolTipText("Adjust the snapping tolerance");
-        toleranceSlider.slider.addChangeListener(
+        toleranceSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            tolerance = source.getValue();
+                        if (!toleranceSlider.getValueIsAdjusting()) {
+                            tolerance = toleranceSlider.getValue();
 
                         }
                     }

@@ -27,7 +27,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -74,16 +73,15 @@ public class Random extends AlcModule {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Distortion Slider
-        AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 1, 100, initialDistortion);
+        final AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 1, 100, initialDistortion);
 
         distortionSlider.setToolTipText("Adjust the distortion level");
-        distortionSlider.slider.addChangeListener(
+        distortionSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!distortionSlider.getValueIsAdjusting()) {
+                            int value = distortionSlider.getValue();
                             bottomEnd = (value * distortionScaler) * -1;
                             topEnd = value * distortionScaler;
                         }

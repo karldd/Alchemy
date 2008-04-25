@@ -97,15 +97,14 @@ public class MicShapes extends AlcModule implements AlcConstants {
         int initialSliderValue = 50;
         final float levelOffset = 0.02F;
         volume = initialSliderValue * levelOffset;
-        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
+        final AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
         volumeSlider.setToolTipText("Adjust the microphone input volume");
-        volumeSlider.slider.addChangeListener(
+        volumeSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!volumeSlider.getValueIsAdjusting()) {
+                            int value = volumeSlider.getValue();
                             volume = value * levelOffset;
                         //System.out.println(volume);
                         }
@@ -123,7 +122,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
         for (int i = 1; i < points.size(); i++) {
             Point p2 = points.get(i - 1);
             Point p1 = points.get(i);
-            float level = ( levels.get(i)).floatValue();
+            float level = (levels.get(i)).floatValue();
             Point pOut = rightAngle(p1, p2, level);
             shape.addCurvePoint(pOut);
         }
@@ -134,7 +133,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
             //System.out.print(index + " ");
             Point p2 = points.get(index);
             Point p1 = points.get(index - 1);
-            float level = ( levels.get(index)).floatValue();
+            float level = (levels.get(index)).floatValue();
             Point pIn = rightAngle(p1, p2, level);
             shape.addCurvePoint(pIn);
         }

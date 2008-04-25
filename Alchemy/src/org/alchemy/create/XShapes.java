@@ -23,7 +23,6 @@ import org.alchemy.core.*;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -72,15 +71,14 @@ public class XShapes extends AlcModule implements AlcConstants {
 //        subToolBarSection.add(lineStyleButton);
 
 
-        AlcSubSlider speedSlider = new AlcSubSlider("Distance", 0, 100, 50);
+        final AlcSubSlider speedSlider = new AlcSubSlider("Distance", 0, 100, 50);
         speedSlider.setToolTipText("Change the amount cursor movement is sped up by");
-        speedSlider.slider.addChangeListener(
+        speedSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!speedSlider.getValueIsAdjusting()) {
+                            int value = speedSlider.getValue();
                             multiplier = value / 2;
                         //System.out.println(multiplier);
                         }

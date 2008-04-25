@@ -22,7 +22,6 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.awt.geom.Point2D.Float;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
@@ -62,15 +61,14 @@ public class Displace extends AlcModule implements AlcConstants {
         subToolBarSection = new AlcSubToolBarSection(this);
 
 
-        AlcSubSlider speedSlider = new AlcSubSlider("Displacement", 1, 15, displacement);
+        final AlcSubSlider speedSlider = new AlcSubSlider("Displacement", 1, 15, displacement);
         speedSlider.setToolTipText("Change the amount of displacement");
-        speedSlider.slider.addChangeListener(
+        speedSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            displacement = source.getValue();
+                        if (!speedSlider.getValueIsAdjusting()) {
+                            displacement = speedSlider.getValue();
                         }
                     }
                 });

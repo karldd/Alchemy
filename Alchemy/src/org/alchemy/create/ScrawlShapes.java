@@ -57,43 +57,40 @@ public class ScrawlShapes extends AlcModule {
     public void createSubToolBarSection() {
         subToolBarSection = new AlcSubToolBarSection(this);
 
-        AlcSubSlider flowSlider = new AlcSubSlider("Flow", 1, 25, flow);
+        final AlcSubSlider flowSlider = new AlcSubSlider("Flow", 1, 25, flow);
         flowSlider.setToolTipText("Change the flow speed");
-        flowSlider.slider.addChangeListener(
+        flowSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            flow = source.getValue();
+                        if (!flowSlider.getValueIsAdjusting()) {
+                            flow = flowSlider.getValue();
                         }
                     }
                 });
         subToolBarSection.add(flowSlider);
 
-        AlcSubSlider detailSlider = new AlcSubSlider("Detail", 2, 50, detail);
+        final AlcSubSlider detailSlider = new AlcSubSlider("Detail", 2, 50, detail);
         detailSlider.setToolTipText("Change the shape detail");
-        detailSlider.slider.addChangeListener(
+        detailSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            detail = source.getValue();
+                        if (!detailSlider.getValueIsAdjusting()) {
+                            detail = detailSlider.getValue();
                         }
                     }
                 });
         subToolBarSection.add(detailSlider);
 
-        AlcSubSlider noiseSlider = new AlcSubSlider("Noise", 1, 50, noise);
+        final AlcSubSlider noiseSlider = new AlcSubSlider("Noise", 1, 50, noise);
         noiseSlider.setToolTipText("Change the shape noise");
-        noiseSlider.slider.addChangeListener(
+        noiseSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            noise = source.getValue();
+                        if (!noiseSlider.getValueIsAdjusting()) {
+                            noise = noiseSlider.getValue();
                         }
                     }
                 });

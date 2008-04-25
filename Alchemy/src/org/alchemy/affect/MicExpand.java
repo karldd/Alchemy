@@ -25,7 +25,6 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -88,19 +87,18 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 
         // Volume Slider
         int initialSliderValue = 50;
-        AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
+        final AlcSubSlider volumeSlider = new AlcSubSlider("Volume", 0, 100, initialSliderValue);
         final float waveOffset = 0.0003F;
         final float levelOffset = 0.001F;
         waveVolume = initialSliderValue * waveOffset;
         levelVolume = initialSliderValue * levelOffset;
         volumeSlider.setToolTipText("Adjust the microphone input volume");
-        volumeSlider.slider.addChangeListener(
+        volumeSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!volumeSlider.getValueIsAdjusting()) {
+                            int value = volumeSlider.getValue();
                             waveVolume = value * waveOffset;
                             levelVolume = value * levelOffset;
                         //System.out.println(volume);

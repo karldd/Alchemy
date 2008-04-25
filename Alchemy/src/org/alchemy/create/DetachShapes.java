@@ -60,15 +60,14 @@ public class DetachShapes extends AlcModule {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Tolerance Slider
-        AlcSubSlider distanceSlider = new AlcSubSlider("Distance", 0, 300, distance);
+        final AlcSubSlider distanceSlider = new AlcSubSlider("Distance", 0, 300, distance);
         distanceSlider.setToolTipText("Adjust the drawing distance");
-        distanceSlider.slider.addChangeListener(
+        distanceSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            distance = source.getValue();
+                        if (!distanceSlider.getValueIsAdjusting()) {
+                            distance = distanceSlider.getValue();
 
                         }
                     }

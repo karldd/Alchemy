@@ -29,7 +29,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -116,15 +115,14 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         final float levelOffset = 0.01F;
         distortion = initialSliderValue * levelOffset;
         //System.out.println(distortion);
-        AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 0, 100, initialSliderValue);
+        final AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 0, 100, initialSliderValue);
         distortionSlider.setToolTipText("Adjust the amount of shape distortion");
-        distortionSlider.slider.addChangeListener(
+        distortionSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = source.getValue();
+                        if (!distortionSlider.getValueIsAdjusting()) {
+                            int value = distortionSlider.getValue();
                             distortion = value * levelOffset;
                             System.out.println(distortion);
                         }
@@ -145,15 +143,14 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(runButton);
 
         // Size Slider
-        AlcSubSlider sizeSlider = new AlcSubSlider("Size", 1, 50, (int) size * 10);
+        final AlcSubSlider sizeSlider = new AlcSubSlider("Size", 1, 50, (int) size * 10);
         sizeSlider.setToolTipText("Adjust the size of shapes created");
-        sizeSlider.slider.addChangeListener(
+        sizeSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            size = 0.1F + source.getValue() / 10F;
+                        if (!sizeSlider.getValueIsAdjusting()) {
+                            size = 0.1F + sizeSlider.getValue() / 10F;
                             System.out.println(size);
                         //System.out.println(distortion);
                         }
