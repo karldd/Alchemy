@@ -176,7 +176,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         int h = visibleRect.height;
 
         if (imageDisplay && image != null) {
-            g2.drawImage(image, 0, 0, null);
+            g2.drawImage(image, imageX, imageY, null);
         } else {
             // Paint background.
             g2.setColor(bgColour);
@@ -568,12 +568,19 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Set the current colour */
     public void setColour(Color colour) {
+        // Control how the Foreground/Background button is updated
         if (backgroundActive) {
             bgColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
             this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
             redraw(true);
         } else {
             this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        }
+        // TODO - Fix the colour updating here
+        if (Alchemy.preferences.paletteAttached) {
+            Alchemy.toolBar.refreshSwapButton();
+        } else {
+            Alchemy.toolBar.queueSwapButtonRefresh();
         }
     }
 
@@ -1039,6 +1046,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     public void mousePressed(MouseEvent event) {
         // Turn off the toolbar on canvas click
+        // TODO - Hide the toolbar based on where the click takes place
         //Alchemy.toolBar.setToolBarVisible(false);
 
         if (mouseEvents) {
@@ -1205,7 +1213,8 @@ class VectorCanvas extends JPanel implements AlcConstants {
 
         // Draw buffImage
         if (Alchemy.canvas.isImageDisplayEnabled() && Alchemy.canvas.isImageSet()) {
-            g2.drawImage(Alchemy.canvas.getImage(), 0, 0, null);
+            Point p = Alchemy.canvas.getImageLocation();
+            g2.drawImage(Alchemy.canvas.getImage(), p.x, p.y, null);
         }
 
         // Draw the create, affect, and shapes lists
