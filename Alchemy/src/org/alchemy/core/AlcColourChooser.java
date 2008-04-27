@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2007 Karl D.D. Willis
+ * Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@ import javax.swing.colorchooser.AbstractColorChooserPanel;
  * AlcColourChooser
  * @author Karl D.D. Willis
  */
-public class AlcColourChooser extends JColorChooser implements AlcConstants {
+class AlcColourChooser extends JColorChooser implements AlcConstants {
 
-    public AlcColourChooser(Color initialColor) {
-       super(initialColor);
+    AlcColourChooser(Color initialColor) {
+        super(initialColor);
 
         if (Alchemy.PLATFORM != MACOSX) {
             String singleChooser = "DefaultHSBChooserPanel";

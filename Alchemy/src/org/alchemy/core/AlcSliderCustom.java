@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2008 Karl D.D. Willis
+ * Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
  * AlcSliderCustom
  * @author Karl D.D. Willis
  */
-public class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
+class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
 
     private int width = 75;
     private int height = 15;
@@ -48,7 +48,7 @@ public class AlcSliderCustom extends JComponent implements MouseListener, MouseM
     /** The ChangeEvent that is passed to all listeners of this slider. */
     protected transient ChangeEvent changeEvent;
 
-    public AlcSliderCustom(int min, int max, int initialSliderValue) {
+    AlcSliderCustom(int min, int max, int initialSliderValue) {
         this.min = min;
         this.max = max;
         addMouseListener(this);
@@ -96,7 +96,7 @@ public class AlcSliderCustom extends JComponent implements MouseListener, MouseM
      *
      * @param listener The listener to register.
      */
-    protected void addChangeListener(ChangeListener listener) {
+    void addChangeListener(ChangeListener listener) {
         listenerList.add(ChangeListener.class, listener);
     }
 
@@ -105,7 +105,7 @@ public class AlcSliderCustom extends JComponent implements MouseListener, MouseM
      *
      * @param listener The listener to remove.
      */
-    protected void removeChangeListener(ChangeListener listener) {
+    void removeChangeListener(ChangeListener listener) {
         listenerList.remove(ChangeListener.class, listener);
     }
 
@@ -114,7 +114,7 @@ public class AlcSliderCustom extends JComponent implements MouseListener, MouseM
      * propagate the ChangeEvent to its listeners with a new ChangeEvent that
      * identifies the slider as the source.
      */
-    protected void fireStateChanged() {
+    void fireStateChanged() {
         Object[] changeListeners = listenerList.getListenerList();
         if (changeEvent == null) {
             changeEvent = new ChangeEvent(this);
@@ -178,14 +178,4 @@ public class AlcSliderCustom extends JComponent implements MouseListener, MouseM
 
     public void keyReleased(KeyEvent e) {
     }
-
-//    public void focusGained(FocusEvent e) {
-//        bg = bgFocused;
-//        this.repaint();
-//    }
-//
-//    public void focusLost(FocusEvent e) {
-//        bg = bgUnfocused;
-//        this.repaint();
-//    }
 }

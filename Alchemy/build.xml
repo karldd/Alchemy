@@ -150,6 +150,12 @@
                 <contains text="ScrawlShapes" casesensitive="no"/>
             </fileset>
         </copy>
+        <!-- Camera Colour -->
+        <copy todir="${basedir}/modules/cameraColour/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
+                <contains text="CameraColour" casesensitive="no"/>
+            </fileset>
+        </copy>
         
         
         <!-- AFFECTS -->
@@ -184,11 +190,16 @@
                 <contains text="Repeat" casesensitive="no"/>
             </fileset>
         </copy>
-        
         <!-- Displace -->
         <copy todir="${basedir}/modules/displace/org/alchemy/affect">
             <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="Displace" casesensitive="no"/>
+            </fileset>
+        </copy>
+        <!-- Camera Colour -->
+        <copy todir="${basedir}/modules/cameraColour/org/alchemy/create">
+            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
+                <contains text="CameraColour" casesensitive="no"/>
             </fileset>
         </copy>
         

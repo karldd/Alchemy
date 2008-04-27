@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -35,7 +34,7 @@ import javax.swing.event.ChangeListener;
  */
 public class MicShapes extends AlcModule implements AlcConstants {
 
-    private AlcMicInput micIn;
+    private AlcMicrophone micIn;
     private Point lastPt;
     private float volume;
     private AlcSubToolBarSection subToolBarSection;
@@ -51,22 +50,22 @@ public class MicShapes extends AlcModule implements AlcConstants {
     protected void setup() {
         points.ensureCapacity(1000);
         // Create a new MicInput Object with a buffer of 10
-        micIn = new AlcMicInput(2);
-        micIn.startMicInput();
+        micIn = new AlcMicrophone(2);
+        micIn.start();
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     @Override
     protected void deselect() {
-        micIn.stopMicInput();
+        micIn.stop();
         micIn = null;
     }
 
     @Override
     protected void reselect() {
-        micIn = new AlcMicInput(2);
-        micIn.startMicInput();
+        micIn = new AlcMicrophone(2);
+        micIn.start();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 

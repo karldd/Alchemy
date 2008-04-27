@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ import javax.swing.event.ChangeListener;
  */
 public class MicExpand extends AlcModule implements AlcMicInterface {
 
-    private AlcMicInput micIn;
+    private AlcMicrophone micIn;
     private AlcShape currentShape;
     private int activeShape = -1;
     //private int centreX,  centreY;
@@ -65,7 +65,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     @Override
     protected void setup() {
         // Create the mic input object
-        micIn = new AlcMicInput(this);
+        micIn = new AlcMicrophone(this);
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
     }
@@ -79,7 +79,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     @Override
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
-        micIn = new AlcMicInput(this);
+        micIn = new AlcMicrophone(this);
     }
 
     public void createSubToolBarSection() {
@@ -148,13 +148,13 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             //}
 
 //            if(running){
-//                micIn.stopMicInput();
+//                micIn.stop();
 //            }
             running = true;
-            //micIn = new AlcMicInput(this, totalPoints);
+            //micIn = new AlcMicrophone(this, totalPoints);
             // buffer equal to the number of points
             micIn.setBuffer(totalPoints);
-            micIn.startMicInput();
+            micIn.start();
         }
     }
 
@@ -295,7 +295,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     private void stopExpand() {
         activeShape = -1;
         if (running) {
-            micIn.stopMicInput();
+            micIn.stop();
             running = false;
         //canvas.commitShapes();
         }
@@ -335,7 +335,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
         mouseDown = false;
     }
 
-    public void bufferFull() {
+    public void microphoneEvent() {
         // If the spacebar has just been pressed
         if (firstRun) {
             delayTime = System.currentTimeMillis();

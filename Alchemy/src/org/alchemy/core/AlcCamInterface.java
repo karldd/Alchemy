@@ -16,17 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Alchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.alchemy.core;
 
 /**
- *  Interface implemented by buttons/menuitems etc.. that are linked to a shortcut.
- *  
- *  The interface is inturn used to refresh the shortcut 
- *  (the tooltip/accelerator key) if it is changed by the user
- * 
- *  @author Karl D.D. Willis
+ * AlcCamInterface
+ * @author Karl D.D. Willis
  */
-public interface AlcShortcutInterface {
+public interface AlcCamInterface {
 
-    public abstract void refreshShortcut(int key, int modifier);
+    public abstract void cameraEvent();
+
 }

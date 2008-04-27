@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,17 +40,17 @@ public class AlcSubToolBarSection extends JPanel {
 
     }
 
-    protected int getLayoutWidth() {
+    int getLayoutWidth() {
         Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
         // Plus extra to account for padding on the sides
         return layoutSize.width;
     }
 
-    protected int getIndex() {
+    int getIndex() {
         return module.getIndex();
     }
 
-    protected int getModuleType() {
+    int getModuleType() {
         return module.getModuleType();
     }
 }

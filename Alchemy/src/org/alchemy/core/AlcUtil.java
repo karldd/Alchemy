@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -226,9 +226,12 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // UI FUNCTIONS
     //////////////////////////////////////////////////////////////
-    /** 
+    /**
      *  Calculate the centre of the screen with multiple monitors
-     *  From: http://www.juixe.com/techknow/index.php/2007/06/20/multiscreen-dialogs-and-the-jfilechooser/
+     *  From: http://www.juixe.com/techknow/index.php/2007/06/20/multiscreen-dialogs-and-the-jfilechooser/ 
+     * 
+     * @param popupFrame    The popup window
+     * @return              The centred location as a Point
      */
     public static Point calculateCenter(Container popupFrame) {
         KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
@@ -375,6 +378,11 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // COLOUR
     //////////////////////////////////////////////////////////////
+    /** Get the brightness of a colour
+     * 
+     * @param rgb   An rgb colour (bit-shifted int format)
+     * @return      The brightness as an int
+     */
     public static int getColorBrightness(int rgb) {
         int oldR = (rgb >>> 16) & 255;
         int oldG = (rgb >>> 8) & 255;
@@ -385,14 +393,20 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // DEBUGGING
     //////////////////////////////////////////////////////////////
-    /** Print a float array */
+    /** Print a float array
+     * 
+     * @param array Float array
+     */
     public static void printFloatArray(float[] array) {
         for (int i = 0; i < array.length; i++) {
             System.out.println("Array [" + String.valueOf(i) + "] = " + String.valueOf(array[i]));
         }
     }
 
-    /** Print a string array */
+    /** Print a string array 
+     * 
+     * @param array String array
+     */
     public static void printStringArray(String[] array) {
         for (int i = 0; i < array.length; i++) {
             System.out.println("Array [" + String.valueOf(i) + "] = " + array[i]);
