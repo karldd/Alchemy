@@ -91,9 +91,11 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     /** Total height of all tool bars */
     private int totalHeight = 60;
     /** Timer to delay the hiding of the toolbar */
-    javax.swing.Timer toolBarTimer;
+    private javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
+    /** Schedule update for the Foreground/Background button */
+    private boolean updateSwapButton = false;
 
     /**
      * Creates a new instance of AlcToolBar
@@ -159,7 +161,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
-        
+
     }
 
     /** Load the tool bar */
@@ -593,6 +595,12 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 if (affectButton != null) {
                     affectButton.hidePopup();
                 }
+            } else {
+                // Update the colours of the fg/bg button if they have changed
+                if (updateSwapButton) {
+                    refreshSwapButton();
+                    updateSwapButton = false;
+                }
             }
         }
     }
@@ -827,8 +835,14 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         return Alchemy.bundle.getString(stringName);
     }
 
+    void queueSwapButtonRefresh() {
+        updateSwapButton = true;
+    }
+
+    /** Refreshes the colours of the Foreground/Background button */
     void refreshSwapButton() {
         Color colour = Alchemy.canvas.getForegroundColour();
+        System.out.println("Called");
         // Make sure there is no transparency
         //Color fullColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 255);
         Color bgColour = Alchemy.canvas.getBgColour();

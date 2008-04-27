@@ -78,6 +78,9 @@ public class CameraColour extends AlcModule implements AlcCamInterface {
 
                     public void actionPerformed(ActionEvent e) {
                         displayImage = true;
+                        int x = (canvas.getWidth() - width) >> 1;
+                        int y = (canvas.getHeight() - height) >> 1;
+                        canvas.setImageLocation(x, y);
                         canvas.setImageDisplay(true);
                     }
                 });
@@ -97,6 +100,7 @@ public class CameraColour extends AlcModule implements AlcCamInterface {
         if (displayImage) {
             displayImage = false;
             canvas.setImageDisplay(false);
+            canvas.resetImageLocation();
             canvas.redraw();
         }
 
