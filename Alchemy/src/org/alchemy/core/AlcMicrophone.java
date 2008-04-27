@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ import javax.sound.sampled.*;
  * With very limited functionality at the moment to return a buffer or the current sound level <br />
  * Based on code by Richard G. Baldwin from: http://www.developer.com/java/other/print.php/1572251
  */
-public class AlcMicInput {
+public class AlcMicrophone {
 
     private Thread micThread;
     //An arbitrary-size temporary holding buffer
@@ -39,21 +39,21 @@ public class AlcMicInput {
     private TargetDataLine targetDataLine;
     AlcMicInterface parent;
 
-    /** Creates a new instance of AlcMicInput */
-    public AlcMicInput(int bufferSize) {
+    /** Creates a new instance of AlcMicrophone */
+    public AlcMicrophone(int bufferSize) {
         setup(null, bufferSize);
     }
 
-    /** Creates a new instance of AlcMicInput
+    /** Creates a new instance of AlcMicrophone
      * 
      * @param parent        Reference to the parent class implementing the AlcMicInterface
      * @param bufferSize    Size of the required buffer
      */
-    public AlcMicInput(AlcMicInterface parent, int bufferSize) {
+    public AlcMicrophone(AlcMicInterface parent, int bufferSize) {
         setup(parent, bufferSize);
     }
 
-    public AlcMicInput(AlcMicInterface parent) {
+    public AlcMicrophone(AlcMicInterface parent) {
         setup(parent, -1);
     }
 
@@ -106,14 +106,14 @@ public class AlcMicInput {
      *  The line can be opened again by calling setBufer() or openLine() directly
      */
     public void closeLine() {
-        stopMicInput();
+        stop();
         targetDataLine.stop();
         targetDataLine = null;
         firstRun = true;
     }
 
     /** Starts Microphone Input */
-    public void startMicInput() {
+    public void start() {
         running = true;
         micThread = new Thread() {
 
@@ -130,7 +130,7 @@ public class AlcMicInput {
                             convertToSamples();
                             // Call back to the parent if it implements the AlcMicInterface
                             if (parent != null) {
-                                parent.bufferFull();
+                                parent.microphoneEvent();
                             }
 
                         }
@@ -146,7 +146,7 @@ public class AlcMicInput {
     }
 
     /** Stops Microphone Input */
-    public void stopMicInput() {
+    public void stop() {
         running = false;
         micThread = null;
     }

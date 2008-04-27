@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ public class Alchemy implements AlcConstants {
     /** Custom reusable colour chooser */
     static AlcColourChooser colourChooser;
 
-    public Alchemy() {
+    Alchemy() {
 
         if (PLATFORM == MACOSX) {
             Object appIcon = LookAndFeel.makeIcon(getClass(), "/org/alchemy/data/alchemy-logo64.png");

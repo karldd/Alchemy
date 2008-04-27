@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,14 +22,14 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.*;
 
-public class AlcSubToolBar extends JPanel implements AlcConstants {
+class AlcSubToolBar extends JPanel implements AlcConstants {
 
     private static final int rowHeight = 26;
     private int height = rowHeight;
     private int numberOfRows = 1;
 
     /** Creates a new instance of AlcSubToolBar */
-    public AlcSubToolBar() {
+    AlcSubToolBar() {
 
         // Allow Transparency
         this.setOpaque(false);
@@ -44,19 +44,19 @@ public class AlcSubToolBar extends JPanel implements AlcConstants {
         this.setPreferredSize(new Dimension(Alchemy.window.getWindowSize().width, height));
     }
 
-    protected void setRows(int numberOfRows) {
+    void setRows(int numberOfRows) {
         this.numberOfRows = numberOfRows;
         height = numberOfRows * rowHeight;
         this.setPreferredSize(new Dimension(Alchemy.window.getWindowSize().width, height));
     }
 
-    protected int getLayoutHeight() {
+    int getLayoutHeight() {
         Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
 
         return layoutSize.height;
     }
 
-    protected int getLayoutWidth() {
+    int getLayoutWidth() {
         Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
         // Plus extra to account for padding on the sides
         return layoutSize.width + 20;

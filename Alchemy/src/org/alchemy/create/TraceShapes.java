@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2007 Karl D.D. Willis
+ * Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import foxtrot.*;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import javax.swing.JOptionPane;
-import javax.swing.JSlider;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

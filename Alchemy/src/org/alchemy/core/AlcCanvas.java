@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007 Karl D.D. Willis
+ *  Copyright (c) 2007-2008 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -109,6 +109,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private Image image;
     /** Display the Image or not */
     private boolean imageDisplay = false;
+    /** Position to display the image */
+    private int imageX = 0;
+    private int imageY = 0;
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
@@ -564,7 +567,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     /** Set the current colour */
-    void setColour(Color colour) {
+    public void setColour(Color colour) {
         if (backgroundActive) {
             bgColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
             this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
@@ -720,7 +723,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return this.image;
     }
 
-    /** Check if the canvasImage display is on
+    /** Check if an mage is defined or not
      * 
      * @return Image display on or off
      */
@@ -728,7 +731,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return image == null ? false : true;
     }
 
-    /** Set canvasImage display to on or off
+    /** Set image display to on or off
      * 
      * @param displayFlatImage Image display on or off
      */
@@ -737,8 +740,33 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         canvasImage = renderCanvas(true);
     }
 
-    public boolean isImageEnabled() {
+    /** Check if image display is enabled */
+    public boolean isImageDisplayEnabled() {
         return imageDisplay;
+    }
+
+    /** Set the location for the image to be displayed on the canvas
+     * 
+     * @param x
+     * @param y
+     */
+    public void setImageLocation(int x, int y) {
+        this.imageX = x;
+        this.imageY = y;
+    }
+
+    /** Get the location where the image is displayed on the canvas
+     * 
+     * @return  Point - x & y location
+     */
+    public Point getImageLocation() {
+        return new Point(imageX, imageY);
+    }
+
+    /** Reset the image location back to zero */
+    public void resetImageLocation() {
+        this.imageX = 0;
+        this.imageY = 0;
     }
 
     /** Create an image from the canvas
@@ -1176,7 +1204,7 @@ class VectorCanvas extends JPanel implements AlcConstants {
         }
 
         // Draw buffImage
-        if (Alchemy.canvas.isImageEnabled() && Alchemy.canvas.isImageSet()) {
+        if (Alchemy.canvas.isImageDisplayEnabled() && Alchemy.canvas.isImageSet()) {
             g2.drawImage(Alchemy.canvas.getImage(), 0, 0, null);
         }
 
