@@ -22,6 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -139,6 +140,8 @@ public class Alchemy implements AlcConstants {
     public static void main(String[] args) {
         // Set system look and feel
         try {
+
+            //System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + "lib");
 
             if (PLATFORM == MACOSX) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
