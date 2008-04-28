@@ -18,6 +18,7 @@
  */
 package org.alchemy.affect;
 
+import JMyron.JMyron;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -31,14 +32,18 @@ import org.alchemy.core.*;
  * CameraColour
  * @author Karl D.D. Willis
  */
-public class CameraColour extends AlcModule implements AlcCamInterface {
+public class CameraColour extends AlcModule {
 
-    private AlcCamera cam;
+    private JMyron cam;
+    //private AlcCamera cam;
     private int width = 640;
     private int height = 480;
+    private int refreshRate = 100;
     private BufferedImage cameraImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-    private boolean displayImage = false;
+    private boolean cameraDisplay = false;
     private AlcSubToolBarSection subToolBarSection;
+    private Thread camThread;
+    private boolean threadPaused = true;
 
     public CameraColour() {
 
@@ -46,24 +51,26 @@ public class CameraColour extends AlcModule implements AlcCamInterface {
 
     @Override
     public void setup() {
-        cam = new AlcCamera(this, width, height);
-        cam.start();
-
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
+        setupCamera();
     }
 
     @Override
     public void deselect() {
+        if (cameraDisplay) {
+            setCameraDisplay(false);
+        }
+        //threadPaused = true;
+        camThread = null;
         cam.stop();
         cam = null;
     }
 
     @Override
     public void reselect() {
-        cam = new AlcCamera(this, width, height);
-        cam.start();
         toolBar.addSubToolBarSection(subToolBarSection);
+        setupCamera();
     }
 
     public void createSubToolBarSection() {
@@ -71,37 +78,75 @@ public class CameraColour extends AlcModule implements AlcCamInterface {
 
         // Show Camera
         AlcSubButton cameraButton = new AlcSubButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));
-        cameraButton.setToolTipText("Display the camera image temporarily");
+        cameraButton.setToolTipText("Display the camera image");
 
         cameraButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        displayImage = true;
-                        int x = (canvas.getWidth() - width) >> 1;
-                        int y = (canvas.getHeight() - height) >> 1;
-                        canvas.setImageLocation(x, y);
-                        canvas.setImageDisplay(true);
+                        setCameraDisplay(!cameraDisplay);
+                        System.out.println(cameraDisplay);
                     }
                 });
         subToolBarSection.add(cameraButton);
     }
 
-    public void cameraEvent() {
-        cameraImage.setRGB(0, 0, width, height, cam.pixels, 0, width);
-        if (displayImage) {
-            canvas.setImage(cameraImage);
+    private void setupCamera() {
+        cam = new JMyron();
+        cam.start(width, height);
+        cam.findGlobs(0);
+
+        camThread = new Thread() {
+
+            @Override
+            public void run() {
+
+                try {
+                    while (true) {
+
+                        cam.update();
+                        cameraImage.setRGB(0, 0, width, height, cam.image(), 0, width);
+                        if (cameraDisplay) {
+                            canvas.setImage(cameraImage);
+                            canvas.redraw();
+                        }
+
+                        // Now the thread checks to see if it should suspend itself
+                        if (threadPaused) {
+                            synchronized (this) {
+                                while (threadPaused) {
+                                    wait();
+                                }
+                            }
+                        }
+                        Thread.sleep(refreshRate);  // interval given in milliseconds
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        threadPaused = false;
+        camThread.start();
+    }
+
+    private void setCameraDisplay(boolean b) {
+        cameraDisplay = b;
+        if (b) {
+            int x = (canvas.getWidth() - width) >> 1;
+            int y = (canvas.getHeight() - height) >> 1;
+            canvas.setImageLocation(x, y);
+            canvas.setImageDisplay(true);
+        } else {
+            canvas.setImageDisplay(false);
+            canvas.resetImageLocation();
             canvas.redraw();
         }
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (displayImage) {
-            displayImage = false;
-            canvas.setImageDisplay(false);
-            canvas.resetImageLocation();
-            canvas.redraw();
+        synchronized (camThread) {
+            threadPaused = true;
         }
 
         Point p = e.getPoint();
@@ -115,6 +160,14 @@ public class CameraColour extends AlcModule implements AlcCamInterface {
         if (camBounds.contains(p)) {
             int colour = cameraImage.getRGB(p.x - x, p.y - y);
             canvas.setColour(new Color(colour));
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        synchronized (camThread) {
+            threadPaused = false;
+            camThread.notify();
         }
     }
     }
