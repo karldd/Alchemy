@@ -272,16 +272,24 @@
         <!-- Copy the manual into the dist directory -->
         <copy file="${basedir}/Alchemy.pdf" todir="${dist.dir}"/>
         
-        <!-- JMyron -->
-        <copy file="${basedir}/libJMyron.jnilib" todir="${dist.dir}"/>
-        <copy file="${basedir}/JMyron.dll" todir="${dist.dir}"/>
-                
+    
         <!-- MAC STUFF 
              Not inlcuded in the distribution jar
-             but put in the Mac Alchemy.app -->
-        <!-- Copy the Quaqua libraries for more mac looking interface support -->
-        <copy file="${basedir}/libquaqua.jnilib" todir="${dist.dir}"/>
+             but put in the Mac Alchemy.app 
+             
+        Copy the Quaqua libraries for more mac looking interface support -->
+        <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
+        <!-- JMyron -->
+        <copy file="${basedir}/lib/libJMyron.jnilib" todir="${dist.dir}/lib"/>
+        
+        
+        <!-- PC STUFF -->
+        
+        <!-- JMyron -->
+        <copy file="${basedir}/lib/JMyron.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/DSVL.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/myron_ezcam.dll" todir="${dist.dir}/lib"/>
         
         
     </target>	
