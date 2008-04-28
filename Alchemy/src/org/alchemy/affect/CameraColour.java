@@ -18,7 +18,6 @@
  */
 package org.alchemy.affect;
 
-import JMyron.JMyron;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -36,11 +35,15 @@ public class CameraColour extends AlcModule implements AlcConstants {
 
     static {
         if (Alchemy.PLATFORM == WINDOWS) {
-            System.loadLibrary("dsvl");
+            // These two libraries are required by DSVL
+            System.loadLibrary("MSVCP71");
+            System.loadLibrary("msvcr71");
+            // Require by JMyron
+            System.loadLibrary("DSVL");
             System.loadLibrary("myron_ezcam");
         }
     }
-    private JMyron cam;
+    private JMyron.JMyron cam;
     //private AlcCamera cam;
     private int width = 640;
     private int height = 480;
@@ -100,7 +103,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
     }
 
     private void setupCamera() {
-        cam = new JMyron();
+        cam = new JMyron.JMyron();
         cam.start(width, height);
         cam.findGlobs(0);
 
