@@ -290,6 +290,8 @@
         <copy file="${basedir}/lib/JMyron.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/DSVL.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/myron_ezcam.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/MSVCP71.DLL" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/msvcr71.dll" todir="${dist.dir}/lib"/>
         
         
     </target>	
