@@ -32,8 +32,14 @@ import org.alchemy.core.*;
  * CameraColour
  * @author Karl D.D. Willis
  */
-public class CameraColour extends AlcModule {
+public class CameraColour extends AlcModule implements AlcConstants {
 
+    static {
+        if (Alchemy.PLATFORM == WINDOWS) {
+            System.loadLibrary("dsvl");
+            System.loadLibrary("myron_ezcam");
+        }
+    }
     private JMyron cam;
     //private AlcCamera cam;
     private int width = 640;
@@ -61,10 +67,13 @@ public class CameraColour extends AlcModule {
         if (cameraDisplay) {
             setCameraDisplay(false);
         }
-        //threadPaused = true;
-        camThread = null;
+        synchronized (camThread) {
+            threadPaused = true;
+        }
         cam.stop();
         cam = null;
+        camThread = null;
+
     }
 
     @Override
@@ -77,7 +86,7 @@ public class CameraColour extends AlcModule {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Show Camera
-        AlcSubButton cameraButton = new AlcSubButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));
+        AlcSubToggleButton cameraButton = new AlcSubToggleButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));
         cameraButton.setToolTipText("Display the camera image");
 
         cameraButton.addActionListener(
@@ -85,7 +94,6 @@ public class CameraColour extends AlcModule {
 
                     public void actionPerformed(ActionEvent e) {
                         setCameraDisplay(!cameraDisplay);
-                        System.out.println(cameraDisplay);
                     }
                 });
         subToolBarSection.add(cameraButton);
@@ -103,13 +111,14 @@ public class CameraColour extends AlcModule {
 
                 try {
                     while (true) {
-
+                        //if (cam != null) {
                         cam.update();
                         cameraImage.setRGB(0, 0, width, height, cam.image(), 0, width);
                         if (cameraDisplay) {
                             canvas.setImage(cameraImage);
                             canvas.redraw();
                         }
+                        //}
 
                         // Now the thread checks to see if it should suspend itself
                         if (threadPaused) {
@@ -159,6 +168,12 @@ public class CameraColour extends AlcModule {
         // If the mouse point is inside the centred image then set the colour
         if (camBounds.contains(p)) {
             int colour = cameraImage.getRGB(p.x - x, p.y - y);
+            for (int i = 0; i < canvas.createShapes.size(); i++) {
+                canvas.createShapes.get(i).setColour(new Color(colour));
+            }
+            for (int j = 0; j < canvas.affectShapes.size(); j++) {
+                canvas.affectShapes.get(j).setColour(new Color(colour));
+            }
             canvas.setColour(new Color(colour));
         }
     }
