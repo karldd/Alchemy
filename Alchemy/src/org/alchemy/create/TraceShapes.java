@@ -120,16 +120,16 @@ public class TraceShapes extends AlcModule implements AlcConstants {
             }
         } else {
             // Tell the user that there was a problem loading the image
-            String exitTitle, exitMessage;
+            String exitTitle = "Error connecting";
+            String exitMessage = "Please check your internet connection";
             if (Alchemy.PLATFORM == MACOSX) {
-                exitTitle = "";
                 exitMessage =
                         "<html>" + UIManager.get("OptionPane.css") +
-                        "<b>" + "Error connecting" + "</b>" +
-                        "<p>" + "Please check your internet connection";
+                        "<b>" + exitTitle + "</b>" +
+                        "<p>" + exitMessage;
+                exitTitle = "";
             } else {
-                exitTitle = "Error connecting";
-                exitMessage = "Please check your internet connection";
+
             }
 
             JOptionPane.showConfirmDialog(

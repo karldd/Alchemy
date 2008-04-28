@@ -34,9 +34,9 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
 
     public AlcSubSlider(String name, int minValue, int maxValue, int startValue) {
 
-        // TODO - Fix layout slider & X-Shapes
+        // TODO - Check this spacing on Win
         // Top Left Bottom Right
-        //this.setBorder(BorderFactory.createEmptyBorder(1, 3, 0, 2));
+        this.setBorder(BorderFactory.createEmptyBorder(1, 2, 0, 2));
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         slider = new AlcSliderCustom(minValue, maxValue, startValue);
@@ -44,7 +44,7 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
 
         JLabel label = new JLabel(name);
         label.setFont(AlcToolBar.subToolBarFont);
-        //label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
+        label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
         this.add(label);
     }
 

@@ -842,7 +842,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     /** Refreshes the colours of the Foreground/Background button */
     void refreshSwapButton() {
         Color colour = Alchemy.canvas.getForegroundColour();
-        System.out.println("Called");
         // Make sure there is no transparency
         //Color fullColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 255);
         Color bgColour = Alchemy.canvas.getBgColour();

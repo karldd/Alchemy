@@ -576,7 +576,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         } else {
             this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
         }
-        // TODO - Fix the colour updating here
+
         if (Alchemy.preferences.paletteAttached) {
             Alchemy.toolBar.refreshSwapButton();
         } else {
@@ -1045,9 +1045,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mousePressed(MouseEvent event) {
-        // Turn off the toolbar on canvas click
-        // TODO - Hide the toolbar based on where the click takes place
-        //Alchemy.toolBar.setToolBarVisible(false);
+        // Hide the toolbar when clicking on the canvas
+        if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
+            Alchemy.toolBar.setToolBarVisible(false);
+        }
 
         if (mouseEvents) {
             // Pass to the current create module
