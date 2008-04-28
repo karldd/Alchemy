@@ -79,6 +79,7 @@
         <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/> 
         <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/> 
+        <unjar src="${file.reference.JMyron.jar}" dest="${build.classes.dir}"/> 
     </target> 
     
     
@@ -197,8 +198,8 @@
             </fileset>
         </copy>
         <!-- Camera Colour -->
-        <copy todir="${basedir}/modules/cameraColour/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
+        <copy todir="${basedir}/modules/cameraColour/org/alchemy/affect">
+            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
                 <contains text="CameraColour" casesensitive="no"/>
             </fileset>
         </copy>
@@ -271,11 +272,15 @@
         <!-- Copy the manual into the dist directory -->
         <copy file="${basedir}/Alchemy.pdf" todir="${dist.dir}"/>
         
+        <!-- JMyron -->
+        <copy file="${basedir}/libJMyron.jnilib" todir="${dist.dir}"/>
+        <copy file="${basedir}/JMyron.dll" todir="${dist.dir}"/>
+                
         <!-- MAC STUFF 
              Not inlcuded in the distribution jar
              but put in the Mac Alchemy.app -->
         <!-- Copy the Quaqua libraries for more mac looking interface support -->
-        <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}"/>
+        <copy file="${basedir}/libquaqua.jnilib" todir="${dist.dir}"/>
         <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
         
         
