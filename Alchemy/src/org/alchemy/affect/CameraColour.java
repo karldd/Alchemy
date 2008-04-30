@@ -65,14 +65,8 @@ public class CameraColour extends AlcModule implements AlcConstants {
     public void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
-        try {
-            cam = new JMyron.JMyron();
-            setupCamera();
-        } catch (Exception e) {
-            // No Camera Found
-            AlcUtil.showConfirmDialog("No Camera Found", "Please check that your camera is attached and try again.");
-            return;
-        }
+        cam = new JMyron.JMyron();
+        setupCamera();
 
         if (cam != null) {
             camThread = new Thread() {
@@ -152,8 +146,16 @@ public class CameraColour extends AlcModule implements AlcConstants {
 
     private void setupCamera() {
         cameraImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        cam.start(width, height);
-        cam.findGlobs(0);
+        try {
+            cam.start(width, height);
+            cam.findGlobs(0);
+        } catch (Exception e) {
+            // No Camera Found
+            // It seems it never makes it this far due to a hard JVM crash
+            AlcUtil.showConfirmDialog("No Camera Found", "Please check that your camera is attached and try again.");
+            return;
+        }
+
     }
 
     private void startThread() {
