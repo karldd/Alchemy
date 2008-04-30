@@ -25,7 +25,6 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.MissingResourceException;
 import javax.swing.*;
 import javax.swing.JTextField;
 import javax.swing.JTextField;
@@ -322,7 +321,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
             bundleTitle = Alchemy.bundle.getString(title);
             // Get the english string to store as a reference - the two may or may not be the same
             bundleTitleEn = Alchemy.bundleEn.getString(title);
-        } catch (MissingResourceException e) {
+        } catch (Exception e) {
             bundleTitle = title;
             bundleTitleEn = title;
         }

@@ -411,11 +411,18 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                         Alchemy.plugins.setCurrentCreate(createMenuItem.getIndex());
                     }
 
-                    Point loc = createMenuItem.getLocation();
-                    //Rectangle butLoc = createButton.getBounds();
-                    int heightFromWindow = loc.y + 50;
-                    //System.out.println(loc + " " + heightFromWindow);
-                    toggleToolBar(heightFromWindow, true);
+
+                    // When triggered by a key toggle the check box
+                    if (!e.getSource().getClass().getName().endsWith("AlcRadioButtonMenuItem")) {
+                        createMenuItem.setSelected(!createMenuItem.isSelected());
+
+                    } else {
+                        Point loc = createMenuItem.getLocation();
+                        //Rectangle butLoc = createButton.getBounds();
+                        int heightFromWindow = loc.y + 50;
+                        //System.out.println(loc + " " + heightFromWindow);
+                        toggleToolBar(heightFromWindow, true);
+                    }
                 }
             };
 
@@ -433,15 +440,14 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             if (i < 10) {
                 Alchemy.shortcuts.setShortcut(createMenuItem, zero + i, currentModule.getName(), createMenuItemAction);
             } else if (i == 10) {
-                // TODO - Check the last create module shortcut
-                Alchemy.shortcuts.setShortcut(createMenuItem, KeyEvent.VK_0, currentModule.getName(), createMenuItemAction);
+                // For some reason 'KeyEvent.VK_0' doesnt work here, using '0x30' instead
+                Alchemy.shortcuts.setShortcut(createMenuItem, 0x30, currentModule.getName(), createMenuItemAction);
             }
 
         }
 
         toolBar.add(createButton);
 
-        // TODO - Implement Affect module shortcuts
 
         //////////////////////////////////////////////////////////////
         // AFFECT
@@ -452,32 +458,67 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 // The current module
                 AlcModule currentModule = Alchemy.plugins.affects[i];
 
-                AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem(currentModule);
-                affectMenuItem.setToolTipText(currentModule.getDescription());
-                affectMenuItem.addItemListener(
-                        new ItemListener() {
+                final AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem();
 
-                            public void itemStateChanged(ItemEvent e) {
+                AbstractAction affectMenuItemAction = new AbstractAction() {
 
-                                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
+                    public void actionPerformed(ActionEvent e) {
 
-                                // SELECTED
-                                if (e.getStateChange() == ItemEvent.SELECTED) {
-                                    Alchemy.plugins.addAffect(source.getIndex());
+                        if (!e.getSource().getClass().getName().endsWith("AlcCheckBoxMenuItem")) {
+                            affectMenuItem.setSelected(!affectMenuItem.isSelected());
+                        }
 
-                                // DESELECTED
-                                } else {
-                                    Alchemy.plugins.removeAffect(source.getIndex());
-                                    // Index is offset to allow for the create module to always be first
-                                    removeSubToolBarSection(source.getIndex() + 1);
-                                }
-                                Point loc = source.getLocation();
-                                int heightFromWindow = loc.y + 50;
-                                toggleToolBar(heightFromWindow, true);
-                            }
-                        });
+                        // SELECTED
+                        if (affectMenuItem.isSelected()) {
+                            Alchemy.plugins.addAffect(affectMenuItem.getIndex());
+
+                        // DESELECTED
+                        } else {
+                            Alchemy.plugins.removeAffect(affectMenuItem.getIndex());
+                            // Index is offset to allow for the create module to always be first
+                            removeSubToolBarSection(affectMenuItem.getIndex() + 1);
+                        }
+
+                        // When triggered by a key toggle the check box
+                        if (e.getSource().getClass().getName().endsWith("AlcCheckBoxMenuItem")) {
+                            Point loc = affectMenuItem.getLocation();
+                            int heightFromWindow = loc.y + 50;
+                            toggleToolBar(heightFromWindow, true);
+                        }
+                    }
+                };
+
+                affectMenuItem.setAction(affectMenuItemAction);
+                affectMenuItem.setup(currentModule);
+
+//                affectMenuItem.setToolTipText(currentModule.getDescription());
+//                affectMenuItem.addItemListener(
+//                        new ItemListener() {
+//
+//                            public void itemStateChanged(ItemEvent e) {
+//
+//                                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
+//
+//                                // SELECTED
+//                                if (e.getStateChange() == ItemEvent.SELECTED) {
+//                                    Alchemy.plugins.addAffect(source.getIndex());
+//
+//                                // DESELECTED
+//                                } else {
+//                                    Alchemy.plugins.removeAffect(source.getIndex());
+//                                    // Index is offset to allow for the create module to always be first
+//                                    removeSubToolBarSection(source.getIndex() + 1);
+//                                }
+//                                Point loc = source.getLocation();
+//                                int heightFromWindow = loc.y + 50;
+//                                toggleToolBar(heightFromWindow, true);
+//                            }
+//                        });
 
                 affectButton.addItem(affectMenuItem);
+                if (i < 10) {
+                    Alchemy.shortcuts.setShortcut(affectMenuItem, zero + i, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                }
             }
             toolBar.add(affectButton);
         }
@@ -492,21 +533,33 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
 
         JPanel topAlign = new JPanel();
-        topAlign.setOpaque(false);
-        topAlign.setLayout(new BoxLayout(topAlign, BoxLayout.PAGE_AXIS));
+        topAlign.setOpaque(
+                false);
+        topAlign.setLayout(
+                new BoxLayout(topAlign, BoxLayout.PAGE_AXIS));
 
         detachButton = new JButton(AlcUtil.getImageIcon("palette-detach.png"));
+
         detachButton.setRolloverIcon(AlcUtil.getImageIcon("palette-detach-over.png"));
-        detachButton.setToolTipText("Detach the toolbar to a seperate palette");
+        detachButton.setToolTipText(
+                "Detach the toolbar to a seperate palette");
 
         // Compensate for the windows border
+
+
+
+
+
         if (Alchemy.PLATFORM == MACOSX) {
             detachButton.setMargin(new Insets(2, 0, 0, 2));
         } else {
             detachButton.setMargin(new Insets(2, 0, 0, 7));
         }
+
         detachButton.setBorderPainted(false);
+
         detachButton.setContentAreaFilled(false);
+
         detachButton.setFocusPainted(false);
 
         detachButton.addActionListener(
@@ -525,9 +578,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         return toolBarGroup;
     }
 
-    //////////////////////////////////////////////////////////////
-    // TOOLBAR
-    //////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// TOOLBAR
+//////////////////////////////////////////////////////////////
     void resizeToolBar() {
         Dimension toolBarWindowSize = new Dimension(this.windowSize.width, totalHeight);
         resizeToolBar(toolBarWindowSize);
@@ -565,7 +618,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         if (y < 10) {
             // Show the toolbar
             setToolBarVisible(true);
-            insideToolBar = true;
+            insideToolBar =
+                    true;
 
         } else if (y > getTotalHeight() + 5) {
             // If rolling out of a popup menu set the toolbar to dissapear with a timer
@@ -578,21 +632,25 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 if (!toolBarKeyedOn) {
                     setToolBarVisible(false);
                 }
+
             }
             insideToolBar = false;
 
         // Inside the middle of the toolbar
         } else {
             insideToolBar = true;
-            toolBarKeyedOn = false;
+            toolBarKeyedOn =
+                    false;
         }
+
     }
 
     /** Set the visibility of the UI Toolbar */
     void setToolBarVisible(boolean visible) {
         if (visible != toolBarVisible) {
             this.setVisible(visible);
-            toolBarVisible = visible;
+            toolBarVisible =
+                    visible;
             Alchemy.canvas.setMouseEvents(!visible);
             if (!visible) {
                 // Be sure to set the cursor back to the cross hair
@@ -604,12 +662,15 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 if (affectButton != null) {
                     affectButton.hidePopup();
                 }
+
             } else {
                 // Update the colours of the fg/bg button if they have changed
                 if (updateSwapButton) {
                     refreshSwapButton();
-                    updateSwapButton = false;
+                    updateSwapButton =
+                            false;
                 }
+
             }
         }
     }
@@ -631,10 +692,12 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         if (subToolBar.isVisible()) {
             newTotalHeight += subToolBar.getHeight();
         }
+
         if (Alchemy.PLATFORM != MACOSX) {
             // Add the height of the menubar if this is not a mac
             newTotalHeight += Alchemy.menuBar.getHeight();
         }
+
         this.totalHeight = newTotalHeight;
     }
 
@@ -643,14 +706,15 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         return totalHeight;
     }
 
-    //////////////////////////////////////////////////////////////
-    // SUBTOOLBAR
-    //////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// SUBTOOLBAR
+//////////////////////////////////////////////////////////////
     private AlcSubToolBar loadSubToolBar() {
         // Initialise the references to the sub toolbar sections
         affectSubToolBarSections = new AlcSubToolBarSection[Alchemy.plugins.getNumberOfAffectModules()];
         // Set to a negative value to indicate no initially loaded sections
-        createSubToolBarSection = null;
+        createSubToolBarSection =
+                null;
 
         // Add the SubToolBar
         AlcSubToolBar toolBar = new AlcSubToolBar();
@@ -694,7 +758,10 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             if (affectSubToolBarSections[offsetIndex] != null) {
                 affectSubToolBarSections[offsetIndex] = null;
                 currentSubToolBarSections--;
+
             }
+
+
         }
         // Refresh the sub toolbar
         refreshSubToolBar();
@@ -709,8 +776,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
             subToolBar.add(createSubToolBarSection);
         }
-        // Add the affect sections
-        for (int i = 0; i < affectSubToolBarSections.length; i++) {
+// Add the affect sections
+        for (int i = 0; i <
+                affectSubToolBarSections.length; i++) {
 
             if (affectSubToolBarSections[i] != null) {
 
@@ -718,9 +786,10 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 if ((subToolBar.getComponentCount() % 2) != 0) {
                     subToolBar.add(new AlcSubSeparator());
                 }
-                // Then add the section
+// Then add the section
                 subToolBar.add(affectSubToolBarSections[i]);
             }
+
         }
 
         if (currentSubToolBarSections > 0) {
@@ -747,15 +816,16 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             if (!Alchemy.preferences.paletteAttached) {
                 subToolBar.setVisible(false);
             }
+
         }
         subToolBar.revalidate();
         subToolBar.repaint();
         refreshToolBar();
     }
 
-    //////////////////////////////////////////////////////////////
-    // POPUP MENUS
-    //////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// POPUP MENUS
+//////////////////////////////////////////////////////////////
     /** Check if any of the popup menus are visible */
     boolean isPopupMenusVisible() {
 
@@ -763,15 +833,16 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             return true;
         }
 
-        //if (createButton != null) {
+//if (createButton != null) {
         if (createButton.isPopupVisible()) {
             return true;
         }
-        //}
+//}
         if (affectButton != null) {
             if (affectButton.isPopupVisible()) {
                 return true;
             }
+
         }
         return false;
     }
@@ -787,19 +858,25 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                             if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");
                                 setToolBarVisible(false);
-                                insideToolBar = false;
+                                insideToolBar =
+                                        false;
                             }
+
                         } else {
                             setToolBarVisible(false);
-                            insideToolBar = false;
+                            insideToolBar =
+                                    false;
                         }
+
                     }
                     toolBarTimer.stop();
-                    toolBarTimer = null;
+                    toolBarTimer =
+                            null;
                 }
             });
             toolBarTimer.start();
         }
+
     }
 
 
@@ -811,6 +888,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         if (!subToolBar.isVisible()) {
             subToolBar.setVisible(true);
         }
+
         this.setToolBarVisible(false);
         this.remove(toolBars);
         this.remove(Alchemy.menuBar);
@@ -822,10 +900,12 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             Alchemy.window.setJMenuBar(null);
             this.add("North", Alchemy.menuBar);
         }
+
         if (currentSubToolBarSections < 1) {
             subToolBar.setVisible(false);
             System.out.println("SET FALSE");
         }
+
         this.add("South", toolBars);
         this.calculateTotalHeight();
         this.detachButton.setVisible(true);
@@ -836,9 +916,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         this.requestFocus();
     }
 
-    //////////////////////////////////////////////////////////////
-    // UTLITY
-    //////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// UTLITY
+//////////////////////////////////////////////////////////////
     /** Get a string from the resource bundle */
     private String getS(String stringName) {
         return Alchemy.bundle.getString(stringName);
@@ -871,7 +951,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         fgbgButton.setIcon(new ImageIcon(swap));
 
         BufferedImage swapOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
-        g = swapOn.createGraphics();
+        g =
+                swapOn.createGraphics();
 
         g.setColor(colour);
         g.fillRect(0, 0, 18, 18);

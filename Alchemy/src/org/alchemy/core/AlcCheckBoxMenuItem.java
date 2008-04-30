@@ -30,6 +30,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     private int index;
     private int moduleType = -1;
     private static int checkX;
+    private String toolTip;
 
     static {
         if (Alchemy.PLATFORM == MACOSX) {
@@ -54,11 +55,13 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
         setup(title, accelerator);
     }
 
-    AlcCheckBoxMenuItem(AlcModule module) {
+    void setup(AlcModule module) {
 
         setup(module.getName(), -1);
         this.index = module.getIndex();
         this.moduleType = module.getModuleType();
+        this.toolTip = module.getDescription();
+        this.setToolTipText(toolTip);
 
         // Set the intial state to false
         //this.setState(true);
@@ -111,6 +114,10 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     }
 
     public void refreshShortcut(int key, int modifier) {
-        this.setAccelerator(KeyStroke.getKeyStroke(key, modifier));
+        if (moduleType < 0) {
+            this.setAccelerator(KeyStroke.getKeyStroke(key, modifier));
+        } else {
+            this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
+        }
     }
 }
