@@ -106,7 +106,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** An image of the canvas drawn behind active shapes */
     private BufferedImage canvasImage;
     /** Image than can be drawn on the canvas */
-    private Image image;
+    private BufferedImage image;
     /** Display the Image or not */
     private boolean imageDisplay = false;
     /** Position to display the image */
@@ -717,7 +717,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * 
      * @param buffImage Image to be drawn
      */
-    public void setImage(Image image) {
+    public void setImage(BufferedImage image) {
         this.image = image;
         canvasImage = renderCanvas(true);
     }
