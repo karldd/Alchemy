@@ -36,8 +36,8 @@ public class CameraColour extends AlcModule implements AlcConstants {
     static {
         if (Alchemy.PLATFORM == WINDOWS) {
             // These two libraries are required by DSVL
-            System.loadLibrary("MSVCP71");
             System.loadLibrary("msvcr71");
+            System.loadLibrary("MSVCP71");
             // Require by JMyron
             System.loadLibrary("DSVL");
             System.loadLibrary("myron_ezcam");
@@ -48,7 +48,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
     private int width = 640;
     private int height = 480;
     private int refreshRate = 100;
-    private BufferedImage cameraImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    private BufferedImage cameraImage;
     private boolean cameraDisplay = false;
     private AlcSubToolBarSection subToolBarSection;
     private Thread camThread;
@@ -62,7 +62,41 @@ public class CameraColour extends AlcModule implements AlcConstants {
     public void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
+
+        cam = new JMyron.JMyron();
         setupCamera();
+
+        camThread = new Thread() {
+
+            @Override
+            public void run() {
+
+                try {
+                    while (true) {
+                        cam.update();
+                        cameraImage.setRGB(0, 0, width, height, cam.image(), 0, width);
+                        if (cameraDisplay) {
+                            canvas.setImage(cameraImage);
+                            canvas.redraw();
+                        }
+
+                        // Now the thread checks to see if it should suspend itself
+                        if (threadPaused) {
+                            synchronized (this) {
+                                while (threadPaused) {
+                                    wait();
+                                }
+                            }
+                        }
+                        Thread.sleep(refreshRate);  // interval given in milliseconds
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+        threadPaused = false;
+        camThread.start();
+        //startThread();
     }
 
     @Override
@@ -70,19 +104,18 @@ public class CameraColour extends AlcModule implements AlcConstants {
         if (cameraDisplay) {
             setCameraDisplay(false);
         }
-        synchronized (camThread) {
-            threadPaused = true;
-        }
+        // Keep the thread and camera object
+        pauseThread();
         cam.stop();
-        cam = null;
-        camThread = null;
-
+        cameraImage = null;
     }
 
     @Override
     public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
+        cameraImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         setupCamera();
+        startThread();
     }
 
     public void createSubToolBarSection() {
@@ -103,42 +136,22 @@ public class CameraColour extends AlcModule implements AlcConstants {
     }
 
     private void setupCamera() {
-        cam = new JMyron.JMyron();
+        cameraImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         cam.start(width, height);
         cam.findGlobs(0);
+    }
 
-        camThread = new Thread() {
+    private void startThread() {
+        synchronized (camThread) {
+            threadPaused = false;
+            camThread.notify();
+        }
+    }
 
-            @Override
-            public void run() {
-
-                try {
-                    while (true) {
-                        //if (cam != null) {
-                        cam.update();
-                        cameraImage.setRGB(0, 0, width, height, cam.image(), 0, width);
-                        if (cameraDisplay) {
-                            canvas.setImage(cameraImage);
-                            canvas.redraw();
-                        }
-                        //}
-
-                        // Now the thread checks to see if it should suspend itself
-                        if (threadPaused) {
-                            synchronized (this) {
-                                while (threadPaused) {
-                                    wait();
-                                }
-                            }
-                        }
-                        Thread.sleep(refreshRate);  // interval given in milliseconds
-                    }
-                } catch (InterruptedException e) {
-                }
-            }
-        };
-        threadPaused = false;
-        camThread.start();
+    private void pauseThread() {
+        synchronized (camThread) {
+            threadPaused = true;
+        }
     }
 
     private void setCameraDisplay(boolean b) {
@@ -157,9 +170,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        synchronized (camThread) {
-            threadPaused = true;
-        }
+        pauseThread();
 
         Point p = e.getPoint();
 
@@ -183,9 +194,6 @@ public class CameraColour extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        synchronized (camThread) {
-            threadPaused = false;
-            camThread.notify();
-        }
+        startThread();
     }
     }
