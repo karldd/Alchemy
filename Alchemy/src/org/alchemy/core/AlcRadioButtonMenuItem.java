@@ -29,11 +29,12 @@ import javax.swing.JRadioButtonMenuItem;
 //import javax.swing.plaf.basic.BasicMenuItemUI;
 import javax.swing.KeyStroke;
 
-class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstants {
+class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcutInterface, AlcConstants {
 
     private int index;
     private int moduleType = -1;
     private static int checkX;
+    private String toolTip;
 
     static {
         if (Alchemy.PLATFORM == MACOSX) {
@@ -48,6 +49,9 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstant
     Ellipse2D.Double menuCircle = new Ellipse2D.Double(checkX, 9, 8, 8);
     Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(checkX + 1, 10, 6, 6);
 
+    AlcRadioButtonMenuItem() {
+    }
+
     AlcRadioButtonMenuItem(int index, String title) {
         setup(index, title);
 
@@ -58,14 +62,13 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstant
         if (accelerator > 0) {
             this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));
         }
-
     }
 
-    AlcRadioButtonMenuItem(AlcModule module) {
-
+    void setup(AlcModule module) {
         setup(module.getIndex(), module.getName());
         this.moduleType = module.getModuleType();
-
+        this.toolTip = module.getDescription();
+        this.setToolTipText(toolTip);
         // Set the intial state to false
         //this.setState(true);
 
@@ -125,5 +128,9 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcConstant
                 g2.fill(menuInnerCircle);
             }
         }
+    }
+
+    public void refreshShortcut(int key, int modifier) {
+        this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
     }
 }

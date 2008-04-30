@@ -34,23 +34,26 @@ import org.alchemy.core.*;
 public class CameraColour extends AlcModule implements AlcConstants {
 
     static {
+        // Native Libraries for Windows must be loaded individually
+        // so we don't have to put them int he system folder
+        // They must be loaded in this order due to dependancy
         if (Alchemy.PLATFORM == WINDOWS) {
             // These two libraries are required by DSVL
             System.loadLibrary("msvcr71");
             System.loadLibrary("MSVCP71");
-            // Require by JMyron
+            // Required by JMyron
             System.loadLibrary("DSVL");
             System.loadLibrary("myron_ezcam");
         }
     }
     private JMyron.JMyron cam;
-    //private AlcCamera cam;
     private int width = 640;
     private int height = 480;
     private int refreshRate = 100;
     private BufferedImage cameraImage;
     private boolean cameraDisplay = false;
     private AlcSubToolBarSection subToolBarSection;
+    private AlcSubToggleButton cameraButton;
     private Thread camThread;
     private boolean threadPaused = true;
 
@@ -96,13 +99,14 @@ public class CameraColour extends AlcModule implements AlcConstants {
         };
         threadPaused = false;
         camThread.start();
-        //startThread();
+    //startThread();
     }
 
     @Override
     public void deselect() {
         if (cameraDisplay) {
             setCameraDisplay(false);
+            cameraButton.setSelected(false);
         }
         // Keep the thread and camera object
         pauseThread();
@@ -122,7 +126,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
         subToolBarSection = new AlcSubToolBarSection(this);
 
         // Show Camera
-        AlcSubToggleButton cameraButton = new AlcSubToggleButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));
+        cameraButton = new AlcSubToggleButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));
         cameraButton.setToolTipText("Display the camera image");
 
         cameraButton.addActionListener(
