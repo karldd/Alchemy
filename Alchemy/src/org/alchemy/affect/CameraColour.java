@@ -65,41 +65,47 @@ public class CameraColour extends AlcModule implements AlcConstants {
     public void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
+        try {
+            cam = new JMyron.JMyron();
+            setupCamera();
+        } catch (Exception e) {
+            // No Camera Found
+            AlcUtil.showConfirmDialog("No Camera Found", "Please check that your camera is attached and try again.");
+            return;
+        }
 
-        cam = new JMyron.JMyron();
-        setupCamera();
+        if (cam != null) {
+            camThread = new Thread() {
 
-        camThread = new Thread() {
+                @Override
+                public void run() {
 
-            @Override
-            public void run() {
+                    try {
+                        while (true) {
+                            cam.update();
+                            cameraImage.setRGB(0, 0, width, height, cam.image(), 0, width);
+                            if (cameraDisplay) {
+                                canvas.setImage(cameraImage);
+                                canvas.redraw();
+                            }
 
-                try {
-                    while (true) {
-                        cam.update();
-                        cameraImage.setRGB(0, 0, width, height, cam.image(), 0, width);
-                        if (cameraDisplay) {
-                            canvas.setImage(cameraImage);
-                            canvas.redraw();
-                        }
-
-                        // Now the thread checks to see if it should suspend itself
-                        if (threadPaused) {
-                            synchronized (this) {
-                                while (threadPaused) {
-                                    wait();
+                            // Now the thread checks to see if it should suspend itself
+                            if (threadPaused) {
+                                synchronized (this) {
+                                    while (threadPaused) {
+                                        wait();
+                                    }
                                 }
                             }
+                            Thread.sleep(refreshRate);  // interval given in milliseconds
                         }
-                        Thread.sleep(refreshRate);  // interval given in milliseconds
+                    } catch (InterruptedException e) {
                     }
-                } catch (InterruptedException e) {
                 }
-            }
-        };
-        threadPaused = false;
-        camThread.start();
-    //startThread();
+            };
+            threadPaused = false;
+            camThread.start();
+        }
     }
 
     @Override
@@ -110,16 +116,21 @@ public class CameraColour extends AlcModule implements AlcConstants {
         }
         // Keep the thread and camera object
         pauseThread();
-        cam.stop();
+        if (cam != null) {
+            cam.stop();
+        }
         cameraImage = null;
     }
 
     @Override
     public void reselect() {
-        toolBar.addSubToolBarSection(subToolBarSection);
-        cameraImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        setupCamera();
-        startThread();
+        if (cam != null) {
+            toolBar.addSubToolBarSection(subToolBarSection);
+            setupCamera();
+            startThread();
+        } else {
+            setup();
+        }
     }
 
     public void createSubToolBarSection() {
@@ -146,29 +157,35 @@ public class CameraColour extends AlcModule implements AlcConstants {
     }
 
     private void startThread() {
-        synchronized (camThread) {
-            threadPaused = false;
-            camThread.notify();
+        if (camThread != null) {
+            synchronized (camThread) {
+                threadPaused = false;
+                camThread.notify();
+            }
         }
     }
 
     private void pauseThread() {
-        synchronized (camThread) {
-            threadPaused = true;
+        if (camThread != null) {
+            synchronized (camThread) {
+                threadPaused = true;
+            }
         }
     }
 
     private void setCameraDisplay(boolean b) {
-        cameraDisplay = b;
-        if (b) {
-            int x = (canvas.getWidth() - width) >> 1;
-            int y = (canvas.getHeight() - height) >> 1;
-            canvas.setImageLocation(x, y);
-            canvas.setImageDisplay(true);
-        } else {
-            canvas.setImageDisplay(false);
-            canvas.resetImageLocation();
-            canvas.redraw();
+        if (cam != null) {
+            cameraDisplay = b;
+            if (b) {
+                int x = (canvas.getWidth() - width) >> 1;
+                int y = (canvas.getHeight() - height) >> 1;
+                canvas.setImageLocation(x, y);
+                canvas.setImageDisplay(true);
+            } else {
+                canvas.setImageDisplay(false);
+                canvas.resetImageLocation();
+                canvas.redraw();
+            }
         }
     }
 
@@ -183,8 +200,10 @@ public class CameraColour extends AlcModule implements AlcConstants {
         int y = (canvas.getHeight() - height) >> 1;
         Rectangle camBounds = new Rectangle(x, y, width, height);
 
-        // If the mouse point is inside the centred image then set the colour
-        if (camBounds.contains(p)) {
+        // If the mouse point is inside the centred image 
+        // and the image is not null
+        // then set the colour
+        if (camBounds.contains(p) && cameraImage != null) {
             int colour = cameraImage.getRGB(p.x - x, p.y - y);
             for (int i = 0; i < canvas.createShapes.size(); i++) {
                 canvas.createShapes.get(i).setColour(new Color(colour));

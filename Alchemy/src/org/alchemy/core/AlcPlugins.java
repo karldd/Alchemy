@@ -163,7 +163,7 @@ class AlcPlugins implements AlcConstants {
             creates = addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
         } else {
             // Tell the user that there must be at least one create module loaded
-            AlcUtil.showConfirmDialog("noCreateModulesDialogTitle", "noCreateModulesDialogMessage");
+            AlcUtil.showConfirmDialog("noCreateModulesDialogTitle", "noCreateModulesDialogMessage", Alchemy.bundle);
             System.exit(0);
         }
     }
@@ -305,7 +305,6 @@ class AlcPlugins implements AlcConstants {
             creates[i].setLoaded(true);
             creates[i].setup();
         }
-
     }
 
     /** Add an affect to the current affect array to be processed
@@ -321,9 +320,7 @@ class AlcPlugins implements AlcConstants {
         } else {
             affects[i].setLoaded(true);
             affects[i].setup();
-
         }
-
     }
 
     /** Remove an affect from the current affect array

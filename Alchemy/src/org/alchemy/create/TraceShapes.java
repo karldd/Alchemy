@@ -27,8 +27,6 @@ import java.awt.image.BufferedImage;
 import foxtrot.*;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -120,24 +118,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
             }
         } else {
             // Tell the user that there was a problem loading the image
-            String exitTitle = "Error connecting";
-            String exitMessage = "Please check your internet connection";
-            if (Alchemy.PLATFORM == MACOSX) {
-                exitMessage =
-                        "<html>" + UIManager.get("OptionPane.css") +
-                        "<b>" + exitTitle + "</b>" +
-                        "<p>" + exitMessage;
-                exitTitle = "";
-            } else {
-
-            }
-
-            JOptionPane.showConfirmDialog(
-                    null,
-                    exitMessage,
-                    exitTitle,
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
+            AlcUtil.showConfirmDialog("Error Connecting", "Please check your internet connection.");
         }
 
     }

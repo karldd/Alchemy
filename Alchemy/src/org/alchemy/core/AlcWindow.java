@@ -373,7 +373,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // Ask to quit
         if (Alchemy.canvas.shapes.size() > 0) {
 
-            boolean result = AlcUtil.showConfirmDialog("exitDialogTitle", "exitDialogMessage", "quitDialogTitle", "quitDialogMessage");
+            boolean result = AlcUtil.showConfirmDialog("exitDialogTitle", "exitDialogMessage", "quitDialogTitle", "quitDialogMessage", Alchemy.bundle);
             if (result) {
                 exit();
                 return true;

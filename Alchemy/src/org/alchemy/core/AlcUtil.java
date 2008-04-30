@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.ResourceBundle;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -321,6 +322,56 @@ public class AlcUtil implements AlcConstants {
         return result;
     }
 
+    /** Show a confirmation dialog specific to the OS style
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param title     Title of the dialog
+     * @param message   Message of the dialog
+     * @return          True if OK, else false if Cancel
+     */
+    public static boolean showConfirmDialog(String title, String message) {
+
+
+        if (Alchemy.PLATFORM == MACOSX) {
+            message =
+                    "<html>" + UIManager.get("OptionPane.css") +
+                    "<b>" + title + "</b>" +
+                    "<p>" + message;
+            title = "";
+        }
+
+        Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
+        int result = JOptionPane.showOptionDialog(
+                Alchemy.window,
+                message,
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+
+        if (result == JOptionPane.YES_OPTION) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /** Show a confirmation dialog specific to the OS style 
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param title     Title of the dialog
+     * @param message   Message of the dialog
+     * @param bundle    The bundle to take localised text from
+     * @return          True if OK, else false if Cancel
+     */
+    public static boolean showConfirmDialog(String title, String message, ResourceBundle bundle) {
+        String bundleTitle = Alchemy.bundle.getString(title);
+        String bundleMessage = Alchemy.bundle.getString(message);
+        return showConfirmDialog(bundleTitle, bundleMessage);
+    }
+
     /** Show a confirmation dialog specific to the OS style 
      *  The title and message are taken from the localised Alchemy bundle
      * 
@@ -338,40 +389,21 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
-    /** Show a confirmation dialog specific to the OS style
+    /** Show a confirmation dialog specific to the OS style 
      *  The title and message are taken from the localised Alchemy bundle
      * 
-     * @param title     Title of the dialog
-     * @param message   Message of the dialog
-     * @return          True if OK, else false if Cancel
+     * @param winTitle      Title of the windows dialog
+     * @param winMessage    Message of the windows dialog
+     * @param macTitle      Title of the mac dialog 
+     * @param macMessage    Message of the mac dialog
+     * @param bundle        The bundle to take localised text from
+     * @return              True if OK, else false if Cancel
      */
-    public static boolean showConfirmDialog(String title, String message) {
-        String bundleTitle = Alchemy.bundle.getString(title);
-        String bundleMessage = Alchemy.bundle.getString(message);
-
+    public static boolean showConfirmDialog(String winTitle, String winMessage, String macTitle, String macMessage, ResourceBundle bundle) {
         if (Alchemy.PLATFORM == MACOSX) {
-            bundleMessage =
-                    "<html>" + UIManager.get("OptionPane.css") +
-                    "<b>" + bundleTitle + "</b>" +
-                    "<p>" + bundleMessage;
-            bundleTitle = "";
-        }
-
-        Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
-        int result = JOptionPane.showOptionDialog(
-                Alchemy.window,
-                bundleMessage,
-                bundleTitle,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]);
-
-        if (result == JOptionPane.YES_OPTION) {
-            return true;
+            return showConfirmDialog(Alchemy.bundle.getString(macTitle), Alchemy.bundle.getString(macMessage));
         } else {
-            return false;
+            return showConfirmDialog(Alchemy.bundle.getString(winTitle), Alchemy.bundle.getString(winMessage));
         }
     }
 

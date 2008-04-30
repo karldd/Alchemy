@@ -205,7 +205,7 @@ class AlcSession implements ActionListener, AlcConstants {
             // First make sure we are not loading the current session file
             if (file.equals(pdfWriteFile)) {
 
-                boolean result = AlcUtil.showConfirmDialog("loadSessionPDFDialogTitle", "loadSessionPDFDialogMessage");
+                boolean result = AlcUtil.showConfirmDialog("loadSessionPDFDialogTitle", "loadSessionPDFDialogMessage", Alchemy.bundle);
 
                 if (result) {
                     restartSession();
@@ -222,7 +222,7 @@ class AlcSession implements ActionListener, AlcConstants {
             // If the pdf is not an Alchemy pdf
             if (!metaData.contains("Alchemy")) {
 
-                boolean result = AlcUtil.showConfirmDialog("loadForeignPDFDialogTitle", "loadForeignPDFDialogMessage");
+                boolean result = AlcUtil.showConfirmDialog("loadForeignPDFDialogTitle", "loadForeignPDFDialogMessage", Alchemy.bundle);
                 if (!result) {
                     return false;
                 }
