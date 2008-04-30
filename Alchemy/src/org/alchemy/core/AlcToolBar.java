@@ -387,41 +387,41 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         //////////////////////////////////////////////////////////////
         toolBar.add(new AlcSeparator());
 
-
         //////////////////////////////////////////////////////////////
         // CREATE
         //////////////////////////////////////////////////////////////
         createButton = new AlcPopupButton(getS("createTitle"), getS("createDescription"), AlcUtil.getUrlPath("create.png"));
         // Button group for the radio buttons
         ButtonGroup group = new ButtonGroup();
+        // Start the keyboard shortcuts from here
+        int zero = KeyEvent.VK_1;
         // Populate the Popup Menu
         for (int i = 0; i < Alchemy.plugins.creates.length; i++) {
             // The current module
+
+            final AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem();
+
+            AbstractAction createMenuItemAction = new AbstractAction() {
+
+                public void actionPerformed(ActionEvent e) {
+                    // Check that the module is not already selected
+                    if (Alchemy.plugins.currentCreate != createMenuItem.getIndex()) {
+                        // Remove the subtoolbar of the create module
+                        removeSubToolBarSection(0);
+                        Alchemy.plugins.setCurrentCreate(createMenuItem.getIndex());
+                    }
+
+                    Point loc = createMenuItem.getLocation();
+                    //Rectangle butLoc = createButton.getBounds();
+                    int heightFromWindow = loc.y + 50;
+                    //System.out.println(loc + " " + heightFromWindow);
+                    toggleToolBar(heightFromWindow, true);
+                }
+            };
+
+            createMenuItem.setAction(createMenuItemAction);
             AlcModule currentModule = Alchemy.plugins.creates[i];
-            AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem(currentModule);
-            createMenuItem.setToolTipText(currentModule.getDescription());
-            //menuItem.
-
-            // Set the action listener
-            createMenuItem.addActionListener(
-                    new ActionListener() {
-
-                        public void actionPerformed(ActionEvent e) {
-                            AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
-                            // Check that the module is not already selected
-                            if (Alchemy.plugins.currentCreate != source.getIndex()) {
-                                // Remove the subtoolbar of the create module
-                                removeSubToolBarSection(0);
-                                Alchemy.plugins.setCurrentCreate(source.getIndex());
-                            }
-
-                            Point loc = source.getLocation();
-                            //Rectangle butLoc = createButton.getBounds();
-                            int heightFromWindow = loc.y + 50;
-                            //System.out.println(loc + " " + heightFromWindow);
-                            toggleToolBar(heightFromWindow, true);
-                        }
-                    });
+            createMenuItem.setup(currentModule);
 
             if (i == 0) {
                 createMenuItem.setSelected(true);
@@ -429,10 +429,19 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
             group.add(createMenuItem);
             createButton.addItem(createMenuItem);
+
+            if (i < 10) {
+                Alchemy.shortcuts.setShortcut(createMenuItem, zero + i, currentModule.getName(), createMenuItemAction);
+            } else if (i == 10) {
+                // TODO - Check the last create module shortcut
+                Alchemy.shortcuts.setShortcut(createMenuItem, KeyEvent.VK_0, currentModule.getName(), createMenuItemAction);
+            }
+
         }
 
         toolBar.add(createButton);
 
+        // TODO - Implement Affect module shortcuts
 
         //////////////////////////////////////////////////////////////
         // AFFECT

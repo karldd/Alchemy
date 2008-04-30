@@ -25,6 +25,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.MissingResourceException;
 import javax.swing.*;
 import javax.swing.JTextField;
 import javax.swing.JTextField;
@@ -37,8 +38,8 @@ import javax.swing.JTextField;
  */
 class AlcShortcuts extends JDialog implements AlcConstants {
 
-    private ArrayList <AlcShortcutMapper> userShortcuts;
-    private ArrayList <AlcShortcutMapper> defaultShortcuts;
+    private ArrayList<AlcShortcutMapper> userShortcuts;
+    private ArrayList<AlcShortcutMapper> defaultShortcuts;
     private JTextField[] textfields;
     private int index = 0;
     private boolean listenerActive = false;
@@ -91,7 +92,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        userShortcuts =  new ArrayList<AlcShortcutMapper>(defaultShortcuts);
+                        userShortcuts = new ArrayList<AlcShortcutMapper>(defaultShortcuts);
                         reloadShortcuts();
                         refreshTextfields();
                         okButton.requestFocus();
@@ -314,10 +315,17 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      * @return          The key actually used for this shortcut - user specified or default
      */
     int setShortcut(JComponent component, int key, String title, Action action, int modifier) {
-        // Get the localised string to display
-        String bundleTitle = Alchemy.bundle.getString(title);
-        // Get the english string to store as a reference - the two may or may not be the same
-        String bundleTitleEn = Alchemy.bundleEn.getString(title);
+
+        String bundleTitle, bundleTitleEn;
+        try {
+            // Get the localised string to display
+            bundleTitle = Alchemy.bundle.getString(title);
+            // Get the english string to store as a reference - the two may or may not be the same
+            bundleTitleEn = Alchemy.bundleEn.getString(title);
+        } catch (MissingResourceException e) {
+            bundleTitle = title;
+            bundleTitleEn = title;
+        }
 
         // Keep track of the default shortcuts
         defaultShortcuts.add(new AlcShortcutMapper(component, index, key, bundleTitle, bundleTitleEn, action, modifier));
