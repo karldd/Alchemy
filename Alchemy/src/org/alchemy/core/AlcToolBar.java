@@ -394,7 +394,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         // Button group for the radio buttons
         ButtonGroup group = new ButtonGroup();
         // Start the keyboard shortcuts from here
-        int zero = KeyEvent.VK_1;
+        int zero = KeyEvent.VK_0;
+
         // Populate the Popup Menu
         for (int i = 0; i < Alchemy.plugins.creates.length; i++) {
             // The current module
@@ -437,11 +438,13 @@ public class AlcToolBar extends JPanel implements AlcConstants {
             group.add(createMenuItem);
             createButton.addItem(createMenuItem);
 
-            if (i < 10) {
-                Alchemy.shortcuts.setShortcut(createMenuItem, zero + i, currentModule.getName(), createMenuItemAction);
-            } else if (i == 10) {
-                // For some reason 'KeyEvent.VK_0' doesnt work here, using '0x30' instead
-                Alchemy.shortcuts.setShortcut(createMenuItem, 0x30, currentModule.getName(), createMenuItemAction);
+            // Range from 0 - 8 mapped to keys 1 - 9
+            if (i < 9) {
+                Alchemy.shortcuts.setShortcut(createMenuItem, zero + i + 1, currentModule.getName(), createMenuItemAction);
+
+            // Last key is mapped to 0
+            } else if (i == 9) {
+                Alchemy.shortcuts.setShortcut(createMenuItem, zero, currentModule.getName(), createMenuItemAction);
             }
 
         }
@@ -490,34 +493,11 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
                 affectMenuItem.setAction(affectMenuItemAction);
                 affectMenuItem.setup(currentModule);
-
-//                affectMenuItem.setToolTipText(currentModule.getDescription());
-//                affectMenuItem.addItemListener(
-//                        new ItemListener() {
-//
-//                            public void itemStateChanged(ItemEvent e) {
-//
-//                                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getItemSelectable();
-//
-//                                // SELECTED
-//                                if (e.getStateChange() == ItemEvent.SELECTED) {
-//                                    Alchemy.plugins.addAffect(source.getIndex());
-//
-//                                // DESELECTED
-//                                } else {
-//                                    Alchemy.plugins.removeAffect(source.getIndex());
-//                                    // Index is offset to allow for the create module to always be first
-//                                    removeSubToolBarSection(source.getIndex() + 1);
-//                                }
-//                                Point loc = source.getLocation();
-//                                int heightFromWindow = loc.y + 50;
-//                                toggleToolBar(heightFromWindow, true);
-//                            }
-//                        });
-
                 affectButton.addItem(affectMenuItem);
-                if (i < 10) {
-                    Alchemy.shortcuts.setShortcut(affectMenuItem, zero + i, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                
+                // Range from 0 - 8 mapped to keys 1 - 9
+                if (i < 9) {
+                    Alchemy.shortcuts.setShortcut(affectMenuItem, zero + i + 1, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
                 }
             }
             toolBar.add(affectButton);

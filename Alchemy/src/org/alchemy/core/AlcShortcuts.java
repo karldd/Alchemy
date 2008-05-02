@@ -178,6 +178,9 @@ class AlcShortcuts extends JDialog implements AlcConstants {
             textfield.setBackground(Color.WHITE);
             textfield.setFont(shortcutFont);
 
+            //Print out a list of the shortcuts
+            //System.out.println(shortcut.title +": " + originalShortcut);
+
             textfield.addMouseListener(new MouseAdapter() {
 
                 @Override
@@ -354,7 +357,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         Alchemy.palette.getRootPane().resetKeyboardActions();
 
         for (int i = 0; i < userShortcuts.size(); i++) {
-            AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            AlcShortcutMapper shortcut = userShortcuts.get(i);
             Alchemy.window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.titleEn);
             Alchemy.palette.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(shortcut.key, shortcut.modifier), shortcut.titleEn);
             Alchemy.window.getRootPane().getActionMap().put(shortcut.titleEn, shortcut.action);
@@ -365,15 +368,16 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     /** Store the shortcuts in the preferences persistant storage */
     private void saveShortcuts() {
         for (int i = 0; i < userShortcuts.size(); i++) {
-            AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            AlcShortcutMapper shortcut = userShortcuts.get(i);
             AlcPreferences.prefs.putInt(shortcut.titleEn, shortcut.key);
             AlcPreferences.prefs.putInt(shortcut.titleEn + " Modifier", shortcut.modifier);
         }
     }
 
+    /** Refresh the tooltip and accelerator key information */
     private void refreshInterfaceElements() {
         for (int i = 0; i < userShortcuts.size(); i++) {
-            AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            AlcShortcutMapper shortcut = userShortcuts.get(i);
             // Check the component is not null and that it implements the shortcut interface
             if (shortcut.component != null && shortcut.component instanceof AlcShortcutInterface) {
                 AlcShortcutInterface shortcutComponent = (AlcShortcutInterface) shortcut.component;
