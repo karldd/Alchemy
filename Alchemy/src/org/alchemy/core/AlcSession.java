@@ -220,7 +220,7 @@ class AlcSession implements ActionListener, AlcConstants {
             String metaData = new String(reader.getMetadata());
 
             // If the pdf is not an Alchemy pdf
-            if (!metaData.contains("Alchemy")) {
+            if (!metaData.contains("Alchemy") && !file.getName().startsWith("Alchemy")) {
 
                 boolean result = AlcUtil.showConfirmDialog("loadForeignPDFDialogTitle", "loadForeignPDFDialogMessage", Alchemy.bundle);
                 if (!result) {
