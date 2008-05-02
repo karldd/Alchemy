@@ -323,7 +323,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction loadSessionAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation(loadSessionTitle, false);
+                File file = askLocation(loadSessionTitle, new File(DESKTOP_DIR), false);
                 if (file != null && file.exists()) {
                     boolean loaded = Alchemy.session.loadSessionFile(file);
                     nextPageItem.setEnabled(loaded);

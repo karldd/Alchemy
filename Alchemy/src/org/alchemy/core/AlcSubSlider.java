@@ -36,11 +36,13 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
 
         // TODO - Check this spacing on Win
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(1, 2, 0, 2));
+        this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         slider = new AlcSliderCustom(minValue, maxValue, startValue);
+        //.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(slider);
+        
 
         JLabel label = new JLabel(name);
         label.setFont(AlcToolBar.subToolBarFont);
