@@ -33,13 +33,8 @@ class AlcSubToolBar extends JPanel implements AlcConstants {
 
         // Allow Transparency
         this.setOpaque(false);
-
-        // (Alchemy.PLATFORM == MACOSX) {
-            // Top Left Bottom Right
-          //  this.setBorder(BorderFactory.createEmptyBorder(2, 10, 0, 5));
-        //} else {
-            this.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 5));
-        //}
+        // Top Left Bottom Right
+        this.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
         this.setPreferredSize(new Dimension(Alchemy.window.getWindowSize().width, height));
     }

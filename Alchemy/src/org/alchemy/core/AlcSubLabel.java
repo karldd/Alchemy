@@ -25,22 +25,7 @@ public class AlcSubLabel extends JLabel {
 
     /** Creates a new instance of AlcSubLabel */
     public AlcSubLabel(String text) {
-
         this.setFont(AlcToolBar.subToolBarBoldFont);
         this.setText(text);
-
-        //this.setVerticalTextPosition(SwingConstants.BOTTOM);
-
-        // Cant set the margins so make an empty border to adjust the spacing
-        // EmptyBorder(int top, int left, int bottom, int right) 
-        //this.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-
-    //this.setIconTextGap(10);
-
-    //this.setBackground(parent.getUiBgColour());
-    //this.setPreferredSize(new Dimension(100, 65));
-    //this.setBorder(BorderFactory.createRaisedBevelBorder());
-
-
     }
 }

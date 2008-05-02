@@ -34,7 +34,6 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
 
     public AlcSubSlider(String name, int minValue, int maxValue, int startValue) {
 
-        // TODO - Check this spacing on Win
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         this.setOpaque(false);

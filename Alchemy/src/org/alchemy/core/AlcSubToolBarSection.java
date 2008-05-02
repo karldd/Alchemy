@@ -37,8 +37,8 @@ public class AlcSubToolBarSection extends JPanel {
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 0));
         AlcSubLabel label = new AlcSubLabel(module.getName());
-        Dimension labelSize = label.getSize();
-        label.setPreferredSize(new Dimension(labelSize.width, 26));
+        // Set the height to the maximum 26 so all other components are correctly centred
+        label.setPreferredSize(new Dimension(label.getPreferredSize().width, 26));
         this.add(label);
 
 
