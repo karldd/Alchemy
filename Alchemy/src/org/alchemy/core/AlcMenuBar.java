@@ -323,7 +323,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction loadSessionAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation(loadSessionTitle, new File(DESKTOP_DIR), false);
+                File file = AlcUtil.showFileChooser(new File(DESKTOP_DIR), false);
                 if (file != null && file.exists()) {
                     boolean loaded = Alchemy.session.loadSessionFile(file);
                     nextPageItem.setEnabled(loaded);
@@ -419,7 +419,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction directoryAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation(setSessionDirTitle, true);
+                File file = AlcUtil.showFileChooser(true);
                 if (file != null) {
                     System.out.println(file.getPath());
                     Alchemy.preferences.sessionPath = file.getPath();
@@ -472,7 +472,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction switchVectorAppAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation(setVectorApp, platformAppDir);
+                File file = AlcUtil.showFileChooser(platformAppDir);
                 if (file != null) {
                     System.out.println(file.toString());
                     Alchemy.preferences.switchVectorApp = file.toString();
@@ -489,7 +489,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction switchBitmapAppAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = askLocation(setBitmapApp, platformAppDir);
+                File file = AlcUtil.showFileChooser(platformAppDir);
                 if (file != null) {
                     System.out.println(file.toString());
                     Alchemy.preferences.switchBitmapApp = file.toString();
@@ -686,10 +686,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
 
         final AlcFileChooser fc = new AlcFileChooser(DESKTOP_DIR);
-        fc.setDialogTitle("Export");
+        fc.setDialogTitle(Alchemy.bundle.getString("exportFileTitle"));
         fc.setAcceptAllFileFilterUsed(false);
+        fc.setFileFilter(new ExportFileFilter("PNG - Transparent"));
         fc.setFileFilter(new ExportFileFilter("PNG"));
         fc.setFileFilter(new ExportFileFilter("PDF"));
+        fc.setSelectedFile(new File(Alchemy.bundle.getString("defaultFileName")));
 
         // in response to a button click:
         int returnVal = fc.showSaveDialog(this);
@@ -699,52 +701,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             String format = fc.getFileFilter().getDescription();
 
             if (format.equals("PDF")) {
-                File fileWithExtension = AlcUtil.addFileExtension(file, "pdf");
-                Alchemy.canvas.saveSinglePdf(fileWithExtension);
+                Alchemy.canvas.saveSinglePdf(file);
             } else if (format.equals("PNG")) {
-                File fileWithExtension = AlcUtil.addFileExtension(file, "png");
-                Alchemy.canvas.savePng(fileWithExtension);
+                Alchemy.canvas.savePng(file);
+            } else if (format.equals("PNG - Transparent")) {
+                Alchemy.canvas.savePng(file, true);
             }
-        }
-    }
-
-    private File askLocation(String title, boolean foldersOnly) {
-        return askLocation(title, null, foldersOnly);
-    }
-
-    private File askLocation(String title, File defaultDir) {
-        return askLocation(title, defaultDir, false);
-    }
-
-    /** Ask for a location with a file chooser. 
-     *  @param  title               the name of the popup title
-     *  @param  foldersOnly         to select only folders or not
-     *  @param defaultDir           the default directory
-     *  @return                     file/folder selected by the user
-     */
-    private File askLocation(String title, File defaultDir, boolean foldersOnly) {
-        AlcFileChooser fc = null;
-
-        if (defaultDir != null && defaultDir.exists()) {
-            fc = new AlcFileChooser(defaultDir);
-        } else {
-            fc = new AlcFileChooser();
-        }
-
-        if (foldersOnly) {
-            fc.setFileSelectionMode(AlcFileChooser.DIRECTORIES_ONLY);
-        }
-
-        fc.setDialogTitle(title);
-
-        // in response to a button click:
-        int returnVal = fc.showOpenDialog(this);
-
-        if (returnVal == AlcFileChooser.APPROVE_OPTION) {
-            return fc.getSelectedFile();
-
-        } else {
-            return null;
         }
     }
 

@@ -18,8 +18,8 @@ creating finished artwork, but rather a sketching environment that focuses
 
 on the absolute initial stage of the creation process. Experimental in nature, 
 
-Alchemy lets you brainstorm visually to explore an expanded range of 
-ideas 
+Alchemy lets you brainstorm visually to explore an expanded range of ideas 
+
 and possibilities in a serendipitous way.
 
 
@@ -31,12 +31,11 @@ INSTALLATION -------------------------
 
 Simply copy the Alchemy folder to wherever you keep your applications.
 
-The 'modules' (and the 'lib' folder on Windows) folder must remain 
-together 
-with the application. 
-Individual modules can be removed if not required, 
-however be sure to 
-not mix older modules with newer versions or vice versa.
+The 'modules' (and the 'lib' folder on Windows) folder must remain together 
+
+with the application. Individual modules can be removed if not required, 
+
+however be sure to not mix older modules with newer versions or vice versa.
 
 
 
@@ -46,8 +45,9 @@ CREDITS/LICENSE ----------------------
 
 
 Alchemy was initiated by Karl D.D. Willis & Jacob Hina. 
-The source code is released 
-under the GNU General Public License and 
+
+The source code is released under the GNU General Public License and 
+
 Copyright © 2007-2008 Karl D.D. Willis. 
 
 Please see the 'COPYING' file for the full license.
@@ -98,11 +98,15 @@ FEATURES
   
 + Alchemy now requires Java Version 5+
 
++ Export transparent PNG files
+
  
 
 BUG FIXES
   
 + Mirror module fixed to work with Camera Colour module
+
++ Warning dialog added when overwriting files
 
 
 

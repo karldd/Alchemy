@@ -396,8 +396,18 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         String keyText = KeyEvent.getKeyText(key).toUpperCase();
         String keyModifier = KeyEvent.getKeyModifiersText(modifier);
 
-        if (Alchemy.PLATFORM == MACOSX && modifier == KeyEvent.META_MASK) {
-            keyModifier = Alchemy.MODIFIER_KEY_STRING;
+        if (Alchemy.PLATFORM == MACOSX) {
+            switch (modifier) {
+                case KeyEvent.META_MASK:
+                    keyModifier = Alchemy.MODIFIER_KEY_STRING;
+                    break;
+                case KeyEvent.SHIFT_MASK:
+                    keyModifier = Alchemy.SHIFT_KEY_STRING;
+                    break;
+                case KeyEvent.ALT_MASK:
+                    keyModifier = Alchemy.ALT_KEY_STRING;
+                    break;
+            }
         }
 
         if (modifier > 0) {

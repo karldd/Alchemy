@@ -322,42 +322,6 @@ public class AlcUtil implements AlcConstants {
         return result;
     }
 
-    /** Show a confirmation dialog specific to the OS style
-     *  The title and message are taken from the localised Alchemy bundle
-     * 
-     * @param title     Title of the dialog
-     * @param message   Message of the dialog
-     * @return          True if OK, else false if Cancel
-     */
-    public static boolean showConfirmDialog(String title, String message) {
-
-
-        if (Alchemy.PLATFORM == MACOSX) {
-            message =
-                    "<html>" + UIManager.get("OptionPane.css") +
-                    "<b>" + title + "</b>" +
-                    "<p>" + message;
-            title = "";
-        }
-
-        Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
-        int result = JOptionPane.showOptionDialog(
-                Alchemy.window,
-                message,
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                options,
-                options[0]);
-
-        if (result == JOptionPane.YES_OPTION) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /** Show a confirmation dialog specific to the OS style 
      *  The title and message are taken from the localised Alchemy bundle
      * 
@@ -404,6 +368,126 @@ public class AlcUtil implements AlcConstants {
             return showConfirmDialog(Alchemy.bundle.getString(macTitle), Alchemy.bundle.getString(macMessage));
         } else {
             return showConfirmDialog(Alchemy.bundle.getString(winTitle), Alchemy.bundle.getString(winMessage));
+        }
+    }
+
+    /** Show a confirmation dialog specific to the OS style
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param title     Title of the dialog
+     * @param message   Message of the dialog
+     * @return          True if OK, else false if Cancel
+     */
+    public static boolean showConfirmDialog(String title, String message) {
+
+
+        if (Alchemy.PLATFORM == MACOSX) {
+            message =
+                    "<html>" + UIManager.get("OptionPane.css") +
+                    "<b>" + title + "</b>" +
+                    "<p>" + message;
+            title = "";
+        }
+
+        //Object[] options = {Alchemy.bundle.getString("ok"), Alchemy.bundle.getString("cancel")};
+        int result = JOptionPane.showOptionDialog(
+                Alchemy.window,
+                message,
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                null,
+                null);
+
+        if (result == JOptionPane.YES_OPTION) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser() {
+        return showFileChooser(null, null, false);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param defaultDir           the default directory
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(File defaultDir) {
+        return showFileChooser(null, defaultDir, false);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  foldersOnly         to select only folders or not
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(boolean foldersOnly) {
+        return showFileChooser(null, null, foldersOnly);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param defaultDir           the default directory
+     *  @param  foldersOnly         to select only folders or not
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(File defaultDir, boolean foldersOnly) {
+        return showFileChooser(null, defaultDir, foldersOnly);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  title               the name of the popup title
+     *  @param  foldersOnly         to select only folders or not
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(String title, boolean foldersOnly) {
+        return showFileChooser(title, null, foldersOnly);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  title               the name of the popup title
+     *  @param defaultDir           the default directory
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(String title, File defaultDir) {
+        return showFileChooser(title, defaultDir, false);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  title               the name of the popup title
+     *  @param  foldersOnly         to select only folders or not
+     *  @param defaultDir           the default directory
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(String title, File defaultDir, boolean foldersOnly) {
+        AlcFileChooser fc = null;
+
+        if (defaultDir != null && defaultDir.exists()) {
+            fc = new AlcFileChooser(defaultDir);
+        } else {
+            fc = new AlcFileChooser();
+        }
+
+        if (foldersOnly) {
+            fc.setFileSelectionMode(AlcFileChooser.DIRECTORIES_ONLY);
+        }
+
+        if (title != null) {
+            fc.setDialogTitle(title);
+        }
+
+        // in response to a button click:
+        int returnVal = fc.showOpenDialog(Alchemy.window);
+
+        if (returnVal == AlcFileChooser.APPROVE_OPTION) {
+            return fc.getSelectedFile();
+
+        } else {
+            return null;
         }
     }
 
