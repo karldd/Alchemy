@@ -22,7 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.File;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -35,25 +35,26 @@ public class Alchemy implements AlcConstants {
     /** Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER. */
     public static int PLATFORM;
     /** Modifier Key to show for tool tips - This looks like '\u2318' for Apple or 'Ctrl' otherwise */
-    public static String MODIFIER_KEY_STRING;
+    public static String MODIFIER_KEY_STRING = "Ctrl";
+    public static String SHIFT_KEY_STRING = "Shift";
+    public static String ALT_KEY_STRING = "Alt";
 
     static {
         if (PLATFORM_NAME.indexOf("Mac") != -1) {
             PLATFORM = MACOSX;
             // Mac command key symbol
             MODIFIER_KEY_STRING = "\u2318";
+            SHIFT_KEY_STRING = "\u21E7";
+            ALT_KEY_STRING = "\u2325";
 
         } else if (PLATFORM_NAME.indexOf("Windows") != -1) {
             PLATFORM = WINDOWS;
-            MODIFIER_KEY_STRING = "Ctrl";
 
         } else if (PLATFORM_NAME.equals("Linux")) {  // true for the ibm vm
             PLATFORM = LINUX;
-            MODIFIER_KEY_STRING = "Ctrl";
 
         } else {
             PLATFORM = OTHER;
-            MODIFIER_KEY_STRING = "Modifier";
         }
     }
     //////////////////////////////////////////////////////////////
@@ -110,6 +111,19 @@ public class Alchemy implements AlcConstants {
         bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
         bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en_US"));
 
+        // LOCALE specific text for the Swing components
+        UIManager.put("FileChooser.cancelButtonText", bundle.getString("cancel"));
+        UIManager.put("FileChooser.newFolderButtonText", bundle.getString("newFolder"));
+        UIManager.put("FileChooser.openButtonText", bundle.getString("open"));
+
+        UIManager.put("FileChooser.openDialogTitleText", bundle.getString("open"));
+        UIManager.put("FileChooser.saveDialogTitleText", bundle.getString("save"));
+
+        UIManager.put("OptionPane.yesButtonText", bundle.getString("yes"));
+        UIManager.put("OptionPane.noButtonText", bundle.getString("no"));
+        UIManager.put("OptionPane.okButtonText", bundle.getString("ok"));
+        UIManager.put("OptionPane.cancelButtonText", bundle.getString("cancel"));
+
         // LOAD SHORTCUTS
         shortcuts = new AlcShortcuts(window);
 
@@ -140,6 +154,7 @@ public class Alchemy implements AlcConstants {
     public static void main(String[] args) {
         // Set system look and feel
         try {
+
 
             //System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + "lib");
 

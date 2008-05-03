@@ -783,23 +783,47 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @return
      */
     BufferedImage renderCanvas(boolean vectorMode) {
+        return renderCanvas(vectorMode, false);
+    }
+
+    /** Create an image from the canvas
+     * 
+     * @param vectorMode    In vector mode all shapes are rendered from scratch.
+     *                      Otherwise the active shapes are rendered on top of the current canvas image
+     * @param transparent   Ignore the background and create a transparent image with only shapes
+     * @return
+     */
+    BufferedImage renderCanvas(boolean vectorMode, boolean transparent) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
-        BufferedImage buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height);
+        BufferedImage buffImage;
+        if (transparent) {
+            buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height, Transparency.TRANSLUCENT);
+        } else {
+            buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height);
+        }
         // Paint the buffImage with the canvas
         Graphics2D g2 = buffImage.createGraphics();
         // Make sure the record indicator is off
         recordIndicator = false;
-        if (vectorMode) {
+
+        if (transparent) {
+            vectorCanvas.transparent = true;
             vectorCanvas.paintComponent(g2);
+            vectorCanvas.transparent = false;
         } else {
-            this.paintComponent(g2);
+            if (vectorMode) {
+                vectorCanvas.paintComponent(g2);
+            } else {
+                this.paintComponent(g2);
+            }
         }
         g2.dispose();
         return buffImage;
     }
+
 
     //////////////////////////////////////////////////////////////
     // SAVE PNG
@@ -810,10 +834,25 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @return      True if save worked, otherwise false
      */
     boolean savePng(File file) {
+        return savePng(file, false);
+    }
+
+    /** Save the canvas to a PNG file
+     * 
+     * @param file          The file object to save the PNG to
+     * @param transparent   An image with transparency or not
+     * @return              True if save worked, otherwise false
+     */
+    boolean savePng(File file, boolean transparent) {
         try {
             //File file = new File("saveToThisFile.jpg");
             setGuide(false);
-            BufferedImage buffImage = renderCanvas(true);
+            BufferedImage buffImage;
+            if (transparent) {
+                buffImage = renderCanvas(true, true);
+            } else {
+                buffImage = renderCanvas(true);
+            }
             setGuide(true);
             ImageIO.write(buffImage, "png", file);
             return true;
@@ -1170,6 +1209,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
  */
 class VectorCanvas extends JPanel implements AlcConstants {
 
+    boolean transparent = false;
+
     @Override
     public void paintComponent(Graphics g) {
 
@@ -1186,10 +1227,12 @@ class VectorCanvas extends JPanel implements AlcConstants {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
 
-        // Paint background.
-        g2.setColor(Alchemy.canvas.getBgColour());
-        g2.fillRect(0, 0, w, h);
-
+        // Do not draw the background when saving a transparent image
+        if (!transparent) {
+            // Paint background.
+            g2.setColor(Alchemy.canvas.getBgColour());
+            g2.fillRect(0, 0, w, h);
+        }
 
         // PDF READER
         if (Alchemy.session.pdfReadPage != null) {
@@ -1212,11 +1255,12 @@ class VectorCanvas extends JPanel implements AlcConstants {
 
         }
 
-        // Draw buffImage
+        // Draw Image
         if (Alchemy.canvas.isImageDisplayEnabled() && Alchemy.canvas.isImageSet()) {
             Point p = Alchemy.canvas.getImageLocation();
             g2.drawImage(Alchemy.canvas.getImage(), p.x, p.y, null);
         }
+
 
         // Draw the create, affect, and shapes lists
         for (int j = 0; j < Alchemy.canvas.fullShapeList.length; j++) {

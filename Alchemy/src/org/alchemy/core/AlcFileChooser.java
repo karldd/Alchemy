@@ -25,8 +25,10 @@ import java.awt.Point;
 import java.io.File;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
-class AlcFileChooser extends JFileChooser {
+class AlcFileChooser extends JFileChooser implements AlcConstants {
 
     AlcFileChooser() {
         super();
@@ -47,5 +49,56 @@ class AlcFileChooser extends JFileChooser {
         dialog.setLocation(p.x, p.y);
         dialog.setResizable(false);
         return dialog;
+    }
+
+    @Override
+    public void approveSelection() {
+
+        if (this.getDialogType() == SAVE_DIALOG) {
+
+            // First get the selected format
+            String format = this.getFileFilter().getDescription();
+            // Use the first three letters as the extension
+            String ext = format.substring(0, 3).toLowerCase();
+            // Check the extension is properly added
+            File fileWithExtension = AlcUtil.addFileExtension(this.getSelectedFile(), ext);
+
+            if (fileWithExtension.exists()) {
+
+                String title, message;
+                Object[] options = new Object[2];
+                if (Alchemy.PLATFORM == MACOSX) {
+                    title = "";
+                    message =
+                            "<html>" + UIManager.get("OptionPane.css") +
+                            "<b>\"" + fileWithExtension.getName() + "\" " + Alchemy.bundle.getString("existsMacDialogTitle") + "</b>" +
+                            "<p>" + Alchemy.bundle.getString("existsMacDialogMessage");
+                    options[0] = Alchemy.bundle.getString("replace");
+                    options[1] = Alchemy.bundle.getString("cancel");
+                } else {
+                    title = Alchemy.bundle.getString("existsWinDialogTitle");
+                    message = "\"" + fileWithExtension.getName() + "\" " + Alchemy.bundle.getString("existsWinDialogMessage");
+                    options[0] = Alchemy.bundle.getString("yes");
+                    options[1] = Alchemy.bundle.getString("no");
+                }
+
+
+                int result = JOptionPane.showOptionDialog(
+                        Alchemy.window,
+                        message,
+                        title,
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+
+                if (result != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+            this.setSelectedFile(fileWithExtension);
+        }
+        super.approveSelection();
     }
 }
