@@ -108,6 +108,8 @@ BUG FIXES
 
 + Warning dialog added when overwriting files
 
++ Japanese localisation fixes
+
 
 
 --------------------------------------

@@ -22,7 +22,6 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
