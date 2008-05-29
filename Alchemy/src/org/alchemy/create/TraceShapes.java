@@ -39,7 +39,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     private int halfArea = 30;
     private int tolerance = 100;
     private Rectangle imageSize;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private int[] pixels;
     private boolean pixelsLoaded = false;
     private boolean moduleActive = false;
@@ -175,7 +175,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Image Display Button
         final AlcSubToggleButton imageDisplayButton = new AlcSubToggleButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));

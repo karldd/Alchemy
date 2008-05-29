@@ -32,7 +32,7 @@ import javax.swing.event.ChangeListener;
  * The disappearing toolbar
  * Housing access to all modules and their sub toolbars
  */
-public class AlcToolBar extends JPanel implements AlcConstants {
+public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
     /** Keep track of the windowSize */
     Dimension windowSize;
@@ -60,19 +60,19 @@ public class AlcToolBar extends JPanel implements AlcConstants {
      *  These are declared global so we can hide the popup when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton,  colourButton;
     /** The main tool bar inside the toolbar */
-    private AlcMainToolBar mainToolBar;
+    private AlcToolBarMain mainToolBar;
     /** The sub toolbar below the main toolbar */
-    private AlcSubToolBar subToolBar;
+    private AlcToolBarSub subToolBar;
     /** Container holding the main and sub toolbars */
     JPanel toolBars;
     /** Detach toolbar button */
-    JButton detachButton;
+    private JButton detachButton;
     /** Foreground Background Button */
     private AlcToggleButton fgbgButton;
     /** Sections within the sub toolbar - either loaded or not */
-    private AlcSubToolBarSection[] affectSubToolBarSections;
+    private AlcToolBarSubSection[] affectSubToolBarSections;
     /** The create section within the sub toolbar - index of the loaded section */
-    private AlcSubToolBarSection createSubToolBarSection;
+    private AlcToolBarSubSection createSubToolBarSection;
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
     /** The number of rows in the sub toolbar */
@@ -165,9 +165,9 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Load the tool bar */
-    private AlcMainToolBar loadToolBar() {
+    private AlcToolBarMain loadToolBar() {
         // Create the main toolbar
-        AlcMainToolBar toolBarGroup = new AlcMainToolBar();
+        AlcToolBarMain toolBarGroup = new AlcToolBarMain();
 
         JPanel toolBar = new JPanel();
         toolBar.setOpaque(false);
@@ -308,7 +308,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                     if (Alchemy.PLATFORM == MACOSX) {
                         Alchemy.canvas.restoreCursor();
                         //Alchemy.canvas.setCursor(CROSS);
-                        Alchemy.toolBar.setCursor(ARROW);
+                        setCursor(ARROW);
                     }
                     refreshSwapButton();
                 }
@@ -378,7 +378,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                             refreshSwapButton();
                         }
                     }
-                    });
+                });
 
         toolBar.add(alphaSlider);
 
@@ -494,7 +494,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 affectMenuItem.setAction(affectMenuItemAction);
                 affectMenuItem.setup(currentModule);
                 affectButton.addItem(affectMenuItem);
-                
+
                 // Range from 0 - 8 mapped to keys 1 - 9
                 if (i < 9) {
                     Alchemy.shortcuts.setShortcut(affectMenuItem, zero + i + 1, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
@@ -525,11 +525,6 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 "Detach the toolbar to a seperate palette");
 
         // Compensate for the windows border
-
-
-
-
-
         if (Alchemy.PLATFORM == MACOSX) {
             detachButton.setMargin(new Insets(2, 0, 0, 2));
         } else {
@@ -561,12 +556,14 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 //////////////////////////////////////////////////////////////
 // TOOLBAR
 //////////////////////////////////////////////////////////////
+    @Override
     void resizeToolBar() {
         Dimension toolBarWindowSize = new Dimension(this.windowSize.width, totalHeight);
         resizeToolBar(toolBarWindowSize);
     }
 
-    void resizeToolBar(Dimension windowSize) {
+    @Override
+    void resizeToolBar( Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
         this.revalidate();
@@ -585,7 +582,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
      * 
      * @param y     The height of the mouse to check against
      */
-    void toggleToolBar(int y) {
+    @Override
+    void toggleToolBar( int y) {
         toggleToolBar(y, false);
     }
 
@@ -594,7 +592,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
      * @param y             The height of the mouse to check against
      * @param startTimer    To force start the timer
      */
-    void toggleToolBar(int y, boolean startTimer) {
+    @Override
+    void toggleToolBar( int y, boolean startTimer) {
         if (y < 10) {
             // Show the toolbar
             setToolBarVisible(true);
@@ -626,7 +625,8 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Set the visibility of the UI Toolbar */
-    void setToolBarVisible(boolean visible) {
+    @Override
+    void setToolBarVisible( boolean visible) {
         if (visible != toolBarVisible) {
             this.setVisible(visible);
             toolBarVisible =
@@ -656,6 +656,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Return the visibility of the UI Toolbar */
+    @Override
     boolean isToolBarVisible() {
         return toolBarVisible;
     }
@@ -666,6 +667,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Calculate the total height of the toolbar and its subtoolbars */
+    @Override
     void calculateTotalHeight() {
         // Start with the main toolbar height
         int newTotalHeight = mainToolBar.getHeight();
@@ -682,6 +684,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Return the total height of the toolbar and its subtoolbars */
+    @Override
     int getTotalHeight() {
         return totalHeight;
     }
@@ -689,21 +692,22 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 //////////////////////////////////////////////////////////////
 // SUBTOOLBAR
 //////////////////////////////////////////////////////////////
-    private AlcSubToolBar loadSubToolBar() {
+    private AlcToolBarSub loadSubToolBar() {
         // Initialise the references to the sub toolbar sections
-        affectSubToolBarSections = new AlcSubToolBarSection[Alchemy.plugins.getNumberOfAffectModules()];
+        affectSubToolBarSections = new AlcToolBarSubSection[Alchemy.plugins.getNumberOfAffectModules()];
         // Set to a negative value to indicate no initially loaded sections
         createSubToolBarSection =
                 null;
 
         // Add the SubToolBar
-        AlcSubToolBar toolBar = new AlcSubToolBar();
+        AlcToolBarSub toolBar = new AlcToolBarSub();
 
         return toolBar;
     }
 
     /** Add a Create Module sub-toolbar */
-    public void addSubToolBarSection(AlcSubToolBarSection subToolBarSection) {
+    @Override
+    public void addSubToolBarSection(AlcToolBarSubSection subToolBarSection) {
 
         subToolBarSection.revalidate();
 
@@ -748,7 +752,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     private void refreshSubToolBar() {
-        // Remove everything
+        // Remove everythingÏ
         subToolBar.removeAll();
 
         // If there is a create section add that first
@@ -756,7 +760,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
 
             subToolBar.add(createSubToolBarSection);
         }
-// Add the affect sections
+        // Add the affect sections
         for (int i = 0; i <
                 affectSubToolBarSections.length; i++) {
 
@@ -766,7 +770,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
                 if ((subToolBar.getComponentCount() % 2) != 0) {
                     subToolBar.add(new AlcSubSeparator());
                 }
-// Then add the section
+                // Then add the section
                 subToolBar.add(affectSubToolBarSections[i]);
             }
 
@@ -864,6 +868,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     // PALETTE
     //////////////////////////////////////////////////////////////
     /** Called when detaching the toolbar into the palette */
+    @Override
     void detachToolBar() {
         if (!subToolBar.isVisible()) {
             subToolBar.setVisible(true);
@@ -875,6 +880,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
     }
 
     /** Called when attaching the toolbar from the palette */
+    @Override
     void attachToolBar() {
         if (Alchemy.PLATFORM != MACOSX) {
             Alchemy.window.setJMenuBar(null);
@@ -896,6 +902,19 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         this.requestFocus();
     }
 
+    /** Toggle the visibility of the detach button */
+    @Override
+    void toggleDetachButton( boolean visible) {
+        detachButton.setVisible(visible);
+    }
+
+    /** Add the toolbar content to the palette */
+    @Override
+    void addPaletteContent() {
+        Alchemy.palette.addContent(toolBars);
+    }
+
+
 //////////////////////////////////////////////////////////////
 // UTLITY
 //////////////////////////////////////////////////////////////
@@ -904,11 +923,13 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         return Alchemy.bundle.getString(stringName);
     }
 
+    @Override
     void queueSwapButtonRefresh() {
         updateSwapButton = true;
     }
 
     /** Refreshes the colours of the Foreground/Background button */
+    @Override
     void refreshSwapButton() {
         Color colour = Alchemy.canvas.getForegroundColour();
         // Make sure there is no transparency
@@ -931,8 +952,7 @@ public class AlcToolBar extends JPanel implements AlcConstants {
         fgbgButton.setIcon(new ImageIcon(swap));
 
         BufferedImage swapOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
-        g =
-                swapOn.createGraphics();
+        g = swapOn.createGraphics();
 
         g.setColor(colour);
         g.fillRect(0, 0, 18, 18);

@@ -61,13 +61,15 @@ class AlcPreferences implements AlcConstants {
     // WINDOWS
     //////////////////////////////////////////////////////////////
     /** State of the palette- attached or not */
-    boolean paletteAttached = false;
+    boolean paletteAttached;
     /** Palette Location */
     Point paletteLocation;
     /** Canvas Window Location */
     Point canvasLocation;
     /** Canvas Window size */
     Dimension canvasSize;
+    /** Simplified toolbar for kids */
+    boolean simpleToolBar;
     //////////////////////////////////////////////////////////////
     // DRAWING
     //////////////////////////////////////////////////////////////
@@ -104,6 +106,7 @@ class AlcPreferences implements AlcConstants {
         paletteLocation = stringToPoint(prefs.get("Palette Location", null));
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
+        simpleToolBar = prefs.getBoolean("Simple ToolBar", false);
         smoothing = prefs.getBoolean("Smoothing", true);
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);

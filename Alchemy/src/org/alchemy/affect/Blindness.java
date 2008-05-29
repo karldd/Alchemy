@@ -29,7 +29,7 @@ import org.alchemy.core.*;
 public class Blindness extends AlcModule implements AlcConstants {
 
     private boolean autoReveal = false;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
 
     /** Creates a new instance of Blindness */
     public Blindness() {
@@ -65,7 +65,7 @@ public class Blindness extends AlcModule implements AlcConstants {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Buttons
         AlcSubButton revealButton = new AlcSubButton("Reveal", AlcUtil.getUrlPath("reveal.png", getClassLoader()));

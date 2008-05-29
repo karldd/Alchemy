@@ -52,7 +52,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
 //    private long mouseDelayTime;
     //
     private boolean mouseDown = false;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     // UI settings
     private float waveVolume;
     private float levelVolume;
@@ -83,7 +83,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Volume Slider
         int initialSliderValue = 50;

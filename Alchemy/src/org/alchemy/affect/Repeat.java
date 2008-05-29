@@ -43,7 +43,7 @@ public class Repeat extends AlcModule {
     private int outside = 0;
     private boolean update = false;
     private boolean repeat = true;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     // Margin before the mouse falls outside of the shape once inside
     private int margin = 10;
     private AlcSubToggleButton repeatButton;
@@ -71,7 +71,7 @@ public class Repeat extends AlcModule {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Repeat button
         repeatButton = new AlcSubToggleButton("Repeat", AlcUtil.getUrlPath("repeat.png", getClassLoader()));

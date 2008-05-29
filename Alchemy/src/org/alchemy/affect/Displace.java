@@ -32,7 +32,7 @@ import org.alchemy.core.*;
  */
 public class Displace extends AlcModule implements AlcConstants {
 
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private Point oldP;
     private int speed;
     private int displacement = 7;
@@ -58,7 +58,7 @@ public class Displace extends AlcModule implements AlcConstants {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
 
         final AlcSubSlider speedSlider = new AlcSubSlider("Displacement", 1, 15, displacement);

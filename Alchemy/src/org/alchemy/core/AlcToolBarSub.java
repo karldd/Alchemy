@@ -22,14 +22,14 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.*;
 
-class AlcSubToolBar extends JPanel implements AlcConstants {
+class AlcToolBarSub extends JPanel implements AlcConstants {
 
     private static final int rowHeight = 26;
     private int height = rowHeight;
     private int numberOfRows = 1;
 
     /** Creates a new instance of AlcSubToolBar */
-    AlcSubToolBar() {
+    AlcToolBarSub() {
 
         // Allow Transparency
         this.setOpaque(false);

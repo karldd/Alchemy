@@ -45,7 +45,6 @@ import javax.imageio.ImageIO;
 import com.sun.pdfview.*;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
 /** 
@@ -1085,7 +1084,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     public void mousePressed(MouseEvent event) {
         // Hide the toolbar when clicking on the canvas
-        if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
+        if (!Alchemy.preferences.paletteAttached 
+                && Alchemy.toolBar.isToolBarVisible() 
+                && !Alchemy.preferences.simpleToolBar 
+                && event.getY() >= Alchemy.toolBar.getTotalHeight()
+                ) {
             Alchemy.toolBar.setToolBarVisible(false);
         }
 

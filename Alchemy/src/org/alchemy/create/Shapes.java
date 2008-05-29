@@ -36,7 +36,7 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     private boolean straightShapes = false;
     private boolean firstClick = true;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private boolean secondClick;
     private Point lastPt;
     private int guideSize = -1;
@@ -76,7 +76,7 @@ public class Shapes extends AlcModule implements AlcConstants {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Line Type Button
         AlcSubToggleButton lineTypeButton = new AlcSubToggleButton("Line Type", AlcUtil.getUrlPath("linetype.png", getClassLoader()));

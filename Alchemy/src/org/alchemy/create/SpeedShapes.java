@@ -35,7 +35,7 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
 
     private Point oldP;
     private int multiplier = 15;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private boolean freeform = true;
 
     public SpeedShapes() {
@@ -54,7 +54,7 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
     }
 
     private void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Shake/Fatten button
         AlcSubToggleButton lineStyleButton = new AlcSubToggleButton("Line Type", AlcUtil.getUrlPath("linestyle.png", getClassLoader()));

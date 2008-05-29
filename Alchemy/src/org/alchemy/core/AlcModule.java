@@ -36,7 +36,7 @@ public abstract class AlcModule {
     /** Access to the canvas */
     protected static AlcCanvas canvas;
     /** Access to the toolBar */
-    protected static AlcToolBar toolBar;
+    protected static AlcAbstractToolBar toolBar;
     /** Access to the Alchemy math class */
     protected static AlcMath math;
     //
@@ -69,7 +69,7 @@ public abstract class AlcModule {
     // STRUCTURE
     //////////////////////////////////////////////////////////////
     /** Sets global references to the root, canvas, and toolbar */
-    void setGlobals(AlcCanvas c, AlcToolBar t, AlcMath m) {
+    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m) {
         canvas = c;
         toolBar = t;
         math = m;

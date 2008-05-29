@@ -37,7 +37,7 @@ public class DetachShapes extends AlcModule {
     private int distance = 100;
     //private Point oldP;
     private boolean newPath;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
 
     public DetachShapes() {
 
@@ -57,7 +57,7 @@ public class DetachShapes extends AlcModule {
 
     public void createSubToolBarSection() {
 
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Tolerance Slider
         final AlcSubSlider distanceSlider = new AlcSubSlider("Distance", 0, 300, distance);
