@@ -36,7 +36,7 @@ public class ScrawlShapes extends AlcModule {
     private int flow = 10;
     private int detail = 10;
     private int noise = 10;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
 
     public ScrawlShapes() {
 
@@ -55,7 +55,7 @@ public class ScrawlShapes extends AlcModule {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         final AlcSubSlider flowSlider = new AlcSubSlider("Flow", 1, 25, flow);
         flowSlider.setToolTipText("Change the flow speed");

@@ -27,11 +27,11 @@ import javax.swing.JPanel;
  * AlcSubToolBarSection
  * 
  */
-public class AlcSubToolBarSection extends JPanel {
+public class AlcToolBarSubSection extends JPanel {
 
     private final AlcModule module;
 
-    public AlcSubToolBarSection(AlcModule module) {
+    public AlcToolBarSubSection(AlcModule module) {
 
         this.module = module;
         this.setOpaque(false);

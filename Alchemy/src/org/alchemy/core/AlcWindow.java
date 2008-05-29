@@ -67,9 +67,13 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         this.addComponentListener(this);        // Add a component listener to detect window resizing
         //this.addWindowStateListener(this);    // Add a window state listener to detect window maximising
+
         this.addKeyListener(this);              // Key Listener
+
         this.setFocusable(true);                // Make the key listener focusable so we can get key events
+
         this.setTitle("Alchemy");               // Title of the frame - Dock name should also be set -Xdock:name="Alchemy"
+
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Let the exitAlchemy function take care of closing
         //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -132,7 +136,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // FRAME
         //this.setSize(windowSize);
         layeredPane.setPreferredSize(windowSize);          // Set the window size
+
         this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
+
         this.pack();                                // Finalize window layout
 
         // Load the old location if available
@@ -154,6 +160,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             }
         } else {
             this.setLocationRelativeTo(null);           // Center window on screen.
+
         }
         // Load the palette after the main window
         if (Alchemy.preferences.paletteAttached) {
@@ -200,6 +207,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         Rectangle bounds = grapConfig.getBounds();
 
         if (this.fullscreen != fullscreen) {        //are we actually changing modes.
+
             this.fullscreen = fullscreen;           //change modes.
 
             // NORMAL WINDOW
@@ -216,13 +224,18 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                 }
 
                 this.setVisible(false);                //hide the frame so we can change it.
+
                 this.dispose();                          //remove the frame from being displayable.
+
                 this.setUndecorated(false);              //put the borders back on the frame.
+
                 this.setFocusable(true);
                 //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
                 this.setSize(oldWindowSize);             //make sure the size of the window is correct.
+
                 this.setLocation(oldLocation);           //reset location of the window
                 //setAlwaysOnTop(false);
+
                 this.setVisible(true);
                 this.toFront();
 
@@ -230,6 +243,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             } else {
 
                 oldWindowSize = windowSize;          //save the old window size and location
+
                 oldLocation = getLocation();
 
                 try {
@@ -267,12 +281,16 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     }
 
                     this.setVisible(false);                  //hide everything
+
                     this.dispose();                          //remove the frame from being displayable.
+
                     this.setUndecorated(true);               //remove borders around the frame
+
                     this.setBounds(bounds);
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
                     this.setVisible(true);                   //show the frame
+
                     if (Alchemy.preferences.paletteAttached) {
                         Alchemy.palette.toFront();
                     }
@@ -330,7 +348,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                 Alchemy.palette.setLocation(100, 100);
             }
 
-            Alchemy.palette.addContent(Alchemy.toolBar.toolBars);
+            Alchemy.toolBar.addPaletteContent();
             //palette.pack();
             //palette.setVisible(true);
 
@@ -340,7 +358,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                 this.setJMenuBar(Alchemy.menuBar);
                 Alchemy.toolBar.calculateTotalHeight();
             }
-            Alchemy.toolBar.detachButton.setVisible(false);
+            Alchemy.toolBar.toggleDetachButton(false);
 
             Alchemy.palette.setVisible(true);
             //palette.show();

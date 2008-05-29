@@ -21,7 +21,6 @@ package org.alchemy.core;
 
 import java.awt.*;
 import javax.swing.*;
-import java.awt.event.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -37,11 +36,13 @@ public class Alchemy implements AlcConstants {
     public static String MODIFIER_KEY_STRING = "Ctrl";
     public static String SHIFT_KEY_STRING = "Shift";
     public static String ALT_KEY_STRING = "Alt";
+    
 
     static {
         if (PLATFORM_NAME.indexOf("Mac") != -1) {
             PLATFORM = MACOSX;
-            // Mac command key symbol
+            // Unicode sequences to display the correct mac symbols for
+            // Command/Apple, Shift, Alt/Option keys
             MODIFIER_KEY_STRING = "\u2318";
             SHIFT_KEY_STRING = "\u21E7";
             ALT_KEY_STRING = "\u2325";
@@ -50,6 +51,7 @@ public class Alchemy implements AlcConstants {
             PLATFORM = WINDOWS;
 
         } else if (PLATFORM_NAME.equals("Linux")) {  // true for the ibm vm
+
             PLATFORM = LINUX;
 
         } else {
@@ -64,7 +66,7 @@ public class Alchemy implements AlcConstants {
     /** Canvas to draw on to */
     static AlcCanvas canvas;
     /** User Interface Tool Bar */
-    static AlcToolBar toolBar;
+    static AlcAbstractToolBar toolBar;
     /** Class to take care of plugin loading and activation */
     static AlcPlugins plugins;
     /** Palette for the toolbar when detached */
@@ -139,8 +141,14 @@ public class Alchemy implements AlcConstants {
         session = new AlcSession();
         // Load the palette
         palette = new AlcPalette(window);
+
         // User Interface toolbar
-        toolBar = new AlcToolBar();
+        if (preferences.simpleToolBar) {
+            toolBar = new AlcToolBar();
+        } else {
+            toolBar = new AlcToolBar();
+        }
+
         // Menu Bar
         menuBar = new AlcMenuBar();
 

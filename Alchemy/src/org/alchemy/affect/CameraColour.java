@@ -52,7 +52,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
     private int refreshRate = 100;
     private BufferedImage cameraImage;
     private boolean cameraDisplay = false;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private AlcSubToggleButton cameraButton;
     private Thread camThread;
     private boolean threadPaused = true;
@@ -128,7 +128,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Show Camera
         cameraButton = new AlcSubToggleButton("Display Image", AlcUtil.getUrlPath("imagedisplay.png", getClassLoader()));

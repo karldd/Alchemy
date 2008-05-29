@@ -22,7 +22,7 @@ package org.alchemy.affect;
 import org.alchemy.core.AlcModule;
 import org.alchemy.core.AlcShape;
 import org.alchemy.core.AlcSubSlider;
-import org.alchemy.core.AlcSubToolBarSection;
+import org.alchemy.core.AlcToolBarSubSection;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
@@ -52,7 +52,7 @@ public class Random extends AlcModule {
 //    private int activeShape = -1;
     private int proximity = 5;
     //
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
 
     public Random() {
 
@@ -70,7 +70,7 @@ public class Random extends AlcModule {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Distortion Slider
         final AlcSubSlider distortionSlider = new AlcSubSlider("Distortion", 1, 100, initialDistortion);

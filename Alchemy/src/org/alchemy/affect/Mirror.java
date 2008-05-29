@@ -33,7 +33,7 @@ import java.awt.geom.Line2D;
  */
 public class Mirror extends AlcModule implements AlcConstants {
 
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private boolean horizontal = true;
     private boolean vertical = false;
     private int horizontalAxis,  verticalAxis;
@@ -65,7 +65,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     }
 
     public void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Horizontal button
         AlcSubToggleButton horizontalButton = new AlcSubToggleButton("Horizontal", AlcUtil.getUrlPath("horizontal.png", getClassLoader()));

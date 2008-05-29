@@ -34,7 +34,7 @@ public class XShapes extends AlcModule implements AlcConstants {
 
     private Point oldP;
     private int multiplier = 25;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
 //    private boolean freeform = true;
     private ArrayList<Integer> averageSpeed = new ArrayList<Integer>();
     private int counter = 0;
@@ -55,7 +55,7 @@ public class XShapes extends AlcModule implements AlcConstants {
     }
 
     private void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 //
 //        // Shake/Fatten button
 //        AlcSubToggleButton lineStyleButton = new AlcSubToggleButton("Style", AlcUtil.getUrlPath("linestyle.png", getClassLoader()));

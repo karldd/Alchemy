@@ -22,14 +22,14 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.JPanel;
 
-class AlcMainToolBar extends JPanel {
+class AlcToolBarMain extends JPanel {
 
     private int height = 60;
 
     /** Creates a new instance of AlcMainToolBar
      * @param root Reference to the root
      */
-    AlcMainToolBar() {
+    AlcToolBarMain() {
 
         // Allow a transparent background
         this.setOpaque(false);

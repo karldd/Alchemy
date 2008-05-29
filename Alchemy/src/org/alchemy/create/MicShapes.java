@@ -37,7 +37,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
     private AlcMicrophone micIn;
     private Point lastPt;
     private float volume;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private boolean shake = false;
     private ArrayList<Point> points = new ArrayList<Point>(1000);
     private ArrayList<Float> levels = new ArrayList<Float>(1000);
@@ -76,7 +76,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
     }
 
     private void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
         // Draw mode button
         AlcSubToggleButton drawModeButton = new AlcSubToggleButton("Draw Mode", AlcUtil.getUrlPath("drawmode.png", getClassLoader()));

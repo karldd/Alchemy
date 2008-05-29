@@ -49,7 +49,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
             ".`-_':,;^=+/\"|)\\<>)iv%xclrs{*}I?!][1taeo7zjLu" +
             "nT#JCwfy325Fp6mqSghVd4EgXPGZbYkOA&8U$@KHDBWNMR0Q";
 //    private boolean addShape = true;
-    private AlcSubToolBarSection subToolBarSection;
+    private AlcToolBarSubSection subToolBarSection;
     private Point oldP;
     private float size = 2.5F;
     private boolean keys = false;
@@ -93,7 +93,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     }
 
     private void createSubToolBarSection() {
-        subToolBarSection = new AlcSubToolBarSection(this);
+        subToolBarSection = new AlcToolBarSubSection(this);
 
 
 //
