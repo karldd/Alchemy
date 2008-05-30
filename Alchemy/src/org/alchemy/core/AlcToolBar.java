@@ -34,25 +34,6 @@ import javax.swing.event.ChangeListener;
  */
 public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
-    /** Keep track of the windowSize */
-    Dimension windowSize;
-    //////////////////////////////////////////////////////////////
-    // INTERFACE COLOURS
-    //////////////////////////////////////////////////////////////
-    static final Color toolBarBgColour = new Color(225, 225, 225);
-    static final Color toolBarBgStartColour = new Color(235, 235, 235, 240);
-    static final Color toolBarBgEndColour = new Color(215, 215, 215, 240);
-    static final Color toolBarLineColour = new Color(140, 140, 140);
-    static final Color toolBarSubLineColour = new Color(160, 160, 160);
-    static final Color toolBarHighlightColour = new Color(231, 231, 231);
-    static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
-    static final Color toolBarBoxColour = new Color(190, 190, 190);
-    //////////////////////////////////////////////////////////////
-    // FONTS
-    //////////////////////////////////////////////////////////////
-    static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
-    static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
-    static final Font subToolBarBoldFont = new Font("sansserif", Font.BOLD, 11);
     //////////////////////////////////////////////////////////////
     // TOOLBAR ELEMENTS
     //////////////////////////////////////////////////////////////
@@ -563,7 +544,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     }
 
     @Override
-    void resizeToolBar( Dimension windowSize) {
+    void resizeToolBar(Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
         this.revalidate();
@@ -629,8 +610,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     void setToolBarVisible( boolean visible) {
         if (visible != toolBarVisible) {
             this.setVisible(visible);
-            toolBarVisible =
-                    visible;
+            toolBarVisible = visible;
             Alchemy.canvas.setMouseEvents(!visible);
             if (!visible) {
                 // Be sure to set the cursor back to the cross hair
@@ -647,8 +627,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 // Update the colours of the fg/bg button if they have changed
                 if (updateSwapButton) {
                     refreshSwapButton();
-                    updateSwapButton =
-                            false;
+                    updateSwapButton = false;
                 }
 
             }

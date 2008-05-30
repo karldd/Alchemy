@@ -23,8 +23,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -97,34 +95,8 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
         g2.drawImage(temp, 0, 15, 100, 100, null);
         g2.dispose();
 
-        // CURSOR
-        // Cursor size differs depending on the platform
-        // Add padding based on the best cursor size
-        final Cursor pickerCursor;
-        Image smallPicker = AlcUtil.getImage("cursor-picker.gif");
-        Dimension smallPickerSize = new Dimension(smallPicker.getWidth(null), smallPicker.getHeight(null));
-        Dimension cursorSize = TOOLKIT.getBestCursorSize(smallPickerSize.width, smallPickerSize.height);
 
-        if (cursorSize.equals(smallPickerSize)) {
-            pickerCursor = TOOLKIT.createCustomCursor(
-                    smallPicker,
-                    new Point(smallPickerSize.width / 2, smallPickerSize.height / 2),
-                    "Picker");
-        } else {
-            int leftGap = (cursorSize.width - smallPickerSize.width) / 2;
-            int topGap = (cursorSize.height - smallPickerSize.height) / 2;
-
-            BufferedImage bigPicker = new BufferedImage(cursorSize.width, cursorSize.height, BufferedImage.TYPE_INT_ARGB);
-            g2 = bigPicker.createGraphics();
-            g2.drawImage(smallPicker, leftGap, topGap, null);
-            g2.dispose();
-
-            pickerCursor = TOOLKIT.createCustomCursor(
-                    bigPicker,
-                    new Point(cursorSize.width / 2, cursorSize.height / 2),
-                    "Picker");
-        }
-
+        final Cursor pickerCursor = AlcUtil.getCursor("cursor-picker.gif");
         this.setCursor(pickerCursor);
 
         this.addMouseListener(new MouseAdapter() {
