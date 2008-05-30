@@ -8,8 +8,7 @@
     <!--<import file="nbproject/profiler-build-impl.xml"/>-->
     
     <import file="nbproject/build-impl.xml"/>
-
-    <import file="nbproject/profiler-build-impl.xml"/>    
+    
     <import file="nbproject/profiler-build-impl.xml"/>    
     <!--
 

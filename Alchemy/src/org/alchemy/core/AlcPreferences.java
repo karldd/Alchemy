@@ -19,12 +19,22 @@
  */
 package org.alchemy.core;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.prefs.Preferences;
+import javax.swing.AbstractAction;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Preference class used to store preferences.
@@ -119,9 +129,38 @@ class AlcPreferences implements AlcConstants {
         prefsWindow = new JDialog(owner);
 
         JPanel masterPanel = new JPanel();
+        masterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         masterPanel.setOpaque(true);
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
-        masterPanel.add(new JLabel("Not yet implemented..."));
+
+        
+        // TODO - Japanese translation
+        masterPanel.add(new JLabel("Interface Mode:"));
+
+        String[] interfaceType = {"Standard", "Simple"};
+
+        final JComboBox interfaceBox = new JComboBox(interfaceType);
+        interfaceBox.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                String interfaceMode = interfaceBox.getSelectedItem().toString();
+                if (interfaceMode.equals("Standard")) {
+                    Alchemy.preferences.simpleToolBar = false;
+                } else {
+                    Alchemy.preferences.simpleToolBar = true;
+                }
+            }
+        });
+
+        if(Alchemy.preferences.simpleToolBar){
+            interfaceBox.setSelectedIndex(1);
+        }
+        masterPanel.add(interfaceBox);
+        
+        JLabel restart = new JLabel("* Restart Required");
+        restart.setFont(new Font("sansserif", Font.PLAIN, 10));
+        restart.setForeground(Color.GRAY);
+        masterPanel.add(restart);
 
         prefsWindow.getContentPane().add(masterPanel);
         prefsWindow.setSize(400, 240);
@@ -131,6 +170,18 @@ class AlcPreferences implements AlcConstants {
         }
         prefsWindow.setTitle(title);
         prefsWindow.setResizable(false);
+
+        // Action to close the window when you hit the escape key
+        AbstractAction closeAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                prefsWindow.setVisible(false);
+            }
+        };
+        // Link the action to the Escape Key
+        prefsWindow.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
+        prefsWindow.getRootPane().getActionMap().put("Escape", closeAction);
+
     }
 
     void showWindow() {
@@ -150,6 +201,8 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Palette Attached", paletteAttached);
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
+        prefs.putBoolean("Simple ToolBar", simpleToolBar);
+
         prefs.putInt("Background Colour", Alchemy.canvas.getBgColour().getRGB());
         prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());
 

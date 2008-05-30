@@ -21,6 +21,7 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -203,6 +204,43 @@ public class AlcUtil implements AlcConstants {
         return null;
     }
 
+    /** Create a custom cursor from a given image file
+     * 
+     * @param name  The image file to use as the cursor
+     * @return      A Custom cursor
+     */
+    public static Cursor getCursor(String name) {
+
+        // Cursor size differs depending on the platform
+        // Add padding based on the best cursor size
+        final Cursor customCursor;
+        Image smallCursor = AlcUtil.getImage(name);
+        Dimension smallCursorSize = new Dimension(smallCursor.getWidth(null), smallCursor.getHeight(null));
+        Dimension cursorSize = TOOLKIT.getBestCursorSize(smallCursorSize.width, smallCursorSize.height);
+
+        if (cursorSize.equals(smallCursorSize)) {
+            customCursor = TOOLKIT.createCustomCursor(
+                    smallCursor,
+                    new Point(smallCursorSize.width / 2, smallCursorSize.height / 2),
+                    "CustomCursor");
+        } else {
+            int leftGap = (cursorSize.width - smallCursorSize.width) / 2;
+            int topGap = (cursorSize.height - smallCursorSize.height) / 2;
+
+            BufferedImage bigCursor = new BufferedImage(cursorSize.width, cursorSize.height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = bigCursor.createGraphics();
+            g2.drawImage(smallCursor, leftGap, topGap, null);
+            g2.dispose();
+
+            customCursor = TOOLKIT.createCustomCursor(
+                    bigCursor,
+                    new Point(cursorSize.width / 2, cursorSize.height / 2),
+                    "CustomCursor");
+        }
+
+        return customCursor;
+    }
+
     /** Copies the source file to destination file.
      *  If the destination file does not exist, it is created.
      * 
@@ -379,7 +417,6 @@ public class AlcUtil implements AlcConstants {
      * @return          True if OK, else false if Cancel
      */
     public static boolean showConfirmDialog(String title, String message) {
-
 
         if (Alchemy.PLATFORM == MACOSX) {
             message =
