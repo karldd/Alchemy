@@ -346,16 +346,15 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        AlcSlider alphaSlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 255);
-        alphaSlider.slider.addChangeListener(
+        final AlcSlider alphaSlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 254);
+        alphaSlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
 
-                        JSlider source = (JSlider) e.getSource();
-                        if (!source.getValueIsAdjusting()) {
-                            int value = (int) source.getValue();
-                            Alchemy.canvas.setAlpha(value);
+                        //JSlider source = (JSlider) e.getSource();
+                        if (!alphaSlider.getValueIsAdjusting()) {
+                            Alchemy.canvas.setAlpha(alphaSlider.getValue());
                             refreshSwapButton();
                         }
                     }
@@ -544,7 +543,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     }
 
     @Override
-    void resizeToolBar(Dimension windowSize) {
+    void resizeToolBar( Dimension windowSize) {
         this.setBounds(0, 0, windowSize.width, totalHeight);
         this.windowSize = windowSize;
         this.revalidate();
@@ -813,10 +812,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Sets and manages a timer used to delay hiding of the toolbar */
     private void setTimer() {
         if (toolBarTimer == null) {
-            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
+            toolBarTimer = new javax.swing.Timer(1000, new  
 
-                public void actionPerformed(ActionEvent e) {
-                    if (!insideToolBar) {
+                  ActionListener( ) {
+
+                     public 
+                          
+                             void  actionPerformed(ActionEvent  e){ 
+                                if (!insideToolBar) {
                         if (isPopupMenusVisible()) {
                             if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");
@@ -841,8 +844,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         }
 
     }
-
-
     //////////////////////////////////////////////////////////////
     // PALETTE
     //////////////////////////////////////////////////////////////
@@ -892,8 +893,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     void addPaletteContent() {
         Alchemy.palette.addContent(toolBars);
     }
-
-
 //////////////////////////////////////////////////////////////
 // UTLITY
 //////////////////////////////////////////////////////////////

@@ -19,10 +19,9 @@
  */
 package org.alchemy.core;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 
 /**
  * AlcSlider
@@ -31,7 +30,7 @@ import javax.swing.*;
  */
 class AlcSlider extends JPanel implements AlcShortcutInterface {
 
-    protected JSlider slider;
+    protected AlcSliderCustom slider;
     private JLabel label;
     private String toolTip;
 
@@ -44,27 +43,15 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        slider = new JSlider(JSlider.HORIZONTAL, minValue, maxValue, startValue);
-        //alphaSlider.setMajorTickSpacing(75); // sets numbers for biggest tick marks
-        slider.setMinorTickSpacing(25);  // smaller tick marks
-        slider.setPaintTicks(true);     // display the ticks
-        //slider.setPaintLabels(false);
-
-        //alphaSlider.setUI(new BasicSliderUI(alphaSlider));
-        slider.setOpaque(false);
-        // This has to be set to avoid the ticks bg being default coloured
-        slider.setBackground(new Color(225, 225, 225));
-        //slider.setForeground(Color.black);
-        slider.setPreferredSize(new Dimension(85, 28));
-        slider.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        slider = new AlcSliderCustom(80, 25, minValue, maxValue, startValue);
         this.add(slider);
-
+       
         label = new JLabel(name);
         label.setFont(AlcToolBar.toolBarFont);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(label);
+        
 
         setToolTipText(toolTip);
 
@@ -78,5 +65,43 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
 
     public void refreshShortcut(int key, int modifier) {
         this.setToolTipText(AlcShortcuts.getShortcutString(key, modifier, toolTip));
+    }
+
+    /**
+     * This method returns this slider's isAdjusting trueValue which is true if the
+     * thumb is being dragged.
+     *
+     * @return The slider's isAdjusting trueValue.
+     */
+    public boolean getValueIsAdjusting() {
+        return slider.mouseDown;
+    }
+
+    /**
+     * This method returns the current trueValue of the slider.
+     *
+     * @return The trueValue of the slider stored in the model.
+     */
+    public int getValue() {
+        return slider.trueValue;
+    }
+
+    /**
+     * This method registers a listener to this slider. The listener will be
+     * informed of new ChangeEvents.
+     *
+     * @param listener The listener to register.
+     */
+    public void addChangeListener(ChangeListener listener) {
+        slider.addChangeListener(listener);
+    }
+
+    /**
+     * This method removes a listener from this slider.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeChangeListener(ChangeListener listener) {
+        slider.removeChangeListener(listener);
     }
 }

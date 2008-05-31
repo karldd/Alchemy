@@ -30,10 +30,7 @@ import javax.swing.event.ChangeListener;
  */
 class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
 
-    private int width = 75;
-    private int height = 15;
-    private int widthMinusOne = width - 1;
-    private int heightMinusOne = height - 1;
+    private int width, widthMinusOne, height, heightMinusOne;
     /** Minimum / Maximum / Display Position of the slider */
     private int min,  max,  displayValue;
     /** Actual Value */
@@ -48,7 +45,11 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     /** The ChangeEvent that is passed to all listeners of this slider. */
     protected transient ChangeEvent changeEvent;
 
-    AlcSliderCustom(int min, int max, int initialSliderValue) {
+    AlcSliderCustom(int width, int height, int min, int max, int initialSliderValue) {
+        this.width = width;
+        this.widthMinusOne = width -1;
+        this.height = height;
+        this.heightMinusOne = height -1;
         this.min = min;
         this.max = max;
         addMouseListener(this);
@@ -68,6 +69,8 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(bg);
         g2.fillRect(0, 0, width, height);
+        g2.setColor(Color.LIGHT_GRAY);
+        g2.fillRect(0, 0, (int) displayValue, heightMinusOne);
         g2.setColor(outline);
         g2.drawRect(0, 0, widthMinusOne, heightMinusOne);
         g2.setColor(line);
