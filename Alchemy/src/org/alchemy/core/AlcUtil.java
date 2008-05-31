@@ -324,6 +324,7 @@ public class AlcUtil implements AlcConstants {
             System.err.println(errMsg + ":\n" + e.getLocalizedMessage());
         }
     }
+    static String openLauncher;
 
     /** Open a local pdf in the default application
      * 
@@ -337,6 +338,36 @@ public class AlcUtil implements AlcConstants {
             } else if (Alchemy.PLATFORM == WINDOWS) {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + pdf.getAbsolutePath());
             } else if (Alchemy.PLATFORM == LINUX) {
+
+                if (openLauncher == null) {
+                    // Attempt to use gnome-open
+                    try {
+                        Process p = Runtime.getRuntime().exec(new String[]{"gnome-open"});
+                        /*int result =*/ p.waitFor();
+                        // Not installed will throw an IOException (JDK 1.4.2, Ubuntu 7.04)
+                        openLauncher = "gnome-open";
+                    } catch (Exception e) {
+                    }
+                }
+                if (openLauncher == null) {
+                    // Attempt with kde-open
+                    try {
+                        Process p = Runtime.getRuntime().exec(new String[]{"kde-open"});
+                        /*int result =*/ p.waitFor();
+                        openLauncher = "kde-open";
+                    } catch (Exception e) {
+                    }
+                }
+                if (openLauncher == null) {
+                    System.err.println("Could not find gnome-open or kde-open, " +
+                            "the command may not work.");
+                }
+                if (openLauncher != null) {
+                   // params = new String[]{openLauncher};
+                    Runtime.getRuntime().exec(openLauncher +" " + pdf.getAbsolutePath());
+                }
+
+            //Runtime.getRuntime().exec("gnome-open " + pdf.getAbsolutePath());
             }
         } catch (Exception e) {
             System.err.println(errMsg + ":\n" + e.getLocalizedMessage());
