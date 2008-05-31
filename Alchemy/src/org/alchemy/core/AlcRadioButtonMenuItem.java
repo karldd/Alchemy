@@ -96,36 +96,39 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        // SELECTED
-        if (!this.isSelected()) {
-            g2.setColor(AlcToolBar.toolBarBoxColour);
-            // This is the toolbar menu popup
-            if (moduleType != -1) {
-                g2.draw(toolCircleLine);
 
-            // This is the menubar
-            } else {
-                g2.draw(menuInnerCircle);
-            }
-        // NOT SELECTED
-        } else {
-            if (moduleType != -1) {
-                if (Alchemy.PLATFORM != MACOSX) {
-                    g2.setColor(this.getBackground());
-                    g2.fill(toolCircle);
-                    g2.setColor(Color.BLACK);
-                    g2.fill(toolInnerCircle);
+        if (Alchemy.PLATFORM != LINUX) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            // SELECTED
+            if (!this.isSelected()) {
+                g2.setColor(AlcToolBar.toolBarBoxColour);
+                // This is the toolbar menu popup
+                if (moduleType != -1) {
+                    g2.draw(toolCircleLine);
+
+                // This is the menubar
+                } else {
+                    g2.draw(menuInnerCircle);
                 }
-
-
-            // This is the menubar
+            // NOT SELECTED
             } else {
-                g2.setColor(this.getBackground());
-                g2.fill(menuCircle);
-                g2.setColor(Color.BLACK);
-                g2.fill(menuInnerCircle);
+                if (moduleType != -1) {
+                    if (Alchemy.PLATFORM != MACOSX) {
+                        g2.setColor(this.getBackground());
+                        g2.fill(toolCircle);
+                        g2.setColor(Color.BLACK);
+                        g2.fill(toolInnerCircle);
+                    }
+
+
+                // This is the menubar
+                } else {
+                    g2.setColor(this.getBackground());
+                    g2.fill(menuCircle);
+                    g2.setColor(Color.BLACK);
+                    g2.fill(menuInnerCircle);
+                }
             }
         }
     }

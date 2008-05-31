@@ -560,7 +560,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             public void actionPerformed(ActionEvent e) {
 
                 File manual = new File("Alchemy.pdf");
-                if (manual.exists() && Alchemy.PLATFORM != LINUX) {
+                if (manual.exists()) {
                     AlcUtil.openPDF(manual);
                 } else {
                     System.err.println("Error locating the Alchemy manual");
@@ -765,6 +765,9 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                     break;
                 case WINDOWS:
                     commands = new String[]{"cmd", "/c", "start \"" + path.getName() + "\"", "\"Alchemy\"", file};
+                    break;
+                case LINUX:
+                    commands = new String[]{path.getName(), file};
                     break;
             }
             if (commands != null) {

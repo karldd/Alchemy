@@ -100,15 +100,17 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (!this.getState()) {
-            g.setColor(AlcToolBar.toolBarBoxColour);
-            // This is the toolbar menu popup
-            if (moduleType > 0) {
-                g.drawRect(checkX, 16, 7, 7);
+        if (Alchemy.PLATFORM != LINUX) {
+            if (!this.getState()) {
+                g.setColor(AlcToolBar.toolBarBoxColour);
+                // This is the toolbar menu popup
+                if (moduleType > 0) {
+                    g.drawRect(checkX, 16, 7, 7);
 
-            // This is the menubar
-            } else {
-                g.drawRect(checkX, 10, 7, 7);
+                // This is the menubar
+                } else {
+                    g.drawRect(checkX, 10, 7, 7);
+                }
             }
         }
     }

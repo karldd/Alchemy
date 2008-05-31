@@ -50,8 +50,7 @@ public class Alchemy implements AlcConstants {
         } else if (PLATFORM_NAME.indexOf("Windows") != -1) {
             PLATFORM = WINDOWS;
 
-        } else if (PLATFORM_NAME.equals("Linux")) {  // true for the ibm vm
-
+        } else if (PLATFORM_NAME.equals("Linux")) {
             PLATFORM = LINUX;
 
         } else {
