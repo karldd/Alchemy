@@ -52,9 +52,13 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 break;
             case WINDOWS:
                 platformAppDir = new File(File.separator + "Program Files");
-                this.setBackground(AlcToolBar.toolBarHighlightColour);
+                break;
+            case LINUX:
+                platformAppDir = new File(File.separator + "usr" + File.separator + "bin");
+                this.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 break;
         }
+        this.setBackground(AlcToolBar.toolBarHighlightColour);
 
         // Recording interval array in milliseconds
         int[] recordingInterval = {5000, 15000, 30000, 60000, 120000, 300000, 600000};

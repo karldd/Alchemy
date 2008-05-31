@@ -164,9 +164,9 @@ class AlcPreferences implements AlcConstants {
 
         prefsWindow.getContentPane().add(masterPanel);
         prefsWindow.setSize(400, 240);
-        String title = "Alchemy Options";
-        if (Alchemy.PLATFORM == MACOSX) {
-            title = "Alchemy Preferences";
+        String title = "Alchemy Preferences";
+        if (Alchemy.PLATFORM == WINDOWS) {
+            title = "Alchemy Options";
         }
         prefsWindow.setTitle(title);
         prefsWindow.setResizable(false);
