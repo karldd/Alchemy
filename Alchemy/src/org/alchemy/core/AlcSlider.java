@@ -49,7 +49,7 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
         label = new JLabel(name);
         label.setFont(AlcToolBar.toolBarFont);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //label.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
+        label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         this.add(label);
         
 
