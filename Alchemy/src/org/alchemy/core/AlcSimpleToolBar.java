@@ -23,8 +23,11 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -52,15 +55,15 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         colourBox.setBackground(Alchemy.canvas.getColour());
         colourBox.setPreferredSize(new Dimension(150, 50));
 
-
+        // Get the icon for the label
         ImageIcon colourPickerIcon = AlcUtil.getImageIcon("simple-colour-picker.png");
-        final int w = colourPickerIcon.getIconWidth();
-        final int h = colourPickerIcon.getIconHeight();
+        // Create a rectangle for easy reference 
+        final Rectangle r = new Rectangle(0, 0, colourPickerIcon.getIconWidth(), colourPickerIcon.getIconHeight());
 
         // Create a blank image then draw into it rather than casting the image
-        final BufferedImage colourPickerBuffImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage colourPickerBuffImage = new BufferedImage(r.width, r.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = colourPickerBuffImage.createGraphics();
-        g2.drawImage(colourPickerIcon.getImage(), 0, 0, w, h, null);
+        g2.drawImage(colourPickerIcon.getImage(), r.x, r.y, r.width, r.height, null);
         g2.dispose();
 
         //final BufferedImage colourPickerImage = (BufferedImage)colourPickerIcon.getImage();
@@ -73,13 +76,24 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                int x = e.getX();
-                int y = e.getY();
-                if (x <= w && y <= h) {
-                    Color c = new Color(colourPickerBuffImage.getRGB(x, y));
+                Point p = e.getPoint();
+                if (r.contains(p)) {
+                    Color c = new Color(colourPickerBuffImage.getRGB(p.x, p.y));
                     Alchemy.canvas.setColour(c);
                     colourBox.setBackground(c);
                 //System.out.println(c + " " + e.getPoint());
+                }
+            }
+        });
+
+        colourPicker.addMouseMotionListener(new MouseMotionAdapter() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Point p = e.getPoint();
+                if (r.contains(p)) {
+                    Color c = new Color(colourPickerBuffImage.getRGB(p.x, p.y));
+                    colourBox.setBackground(c);
                 }
             }
         });
