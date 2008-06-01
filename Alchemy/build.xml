@@ -275,6 +275,10 @@
         <copy file="${basedir}/COPYING" todir="${dist.dir}"/>
         <copy file="${basedir}/ReadMe.txt" todir="${dist.dir}"/>
         
+         <!-- LINUX Shell Script to Launch Alchemy -->
+         <copy file="${basedir}/Alchemy" todir="${dist.dir}"/>
+         <chmod file="${dist.dir}/Alchemy" perm="+x"/>
+
     
         <!-- MAC STUFF 
              Not inlcuded in the distribution jar
@@ -282,14 +286,12 @@
              
         Copy the Quaqua libraries for more mac looking interface support -->
         <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/libquaqua64.jnilib" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
+        
         <!-- JMyron -->
         <copy file="${basedir}/lib/libJMyron.jnilib" todir="${dist.dir}/lib"/>
-        
-        
-        <!-- PC STUFF -->
-        
-        <!-- JMyron -->
+        <copy file="${basedir}/lib/libJMyron.so" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/JMyron.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/DSVL.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/myron_ezcam.dll" todir="${dist.dir}/lib"/>
