@@ -32,7 +32,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
     AlcSimpleToolBar() {
         // TOOLBAR
         // Left align layout
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        this.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.setOpaque(true);
         this.setBackground(toolBarBgColour);
@@ -41,9 +41,9 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         // COLOUR BOX
         // Rectangle colourBoxRect = new Rectangle(0, 100, 150, 50);
         final Rect colourBox = new Rect(150, 50, Alchemy.canvas.getColour());
-        colourBox.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.red),
-                colourBox.getBorder()));
+//        colourBox.setBorder(BorderFactory.createCompoundBorder(
+//                BorderFactory.createLineBorder(Color.red),
+//                colourBox.getBorder()));
         //colourBox.setBounds(colourBoxRect);
 
 //        colourBox.setOpaque(true);
@@ -96,10 +96,10 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         });
         this.add(colourPicker);
         this.add(colourBox);
-        
+
         AlcToggleButton styleButton = new AlcToggleButton(AlcUtil.getUrlPath("simple-style.png"));
         this.add(styleButton);
-        
+
         this.add(Box.createVerticalGlue());
 //        colourPicker.setBounds(colourPickerRect);
 //        colourBox.setBounds(colourBoxrRect);
@@ -132,14 +132,14 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
 class Rect extends JPanel {
 
-    int width,  height;
+    int width, height;
     Color colour;
 
     Rect(int width, int height, Color colour) {
         this.width = width;
         this.height = height;
         this.colour = colour;
-        this.setSize(new Dimension(width, height));
+        this.setPreferredSize(new Dimension(width, height));
 //        this.setMinimumSize(new Dimension(width, height));
 //        this.setMaximumSize(new Dimension(width, height));
     }
