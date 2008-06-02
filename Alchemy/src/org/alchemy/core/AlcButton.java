@@ -31,6 +31,10 @@ class AlcButton extends JButton implements AlcShortcutInterface {
         this.setAction(action);
     }
 
+    AlcButton(URL iconUrl) {
+        setup(null, null, iconUrl);
+    }
+
     AlcButton(String text, String toolTip) {
         setup(text, toolTip, null);
     }
@@ -41,7 +45,9 @@ class AlcButton extends JButton implements AlcShortcutInterface {
 
     void setup(String text, String toolTip, URL iconUrl) {
 
-        this.toolTip = toolTip;
+        if (toolTip != null) {
+            this.toolTip = toolTip;
+        }
 
         if (iconUrl != null) {
             // Set the main icon
@@ -57,7 +63,9 @@ class AlcButton extends JButton implements AlcShortcutInterface {
         this.setFont(AlcToolBar.toolBarFont);
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
-        this.setText(text);
+        if (text != null) {
+            this.setText(text);
+        }
         this.setToolTipText(toolTip);
 
         // Insets(int top, int left, int bottom, int right)

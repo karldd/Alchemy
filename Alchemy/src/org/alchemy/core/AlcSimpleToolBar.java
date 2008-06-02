@@ -18,20 +18,10 @@
  */
 package org.alchemy.core;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import javax.swing.*;
 
 /**
  *
@@ -40,35 +30,42 @@ import javax.swing.JLabel;
 public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants {
 
     AlcSimpleToolBar() {
-        // General Toolbar settings
+        // TOOLBAR
         // Left align layout
-        //this.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.setOpaque(true);
         this.setBackground(toolBarBgColour);
-
         this.setName("Toolbar");
 
+        // COLOUR BOX
+        // Rectangle colourBoxRect = new Rectangle(0, 100, 150, 50);
+        final Rect colourBox = new Rect(150, 50, Alchemy.canvas.getColour());
+        colourBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.red),
+                colourBox.getBorder()));
+        //colourBox.setBounds(colourBoxRect);
 
-        final JLabel colourBox = new JLabel();
-        colourBox.setOpaque(true);
-        colourBox.setBackground(Alchemy.canvas.getColour());
-        colourBox.setPreferredSize(new Dimension(150, 50));
+//        colourBox.setOpaque(true);
+//        colourBox.setBackground(Alchemy.canvas.getColour());
 
+
+        // COLOUR PICKER
         // Get the icon for the label
         ImageIcon colourPickerIcon = AlcUtil.getImageIcon("simple-colour-picker.png");
         // Create a rectangle for easy reference 
-        final Rectangle r = new Rectangle(0, 0, colourPickerIcon.getIconWidth(), colourPickerIcon.getIconHeight());
+        final Rectangle colourPickerRect = new Rectangle(0, 0, colourPickerIcon.getIconWidth(), colourPickerIcon.getIconHeight());
 
         // Create a blank image then draw into it rather than casting the image
-        final BufferedImage colourPickerBuffImage = new BufferedImage(r.width, r.height, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage colourPickerBuffImage = new BufferedImage(colourPickerRect.width, colourPickerRect.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = colourPickerBuffImage.createGraphics();
-        g2.drawImage(colourPickerIcon.getImage(), r.x, r.y, r.width, r.height, null);
+        g2.drawImage(colourPickerIcon.getImage(), colourPickerRect.x, colourPickerRect.y, colourPickerRect.width, colourPickerRect.height, null);
         g2.dispose();
 
         //final BufferedImage colourPickerImage = (BufferedImage)colourPickerIcon.getImage();
         JLabel colourPicker = new JLabel(colourPickerIcon);
 
+        colourPicker.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         final Cursor pickerCursor = AlcUtil.getCursor("cursor-picker.gif");
         colourPicker.setCursor(pickerCursor);
         //    colourPicker.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -77,10 +74,10 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
             @Override
             public void mouseReleased(MouseEvent e) {
                 Point p = e.getPoint();
-                if (r.contains(p)) {
+                if (colourPickerRect.contains(p)) {
                     Color c = new Color(colourPickerBuffImage.getRGB(p.x, p.y));
                     Alchemy.canvas.setColour(c);
-                    colourBox.setBackground(c);
+                    colourBox.update(c);
                 //System.out.println(c + " " + e.getPoint());
                 }
             }
@@ -91,14 +88,23 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
             @Override
             public void mouseDragged(MouseEvent e) {
                 Point p = e.getPoint();
-                if (r.contains(p)) {
+                if (colourPickerRect.contains(p)) {
                     Color c = new Color(colourPickerBuffImage.getRGB(p.x, p.y));
-                    colourBox.setBackground(c);
+                    colourBox.update(c);
                 }
             }
         });
         this.add(colourPicker);
         this.add(colourBox);
+        
+        AlcToggleButton styleButton = new AlcToggleButton(AlcUtil.getUrlPath("simple-style.png"));
+        this.add(styleButton);
+        
+        this.add(Box.createVerticalGlue());
+//        colourPicker.setBounds(colourPickerRect);
+//        colourBox.setBounds(colourBoxrRect);
+
+
 
 
         //this.setPreferredSize(new Dimension(100, 100));
@@ -121,6 +127,32 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         // Draw a line on the right edge of the toolbar
         g.setColor(toolBarLineColour);
         g.drawLine(150, 0, 150, windowSize.height);
+    }
+}
+
+class Rect extends JPanel {
+
+    int width,  height;
+    Color colour;
+
+    Rect(int width, int height, Color colour) {
+        this.width = width;
+        this.height = height;
+        this.colour = colour;
+        this.setSize(new Dimension(width, height));
+//        this.setMinimumSize(new Dimension(width, height));
+//        this.setMaximumSize(new Dimension(width, height));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.setColor(colour);
+        g.fillRect(0, 0, width, height);
+    }
+
+    void update(Color colour) {
+        this.colour = colour;
+        this.repaint();
     }
 }
 

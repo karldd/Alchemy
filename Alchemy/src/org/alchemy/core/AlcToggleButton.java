@@ -34,14 +34,20 @@ class AlcToggleButton extends JToggleButton implements AlcShortcutInterface {
         this.setAction(action);
     }
 
+    AlcToggleButton(URL iconUrl) {
+        setup(null, null, iconUrl);
+    }
+
     AlcToggleButton(String text, String toolTip, URL iconUrl) {
         setup(text, toolTip, iconUrl);
     }
 
     void setup(String text, String toolTip, URL iconUrl) {
-        
-        this.toolTip = toolTip;
-        
+
+        if (toolTip != null) {
+            this.toolTip = toolTip;
+        }
+
         if (iconUrl != null) {
             // Set the main icon
             this.setIcon(AlcUtil.getImageIcon(iconUrl));
@@ -62,7 +68,9 @@ class AlcToggleButton extends JToggleButton implements AlcShortcutInterface {
         this.setFont(AlcToolBar.toolBarFont);
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
-        this.setText(text);
+        if (text != null) {
+            this.setText(text);
+        }
         this.setToolTipText(toolTip);
 
         // Insets(int top, int left, int bottom, int right)
