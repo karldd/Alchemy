@@ -51,14 +51,13 @@ public class CameraColour extends AlcModule implements AlcConstants {
     private int height = 480;
     private int refreshRate = 100;
     private BufferedImage cameraImage;
-    private boolean cameraDisplay = false;
+    private boolean cameraDisplay = true;
     private AlcToolBarSubSection subToolBarSection;
     private AlcSubToggleButton cameraButton;
     private Thread camThread;
     private boolean threadPaused = true;
 
     public CameraColour() {
-
     }
 
     @Override
@@ -67,6 +66,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
         toolBar.addSubToolBarSection(subToolBarSection);
         cam = new JMyron.JMyron();
         setupCamera();
+        setCameraDisplay(cameraDisplay);
 
         if (cam != null) {
             camThread = new Thread() {
@@ -121,6 +121,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
         if (cam != null) {
             toolBar.addSubToolBarSection(subToolBarSection);
             setupCamera();
+            setCameraDisplay(true);
             startThread();
         } else {
             setup();
@@ -141,6 +142,7 @@ public class CameraColour extends AlcModule implements AlcConstants {
                         setCameraDisplay(!cameraDisplay);
                     }
                 });
+        cameraButton.setSelected(cameraDisplay);
         subToolBarSection.add(cameraButton);
     }
 
@@ -221,4 +223,4 @@ public class CameraColour extends AlcModule implements AlcConstants {
     public void mouseReleased(MouseEvent e) {
         startThread();
     }
-    }
+}

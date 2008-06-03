@@ -19,6 +19,8 @@ public abstract class AlcAbstractToolBar extends JPanel {
 
     /** Keep track of the windowSize */
     Dimension windowSize;
+    /** Width of the toolbar */
+    int toolBarWidth;
     //////////////////////////////////////////////////////////////
     // INTERFACE COLOURS
     //////////////////////////////////////////////////////////////
@@ -54,10 +56,10 @@ public abstract class AlcAbstractToolBar extends JPanel {
     void setToolBarVisible(boolean visible) {
     }
 
-    void refreshSwapButton() {
+    void refreshColourButton() {
     }
 
-    void queueSwapButtonRefresh() {
+    void queueColourButtonRefresh() {
     }
 
     void resizeToolBar() {
@@ -82,5 +84,10 @@ public abstract class AlcAbstractToolBar extends JPanel {
     }
 
     public void addSubToolBarSection(AlcToolBarSubSection subToolBarSection) {
+    }
+
+    /** Get a string from the resource bundle */
+    String getS(String stringName) {
+        return Alchemy.bundle.getString(stringName);
     }
 }

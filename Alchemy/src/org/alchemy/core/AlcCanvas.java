@@ -138,7 +138,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         addMouseListener(this);
         addMouseMotionListener(this);
-        this.setBounds(0, 0, Alchemy.window.getWindowSize().width, Alchemy.window.getWindowSize().height);
+
+////        Dimension windowSize = Alchemy.window.getWindowSize();
+////        int x = 0;
+////        if (Alchemy.preferences.simpleToolBar) {
+////            x = 150;
+////            windowSize.width -= 150;
+////        }
+////        this.setBounds(x, 0, windowSize.width, windowSize.height);
 
         shapes = new ArrayList<AlcShape>(100);
         shapes.ensureCapacity(100);
@@ -328,7 +335,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Resize the canvas - called when the window is resized */
     public void resizeCanvas(Dimension windowSize) {
-        this.setBounds(0, 0, windowSize.width, windowSize.height);
+        // Allow for the left hand toolbar if in 'simple' mode
+        int x = 0;
+        if (Alchemy.preferences.simpleToolBar) {
+            x = Alchemy.toolBar.toolBarWidth;
+            windowSize.width -= Alchemy.toolBar.toolBarWidth;
+        }
+        this.setBounds(x, 0, windowSize.width, windowSize.height);
     }
 
     /** Clear the canvas */
@@ -456,7 +469,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      */
     public AlcShape getCurrentCreateShape() {
         if (createShapes.size() > 0) {
-            return (AlcShape) createShapes.get(createShapes.size() - 1);
+            return createShapes.get(createShapes.size() - 1);
         } else {
             return null;
         }
@@ -560,7 +573,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     //////////////////////////////////////////////////////////////
     // SHAPE/COLOUR SETTINGS
     //////////////////////////////////////////////////////////////
-    /** Get the current colour */
+    /** Get the current colour
+     * @return      The current colour
+     */
     public Color getColour() {
         return colour;
     }
@@ -576,10 +591,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
         }
 
-        if (Alchemy.preferences.paletteAttached) {
-            Alchemy.toolBar.refreshSwapButton();
+        if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
+            Alchemy.toolBar.refreshColourButton();
         } else {
-            Alchemy.toolBar.queueSwapButtonRefresh();
+            Alchemy.toolBar.queueColourButtonRefresh();
         }
     }
 
@@ -688,8 +703,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
-
-
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
@@ -822,8 +835,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         g2.dispose();
         return buffImage;
     }
-
-
     //////////////////////////////////////////////////////////////
     // SAVE PNG
     //////////////////////////////////////////////////////////////
@@ -870,9 +881,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @return      True if save worked, otherwise false
      */
     boolean saveSinglePdf(File file) {
-        int singlePdfWidth = Alchemy.window.getWindowSize().width;
-        int singlePdfHeight = Alchemy.window.getWindowSize().height;
-        Document singleDocument = new Document(new com.lowagie.text.Rectangle(singlePdfWidth, singlePdfHeight), 0, 0, 0, 0);
+        java.awt.Rectangle visibleRect = this.getVisibleRect();
+        //int singlePdfWidth = Alchemy.window.getWindowSize().width;
+        //int singlePdfHeight = Alchemy.window.getWindowSize().height;
+        Document singleDocument = new Document(new com.lowagie.text.Rectangle(visibleRect.width, visibleRect.height), 0, 0, 0, 0);
         System.out.println("Save Single Pdf Called: " + file.toString());
 
         try {
@@ -895,7 +907,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             singleDocument.open();
             PdfContentByte singleContent = singleWriter.getDirectContent();
 
-            Graphics2D g2pdf = singleContent.createGraphics(singlePdfWidth, singlePdfHeight);
+            Graphics2D g2pdf = singleContent.createGraphics(visibleRect.width, visibleRect.height);
 
             setGuide(false);
             vectorCanvas.paintComponent(g2pdf);
@@ -1084,11 +1096,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     public void mousePressed(MouseEvent event) {
         // Hide the toolbar when clicking on the canvas
-        if (!Alchemy.preferences.paletteAttached 
-                && Alchemy.toolBar.isToolBarVisible() 
-                && !Alchemy.preferences.simpleToolBar 
-                && event.getY() >= Alchemy.toolBar.getTotalHeight()
-                ) {
+        if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() && !Alchemy.preferences.simpleToolBar && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
             Alchemy.toolBar.setToolBarVisible(false);
         }
 

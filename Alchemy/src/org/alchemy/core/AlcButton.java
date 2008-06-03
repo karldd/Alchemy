@@ -27,6 +27,9 @@ class AlcButton extends JButton implements AlcShortcutInterface {
 
     private String toolTip;
 
+    AlcButton() {
+    }
+
     AlcButton(Action action) {
         this.setAction(action);
     }

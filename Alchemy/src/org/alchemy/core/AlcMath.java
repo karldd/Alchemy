@@ -22,8 +22,10 @@ package org.alchemy.core;
 import java.util.*;
 
 /**
- * Utility class that handles math functions <br />
- * Random number generation and noise at the moment... 
+ * Utility class that handles math functions 
+ * Random number generation, noise etc...
+ * Based on Processing:
+ * http://dev.processing.org/source/index.cgi/trunk/processing/core/src/processing/core/PApplet.java?view=markup
  */
 public class AlcMath implements AlcConstants {
 
@@ -288,5 +290,20 @@ public class AlcMath implements AlcConstants {
             sum += p[i];
         }
         return sum / p.length;
+    }
+
+    /** Convenience function to map a variable 
+     *  from one coordinate space to another. 
+     *  Equivalent to unlerp() followed by lerp().
+     * 
+     * @param value     The incoming value to be converted
+     * @param istart    Lower bound of the value's current range
+     * @param istop     Upper bound of the value's current range
+     * @param ostart    Lower bound of the value's target range
+     * @param ostop     Upper bound of the value's target range
+     * @return          The mapped number
+     */
+    static public final float map(float value, float istart, float istop, float ostart, float ostop) {
+        return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
     }
 }
