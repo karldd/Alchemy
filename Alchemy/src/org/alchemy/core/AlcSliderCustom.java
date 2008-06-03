@@ -30,12 +30,18 @@ import javax.swing.event.ChangeListener;
  */
 class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
 
-    private int width, widthMinusOne, height, heightMinusOne;
+    private int width,  widthMinusOne,  height,  heightMinusOne;
     /** Minimum / Maximum / Display Position of the slider */
     private int min,  max,  displayValue;
     /** Actual Value */
     int trueValue;
     boolean mouseDown;
+    /** Border painting on/off */
+    boolean borderPainting = true;
+    /** Fill painting on/off */
+    boolean fillPainting = true;
+    /** Background Image */
+    Image bgImage;
     /** Size of one step */
     private float step;
     private float scale;
@@ -47,9 +53,9 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
 
     AlcSliderCustom(int width, int height, int min, int max, int initialSliderValue) {
         this.width = width;
-        this.widthMinusOne = width -1;
+        this.widthMinusOne = width - 1;
         this.height = height;
-        this.heightMinusOne = height -1;
+        this.heightMinusOne = height - 1;
         this.min = min;
         this.max = max;
         addMouseListener(this);
@@ -67,14 +73,45 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setColor(bg);
-        g2.fillRect(0, 0, width, height);
+        if (bgImage != null) {
+            g2.drawImage(bgImage, 0, 0, null);
+        } else {
+            g2.setColor(bg);
+            g2.fillRect(0, 0, width, height);
+        }
         g2.setColor(Color.LIGHT_GRAY);
-        g2.fillRect(0, 0, displayValue, heightMinusOne);
-        g2.setColor(outline);
-        g2.drawRect(0, 0, widthMinusOne, heightMinusOne);
-        g2.setColor(line);
+        if (borderPainting) {
+            if (fillPainting) {
+                g2.fillRect(0, 0, displayValue, heightMinusOne);
+            }
+            g2.setColor(outline);
+            g2.drawRect(0, 0, widthMinusOne, heightMinusOne);
+        } else {
+            if (fillPainting) {
+                g2.fillRect(0, 0, displayValue, height);
+            }
+        }
+
+        if (bgImage != null) {
+            g2.setColor(Color.WHITE);
+            int displayValueMinus = displayValue - 1;
+            if (displayValueMinus >= 0) {
+                g2.drawLine(displayValueMinus, 0, displayValueMinus, height);
+            }
+            g2.setColor(Color.BLACK);
+        } else {
+            g2.setColor(line);
+        }
+        //g2.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
         g2.drawLine(displayValue, 0, displayValue, height);
+
+//        if (bgImage != null) {
+//            g2.setColor(Color.WHITE);
+//            int displayValuePlus = displayValue + 1;
+//            if (displayValuePlus <= width) {
+//                g2.drawLine(displayValuePlus, 0, displayValuePlus, height);
+//            }
+//        }
     }
 
     private void moveSlider(int x) {
@@ -91,6 +128,40 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
             displayValue = Math.round((width / scale) * value);
             this.repaint();
         }
+    }
+
+    /** Turn border painting on or off */
+    void setBorderPainted(boolean b) {
+        borderPainting = b;
+    }
+
+    /** Turn fill painting on or off */
+    void setFillPainted(boolean b) {
+        fillPainting = b;
+    }
+
+    /** Set the background image */
+    void setBgImage(Image bgImage) {
+        this.bgImage = bgImage;
+    }
+
+    /**
+     * This method returns this slider's isAdjusting trueValue which is true if the
+     * thumb is being dragged.
+     *
+     * @return The slider's isAdjusting trueValue.
+     */
+    public boolean getValueIsAdjusting() {
+        return mouseDown;
+    }
+
+    /**
+     * This method returns the current trueValue of the slider.
+     *
+     * @return The trueValue of the slider stored in the model.
+     */
+    public int getValue() {
+        return trueValue;
     }
 
     /**

@@ -36,7 +36,7 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
 
     AlcSlider(String name, String toolTip, int minValue, int maxValue, int startValue) {
 
-        this.toolTip = toolTip;
+
 
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -45,15 +45,20 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
 
         slider = new AlcSliderCustom(80, 25, minValue, maxValue, startValue);
         this.add(slider);
-       
-        label = new JLabel(name);
-        label.setFont(AlcToolBar.toolBarFont);
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
-        label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-        this.add(label);
-        
 
-        setToolTipText(toolTip);
+        if (name != null) {
+            label = new JLabel(name);
+            label.setFont(AlcToolBar.toolBarFont);
+            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+            label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+            this.add(label);
+        }
+
+
+        if (toolTip != null) {
+            this.toolTip = toolTip;
+            setToolTipText(toolTip);
+        }
 
     }
 

@@ -57,6 +57,7 @@ public class Mirror extends AlcModule implements AlcConstants {
     @Override
     protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
+        resetAxis();
     }
 
     @Override
@@ -137,7 +138,7 @@ public class Mirror extends AlcModule implements AlcConstants {
 
 
             for (int i = 0; i < numOfCreateShapes; i++) {
-                AlcShape shape = (AlcShape) canvas.createShapes.get(i);
+                AlcShape shape = canvas.createShapes.get(i);
                 // Original Path with which we reflect
                 GeneralPath originalPath = shape.getPath();
 
@@ -147,7 +148,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     if (canvas.affectShapes.size() == index) {
                         canvas.affectShapes.add(shape.customClone(hPath));
                     } else {
-                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(index));
+                        AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hPath);
                         // Make sure the points tally is up to date
                         thisShape.setTotalPoints(shape.getTotalPoints());
@@ -163,7 +164,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     if (canvas.affectShapes.size() == index) {
                         canvas.affectShapes.add(shape.customClone(vPath));
                     } else {
-                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(index));
+                        AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(vPath);
                         // Make sure the points tally is up to date
                         thisShape.setTotalPoints(shape.getTotalPoints());
@@ -175,7 +176,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     if (canvas.affectShapes.size() == index) {
                         canvas.affectShapes.add(shape.customClone(hvPath));
                     } else {
-                        AlcShape thisShape = ((AlcShape) canvas.affectShapes.get(index));
+                        AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hvPath);
                         // Make sure the points tally is up to date
                         thisShape.setTotalPoints(shape.getTotalPoints());

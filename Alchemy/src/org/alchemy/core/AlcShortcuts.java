@@ -27,9 +27,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.JTextField;
-import javax.swing.JTextField;
-import javax.swing.JTextField;
-import javax.swing.JTextField;
 
 /**
  * AlcShortcuts
@@ -73,6 +70,11 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
         masterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        
+        
+        //////////////////////////////////////////////////////////////
+        // SCROLL PANE
+        //////////////////////////////////////////////////////////////
         shortcutPanel = setupShortcutPanel();
         //Create the scroll pane and add the panel to it.
         final JScrollPane scrollPane = new JScrollPane(shortcutPanel);
@@ -168,7 +170,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         panel.setLayout(new GridLayout(userShortcuts.size(), 2, 5, 5));
 
         for (int i = 0; i < userShortcuts.size(); i++) {
-            final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            final AlcShortcutMapper shortcut = userShortcuts.get(i);
             JLabel label = new JLabel(shortcut.title);
             label.setFont(shortcutFont);
             panel.add(label);
@@ -272,7 +274,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
         // Check the shortcut is not the same as any other
         for (int i = 0; i < userShortcuts.size(); i++) {
-            final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            final AlcShortcutMapper shortcut = userShortcuts.get(i);
             if (i != index) {
                 if (shortcut.modifier == modifier && shortcut.key == key) {
                     return 2;
@@ -286,7 +288,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     /** Reload the shortcuts into the textfields */
     private void refreshTextfields() {
         for (int i = 0; i < textfields.length; i++) {
-            final AlcShortcutMapper shortcut = (AlcShortcutMapper) userShortcuts.get(i);
+            final AlcShortcutMapper shortcut = userShortcuts.get(i);
             // Make a text string of the shortcut
             String shortcutString = getShortcutString(shortcut.key, shortcut.modifier);
             textfields[i].setText(shortcutString);

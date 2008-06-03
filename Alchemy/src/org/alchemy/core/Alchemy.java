@@ -154,7 +154,15 @@ public class Alchemy implements AlcConstants {
         window.setupWindow();
         shortcuts.setupWindow();
         plugins.initialiseModules();
+
+        if (Alchemy.preferences.simpleToolBar) {
+            window.setFullscreen(true);
+        }
+
         window.setVisible(true);
+
+
+
     }
 
     public static void main(String[] args) {

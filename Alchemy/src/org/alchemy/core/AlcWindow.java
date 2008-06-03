@@ -417,6 +417,10 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
             // Get the size of the canvas without the titlebar and insets
             Rectangle visibleRect = Alchemy.canvas.getVisibleRect();
+            // Add extra 
+            if (Alchemy.preferences.simpleToolBar) {
+                visibleRect.width += Alchemy.toolBar.toolBarWidth;
+            }
             // Set the canvas size
             Alchemy.preferences.canvasSize = new Dimension(visibleRect.width, visibleRect.height);
         }
