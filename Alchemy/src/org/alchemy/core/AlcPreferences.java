@@ -21,6 +21,11 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.prefs.Preferences;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -43,7 +48,7 @@ class AlcPreferences implements AlcConstants {
     /** Panel containing the modules */
     JPanel modulePanel;
     /** Default Modules for the simple interface */
-    String[] simpleDefaultModules = {"Shapes", "Mirror", "Displace", "Mic Shapes", "Speed Shapes", "Camera Colour"};
+    String[] simpleDefaultModules = {"Shapes", "Mirror", "Displace", "Mic Shapes", "Speed Shapes", "Camera Colour", "Median Shapes", "Mic Expand"};
     /** If the simple modules have been customised */
     boolean simpleModulesSet;
     /** Prefix for the preference node name */
@@ -98,14 +103,22 @@ class AlcPreferences implements AlcConstants {
     AlcPreferences() {
         //super(owner);
 
-        prefs = Preferences.userNodeForPackage(getClass());
-        // Reset the preferences
+//        prefs = Preferences.userNodeForPackage(getClass());
+////        // Reset the preferences
 //        try {
 //            prefs.removeNode();
 //        } catch (BackingStoreException ex) {
 //            ex.printStackTrace();
 //        }
 //        prefs = Preferences.userNodeForPackage(getClass());
+
+        String[] simpleModules = loadModuleList();
+
+        if (simpleModules != null) {
+            System.out.println("Simple Modules assigned");
+            simpleDefaultModules = simpleModules;
+            simpleModules = null;
+        }
 
         sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
@@ -119,12 +132,14 @@ class AlcPreferences implements AlcConstants {
         paletteLocation = stringToPoint(prefs.get("Palette Location", null));
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
-        simpleToolBar = prefs.getBoolean("Simple ToolBar", false);
+        simpleToolBar = prefs.getBoolean("Simple ToolBar", true);
         simpleModulesSet = prefs.getBoolean("Simple Modules Set", false);
         smoothing = prefs.getBoolean("Smoothing", true);
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
+
+
     }
 
     /** Save the changes on exit */
@@ -254,6 +269,7 @@ class AlcPreferences implements AlcConstants {
 
         setupModules(Alchemy.plugins.creates);
         setupModules(Alchemy.plugins.affects);
+        simpleModulesSet = true;
 
 
         //Create the scroll pane and add the panel to it.
@@ -275,32 +291,32 @@ class AlcPreferences implements AlcConstants {
             String moduleName = currentModule.getName();
             final String moduleNodeName = simpleModulePrefix + moduleName;
             final JCheckBox checkBox = new JCheckBox(moduleName);
-            
-                // CUSTOM MODULES
-                if (simpleModulesSet) {
-                    // Set the state of the checkbox
-                    checkBox.setSelected(prefs.getBoolean(moduleNodeName, false));
 
-                // DEFAULT MODULES
-                } else {
-                    // No preferences, check if it is a default
-                    boolean hit = false;
-                    for (int j = 0; j < simpleDefaultModules.length; j++) {
-                        if (moduleName.equals(simpleDefaultModules[j])) {
-                            checkBox.setSelected(true);
-                            prefs.putBoolean(moduleNodeName, true);
-                            hit = true;
-                            break;
-                        }
+            // CUSTOM MODULES
+            if (simpleModulesSet) {
+                // Set the state of the checkbox
+                checkBox.setSelected(prefs.getBoolean(moduleNodeName, false));
+
+            // DEFAULT MODULES
+            } else {
+                // No preferences, check if it is a default
+                boolean hit = false;
+                for (int j = 0; j < simpleDefaultModules.length; j++) {
+                    if (moduleName.equals(simpleDefaultModules[j])) {
+                        checkBox.setSelected(true);
+                        prefs.putBoolean(moduleNodeName, true);
+                        hit = true;
+                        break;
                     }
-                    // Set the preference to false
-                    if (!hit) {
-                        prefs.putBoolean(moduleNodeName, false);
-                    }
-                    simpleModulesSet = true;
-                    prefs.putBoolean("Simple Modules Set", simpleModulesSet);
                 }
-            
+                // Set the preference to false
+                if (!hit) {
+                    prefs.putBoolean(moduleNodeName, false);
+                }
+
+                prefs.putBoolean("Simple Modules Set", simpleModulesSet);
+            }
+
             checkBox.addActionListener(
                     new ActionListener() {
 
@@ -311,6 +327,7 @@ class AlcPreferences implements AlcConstants {
 
             modulePanel.add(checkBox);
         }
+
     }
 
     private void setScrollPaneEnabled(boolean enabled) {
@@ -329,6 +346,32 @@ class AlcPreferences implements AlcConstants {
             int count = components.length;
             for (int i = 0; i < count; i++) {
                 components[i].setEnabled(enabled);
+            }
+        }
+    }
+
+    private String[] loadModuleList() {
+        ArrayList<String> modules = new ArrayList<String>();
+        Scanner s = null;
+        try {
+            s = new Scanner(new BufferedReader(new FileReader("modules" + FILE_SEPARATOR + "modules.txt")));
+            s.useDelimiter(", ");
+            while (s.hasNext()) {
+
+                String module = s.next();
+                modules.add(module);
+            //System.out.println("Module Name:" + module);
+
+            }
+            String[] moduleArray = new String[modules.size()];
+            moduleArray = modules.toArray(moduleArray);
+            return moduleArray;
+        } catch (FileNotFoundException ex) {
+            //ex.printStackTrace();
+            return null;
+        } finally {
+            if (s != null) {
+                s.close();
             }
         }
     }
