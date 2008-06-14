@@ -40,6 +40,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     /** Session stuff global so it can be enabled/disabled */
     private AlcMenuItem nextPageItem,  previousPageItem,  unloadSessionItem;
     private AlcCheckBoxMenuItem linkSessionItem;
+    /** Fullscreen toggle global so it can be set on startup */
+    AlcCheckBoxMenuItem fullScreenItem;
 
     /** Creates a new instance of AlcMenuBar */
     AlcMenuBar() {
@@ -181,7 +183,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         // Fullscreen
 
         String fullScreenTitle = getS("fullScreenTitle");
-        final AlcCheckBoxMenuItem fullScreenItem = new AlcCheckBoxMenuItem();
+        fullScreenItem = new AlcCheckBoxMenuItem();
         AbstractAction fullScreenAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -592,7 +594,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 }
 
             }
-            };
+        };
 
         AlcMenuItem helpItem = new AlcMenuItem(helpAction);
         helpItem.setup(getS("alchemyHelpTitle"));

@@ -103,8 +103,8 @@ class AlcPreferences implements AlcConstants {
     AlcPreferences() {
         //super(owner);
 
-//        prefs = Preferences.userNodeForPackage(getClass());
-////        // Reset the preferences
+        prefs = Preferences.userNodeForPackage(getClass());
+//        // Reset the preferences
 //        try {
 //            prefs.removeNode();
 //        } catch (BackingStoreException ex) {
@@ -123,7 +123,7 @@ class AlcPreferences implements AlcConstants {
         sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", DESKTOP_DIR);
-        sessionRecordingInterval = prefs.getInt("Recording Interval", 5000);
+        sessionRecordingInterval = prefs.getInt("Recording Interval", 30000);
         sessionAutoClear = prefs.getBoolean("Auto Clear Canvas", false);
         sessionLink = prefs.getBoolean("Link to Current Session", true);
         switchVectorApp = prefs.get("Switch Vector Application", null);
@@ -291,6 +291,7 @@ class AlcPreferences implements AlcConstants {
             String moduleName = currentModule.getName();
             final String moduleNodeName = simpleModulePrefix + moduleName;
             final JCheckBox checkBox = new JCheckBox(moduleName);
+            checkBox.setBackground(AlcToolBar.toolBarBgStartColour);
 
             // CUSTOM MODULES
             if (simpleModulesSet) {

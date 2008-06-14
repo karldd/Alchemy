@@ -117,16 +117,16 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         } else {
             // Otherwise add it to the toolbar area
-            if (!Alchemy.preferences.simpleToolBar) {
+            //if (!Alchemy.preferences.simpleToolBar) {
                 //Palette
-                if (Alchemy.preferences.paletteAttached) {
+                if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
                     this.setJMenuBar(Alchemy.menuBar);
                 //Toolbar
                 } else {
                     Alchemy.toolBar.add("North", Alchemy.menuBar);
                     Alchemy.toolBar.calculateTotalHeight();
                 }
-            }
+            //}
         }
 
         // LAYERED PANE
