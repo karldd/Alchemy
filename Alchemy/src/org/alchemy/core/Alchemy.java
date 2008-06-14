@@ -157,6 +157,7 @@ public class Alchemy implements AlcConstants {
 
         if (Alchemy.preferences.simpleToolBar) {
             window.setFullscreen(true);
+            menuBar.fullScreenItem.setSelected(true);
         }
 
         window.setVisible(true);
