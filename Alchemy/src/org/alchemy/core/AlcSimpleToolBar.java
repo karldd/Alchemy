@@ -75,7 +75,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         // STYLE BUTTON
         //////////////////////////////////////////////////////////////
         final AlcToggleButton styleButton = new AlcToggleButton();
-        styleButton.setBorder(BorderFactory.createEmptyBorder(15, 0, 10, 0));
+        styleButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         AbstractAction styleAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -234,8 +234,8 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         //Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
 
         this.setVisible(true);
-        
-        //Alchemy.window.setFullscreen(true);
+
+    //Alchemy.window.setFullscreen(true);
     }
 
     private void addModules(AlcModule[] modules) {
@@ -283,8 +283,11 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
                 AlcSimpleModuleToggleButton moduleButton = (AlcSimpleModuleToggleButton) e.getSource();
                 // CREATE
                 if (createModule) {
-                    Alchemy.plugins.setCurrentCreate(currentModule.getIndex());
-                    buttonGroup.setSelected(moduleButton.getModel(), true);
+
+                    if (Alchemy.plugins.currentCreate != currentModule.getIndex()) {
+                        Alchemy.plugins.setCurrentCreate(currentModule.getIndex());
+                        buttonGroup.setSelected(moduleButton.getModel(), true);
+                    }
                 // AFFECT
                 } else {
 
@@ -302,7 +305,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         };
 
         AlcSimpleModuleToggleButton moduleButton = new AlcSimpleModuleToggleButton(moduleAction);
-        moduleButton.setToolTipText(currentModule.getDescription());
+        moduleButton.setToolTipText(currentModule.getName());
         moduleButton.setup(AlcUtil.getUrlPath(currentModule.getIconName(), currentModule.getClassLoader()));
 
         if (createModule) {
