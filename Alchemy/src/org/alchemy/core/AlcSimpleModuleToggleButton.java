@@ -53,7 +53,7 @@ class AlcSimpleModuleToggleButton extends JToggleButton {
     //this.setMargin(new Insets(5, 5, 5, 5));
     //this.setBorderPainted(false);    // Draw the button shape
     this.setContentAreaFilled(false);  // Draw the background behind the button
-    //this.setFocusPainted(false);       // Draw the highlight when focused
+    this.setFocusPainted(false);       // Draw the highlight when focused
 
     }
 
