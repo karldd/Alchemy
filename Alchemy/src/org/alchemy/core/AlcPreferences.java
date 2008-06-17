@@ -41,19 +41,26 @@ class AlcPreferences implements AlcConstants {
     /** The preferences window */
     private JDialog prefsWindow;
     /** Main content panel for the window */
-    JPanel masterPanel;    //////////////////////////////////////////////////////////////
-    // SIMPLE MODULES
+    JPanel masterPanel;
+    /** Default / Cancel / OK Button Pane */
+    JPanel buttonPane;
+    /** Ok Button */
+    JButton okButton;
+    //////////////////////////////////////////////////////////////
+    //  MODULES
     //////////////////////////////////////////////////////////////    
     /** Scroll pane for the module listing */
     JScrollPane scrollPane;
     /** Panel containing the modules */
     JPanel modulePanel;
-    /** Default Modules for the simple interface */
-    String[] simpleDefaultModules = {"Shapes", "Mirror", "Displace", "Mic Shapes", "Speed Shapes", "Camera Colour", "Median Shapes", "Mic Expand"};
+    /** A module list loaded from /modules/modules.txt */
+    String[] moduleList;
     /** If the simple modules have been customised */
-    boolean simpleModulesSet;
+    boolean modulesSet;
     /** Prefix for the preference node name */
-    String simpleModulePrefix = "Simple Module - ";
+    String modulePrefix = "Module - ";
+    /** Change modules when the prefs window is closed */
+    boolean changeModules = false;
     //////////////////////////////////////////////////////////////
     // SESSION
     //////////////////////////////////////////////////////////////
@@ -102,24 +109,13 @@ class AlcPreferences implements AlcConstants {
     int colour;
 
     AlcPreferences() {
-        //super(owner);
+        moduleList = loadModuleList();
+        loadPreferences();
+    }
 
+    /** Load the preference nodes */
+    private void loadPreferences() {
         prefs = Preferences.userNodeForPackage(getClass());
-//        // Reset the preferences
-//        try {
-//            prefs.removeNode();
-//        } catch (BackingStoreException ex) {
-//            ex.printStackTrace();
-//        }
-//        prefs = Preferences.userNodeForPackage(getClass());
-
-        String[] simpleModules = loadModuleList();
-
-        if (simpleModules != null) {
-            System.out.println("Simple Modules assigned");
-            simpleDefaultModules = simpleModules;
-            simpleModules = null;
-        }
 
         sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
@@ -134,7 +130,7 @@ class AlcPreferences implements AlcConstants {
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
         simpleToolBar = prefs.getBoolean("Simple ToolBar", true);
-        simpleModulesSet = prefs.getBoolean("Simple Modules Set", false);
+        modulesSet = prefs.getBoolean("Modules Set", false);
         smoothing = prefs.getBoolean("Smoothing", true);
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
@@ -155,7 +151,7 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
         prefs.putBoolean("Simple ToolBar", simpleToolBar);
-        prefs.putBoolean("Simple Modules Set", simpleModulesSet);
+        prefs.putBoolean("Modules Set", modulesSet);
 
         prefs.putInt("Background Colour", Alchemy.canvas.getBgColour().getRGB());
         prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());
@@ -177,12 +173,57 @@ class AlcPreferences implements AlcConstants {
         }
     }
 
+    /** Reset the preferences */
+    private void resetPreferences() {
+        try {
+            prefs.removeNode();
+            loadPreferences();
+
+
+        } catch (BackingStoreException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /** Reset the modules to defaults */
+    private void resetModules(AlcModule[] modules) {
+        for (int i = 0; i < modules.length; i++) {
+            AlcModule currentModule = modules[i];
+            String moduleName = currentModule.getName();
+            final String moduleNodeName = modulePrefix + moduleName;
+
+            if (moduleList == null) {
+                prefs.putBoolean(moduleNodeName, true);
+
+            // MODULE LIST
+            } else {
+                // No preferences, check if it is a default
+                boolean hit = false;
+                for (int j = 0; j < moduleList.length; j++) {
+                    if (moduleName.equals(moduleList[j])) {
+                        prefs.putBoolean(moduleNodeName, true);
+                        hit = true;
+                        break;
+                    }
+                }
+                // Set the preference to false
+                if (!hit) {
+                    prefs.putBoolean(moduleNodeName, false);
+                }
+
+                prefs.putBoolean("Modules Set", modulesSet);
+            }
+        }
+    }
+
     /** Initialise the preference window */
     void setupWindow(AlcWindow owner) {
 
-        // The actual prefs window
+        //////////////////////////////////////////////////////////////
+        // WINDOW
+        //////////////////////////////////////////////////////////////
         prefsWindow = new JDialog(owner);
-        prefsWindow.setSize(400, 300);
+        prefsWindow.setPreferredSize(new Dimension(400, 300));
         String title = "Alchemy Preferences";
         if (Alchemy.PLATFORM == WINDOWS) {
             title = "Alchemy Options";
@@ -200,32 +241,36 @@ class AlcPreferences implements AlcConstants {
         prefsWindow.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
         prefsWindow.getRootPane().getActionMap().put("Escape", closeAction);
 
-        // The master panel holding everything
+
+        //////////////////////////////////////////////////////////////
+        // MASTER PANEL
+        //////////////////////////////////////////////////////////////
         masterPanel = new JPanel();
+        masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
         masterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         masterPanel.setOpaque(true);
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
 
-        // TODO - Japanese translation
-        masterPanel.add(new JLabel("Interface Mode:"));
 
-        String[] interfaceType = {"Standard", "Simple"};
+        //////////////////////////////////////////////////////////////
+        // INTERFACE SELECTOR
+        //////////////////////////////////////////////////////////////
+        JPanel centreRow = new JPanel();
+        centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
+
+
+        String[] interfaceType = {Alchemy.bundle.getString("standard"), Alchemy.bundle.getString("simple")};
 
         final JComboBox interfaceBox = new JComboBox(interfaceType);
         interfaceBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                String interfaceMode = interfaceBox.getSelectedItem().toString();
-                if (interfaceMode.equals("Standard")) {
+                // STANDARD                
+                if (interfaceBox.getSelectedIndex() == 0) {
                     Alchemy.preferences.simpleToolBar = false;
-                    if (modulePanel != null) {
-                        setScrollPaneEnabled(false);
-                    }
+                // SIMPLE
                 } else {
                     Alchemy.preferences.simpleToolBar = true;
-                    if (modulePanel != null) {
-                        setScrollPaneEnabled(true);
-                    }
                 }
             }
         });
@@ -233,25 +278,84 @@ class AlcPreferences implements AlcConstants {
         if (Alchemy.preferences.simpleToolBar) {
             interfaceBox.setSelectedIndex(1);
         }
-        masterPanel.add(interfaceBox);
+        centreRow.add(interfaceBox);
 
-        JLabel restart = new JLabel("* Restart Required");
+        JLabel restart = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
         restart.setFont(new Font("sansserif", Font.PLAIN, 10));
         restart.setForeground(Color.GRAY);
-        masterPanel.add(restart);
+        centreRow.add(restart);
+
+        masterPanel.add(centreRow);
+
+        //////////////////////////////////////////////////////////////
+        // RESTORE DEFAULT BUTTON
+        //////////////////////////////////////////////////////////////
+        JButton defaultButton = new JButton(Alchemy.bundle.getString("restoreDefaults"));
+        defaultButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        resetModules(Alchemy.plugins.creates);
+                        resetModules(Alchemy.plugins.affects);
+                        refreshModulePanel();
+                    }
+                });
+
+        JLabel restart2 = new JLabel(restart.getText());
+        restart2.setFont(restart.getFont());
+        restart2.setForeground(restart.getForeground());
+
+
+        //////////////////////////////////////////////////////////////
+        // CANCEL BUTTON
+        //////////////////////////////////////////////////////////////
+        JButton cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
+        cancelButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        prefsWindow.setVisible(false);
+                        refreshModulePanel();
+                    }
+                });
+
+        //////////////////////////////////////////////////////////////
+        // OK BUTTON
+        //////////////////////////////////////////////////////////////
+        okButton = new JButton(Alchemy.bundle.getString("ok"));
+        okButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        changeModules();
+                        prefsWindow.setVisible(false);
+                    }
+                });
+
+        buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        buttonPane.add(defaultButton);
+        buttonPane.add(restart2);
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(cancelButton);
+        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+        buttonPane.add(okButton);
+
+        //masterPanel.add(buttonPane);
 
         prefsWindow.getContentPane().add(masterPanel);
-
-
-
     }
 
     void showWindow() {
-
+        changeModules = false;
         if (scrollPane == null) {
             setupModulePanel();
             //Add the scroll pane to this panel.
             masterPanel.add(scrollPane);
+            masterPanel.add(buttonPane);
+            prefsWindow.pack();
+        //prefsWindow.getRootPane().setDefaultButton(okButton);
         }
 
         Point loc = AlcUtil.calculateCenter(prefsWindow);
@@ -270,7 +374,7 @@ class AlcPreferences implements AlcConstants {
 
         setupModules(Alchemy.plugins.creates);
         setupModules(Alchemy.plugins.affects);
-        simpleModulesSet = true;
+        modulesSet = true;
 
 
         //Create the scroll pane and add the panel to it.
@@ -280,9 +384,14 @@ class AlcPreferences implements AlcConstants {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setPreferredSize(new Dimension(300, 200));
 
-        if (!simpleToolBar) {
-            setScrollPaneEnabled(false);
-        }
+    }
+
+    private void refreshModulePanel() {
+        masterPanel.remove(scrollPane);
+        setupModulePanel();
+        masterPanel.add(scrollPane);
+        masterPanel.add(buttonPane);
+        masterPanel.revalidate();
     }
 
     private void setupModules(AlcModule[] modules) {
@@ -290,21 +399,26 @@ class AlcPreferences implements AlcConstants {
         for (int i = 0; i < modules.length; i++) {
             AlcModule currentModule = modules[i];
             String moduleName = currentModule.getName();
-            final String moduleNodeName = simpleModulePrefix + moduleName;
+            final String moduleNodeName = modulePrefix + moduleName;
             final JCheckBox checkBox = new JCheckBox(moduleName);
             checkBox.setBackground(AlcToolBar.toolBarBgStartColour);
 
             // CUSTOM MODULES
-            if (simpleModulesSet) {
+            if (modulesSet) {
                 // Set the state of the checkbox
                 checkBox.setSelected(prefs.getBoolean(moduleNodeName, false));
 
-            // DEFAULT MODULES
+            // DEFAULT - ALL ON    
+            } else if (moduleList == null) {
+                checkBox.setSelected(true);
+                prefs.putBoolean(moduleNodeName, true);
+
+            // MODULE LIST
             } else {
                 // No preferences, check if it is a default
                 boolean hit = false;
-                for (int j = 0; j < simpleDefaultModules.length; j++) {
-                    if (moduleName.equals(simpleDefaultModules[j])) {
+                for (int j = 0; j < moduleList.length; j++) {
+                    if (moduleName.equals(moduleList[j])) {
                         checkBox.setSelected(true);
                         prefs.putBoolean(moduleNodeName, true);
                         hit = true;
@@ -316,38 +430,41 @@ class AlcPreferences implements AlcConstants {
                     prefs.putBoolean(moduleNodeName, false);
                 }
 
-                prefs.putBoolean("Simple Modules Set", simpleModulesSet);
+                prefs.putBoolean("Modules Set", modulesSet);
             }
 
-            checkBox.addActionListener(
-                    new ActionListener() {
+            checkBox.addActionListener(new ActionListener() {
 
-                        public void actionPerformed(ActionEvent e) {
-                            prefs.putBoolean(moduleNodeName, checkBox.isSelected());
-                        }
-                    });
+                public void actionPerformed(ActionEvent e) {
+                    changeModules = true;
+                //prefs.putBoolean(moduleNodeName, checkBox.isSelected());
+                }
+            });
 
             modulePanel.add(checkBox);
         }
-
     }
 
-    private void setScrollPaneEnabled(boolean enabled) {
-        // Disabling a parent does not disable it's children!
-        modulePanel.setEnabled(enabled);
-        Component[] components = modulePanel.getComponents();
-        if (components != null && components.length > 0) {
-            int count = components.length;
-            for (int i = 0; i < count; i++) {
-                components[i].setEnabled(enabled);
-            }
-        }
-        scrollPane.setEnabled(enabled);
-        components = scrollPane.getComponents();
-        if (components != null && components.length > 0) {
-            int count = components.length;
-            for (int i = 0; i < count; i++) {
-                components[i].setEnabled(enabled);
+    private void changeModules() {
+        // If there has actually been some changes
+        if (changeModules) {
+            Component[] components = modulePanel.getComponents();
+            int creates = Alchemy.plugins.getNumberOfCreateModules();
+            for (int i = 0; i < components.length; i++) {
+                if (components[i] instanceof JCheckBox) {
+                    JCheckBox checkBox = (JCheckBox) components[i];
+                    String moduleName;
+                    if (i < creates) {
+                        moduleName = Alchemy.plugins.creates[i].getName();
+                    //System.out.println("CREATE: " + checkBox.getText() + " " + Alchemy.plugins.creates[i].getName());
+                    } else {
+                        moduleName = Alchemy.plugins.affects[i - creates].getName();
+                    //System.out.println("AFFECT: " + checkBox.getText() + " " + Alchemy.plugins.affects[i - creates].getName());
+                    }
+                    String moduleNodeName = modulePrefix + moduleName;
+                    prefs.putBoolean(moduleNodeName, checkBox.isSelected());
+                }
+
             }
         }
     }

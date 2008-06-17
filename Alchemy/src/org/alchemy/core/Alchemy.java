@@ -104,12 +104,12 @@ public class Alchemy implements AlcConstants {
         // Create the window
         window = new AlcWindow();
 
-        // Create the preferences window
-        preferences.setupWindow(window);
-
         // LOAD RESOURCE BUNDLE
         bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
         bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en_US"));
+
+        // Create the preferences window
+        preferences.setupWindow(window);
 
         // LOCALE specific text for the Swing components
         UIManager.put("FileChooser.cancelButtonText", bundle.getString("cancel"));

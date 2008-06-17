@@ -199,20 +199,11 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         //////////////////////////////////////////////////////////////
         // MODULES
         //////////////////////////////////////////////////////////////
-        // Loaded from the preferences
-        if (Alchemy.preferences.simpleModulesSet) {
-            addModules(Alchemy.plugins.creates);
-            this.add(separator);
-            addModules(Alchemy.plugins.affects);
-            this.add((ColourBox) separator.clone());
 
-        // Loaded from the default list
-        } else {
-            addDefaultModules(Alchemy.plugins.creates);
-            this.add(separator);
-            addDefaultModules(Alchemy.plugins.affects);
-            this.add((ColourBox) separator.clone());
-        }
+        addModules(Alchemy.plugins.creates);
+        this.add(separator);
+        addModules(Alchemy.plugins.affects);
+        this.add((ColourBox) separator.clone());
 
 
         //////////////////////////////////////////////////////////////
@@ -244,39 +235,16 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
         for (int i = 0; i < modules.length; i++) {
             AlcModule currentModule = modules[i];
-            boolean createModule = (currentModule.getModuleType() == CREATE) ? true : false;
-
-            String moduleNodeName = Alchemy.preferences.simpleModulePrefix + currentModule.getName();
-            if (AlcPreferences.prefs.getBoolean(moduleNodeName, false)) {
-                addModuleButton(currentModule, buttonGroup, firstModule, createModule);
+            if (loadModule(currentModule)) {
+                addModuleButton(currentModule, buttonGroup, firstModule);
                 firstModule = false;
             }
         }
     }
 
-    private void addDefaultModules(AlcModule[] modules) {
-        boolean firstModule = true;
-        ButtonGroup buttonGroup = new ButtonGroup();
+    private void addModuleButton(final AlcModule currentModule, final ButtonGroup buttonGroup, final boolean firstModule) {
 
-        for (int i = 0; i < modules.length; i++) {
-            AlcModule currentModule = modules[i];
-            boolean createModule = (currentModule.getModuleType() == CREATE) ? true : false;
-
-
-            String moduleName = currentModule.getName();
-            // Check if this module is on the default list
-            for (int j = 0; j < Alchemy.preferences.simpleDefaultModules.length; j++) {
-                if (Alchemy.preferences.simpleDefaultModules[j].equals(moduleName)) {
-                    addModuleButton(currentModule, buttonGroup, firstModule, createModule);
-                    firstModule = false;
-                    break;
-                }
-            }
-        }
-    }
-
-    private void addModuleButton(final AlcModule currentModule, final ButtonGroup buttonGroup, final boolean firstModule, final boolean createModule) {
-
+        final boolean createModule = (currentModule.getModuleType() == CREATE) ? true : false;
         AbstractAction moduleAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
@@ -360,15 +328,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
 class ColourBox extends JPanel implements Cloneable {
 
-      
-      
-     
-
-          
-          
-          
-          
-        final int width,  height;
+    final int width,  height;
     Color colour;
 
     ColourBox(int width, int height, Color colour) {

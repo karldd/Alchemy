@@ -375,58 +375,66 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         ButtonGroup group = new ButtonGroup();
         // Start the keyboard shortcuts from here
         int zero = KeyEvent.VK_0;
+        int createCount = 0;
 
         // Populate the Popup Menu
         for (int i = 0; i < Alchemy.plugins.creates.length; i++) {
+
             // The current module
-
-            final AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem();
-
-            AbstractAction createMenuItemAction = new AbstractAction() {
-
-                public void actionPerformed(ActionEvent e) {
-                    // Check that the module is not already selected
-                    if (Alchemy.plugins.currentCreate != createMenuItem.getIndex()) {
-                        // Remove the subtoolbar of the create module
-                        removeSubToolBarSection(0);
-                        Alchemy.plugins.setCurrentCreate(createMenuItem.getIndex());
-                    }
-
-
-                    // When triggered by a key toggle the check box
-                    if (!e.getSource().getClass().getName().endsWith("AlcRadioButtonMenuItem")) {
-                        createMenuItem.setSelected(!createMenuItem.isSelected());
-
-                    } else {
-                        Point loc = createMenuItem.getLocation();
-                        //Rectangle butLoc = createButton.getBounds();
-                        int heightFromWindow = loc.y + 50;
-                        //System.out.println(loc + " " + heightFromWindow);
-                        toggleToolBar(heightFromWindow, true);
-                    }
-                }
-            };
-
-            createMenuItem.setAction(createMenuItemAction);
             AlcModule currentModule = Alchemy.plugins.creates[i];
-            createMenuItem.setup(currentModule);
 
-            if (i == 0) {
-                createMenuItem.setSelected(true);
+            // To load or not
+            boolean load = loadModule(currentModule);
+
+            if (load) {
+
+                final AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem();
+
+                AbstractAction createMenuItemAction = new AbstractAction() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        // Check that the module is not already selected
+                        if (Alchemy.plugins.currentCreate != createMenuItem.getIndex()) {
+                            // Remove the subtoolbar of the create module
+                            removeSubToolBarSection(0);
+                            Alchemy.plugins.setCurrentCreate(createMenuItem.getIndex());
+                        }
+
+
+                        // When triggered by a key toggle the check box
+                        if (!e.getSource().getClass().getName().endsWith("AlcRadioButtonMenuItem")) {
+                            createMenuItem.setSelected(!createMenuItem.isSelected());
+
+                        } else {
+                            Point loc = createMenuItem.getLocation();
+                            //Rectangle butLoc = createButton.getBounds();
+                            int heightFromWindow = loc.y + 50;
+                            //System.out.println(loc + " " + heightFromWindow);
+                            toggleToolBar(heightFromWindow, true);
+                        }
+                    }
+                };
+
+                createMenuItem.setAction(createMenuItemAction);
+                createMenuItem.setup(currentModule);
+
+                if (createCount == 0) {
+                    createMenuItem.setSelected(true);
+                }
+
+                group.add(createMenuItem);
+                createButton.addItem(createMenuItem);
+
+                // Range from 0 - 8 mapped to keys 1 - 9
+                if (createCount < 9) {
+                    Alchemy.shortcuts.setShortcut(createMenuItem, zero + createCount + 1, currentModule.getName(), createMenuItemAction);
+
+                // Last key is mapped to 0
+                } else if (createCount == 9) {
+                    Alchemy.shortcuts.setShortcut(createMenuItem, zero, currentModule.getName(), createMenuItemAction);
+                }
+                createCount++;
             }
-
-            group.add(createMenuItem);
-            createButton.addItem(createMenuItem);
-
-            // Range from 0 - 8 mapped to keys 1 - 9
-            if (i < 9) {
-                Alchemy.shortcuts.setShortcut(createMenuItem, zero + i + 1, currentModule.getName(), createMenuItemAction);
-
-            // Last key is mapped to 0
-            } else if (i == 9) {
-                Alchemy.shortcuts.setShortcut(createMenuItem, zero, currentModule.getName(), createMenuItemAction);
-            }
-
         }
 
         toolBar.add(createButton);
@@ -437,47 +445,57 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         if (Alchemy.plugins.getNumberOfAffectModules() > 0) {
             affectButton = new AlcPopupButton(getS("affectTitle"), getS("affectDescription"), AlcUtil.getUrlPath("affect.png"));
+
+            int affectCount = 0;
+
+
             for (int i = 0; i < Alchemy.plugins.affects.length; i++) {
                 // The current module
                 AlcModule currentModule = Alchemy.plugins.affects[i];
 
-                final AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem();
+                // To load or not
+                boolean load = loadModule(currentModule);
 
-                AbstractAction affectMenuItemAction = new AbstractAction() {
+                if (load) {
+                    final AlcCheckBoxMenuItem affectMenuItem = new AlcCheckBoxMenuItem();
 
-                    public void actionPerformed(ActionEvent e) {
+                    AbstractAction affectMenuItemAction = new AbstractAction() {
 
-                        if (!e.getSource().getClass().getName().endsWith("AlcCheckBoxMenuItem")) {
-                            affectMenuItem.setSelected(!affectMenuItem.isSelected());
+                        public void actionPerformed(ActionEvent e) {
+
+                            if (!e.getSource().getClass().getName().endsWith("AlcCheckBoxMenuItem")) {
+                                affectMenuItem.setSelected(!affectMenuItem.isSelected());
+                            }
+
+                            // SELECTED
+                            if (affectMenuItem.isSelected()) {
+                                Alchemy.plugins.addAffect(affectMenuItem.getIndex());
+
+                            // DESELECTED
+                            } else {
+                                Alchemy.plugins.removeAffect(affectMenuItem.getIndex());
+                                // Index is offset to allow for the create module to always be first
+                                removeSubToolBarSection(affectMenuItem.getIndex() + 1);
+                            }
+
+                            // When triggered by a key toggle the check box
+                            if (e.getSource().getClass().getName().endsWith("AlcCheckBoxMenuItem")) {
+                                Point loc = affectMenuItem.getLocation();
+                                int heightFromWindow = loc.y + 50;
+                                toggleToolBar(heightFromWindow, true);
+                            }
                         }
+                    };
 
-                        // SELECTED
-                        if (affectMenuItem.isSelected()) {
-                            Alchemy.plugins.addAffect(affectMenuItem.getIndex());
+                    affectMenuItem.setAction(affectMenuItemAction);
+                    affectMenuItem.setup(currentModule);
+                    affectButton.addItem(affectMenuItem);
 
-                        // DESELECTED
-                        } else {
-                            Alchemy.plugins.removeAffect(affectMenuItem.getIndex());
-                            // Index is offset to allow for the create module to always be first
-                            removeSubToolBarSection(affectMenuItem.getIndex() + 1);
-                        }
-
-                        // When triggered by a key toggle the check box
-                        if (e.getSource().getClass().getName().endsWith("AlcCheckBoxMenuItem")) {
-                            Point loc = affectMenuItem.getLocation();
-                            int heightFromWindow = loc.y + 50;
-                            toggleToolBar(heightFromWindow, true);
-                        }
+                    // Range from 0 - 8 mapped to keys 1 - 9
+                    if (affectCount < 9) {
+                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero + affectCount + 1, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
                     }
-                };
-
-                affectMenuItem.setAction(affectMenuItemAction);
-                affectMenuItem.setup(currentModule);
-                affectButton.addItem(affectMenuItem);
-
-                // Range from 0 - 8 mapped to keys 1 - 9
-                if (i < 9) {
-                    Alchemy.shortcuts.setShortcut(affectMenuItem, zero + i + 1, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                    affectCount++;
                 }
             }
             toolBar.add(affectButton);
@@ -895,7 +913,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 //////////////////////////////////////////////////////////////
 // UTLITY
 //////////////////////////////////////////////////////////////
-
     @Override
     void queueColourButtonRefresh() {
         updateSwapButton = true;

@@ -48,14 +48,8 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         super(owner, Alchemy.bundle.getString("keyboardShortcutsWindowTitle"), true);
         userShortcuts = new ArrayList<AlcShortcutMapper>(50);
         defaultShortcuts = new ArrayList<AlcShortcutMapper>(50);
-
-//        try {
-//            String[] prefKeys = AlcPreferences.prefs.keys();
-//            AlcUtil.printStringArray(prefKeys);
-//
-//        } catch (BackingStoreException ex) {
-//            ex.printStackTrace();
-//        }
+        this.setPreferredSize(new Dimension(400, 300));
+        
     }
 
     void setupWindow() {
@@ -131,7 +125,6 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                         setVisible(false);
                     }
                 });
-        getRootPane().setDefaultButton(okButton);
 
         //Lay out the buttons from left to right.
         JPanel buttonPane = new JPanel();
@@ -144,7 +137,9 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         buttonPane.add(okButton);
 
         masterPanel.add(buttonPane);
+        //getRootPane().setDefaultButton(okButton);
 
+        
         this.getContentPane().add(masterPanel);
         this.pack();
         //this.setResizable(false);
