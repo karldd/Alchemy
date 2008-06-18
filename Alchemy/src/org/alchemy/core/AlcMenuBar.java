@@ -554,16 +554,18 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         keyboardShortcutsItem.setup(getS("keyboardShortcutsTitle"));
         settingsMenu.add(keyboardShortcutsItem);
 
-        // Options
-        AbstractAction optionsAction = new AbstractAction() {
+        if (Alchemy.PLATFORM != MACOSX) {
+            // Options
+            AbstractAction optionsAction = new AbstractAction() {
 
-            public void actionPerformed(ActionEvent e) {
-                Alchemy.preferences.showWindow();
-            }
-        };
-        AlcMenuItem optionsItem = new AlcMenuItem(optionsAction);
-        optionsItem.setup(getS("optionsTitle"));
-        settingsMenu.add(optionsItem);
+                public void actionPerformed(ActionEvent e) {
+                    Alchemy.preferences.showWindow();
+                }
+            };
+            AlcMenuItem optionsItem = new AlcMenuItem(optionsAction);
+            optionsItem.setup(getS("optionsTitle"));
+            settingsMenu.add(optionsItem);
+        }
 
 
         this.add(settingsMenu);

@@ -116,7 +116,7 @@ public class MedianShapes extends AlcModule {
                     Point tempPoint = new Point(xOffset, yOffset);
                     //controlPoint.x += p.x + xOffset;
                     //controlPoint.y += p.y + yOffset;
-                    AlcShape thisShape = (AlcShape) canvas.createShapes.get(canvas.createShapes.size() - 2);
+                    AlcShape thisShape = canvas.createShapes.get(canvas.createShapes.size() - 2);
                     thisShape.addCurvePoint(tempPoint);
 
                 }

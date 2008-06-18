@@ -49,6 +49,7 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
             @Override
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
+                //popup.requestFocus();
                 Alchemy.canvas.setTempCursor(ARROW);
             }
         });
