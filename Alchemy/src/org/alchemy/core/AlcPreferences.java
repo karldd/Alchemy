@@ -117,7 +117,7 @@ class AlcPreferences implements AlcConstants {
     private void loadPreferences() {
         prefs = Preferences.userNodeForPackage(getClass());
 
-        sessionRecordingState = prefs.getBoolean("Recording State", false);
+        sessionRecordingState = prefs.getBoolean("Recording State", true);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", DESKTOP_DIR);
         sessionRecordingInterval = prefs.getInt("Recording Interval", 30000);
@@ -256,6 +256,7 @@ class AlcPreferences implements AlcConstants {
         // INTERFACE SELECTOR
         //////////////////////////////////////////////////////////////
         JPanel centreRow = new JPanel();
+        centreRow.setOpaque(false);
         centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
 
 
@@ -333,6 +334,7 @@ class AlcPreferences implements AlcConstants {
                 });
 
         buttonPane = new JPanel();
+        buttonPane.setOpaque(false);
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
