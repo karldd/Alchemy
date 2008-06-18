@@ -49,7 +49,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         userShortcuts = new ArrayList<AlcShortcutMapper>(50);
         defaultShortcuts = new ArrayList<AlcShortcutMapper>(50);
         this.setPreferredSize(new Dimension(400, 300));
-        
+
     }
 
     void setupWindow() {
@@ -64,8 +64,8 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
         masterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        
-        
+
+
         //////////////////////////////////////////////////////////////
         // SCROLL PANE
         //////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         masterPanel.add(buttonPane);
         //getRootPane().setDefaultButton(okButton);
 
-        
+
         this.getContentPane().add(masterPanel);
         this.pack();
         //this.setResizable(false);
@@ -186,7 +186,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                     textfield.setText("");
                     textfield.setBackground(AlcToolBar.toolBarBgColour);
                 }
-                });
+            });
 
             textfield.addKeyListener(new KeyAdapter() {
 
@@ -236,7 +236,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                     }
 
                 }
-                });
+            });
 
             textfield.addFocusListener(new FocusAdapter() {
 
@@ -247,7 +247,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                         textfield.setBackground(Color.WHITE);
                     }
                 }
-                });
+            });
 
 
             textfields[i] = textfield;
@@ -316,6 +316,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
     int setShortcut(JComponent component, int key, String title, Action action, int modifier) {
 
         String bundleTitle, bundleTitleEn;
+
         try {
             // Get the localised string to display
             bundleTitle = Alchemy.bundle.getString(title);
@@ -405,6 +406,12 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                     keyModifier = Alchemy.ALT_KEY_STRING;
                     break;
             }
+
+            // Space bar is not showing up correctly on mac (and pc?)
+            if (key == KeyEvent.VK_SPACE) {
+                keyText = "SPACE";
+            }
+
         }
 
         if (modifier > 0) {

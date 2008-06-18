@@ -175,24 +175,51 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         // Shortcut - s
         Alchemy.shortcuts.setShortcut(styleButton, KeyEvent.VK_S, "styleTitle", styleAction);
+
         toolBar.add(styleButton);
 
         //////////////////////////////////////////////////////////////
-        // CLEAR BUTTON
+        // UNDER OVER BUTTON
         //////////////////////////////////////////////////////////////
-        String clearTitle = getS("clearTitle");
-        AbstractAction clearAction = new AbstractAction() {
+        String underOverTitle = getS("overTitle");
+        final AlcToggleButton underOverButton = new AlcToggleButton();
+
+        AbstractAction underOverAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                Alchemy.canvas.clear();
+
+                if (!e.getSource().getClass().getName().endsWith("AlcToggleButton")) {
+                    // Only toogle the button manually if it is triggered by a key
+                    underOverButton.setSelected(!underOverButton.isSelected());
+                }
+
+                if (underOverButton.isSelected()) {
+                    underOverButton.setText(getS("underTitle"));
+                } else {
+                    underOverButton.setText(getS("overTitle"));
+                }
+
+
+                Alchemy.canvas.setDrawUnder(!Alchemy.canvas.getDrawUnder());
             }
         };
-        AlcButton clearButton = new AlcButton(clearAction);
-        clearButton.setup(clearTitle, getS("clearDescription"), AlcUtil.getUrlPath("clear.png"));
-        // Shortcuts - Modifier Delete/Backspace
-        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
-        Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
-        toolBar.add(clearButton);
+        underOverButton.setAction(underOverAction);
+        underOverButton.setup(underOverTitle, getS("underOverDescription"), AlcUtil.getUrlPath("underOver.png"));
+
+        // Hack here to make the sizes the same
+        Dimension underOverButtonSize = underOverButton.getPreferredSize();
+        underOverButton.setText(getS("underTitle"));
+        Dimension underOverButtonNewSize = underOverButton.getPreferredSize();
+        if (!underOverButtonSize.equals(underOverButtonNewSize)) {
+            underOverButton.setPreferredSize(underOverButtonNewSize);
+        }
+        underOverButton.setText(underOverTitle);
+
+        // Shortcut - d
+        Alchemy.shortcuts.setShortcut(styleButton, KeyEvent.VK_D, "underOverTitle", underOverAction);
+
+        toolBar.add(underOverButton);
+
 
         //////////////////////////////////////////////////////////////
         // LINE WIDTH SPINNER
@@ -330,12 +357,12 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         refreshColourButton();
 
         // Hack here to make sure the text does not resize the button
-        // Make sure it is set the the maximum size
-        Dimension size = fgbgButton.getPreferredSize();
+        // Make sure it is set to the maximum size
+        Dimension fgbgButtonSize = fgbgButton.getPreferredSize();
         fgbgButton.setText(getS("bgTitle"));
-        Dimension newSize = fgbgButton.getPreferredSize();
-        if (!size.equals(newSize)) {
-            fgbgButton.setPreferredSize(newSize);
+        Dimension fgbgButtonNewSize = fgbgButton.getPreferredSize();
+        if (!fgbgButtonSize.equals(fgbgButtonNewSize)) {
+            fgbgButton.setPreferredSize(fgbgButtonNewSize);
         }
         fgbgButton.setText(fgTitle);
 
@@ -506,18 +533,39 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         toolBar.add(new AlcSeparator());
 
+
+        //////////////////////////////////////////////////////////////
+        // CLEAR BUTTON
+        //////////////////////////////////////////////////////////////
+        String clearTitle = getS("clearTitle");
+        AbstractAction clearAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.canvas.clear();
+            }
+        };
+        AlcButton clearButton = new AlcButton(clearAction);
+        clearButton.setup(clearTitle, getS("clearDescription"), AlcUtil.getUrlPath("clear.png"));
+        // Shortcuts - Modifier Delete/Backspace
+        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
+        Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
+        toolBar.add(clearButton);
+
+        //////////////////////////////////////////////////////////////
+        // SEPARATOR
+        //////////////////////////////////////////////////////////////
+        // toolBar.add(new AlcSeparator());
+
+
         //////////////////////////////////////////////////////////////
         // DETACH BUTTON
         //////////////////////////////////////////////////////////////
 
         JPanel topAlign = new JPanel();
-        topAlign.setOpaque(
-                false);
-        topAlign.setLayout(
-                new BoxLayout(topAlign, BoxLayout.PAGE_AXIS));
+        topAlign.setOpaque(false);
+        topAlign.setLayout(new BoxLayout(topAlign, BoxLayout.PAGE_AXIS));
 
         detachButton = new JButton(AlcUtil.getImageIcon("palette-detach.png"));
-
         detachButton.setRolloverIcon(AlcUtil.getImageIcon("palette-detach-over.png"));
         detachButton.setToolTipText(
                 "Detach the toolbar to a seperate palette");
@@ -530,24 +578,20 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         }
 
         detachButton.setBorderPainted(false);
-
         detachButton.setContentAreaFilled(false);
-
         detachButton.setFocusPainted(false);
 
-        detachButton.addActionListener(
-                new ActionListener() {
+        detachButton.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        Alchemy.window.setPalette(true);
-                    }
-                });
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.window.setPalette(true);
+            }
+        });
 
         topAlign.add(detachButton);
 
         toolBarGroup.add(toolBar, BorderLayout.LINE_START);
         toolBarGroup.add(topAlign, BorderLayout.LINE_END);
-
         return toolBarGroup;
     }
 

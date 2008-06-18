@@ -34,10 +34,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     //////////////////////////////////////////////////////////////
     /** Toggle between windowed and fullscreen */
     private boolean fullscreen = false;
-    /** For storing the old display size before entering fullscreen */
-    private Dimension oldWindowSize = null;
-    /** For storing the old display location before entering fullscreen */
-    private Point oldLocation = null;
+    /** For storing the old display size & location before entering fullscreen */
+    private Rectangle oldBounds = null;
     //////////////////////////////////////////////////////////////
     // WINDOW
     //////////////////////////////////////////////////////////////    
@@ -118,15 +116,15 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         } else {
             // Otherwise add it to the toolbar area
             //if (!Alchemy.preferences.simpleToolBar) {
-                //Palette
-                if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
-                    this.setJMenuBar(Alchemy.menuBar);
-                //Toolbar
-                } else {
-                    Alchemy.toolBar.add("North", Alchemy.menuBar);
-                    Alchemy.toolBar.calculateTotalHeight();
-                }
-            //}
+            //Palette
+            if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
+                this.setJMenuBar(Alchemy.menuBar);
+            //Toolbar
+            } else {
+                Alchemy.toolBar.add("North", Alchemy.menuBar);
+                Alchemy.toolBar.calculateTotalHeight();
+            }
+        //}
         }
 
         // LAYERED PANE
@@ -165,7 +163,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         }
         // Load the palette after the main window
-        if (Alchemy.preferences.paletteAttached) {
+        // as long as we are not in simple mode
+        if (!Alchemy.preferences.simpleToolBar && Alchemy.preferences.paletteAttached) {
             setPalette(true);
         } else {
             this.requestFocus();
@@ -233,9 +232,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                 this.setFocusable(true);
                 //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
-                this.setSize(oldWindowSize);             //make sure the size of the window is correct.
 
-                this.setLocation(oldLocation);           //reset location of the window
+                this.setBounds(oldBounds);
+
                 //setAlwaysOnTop(false);
 
                 this.setVisible(true);
@@ -244,9 +243,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             // FULLSCREEN
             } else {
 
-                oldWindowSize = windowSize;          //save the old window size and location
-
-                oldLocation = getLocation();
+                oldBounds = this.getBounds();
 
                 try {
                     // If there are multiple monitors present
@@ -409,7 +406,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
     /** Exit Alchemy, saving preferences and doing general clean up */
     private void exit() {
-        //System.out.println("Alchemy Closing...");
+
+        // Don't need to save the window location when in simple mode
 
         // Save the window location if not in full screen mode
         if (!isFullscreen()) {
@@ -417,17 +415,18 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
             // Get the size of the canvas without the titlebar and insets
             Rectangle visibleRect = Alchemy.canvas.getVisibleRect();
-            // Add extra 
-            if (Alchemy.preferences.simpleToolBar) {
+            
+            if(Alchemy.preferences.simpleToolBar){
                 visibleRect.width += Alchemy.toolBar.toolBarWidth;
             }
+
             // Set the canvas size
             Alchemy.preferences.canvasSize = new Dimension(visibleRect.width, visibleRect.height);
         }
-        if (Alchemy.preferences.paletteAttached) {
+
+        if (!Alchemy.preferences.simpleToolBar && Alchemy.preferences.paletteAttached) {
             Alchemy.preferences.paletteLocation = Alchemy.palette.getLocation();
         }
-
 
         // Turn off recording if on
         if (Alchemy.session.isRecording()) {
@@ -561,6 +560,5 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     }
 
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
-        System.out.println("Clipboard contents replaced");
     }
 }

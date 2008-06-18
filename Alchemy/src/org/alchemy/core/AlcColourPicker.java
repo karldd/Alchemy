@@ -18,13 +18,8 @@
  */
 package org.alchemy.core;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.swing.JMenuItem;
 
@@ -104,6 +99,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
             @Override
             public void mouseEntered(MouseEvent e) {
                 // OSX does not seem to obey the set cursor so set the other cursors
+                // TODO - OSX bug here cursor changes back to arrow when entering the canvas
                 if (Alchemy.PLATFORM == MACOSX) {
                     Alchemy.canvas.setTempCursor(pickerCursor);
                     Alchemy.toolBar.setCursor(pickerCursor);
@@ -118,7 +114,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
                     Alchemy.toolBar.setCursor(ARROW);
                 }
             }
-            });
+        });
     }
 
     Color getColor(int x, int y) {

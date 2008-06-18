@@ -175,7 +175,7 @@ public class Shapes extends AlcModule implements AlcConstants {
                     // Only if is is not the same as the last point
                     if (!p.equals(lastPt)) {
                         secondClick = false;
-                        AlcShape secondShape = ((AlcShape) canvas.guideShapes.get(guideSize - 1));
+                        AlcShape secondShape = (canvas.guideShapes.get(guideSize - 1));
                         if (secondShape != null) {
                             secondShape.addLinePoint(p);
                         }

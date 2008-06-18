@@ -20,7 +20,6 @@ package org.alchemy.create;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
