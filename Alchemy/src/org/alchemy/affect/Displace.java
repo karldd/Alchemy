@@ -79,7 +79,7 @@ public class Displace extends AlcModule implements AlcConstants {
     protected void affect() {
         if (mouseDown) {
             for (int i = 0; i < canvas.createShapes.size(); i++) {
-                AlcShape shape = (AlcShape) canvas.createShapes.get(i);
+                AlcShape shape = canvas.createShapes.get(i);
                 GeneralPath originalPath = shape.getPath();
                 Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
 

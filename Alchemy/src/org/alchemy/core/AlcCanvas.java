@@ -25,8 +25,7 @@ import javax.swing.*;
 import java.awt.event.*;
 
 import java.awt.Graphics2D;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 
 // ITEXT
 import com.lowagie.text.Document;
@@ -37,15 +36,19 @@ import com.lowagie.text.xml.xmp.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
-import java.io.File;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 // PDF READER
 import com.sun.pdfview.*;
 import java.awt.geom.AffineTransform;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.GeneralPath;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.nio.channels.FileChannel;
 
 /** 
  * The Alchemy canvas
@@ -111,8 +114,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Display the Image or not */
     private boolean imageDisplay = false;
     /** Position to display the image */
-    private int imageX = 0;
-    private int imageY = 0;
+    private Point imageLocation = new Point(0, 0);
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
@@ -121,9 +123,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Draw guides */
     private boolean guides = true;
     /** Graphics Envrionment - updated everytime the volatile buffImage is refreshed */
-    private GraphicsEnvironment ge;
+    private GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     /** Graphics Configuration - updated everytime the volatile buffImage is refreshed */
-    private GraphicsConfiguration gc;
+    private GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
     /** A Vector based canvas for full redrawing */
     private static VectorCanvas vectorCanvas;
     /** Previous cursor */
@@ -173,7 +175,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         int h = visibleRect.height;
 
         if (imageDisplay && image != null) {
-            g2.drawImage(image, imageX, imageY, null);
+            g2.drawImage(image, imageLocation.x, imageLocation.y, null);
         } else {
             // Paint background.
             g2.setColor(bgColour);
@@ -832,12 +834,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Set the location for the image to be displayed on the canvas
      * 
+     * @param p
+     */
+    public void setImageLocation(Point p) {
+        this.imageLocation = p;
+    }
+
+    /** Set the location for the image to be displayed on the canvas
+     * 
      * @param x
      * @param y
      */
     public void setImageLocation(int x, int y) {
-        this.imageX = x;
-        this.imageY = y;
+        this.imageLocation.x = x;
+        this.imageLocation.y = y;
     }
 
     /** Get the location where the image is displayed on the canvas
@@ -845,13 +855,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @return  Point - x & y location
      */
     public Point getImageLocation() {
-        return new Point(imageX, imageY);
+        return imageLocation;
     }
 
     /** Reset the image location back to zero */
     public void resetImageLocation() {
-        this.imageX = 0;
-        this.imageY = 0;
+        this.imageLocation.x = 0;
+        this.imageLocation.y = 0;
     }
 
     /** Create an image from the canvas
@@ -1165,7 +1175,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     public void mousePressed(MouseEvent event) {
         // Hide the toolbar when clicking on the canvas
-        if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() && !Alchemy.preferences.simpleToolBar && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
+        if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() &&
+                !Alchemy.preferences.simpleToolBar && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
             Alchemy.toolBar.setToolBarVisible(false);
         }
 
@@ -1281,101 +1292,101 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             }
         }
     }
-}
 
-/** Vector Canvas
- *  Draws the canvas is full, including all shapes,
- *  the background and buffImage if any.
- */
-class VectorCanvas extends JPanel implements AlcConstants {
+    /** Vector Canvas
+     *  Draws the canvas is full, including all shapes,
+     *  the background and buffImage if any.
+     */
+    class VectorCanvas extends JPanel implements AlcConstants {
 
-    boolean transparent = false;
+        boolean transparent = false;
 
-    @Override
-    public void paintComponent(Graphics g) {
+        @Override
+        public void paintComponent(Graphics g) {
 
-        super.paintComponent(g);
+            super.paintComponent(g);
 
-        int w = Alchemy.canvas.getWidth();
-        int h = Alchemy.canvas.getHeight();
+            int w = Alchemy.canvas.getWidth();
+            int h = Alchemy.canvas.getHeight();
 
-        Graphics2D g2 = (Graphics2D) g;
+            Graphics2D g2 = (Graphics2D) g;
 
-        if (Alchemy.canvas.smoothing) {
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        } else {
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        }
-
-        // Do not draw the background when creating a transparent image
-        if (!transparent) {
-            // Paint background.
-            g2.setColor(Alchemy.canvas.getBgColour());
-            g2.fillRect(0, 0, w, h);
-        }
-
-        // PDF READER
-        if (Alchemy.session.pdfReadPage != null) {
-
-            // Remember the old transform settings
-            AffineTransform at = g2.getTransform();
-
-            int pageWidth = (int) Alchemy.session.pdfReadPage.getWidth();
-            int pageHeight = (int) Alchemy.session.pdfReadPage.getHeight();
-            PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBgColour());
-            try {
-                Alchemy.session.pdfReadPage.waitForFinish();
-                renderer.run();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+            if (Alchemy.canvas.smoothing) {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            } else {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
             }
 
-            // Revert to the old transform settings
-            g2.setTransform(at);
+            // Do not draw the background when creating a transparent image
+            if (!transparent) {
+                // Paint background.
+                g2.setColor(Alchemy.canvas.getBgColour());
+                g2.fillRect(0, 0, w, h);
+            }
 
-        }
+            // PDF READER
+            if (Alchemy.session.pdfReadPage != null) {
 
-        // Draw Image
-        if (Alchemy.canvas.isImageDisplayEnabled() && Alchemy.canvas.isImageSet()) {
-            Point p = Alchemy.canvas.getImageLocation();
-            g2.drawImage(Alchemy.canvas.getImage(), p.x, p.y, null);
-        }
+                // Remember the old transform settings
+                AffineTransform at = g2.getTransform();
+
+                int pageWidth = (int) Alchemy.session.pdfReadPage.getWidth();
+                int pageHeight = (int) Alchemy.session.pdfReadPage.getHeight();
+                PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBgColour());
+                try {
+                    Alchemy.session.pdfReadPage.waitForFinish();
+                    renderer.run();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+
+                // Revert to the old transform settings
+                g2.setTransform(at);
+
+            }
+
+            // Draw Image
+            if (Alchemy.canvas.isImageDisplayEnabled() && Alchemy.canvas.isImageSet()) {
+                Point p = Alchemy.canvas.getImageLocation();
+                g2.drawImage(Alchemy.canvas.getImage(), p.x, p.y, null);
+            }
 
 
-        // Draw the shapes, create, and affect lists
-        for (int j = 0; j < Alchemy.canvas.fullShapeList.length; j++) {
-            for (int i = 0; i < Alchemy.canvas.fullShapeList[j].size(); i++) {
-                AlcShape currentShape = (AlcShape) Alchemy.canvas.fullShapeList[j].get(i);
-                // LINE
-                if (currentShape.style == LINE) {
-                    //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
-                    g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                    g2.setColor(currentShape.colour);
-                    g2.draw(currentShape.path);
-                // SOLID
-                } else {
-                    g2.setColor(currentShape.colour);
-                    g2.fill(currentShape.path);
+            // Draw the shapes, create, and affect lists
+            for (int j = 0; j < Alchemy.canvas.fullShapeList.length; j++) {
+                for (int i = 0; i < Alchemy.canvas.fullShapeList[j].size(); i++) {
+                    AlcShape currentShape = (AlcShape) Alchemy.canvas.fullShapeList[j].get(i);
+                    // LINE
+                    if (currentShape.style == LINE) {
+                        //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                        g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                        g2.setColor(currentShape.colour);
+                        g2.draw(currentShape.path);
+                    // SOLID
+                    } else {
+                        g2.setColor(currentShape.colour);
+                        g2.fill(currentShape.path);
+                    }
                 }
             }
-        }
-        if (Alchemy.canvas.isGuideEnabled()) {
-            for (int i = 0; i < Alchemy.canvas.guideShapes.size(); i++) {
-                AlcShape currentShape = Alchemy.canvas.guideShapes.get(i);
-                // LINE
-                if (currentShape.style == LINE) {
-                    //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
-                    g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                    g2.setColor(currentShape.colour);
-                    g2.draw(currentShape.path);
-                // SOLID
-                } else {
-                    g2.setColor(currentShape.colour);
-                    g2.fill(currentShape.path);
+            if (Alchemy.canvas.isGuideEnabled()) {
+                for (int i = 0; i < Alchemy.canvas.guideShapes.size(); i++) {
+                    AlcShape currentShape = Alchemy.canvas.guideShapes.get(i);
+                    // LINE
+                    if (currentShape.style == LINE) {
+                        //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
+                        g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
+                        g2.setColor(currentShape.colour);
+                        g2.draw(currentShape.path);
+                    // SOLID
+                    } else {
+                        g2.setColor(currentShape.colour);
+                        g2.fill(currentShape.path);
+                    }
                 }
             }
-        }
 
-        g2.dispose();
+            g2.dispose();
+        }
     }
 }

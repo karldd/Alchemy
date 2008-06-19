@@ -19,14 +19,10 @@
  */
 package org.alchemy.core;
 
-import com.lowagie.text.pdf.PdfReader;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.awt.event.*;
+import java.io.*;
 import com.sun.pdfview.*;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
+import com.lowagie.text.pdf.PdfReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -235,7 +231,7 @@ class AlcSession implements ActionListener, AlcConstants {
             pdfReadFile = new PDFFile(buf);
             currentPdfReadPage = 1;
             maxPdfReadPage = pdfReadFile.getNumPages();
-            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
+            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);           
             Alchemy.canvas.redraw(true);
             return true;
 

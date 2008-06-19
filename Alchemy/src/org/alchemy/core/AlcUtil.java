@@ -19,19 +19,21 @@
  */
 package org.alchemy.core;
 
+import com.sun.pdfview.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.ResourceBundle;
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
+import java.util.*;
+import javax.swing.*;
 
 /**
  * Static utility methods used in Alchemy
@@ -40,8 +42,6 @@ import javax.swing.UIManager;
 public class AlcUtil implements AlcConstants {
 
     private final static Clipboard CLIPBOARD = TOOLKIT.getSystemClipboard();
-
-
     //////////////////////////////////////////////////////////////
     // STRING FUNCTIONS
     //////////////////////////////////////////////////////////////
@@ -241,6 +241,106 @@ public class AlcUtil implements AlcConstants {
         return customCursor;
     }
 
+    /** 
+     * Get a set of vector paths (shapes) from a PDF file.
+     * To not return the background rectangle added when Alchemy saves a PDF,
+     * Any shape that is bigger or the same size as the page is ignored
+     * 
+     * This is a rather long and hacky way using the swing labs
+     * PDFRenderer library.
+     * It uses reflection to access private variables but seems to be working...
+     * for now anyway. 
+     * 
+     * @param file              The PDF file to retrive the shapes from
+     * @param resetLocation     Reset the location of each path to 0,0
+     * @return                  An array of GeneralPath's from the PDF, else null
+     */
+    public static GeneralPath[] getPDFShapes(File file, boolean resetLocation) {
+
+        //File file = new File(HOME_DIR + "/Desktop/Alchemy-2008-06-18-22-32-36.pdf");
+        // set up the PDF reading
+        PDFPage pdfReadPage = null;
+
+        try {
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            FileChannel channel = raf.getChannel();
+            java.nio.ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+            pdfReadPage = new PDFFile(buf).getPage(1);
+
+        } catch (IOException e) {
+            System.err.println("Failed to load file");
+            e.printStackTrace();
+            return null;
+        }
+
+        if (pdfReadPage != null) {
+
+            // Token size because we are not actually rendering
+            int size = 1;
+            BufferedImage buffImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = buffImage.createGraphics();
+            AffineTransform at = g2.getTransform();
+            PDFRenderer renderer = new PDFRenderer(pdfReadPage, g2, new Rectangle(0, 0, size, size), null, null);
+
+            java.awt.Rectangle pageBounds = new java.awt.Rectangle(0, 0, (int) pdfReadPage.getWidth(), (int) pdfReadPage.getHeight());
+            //System.out.println("Page Bounds" + pageBounds);
+
+            renderer.setup();
+            int totalCommands = pdfReadPage.getCommandCount();
+            ArrayList<GeneralPath> gpList = new ArrayList<GeneralPath>(totalCommands);
+
+            try {
+                for (int i = 0; i < totalCommands; i++) {
+                    PDFCmd command = pdfReadPage.getCommand(i);
+                    if (command instanceof PDFShapeCmd) {
+                        PDFShapeCmd shapeCommand = (PDFShapeCmd) command;
+                        // Hack into the command to get the shape
+                        Class shapeClass = shapeCommand.getClass();
+                        Field field = shapeClass.getDeclaredField("gp");
+                        field.setAccessible(true);
+
+                        GeneralPath gp = (GeneralPath) field.get(shapeCommand);
+                        java.awt.Rectangle gpBounds = gp.getBounds();
+
+                        // Save the shape if it is within the page size
+                        if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
+                            // For some reason the shapes come in flipped, o re-flip them here
+                            AffineTransform verticalReflection = new AffineTransform();
+                            int axis = (gpBounds.y * 2) + gpBounds.height;
+                            // Move the reflection into place and reset to 0,0 if required
+                            if (resetLocation) {
+                                verticalReflection.translate(0 - gpBounds.x, axis - gpBounds.y);
+                            } else {
+                                verticalReflection.translate(0, axis);
+                            }
+                            // Reflect it using a negative scale
+                            verticalReflection.scale(1, -1);
+                            GeneralPath reflectedPath = (GeneralPath) gp.createTransformedShape(verticalReflection);
+                            gpList.add(reflectedPath);
+                        }
+                    }
+                }
+
+                // If there are shapes, then return them as an  array
+                if (gpList.size() > 0) {
+                    GeneralPath[] gpArray = new GeneralPath[gpList.size()];
+                    return gpList.toArray(gpArray);
+                }
+            } catch (IllegalArgumentException ex) {
+                ex.printStackTrace();
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            } catch (NoSuchFieldException ex) {
+                ex.printStackTrace();
+            } catch (SecurityException ex) {
+                ex.printStackTrace();
+            } finally {
+                g2.dispose();
+            }
+        }
+        return null;
+    }
+
     /** Copies the source file to destination file.
      *  If the destination file does not exist, it is created.
      * 
@@ -363,8 +463,8 @@ public class AlcUtil implements AlcConstants {
                             "the command may not work.");
                 }
                 if (openLauncher != null) {
-                   // params = new String[]{openLauncher};
-                    Runtime.getRuntime().exec(openLauncher +" " + pdf.getAbsolutePath());
+                    // params = new String[]{openLauncher};
+                    Runtime.getRuntime().exec(openLauncher + " " + pdf.getAbsolutePath());
                 }
 
             //Runtime.getRuntime().exec("gnome-open " + pdf.getAbsolutePath());
@@ -378,6 +478,7 @@ public class AlcUtil implements AlcConstants {
      * Sets the current contents of the clipboard to the specified transferable object and registers the specified clipboard owner as the owner of the new contents. 
      * Shows warning message if an exception occured
      * @param contents
+     * @param owner 
      * @return boolean false if an exception occured
      */
     public static boolean setClipboard(Transferable contents, ClipboardOwner owner) {

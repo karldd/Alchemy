@@ -273,6 +273,11 @@ class AlcPreferences implements AlcConstants {
                 } else {
                     Alchemy.preferences.simpleToolBar = true;
                 }
+                if (okButton != null) {
+                    //okButton.setSelected(true);
+                    //prefsWindow.getRootPane().setDefaultButton(okButton);
+                    okButton.requestFocus();
+                }
             }
         });
 
@@ -324,6 +329,8 @@ class AlcPreferences implements AlcConstants {
         // OK BUTTON
         //////////////////////////////////////////////////////////////
         okButton = new JButton(Alchemy.bundle.getString("ok"));
+        okButton.setMnemonic(KeyEvent.VK_ENTER);
+
         okButton.addActionListener(
                 new ActionListener() {
 

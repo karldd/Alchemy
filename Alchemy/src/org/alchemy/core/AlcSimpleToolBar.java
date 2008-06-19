@@ -230,25 +230,26 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
     }
 
     private void addModules(AlcModule[] modules) {
-        boolean firstModule = true;
-        ButtonGroup buttonGroup = new ButtonGroup();
 
+        ButtonGroup buttonGroup = new ButtonGroup();
+        int count = 0;
         for (int i = 0; i < modules.length; i++) {
             AlcModule currentModule = modules[i];
             if (loadModule(currentModule)) {
-                addModuleButton(currentModule, buttonGroup, firstModule);
-                firstModule = false;
+                addModuleButton(currentModule, buttonGroup, count);
+                count++;
             }
         }
     }
 
-    private void addModuleButton(final AlcModule currentModule, final ButtonGroup buttonGroup, final boolean firstModule) {
+    private void addModuleButton(final AlcModule currentModule, final ButtonGroup buttonGroup, int count) {
 
         final boolean createModule = (currentModule.getModuleType() == CREATE) ? true : false;
+        final AlcSimpleModuleToggleButton moduleButton = new AlcSimpleModuleToggleButton();
+
         AbstractAction moduleAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                AlcSimpleModuleToggleButton moduleButton = (AlcSimpleModuleToggleButton) e.getSource();
                 // CREATE
                 if (createModule) {
 
@@ -256,8 +257,13 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
                         Alchemy.plugins.setCurrentCreate(currentModule.getIndex());
                         buttonGroup.setSelected(moduleButton.getModel(), true);
                     }
+                    
                 // AFFECT
                 } else {
+                    // If triggered by a key
+                    if (!e.getSource().getClass().getName().endsWith("AlcSimpleModuleToggleButton")) {
+                        moduleButton.setSelected(!moduleButton.isSelected());
+                    }
 
                     // SELECTED
                     if (moduleButton.isSelected()) {
@@ -272,13 +278,29 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
             }
         };
 
-        AlcSimpleModuleToggleButton moduleButton = new AlcSimpleModuleToggleButton(moduleAction);
-        moduleButton.setToolTipText(currentModule.getName());
-        moduleButton.setup(AlcUtil.getUrlPath(currentModule.getIconName(), currentModule.getClassLoader()));
+        moduleButton.setAction(moduleAction);
+        moduleButton.setup(AlcUtil.getUrlPath(currentModule.getIconName(), currentModule.getClassLoader()), currentModule.getName());
+
+        // Range from 0 - 8 mapped to keys 1 - 9
+        if (count < 9) {
+            if (createModule) {
+                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0 + count + 1, currentModule.getName(), moduleAction);
+            } else {
+                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0 + count + 1, currentModule.getName(), moduleAction, MODIFIER_KEY);
+            }
+
+        // Last key is mapped to 0
+        } else if (count == 9) {
+            if (createModule) {
+                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0, currentModule.getName(), moduleAction);
+            } else {
+                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0, currentModule.getName(), moduleAction, MODIFIER_KEY);
+            }
+        }
 
         if (createModule) {
             buttonGroup.add(moduleButton);
-            if (firstModule) {
+            if (count == 0) {
                 buttonGroup.setSelected(moduleButton.getModel(), true);
             }
         }
@@ -328,10 +350,15 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
 class ColourBox extends JPanel implements Cloneable {
 
-    final int width,  height;
-    Color colour;
+    final  
+      
+     
 
-    ColourBox(int width, int height, Color colour) {
+    int width,  height; Color colour; 
+        ColourBox  
+          
+          
+        (int width, int height, Color colour) {
         this.width = width;
         this.height = height;
         this.colour = colour;

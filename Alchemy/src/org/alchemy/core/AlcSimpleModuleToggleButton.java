@@ -38,10 +38,14 @@ class AlcSimpleModuleToggleButton extends JToggleButton {
     }
 
     AlcSimpleModuleToggleButton(URL iconUrl) {
-        setup(iconUrl);
+        setup(iconUrl, null);
     }
 
     void setup(URL iconUrl) {
+        setup(iconUrl, null);
+    }
+
+    void setup(URL iconUrl, String toolTip) {
         if (iconUrl != null) {
             ImageIcon icon = AlcUtil.getImageIcon(iconUrl);
             this.setIcon(createIcon(icon, AlcToolBar.toolBarBgColour));
@@ -50,10 +54,10 @@ class AlcSimpleModuleToggleButton extends JToggleButton {
         }
 
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 0));
-    //this.setMargin(new Insets(5, 5, 5, 5));
-    //this.setBorderPainted(false);    // Draw the button shape
-    this.setContentAreaFilled(false);  // Draw the background behind the button
-    this.setFocusPainted(false);       // Draw the highlight when focused
+        //this.setMargin(new Insets(5, 5, 5, 5));
+        //this.setBorderPainted(false);    // Draw the button shape
+        this.setContentAreaFilled(false);  // Draw the background behind the button
+        this.setFocusPainted(false);       // Draw the highlight when focused
 
     }
 
