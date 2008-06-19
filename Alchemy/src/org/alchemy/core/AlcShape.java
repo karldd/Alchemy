@@ -309,7 +309,14 @@ public class AlcShape implements AlcConstants, Cloneable {
     public void recalculateTotalPoints() {
         PathIterator count = path.getPathIterator(null);
         int numberOfPoints = 0;
+//        float[] currentPoints = new float[6];
         while (!count.isDone()) {
+//            int currentPointType = count.currentSegment(currentPoints);
+//            switch (currentPointType) {
+//                case PathIterator.SEG_MOVETO:
+//                    System.out.println("Move");
+//                    break;
+//            }
             numberOfPoints++;
             count.next();
         }

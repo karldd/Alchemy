@@ -500,7 +500,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     public void keyPressed(KeyEvent event) {
 
         int keyCode = event.getKeyCode();
-
+        
         // Turn off fullscreen mode with just the escape key if in fullscreen mode
         if (keyCode == KeyEvent.VK_ESCAPE) {
             if (isFullscreen()) {

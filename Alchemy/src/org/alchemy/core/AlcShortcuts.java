@@ -111,6 +111,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         // OK BUTTON
         //////////////////////////////////////////////////////////////
         okButton = new JButton(Alchemy.bundle.getString("ok"));
+        okButton.setMnemonic(KeyEvent.VK_ENTER);
         okButton.addActionListener(
                 new ActionListener() {
 
@@ -139,11 +140,21 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         masterPanel.add(buttonPane);
         //getRootPane().setDefaultButton(okButton);
 
+        // Action to close the window when you hit the escape key
+        AbstractAction closeAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+            }
+        };
+
+        this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
+        this.getRootPane().getActionMap().put("Escape", closeAction);
 
         this.getContentPane().add(masterPanel);
         this.pack();
-        //this.setResizable(false);
-        okButton.requestFocus();
+    //this.setResizable(false);
+    //okButton.requestFocus();
     }
 
     /** Show and centre the shorcut window */
@@ -315,7 +326,15 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      */
     int setShortcut(JComponent component, int key, String title, Action action, int modifier) {
 
-        String bundleTitle, bundleTitleEn;
+        String bundleTitle,
+                bundleTitleEn;
+
+
+
+
+
+
+
 
         try {
             // Get the localised string to display

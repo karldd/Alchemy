@@ -20,6 +20,8 @@
 package org.alchemy.core;
 
 import java.awt.*;
+import java.awt.geom.GeneralPath;
+import java.io.File;
 import javax.swing.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -162,14 +164,17 @@ public class Alchemy implements AlcConstants {
 
         window.setVisible(true);
 
-
-
+//        GeneralPath[] gps = AlcUtil.getPDFShapes(new File(HOME_DIR + "/Desktop/Alchemy-2008-06-18-22-32-36.pdf"), true);
+//        if (gps != null) {
+//            for (int i = 0; i < gps.length; i++) {
+//                canvas.createShapes.add(new AlcShape(gps[i]));
+//            }
+//        }
     }
 
     public static void main(String[] args) {
         // Set system look and feel
         try {
-
 
             //System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + "lib");
 
