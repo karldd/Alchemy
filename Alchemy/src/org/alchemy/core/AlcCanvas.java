@@ -724,7 +724,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     /** Set the current alpha value */
-    void setAlpha(int alpha) {
+    public void setAlpha(int alpha) {
         this.alpha = alpha;
         if (backgroundActive) {
             setOldColour(this.oldColour);

@@ -20,8 +20,6 @@
 package org.alchemy.core;
 
 import java.awt.*;
-import java.awt.geom.GeneralPath;
-import java.io.File;
 import javax.swing.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
