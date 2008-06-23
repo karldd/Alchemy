@@ -374,6 +374,14 @@ public class AlcShape implements AlcConstants, Cloneable {
     }
 
     /**
+     * Set a colour with alpha directly 
+     * @param colour
+     */
+    public void setAlphaColour(Color colour){
+        this.colour = colour;
+    }
+    
+    /**
      * Get the style of this shape
      * @return  The style of this shape - (1) LINE or (2) SOLID FILL
      */
