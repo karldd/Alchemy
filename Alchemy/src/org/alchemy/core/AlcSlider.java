@@ -73,26 +73,34 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
     }
 
     /**
-     * This method returns this slider's isAdjusting trueValue which is true if the
+     * Returns this slider's isAdjusting value which is true if the
      * thumb is being dragged.
      *
-     * @return The slider's isAdjusting trueValue.
+     * @return The slider's isAdjusting value.
      */
     public boolean getValueIsAdjusting() {
         return slider.mouseDown;
     }
 
     /**
-     * This method returns the current trueValue of the slider.
+     * Returns the current value of the slider.
      *
-     * @return The trueValue of the slider stored in the model.
+     * @return The value of the slider stored in the model.
      */
     public int getValue() {
         return slider.trueValue;
     }
 
+    /** Sets the current value of the slider.
+     * 
+     * @param value The new value
+     */
+    public void setValue(int value) {
+        slider.setSlider(value);
+    }
+
     /**
-     * This method registers a listener to this slider. The listener will be
+     * Registers a listener to this slider. The listener will be
      * informed of new ChangeEvents.
      *
      * @param listener The listener to register.
@@ -102,7 +110,7 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
     }
 
     /**
-     * This method removes a listener from this slider.
+     * Removes a listener from this slider.
      *
      * @param listener The listener to remove.
      */

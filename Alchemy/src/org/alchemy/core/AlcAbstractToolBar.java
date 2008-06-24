@@ -62,6 +62,9 @@ public abstract class AlcAbstractToolBar extends JPanel {
     void queueColourButtonRefresh() {
     }
 
+    void refreshTransparencySlider() {
+    }
+
     void resizeToolBar() {
     }
 

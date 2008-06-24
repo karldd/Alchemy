@@ -22,7 +22,6 @@ package org.alchemy.core;
 import com.sun.pdfview.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
@@ -46,7 +45,12 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // STRING FUNCTIONS
     //////////////////////////////////////////////////////////////
-    /** Checks a name for a file extension and adds one if not present */
+    /** Checks a name for a file extension and adds one if not present 
+     * 
+     * @param file  The file to add the extenstion to
+     * @param ext   The extension to add
+     * @return      The new file with extension
+     */
     public static File addFileExtension(File file, String ext) {
         //String fileName = file.getName();
         String filePath = file.getPath();
@@ -63,14 +67,23 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
-    /** Returns just the class name -- no package info. */
-    public static String getClassName(Object o) {
-        String classString = o.getClass().getName();
+    /** Returns just the class name -- no package info. 
+     * 
+     * @param object    The object      
+     * @return          The name of the class
+     */
+    public static String getClassName(Object object) {
+        String classString = object.getClass().getName();
         int dotIndex = classString.lastIndexOf(".");
         return classString.substring(dotIndex + 1);
     }
 
-    /** Function to append a string to the end of a given URL */
+    /** Function to append a string to the end of a given URL 
+     * 
+     * @param url       The url
+     * @param append    The string to append
+     * @return          The new url with string appended
+     */
     public static URL appendStringToUrl(URL url, String append) {
         String urlString = url.toString();
         URL newUrl = null;
@@ -94,21 +107,30 @@ public class AlcUtil implements AlcConstants {
         return newUrl;
     }
 
-    /** Returns a string date stamp according to the format given */
+    /** Returns a string date stamp according to the format given 
+     * 
+     * @param format    Format for the date stamp see: SimpleDateFormat
+     * @return          A string containing a formatted date
+     */
     public static String dateStamp(String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
         Date today = new Date();
         return formatter.format(today);
     }
 
-    /** Zero Pad an int */
+    /** Zero Pad an int 
+     * 
+     * @param i     The number to pad
+     * @param len   The length required
+     * @return      The padded number
+     */
     public static String zeroPad(int i, int len) {
         // converts integer to left-zero padded string, len chars long.
         String s = Integer.toString(i);
         if (s.length() > len) {
             return s.substring(0, len);
-        } else if (s.length() < len) // pad on left with zeros
-        {
+        // pad on left with zeros
+        } else if (s.length() < len) {
             return "000000000000000000000000000".substring(0, len - s.length()) + s;
         } else {
             return s;
@@ -120,7 +142,7 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     /** Returns a URL from a String, or null if the name was invalid.
      * 
-     * @param name  The name to the resource
+     * @param path  The name to the resource
      * @return      URL to the resource or null if invalid
      */
     public static URL getUrlPath(String path) {
@@ -129,7 +151,7 @@ public class AlcUtil implements AlcConstants {
 
     /** Returns a URL from a String, or null if the name was invalid.
      * 
-     * @param name          The name to the resource
+     * @param path          The name to the resource
      * @param classLoader   The classloader
      * @return              URL to the resource or null if invalid
      */
@@ -582,6 +604,14 @@ public class AlcUtil implements AlcConstants {
      */
     public static File showFileChooser() {
         return showFileChooser(null, null, false);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  title               the name of the popup title
+     *  @return                     file/folder selected by the user
+     */
+    public static File showFileChooser(String title) {
+        return showFileChooser(title, null, false);
     }
 
     /** Ask for a location with a file chooser. 

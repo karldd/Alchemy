@@ -146,10 +146,10 @@
                 <contains text="ScrawlShapes" casesensitive="no"/>
             </fileset>
         </copy>
-        <!-- Camera Colour -->
-        <copy todir="${basedir}/modules/cameraColour/org/alchemy/create">
+        <!-- Blank -->
+        <copy todir="${basedir}/modules/blank/org/alchemy/create">
             <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="CameraColour" casesensitive="no"/>
+                <contains text="Blank" casesensitive="no"/>
             </fileset>
         </copy>
         

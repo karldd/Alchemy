@@ -42,13 +42,7 @@ import javax.imageio.ImageIO;
 // PDF READER
 import com.sun.pdfview.*;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.GeneralPath;
 import java.io.*;
-import java.lang.reflect.Field;
-import java.nio.channels.FileChannel;
 
 /** 
  * The Alchemy canvas
@@ -723,7 +717,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return alpha;
     }
 
-    /** Set the current alpha value */
+    /** Set the current alpha value
+     * @param alpha 
+     */
     public void setAlpha(int alpha) {
         this.alpha = alpha;
         if (backgroundActive) {
@@ -731,6 +727,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         } else {
             setColour(this.colour);
         }
+        Alchemy.toolBar.refreshTransparencySlider();
     }
 
     /** Get the current style
