@@ -50,6 +50,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     private JButton detachButton;
     /** Foreground Background Button */
     private AlcToggleButton fgbgButton;
+    /** Transparency slider */
+    private AlcSlider transparencySlider;
     /** Sections within the sub toolbar - either loaded or not */
     private AlcToolBarSubSection[] affectSubToolBarSections;
     /** The create section within the sub toolbar - index of the loaded section */
@@ -301,12 +303,12 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                             refreshColourButton();
                         }
                     };
-                    
+
                     // Set the current colour 
                     Alchemy.colourChooser.setColor(Alchemy.canvas.getColour());
                     Alchemy.colourChooser.show(colorAction, null);
-                    
-                    // Dialog to hold the colour chooser
+
+                // Dialog to hold the colour chooser
 //                    JDialog dialog = JColorChooser.createDialog(Alchemy.window, getS("colourTitle"), true, Alchemy.colourPane, colorAction, null);
 //                    dialog.setBackground(AlcToolBar.toolBarBgColour);
 //                    dialog.setResizable(false);
@@ -375,21 +377,21 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        final AlcSlider alphaSlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 254);
-        alphaSlider.addChangeListener(
+        transparencySlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 254);
+        transparencySlider.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
 
                         //JSlider source = (JSlider) e.getSource();
-                        if (!alphaSlider.getValueIsAdjusting()) {
-                            Alchemy.canvas.setAlpha(alphaSlider.getValue());
+                        if (!transparencySlider.getValueIsAdjusting()) {
+                            Alchemy.canvas.setAlpha(transparencySlider.getValue());
                             refreshColourButton();
                         }
                     }
                 });
 
-        toolBar.add(alphaSlider);
+        toolBar.add(transparencySlider);
 
         //////////////////////////////////////////////////////////////
         // SEPARATOR
@@ -818,12 +820,15 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 // Then add the section
                 subToolBar.add(affectSubToolBarSections[i]);
             }
-
         }
 
         if (currentSubToolBarSections > 0) {
 
-            // TODO - Check there is enough room for the subtoolbar and expand the window as required    
+            // TODO - Check there is enough room for the subtoolbar
+            // If there is overflow collapsable the subtoolbar sections to show just the header
+            // Keep track of the last used section
+            // Click on the header to expand it then collapse other ones if necessary
+            
 //            int layoutWidth = subToolBar.getLayoutWidth();
 //            System.out.println("SubToolbar layout width:" + layoutWidth);
 //            if (layoutWidth > windowSize.width) {
@@ -1001,5 +1006,11 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         g.drawRect(6, 6, 17, 17);
 
         fgbgButton.setSelectedIcon(new ImageIcon(swapOn));
+    }
+
+    
+    @Override
+    void refreshTransparencySlider(){
+        transparencySlider.setValue(Alchemy.canvas.getAlpha());
     }
 }

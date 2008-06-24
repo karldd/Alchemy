@@ -122,7 +122,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         }
     }
 
-    private void setSlider(int value) {
+    void setSlider(int value) {
         if (value >= min && value < max) {
             trueValue = value;
             displayValue = Math.round((width / scale) * value);

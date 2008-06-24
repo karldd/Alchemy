@@ -22,6 +22,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 /**
@@ -30,39 +32,35 @@ import org.alchemy.core.*;
  */
 public class ColourSwitcher extends AlcModule {
 
-    private boolean switchColour = false;
+    private boolean switchColour = true;
     private boolean switchAlpha = true;
     private AlcToolBarSubSection subToolBarSection;
+    private Color baseColour = null;
+    private float[] baseHSB = new float[3];
+    private int baseRange = 50;
 
     public ColourSwitcher() {
     }
 
     @Override
     public void setup() {
+        baseColour = canvas.getColour();
+        Color.RGBtoHSB(baseColour.getRed(), baseColour.getGreen(), baseColour.getBlue(), baseHSB);
         createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    public void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     public void createSubToolBarSection() {
         subToolBarSection = new AlcToolBarSubSection(this);
 
-        // Switch Colour
-        AlcSubToggleButton colourButton = new AlcSubToggleButton("Colour", AlcUtil.getUrlPath("vertical.png", getClassLoader()));
-        colourButton.setToolTipText("Change the colour");
-
-        colourButton.addActionListener(
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        switchColour = !switchColour;
-                    }
-                });
-        colourButton.setSelected(switchColour);
-        subToolBarSection.add(colourButton);
-
         // Switch Alpha
-        AlcSubToggleButton alphaButton = new AlcSubToggleButton("Transparency", AlcUtil.getUrlPath("horizontal.png", getClassLoader()));
-        alphaButton.setToolTipText("Change the transparency");
+        AlcSubToggleButton alphaButton = new AlcSubToggleButton("Transparency", AlcUtil.getUrlPath("transparency.png", getClassLoader()));
+        alphaButton.setToolTipText("Turn transparency changing on");
 
         alphaButton.addActionListener(
                 new ActionListener() {
@@ -74,32 +72,66 @@ public class ColourSwitcher extends AlcModule {
         alphaButton.setSelected(switchAlpha);
         subToolBarSection.add(alphaButton);
 
-        //Alchemy.colourChooser.getColor()
-        // Base Colour
-        AlcSubToggleButton baseColourButton = new AlcSubToggleButton("Base Colour", AlcUtil.getUrlPath("horizontal.png", getClassLoader()));
-        baseColourButton.setToolTipText("Set the base colour to randomise from");
+        // Hue Slider
+        final AlcSubSlider rangeSlider = new AlcSubSlider("Range", 0, 100, baseRange);
+        rangeSlider.setToolTipText("Set the range for the colour to diverge from");
+        rangeSlider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!rangeSlider.getValueIsAdjusting()) {
+                            baseRange = rangeSlider.getValue();
+                        }
+                    }
+                });
+
+
+        //  Colour
+        final AlcSubToggleButton baseColourButton = new AlcSubToggleButton("Colour", AlcUtil.getUrlPath("colour.png", getClassLoader()));
+        baseColourButton.setToolTipText("Set the base colour to diverge from");
 
         // Action called when the user sets the colour
-        final ActionListener colorAction = new ActionListener() {
+        final ActionListener okAction = new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                canvas.setColour(colourChooser.getColor());
-                System.out.println(colourChooser.getColor());
-                //Alchemy.canvas.setColour(Alchemy);
-                //refreshColourButton();
+                baseColour = colourChooser.getColor();
+                subToolBarSection.add(rangeSlider);
+                subToolBarSection.revalidate();
+                switchColour = true;
+
+                Color.RGBtoHSB(baseColour.getRed(), baseColour.getGreen(), baseColour.getBlue(), baseHSB);
             }
         };
+
+        // Action called when the user sets the colour
+        final ActionListener cancelAction = new ActionListener() {
+
+            public void actionPerformed(ActionEvent event) {
+                baseColourButton.setSelected(false);
+                switchColour = false;
+            }
+        };
+
+        baseColourButton.setSelected(switchColour);
+        subToolBarSection.add(baseColourButton);
+        subToolBarSection.add(rangeSlider);
+
 
         // Shows the colour chooser
         baseColourButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        colourChooser.show(colorAction, null);
+                        if (!switchColour) {
+                            colourChooser.show(okAction, cancelAction);
+                        } else {
+                            subToolBarSection.remove(rangeSlider);
+                            subToolBarSection.revalidate();
+                            switchColour = false;
+                        }
+
                     }
                 });
-        //baseColourButton.setSelected(false);
-        subToolBarSection.add(baseColourButton);
 
     }
 
@@ -137,17 +169,52 @@ public class ColourSwitcher extends AlcModule {
     }
 
     private Color getRandomColour() {
-        int r = (int) math.random(0, 255);
-        int g = (int) math.random(0, 255);
-        int b = (int) math.random(0, 255);
-        return new Color(r, g, b);
+        Color randomColour = null;
+        if (baseColour == null) {
+
+            int r = (int) math.random(0, 255);
+            int g = (int) math.random(0, 255);
+            int b = (int) math.random(0, 255);
+            randomColour = new Color(r, g, b);
+
+        } else {
+
+            // Work out the half range
+            float halfRange = (baseRange / 100F) / 2F;
+
+            float h = divergeNumber(baseHSB[0], halfRange);
+            float s = divergeNumber(baseHSB[1], halfRange);
+            float b = divergeNumber(baseHSB[2], halfRange);
+
+            randomColour = Color.getHSBColor(h, s, b);
+        //System.out.println(randomColour);
+
+        }
+        return randomColour;
     }
 
     private Color getRandomAlphaColour() {
-        int r = (int) math.random(0, 255);
-        int g = (int) math.random(0, 255);
-        int b = (int) math.random(0, 255);
+        Color c = getRandomColour();
         int a = (int) math.random(0, 255);
-        return new Color(r, g, b, a);
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
+    }
+
+    /** Diverge a number within a certain range */
+    private float divergeNumber(float num, float range) {
+        float min = num - range;
+        float max = num + range;
+        // Pad out the range in the other direction if out of bounds
+        if (min < 0F) {
+            max += min * -1F;
+            min = 0F;
+        } else if (max > 1F) {
+            min -= (max - 1F);
+            max = 1F;
+        }
+
+        float random = math.random(min, max);
+        //System.out.println(num + " > " + random + " : " + min + " " + max);
+        //System.out.println(num + " > " + random);
+        return random;
     }
 }

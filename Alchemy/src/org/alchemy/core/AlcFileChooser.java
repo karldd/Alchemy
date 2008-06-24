@@ -51,6 +51,7 @@ class AlcFileChooser extends JFileChooser implements AlcConstants {
         return dialog;
     }
 
+    /** Display a warning dialog when overwriting a file */
     @Override
     public void approveSelection() {
 

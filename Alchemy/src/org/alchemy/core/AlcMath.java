@@ -306,4 +306,26 @@ public class AlcMath implements AlcConstants {
     static public final float map(float value, float istart, float istop, float ostart, float ostop) {
         return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
     }
+
+    /**Constrains a value to not exceed a maximum and minimum value.
+     * 
+     * @param value     The value to constrain
+     * @param min       Minimum limit
+     * @param max       Maximum limit
+     * @return
+     */
+    static public final int constrain(int value, int min, int max) {
+        return (value < min) ? min : ((value > max) ? max : value);
+    }
+
+    /**Constrains a value to not exceed a maximum and minimum value.
+     * 
+     * @param value     The value to constrain
+     * @param min       Minimum limit
+     * @param max       Maximum limit
+     * @return
+     */
+    static public final float constrain(float value, float min, float max) {
+        return (value < min) ? min : ((value > max) ? max : value);
+    }
 }
