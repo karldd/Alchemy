@@ -33,12 +33,14 @@ public abstract class AlcModule {
     //////////////////////////////////////////////////////////////
     // STATIC MODULE REFERENCES
     //////////////////////////////////////////////////////////////
-    /** Access to the canvas */
+    /** Access to the Alchemy canvas */
     protected static AlcCanvas canvas;
-    /** Access to the toolBar */
+    /** Access to the Alchemy toolBar */
     protected static AlcAbstractToolBar toolBar;
     /** Access to the Alchemy math class */
     protected static AlcMath math;
+    /** Access to the Alchemy colour chooser */
+    protected static AlcColourChooser colourChooser;
     //
     //////////////////////////////////////////////////////////////
     // MODULE INSTANCE REFERENCES
@@ -69,10 +71,11 @@ public abstract class AlcModule {
     // STRUCTURE
     //////////////////////////////////////////////////////////////
     /** Sets global references to the root, canvas, and toolbar */
-    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m) {
+    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m, AlcColourChooser cc) {
         canvas = c;
         toolBar = t;
         math = m;
+        colourChooser = cc;
     }
 
     /** Called to load the module when first run */
