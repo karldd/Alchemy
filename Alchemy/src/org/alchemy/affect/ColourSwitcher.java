@@ -74,6 +74,33 @@ public class ColourSwitcher extends AlcModule {
         alphaButton.setSelected(switchAlpha);
         subToolBarSection.add(alphaButton);
 
+        //Alchemy.colourChooser.getColor()
+        // Base Colour
+        AlcSubToggleButton baseColourButton = new AlcSubToggleButton("Base Colour", AlcUtil.getUrlPath("horizontal.png", getClassLoader()));
+        baseColourButton.setToolTipText("Set the base colour to randomise from");
+
+        // Action called when the user sets the colour
+        final ActionListener colorAction = new ActionListener() {
+
+            public void actionPerformed(ActionEvent event) {
+                canvas.setColour(colourChooser.getColor());
+                System.out.println(colourChooser.getColor());
+                //Alchemy.canvas.setColour(Alchemy);
+                //refreshColourButton();
+            }
+        };
+
+        // Shows the colour chooser
+        baseColourButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        colourChooser.show(colorAction, null);
+                    }
+                });
+        //baseColourButton.setSelected(false);
+        subToolBarSection.add(baseColourButton);
+
     }
 
     @Override
@@ -83,7 +110,7 @@ public class ColourSwitcher extends AlcModule {
         Color newColour = null;
 
         if (switchAlpha && switchColour) {
-            
+
             newColour = getRandomAlphaColour();
             canvas.setAlpha(newColour.getAlpha());
             canvas.setColour(newColour);

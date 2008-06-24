@@ -19,7 +19,9 @@
 package org.alchemy.core;
 
 import java.awt.Color;
+import java.awt.event.ActionListener;
 import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
@@ -27,7 +29,7 @@ import javax.swing.colorchooser.AbstractColorChooserPanel;
  * AlcColourChooser
  * @author Karl D.D. Willis
  */
-class AlcColourChooser extends JColorChooser implements AlcConstants {
+public class AlcColourChooser extends JColorChooser implements AlcConstants {
 
     AlcColourChooser(Color initialColor) {
         super(initialColor);
@@ -48,6 +50,23 @@ class AlcColourChooser extends JColorChooser implements AlcConstants {
             }
             this.setPreviewPanel(new JPanel());
         }
+    }
 
+    /** Creates and shows a JDialog with the Alchemy colour pane and the given actions 
+     * 
+     * @param okListener        The ActionListener for the OK button
+     * @param cancelListener    The ActionListener for the CANCEL button
+     */
+    public void show(ActionListener okListener, ActionListener cancelListener) {
+        JDialog colourChooser = JColorChooser.createDialog(Alchemy.window,
+                Alchemy.bundle.getString("colourTitle"),
+                true,
+                this,
+                okListener,
+                cancelListener);
+
+        colourChooser.setBackground(AlcToolBar.toolBarBgColour);
+        colourChooser.setResizable(false);
+        colourChooser.setVisible(true);
     }
 }

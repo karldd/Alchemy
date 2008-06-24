@@ -297,18 +297,20 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
                         public void actionPerformed(ActionEvent event) {
                             Alchemy.canvas.setColour(Alchemy.colourChooser.getColor());
+                            //Alchemy.canvas.setColour(Alchemy);
                             refreshColourButton();
                         }
                     };
-
+                    
                     // Set the current colour 
                     Alchemy.colourChooser.setColor(Alchemy.canvas.getColour());
-
+                    Alchemy.colourChooser.show(colorAction, null);
+                    
                     // Dialog to hold the colour chooser
-                    JDialog dialog = JColorChooser.createDialog(Alchemy.window, getS("colourTitle"), true, Alchemy.colourChooser, colorAction, null);
-                    dialog.setBackground(AlcToolBar.toolBarBgColour);
-                    dialog.setResizable(false);
-                    dialog.setVisible(true);
+//                    JDialog dialog = JColorChooser.createDialog(Alchemy.window, getS("colourTitle"), true, Alchemy.colourPane, colorAction, null);
+//                    dialog.setBackground(AlcToolBar.toolBarBgColour);
+//                    dialog.setResizable(false);
+//                    dialog.setVisible(true);
 
                 } else {
                     Alchemy.canvas.setColour(picker.getColor(e.getX(), e.getY()));
