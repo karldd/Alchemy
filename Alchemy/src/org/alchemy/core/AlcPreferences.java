@@ -117,7 +117,7 @@ class AlcPreferences implements AlcConstants {
     private void loadPreferences() {
         prefs = Preferences.userNodeForPackage(getClass());
 
-        sessionRecordingState = prefs.getBoolean("Recording State", true);
+        sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", DESKTOP_DIR);
         sessionRecordingInterval = prefs.getInt("Recording Interval", 30000);
