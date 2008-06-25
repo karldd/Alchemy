@@ -1,5 +1,5 @@
 Alchemy 
-ALPHA 004
+ALPHA 005
 
 
 
@@ -30,6 +30,23 @@ Download Alchemy: http://al.chemy.org/download/
 Alchemy Forum: http://al.chemy.org/forum/
 
 Version History
+--------------------------------------
+ALPHA 005
+
+FEATURES
++ Draw over/under existing shapes mode 
++ Colour Switcher Module
++ Simple interface mode introduced, aimed at kidz!
+
+CHANGES
++ Preferences/Options window added to change inteface mode
++ Modules can now be turned on and off in the preferences/options window
++ A default list of modules can be created in modules/modules.txt
+
+BUG FIXES
++ Session timer now saves correctly only when the canvas has changed
++ Minor interface fixes (especially for Linux)
+
 --------------------------------------
 ALPHA 004
 

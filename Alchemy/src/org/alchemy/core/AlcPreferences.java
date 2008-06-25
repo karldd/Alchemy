@@ -129,7 +129,7 @@ class AlcPreferences implements AlcConstants {
         paletteLocation = stringToPoint(prefs.get("Palette Location", null));
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
-        simpleToolBar = prefs.getBoolean("Simple ToolBar", true);
+        simpleToolBar = prefs.getBoolean("Simple ToolBar", false);
         modulesSet = prefs.getBoolean("Modules Set", false);
         smoothing = prefs.getBoolean("Smoothing", true);
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
