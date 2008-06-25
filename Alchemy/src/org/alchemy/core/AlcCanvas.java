@@ -272,7 +272,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.setRedraw(true);
         this.redraw(true);
         this.setRedraw(false);
-        canvasChanged = true;
     }
 
     /** Set the canvas redraw state
@@ -327,12 +326,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     /** Return if there has been activity on the canvas since the last time the timer checked */
-    boolean canvasChange() {
+    boolean canvasChanged() {
         return this.canvasChanged;
     }
 
     /** Reset the activity flag - called by the timer */
-    void resetCanvasChange() {
+    void resetCanvasChanged() {
         this.canvasChanged = false;
     }
 

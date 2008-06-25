@@ -140,7 +140,7 @@ public class AlcMath implements AlcConstants {
     /**
      * Computes the Perlin noise function value at x, y, z.
      */
-    public float noise(float x, float y, float z) {
+    public final float noise(float x, float y, float z) {
 
         // precalculate sin/cos lookup tables [toxi]
         // circle resolution is determined from the actual used radii
@@ -189,9 +189,9 @@ public class AlcMath implements AlcConstants {
         }
 
         int xi = (int) x, yi = (int) y, zi = (int) z;
-        float xf = (float) (x - xi);
-        float yf = (float) (y - yi);
-        float zf = (float) (z - zi);
+        float xf = (x - xi);
+        float yf = (y - yi);
+        float zf = (z - zi);
         float rxf, ryf;
 
         float r = 0;
@@ -249,7 +249,7 @@ public class AlcMath implements AlcConstants {
      *  now adjusts to the size of the cosLUT used via
      *  the new variables, defined above
      */
-    private float noise_fsc(float i) {
+    private  final float noise_fsc(float i) {
         // using bagel's cosine table instead
         return 0.5f * (1.0f - perlin_cosTable[(int) (i * perlin_PI) % perlin_TWOPI]);
     }
@@ -259,13 +259,13 @@ public class AlcMath implements AlcConstants {
      *  for different levels of detail. lower values will produce
      *  smoother results as higher octaves are surpressed
      */
-    public void noiseDetail(int lod) {
+    public final void noiseDetail(int lod) {
         if (lod > 0) {
             perlin_octaves = lod;
         }
     }
 
-    public void noiseDetail(int lod, float falloff) {
+    public final void noiseDetail(int lod, float falloff) {
         if (lod > 0) {
             perlin_octaves = lod;
         }
@@ -274,7 +274,7 @@ public class AlcMath implements AlcConstants {
         }
     }
 
-    public void noiseSeed(long what) {
+    public final void noiseSeed(long what) {
         if (perlinRandom == null) {
             perlinRandom = new Random();
         }
@@ -284,7 +284,7 @@ public class AlcMath implements AlcConstants {
     }
 
     /** Return the mean of an int array */
-    public static double mean(int[] p) {
+    public static final double mean(int[] p) {
         int sum = 0;  // sum of all the elements
         for (int i = 0; i < p.length; i++) {
             sum += p[i];
@@ -303,7 +303,7 @@ public class AlcMath implements AlcConstants {
      * @param ostop     Upper bound of the value's target range
      * @return          The mapped number
      */
-    static public final float map(float value, float istart, float istop, float ostart, float ostop) {
+    public static final float map(float value, float istart, float istop, float ostart, float ostop) {
         return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
     }
 
@@ -314,7 +314,7 @@ public class AlcMath implements AlcConstants {
      * @param max       Maximum limit
      * @return
      */
-    static public final int constrain(int value, int min, int max) {
+    public static final int constrain(int value, int min, int max) {
         return (value < min) ? min : ((value > max) ? max : value);
     }
 
@@ -325,7 +325,28 @@ public class AlcMath implements AlcConstants {
      * @param max       Maximum limit
      * @return
      */
-    static public final float constrain(float value, float min, float max) {
+    public static final float constrain(float value, float min, float max) {
         return (value < min) ? min : ((value > max) ? max : value);
+    }
+
+    /** Calculates the distance between two points.
+     * 
+     * @param x1    x-coordinate of the first point
+     * @param y1    y-coordinate of the first point
+     * @param x2    x-coordinate of the second point
+     * @param y2    y-coordinate of the second point
+     * @return      The distance between the two points
+     */
+    public static final float distance(float x1, float y1, float x2, float y2) {
+        return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1));
+    }
+
+    /** Squares a number (multiplies a number by itself). 
+     * 
+     * @param num   The number to square
+     * @return      The squared number
+     */
+    public static final float sq(float num) {
+        return num * num;
     }
 }

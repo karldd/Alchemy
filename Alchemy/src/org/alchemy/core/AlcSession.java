@@ -68,7 +68,7 @@ class AlcSession implements ActionListener, AlcConstants {
                 timer.start();
 
             }
-            Alchemy.canvas.resetCanvasChange();
+            //Alchemy.canvas.resetCanvasChanged();
 
         } else {
 
@@ -231,7 +231,7 @@ class AlcSession implements ActionListener, AlcConstants {
             pdfReadFile = new PDFFile(buf);
             currentPdfReadPage = 1;
             maxPdfReadPage = pdfReadFile.getNumPages();
-            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);           
+            pdfReadPage = pdfReadFile.getPage(currentPdfReadPage);
             Alchemy.canvas.redraw(true);
             return true;
 
@@ -301,7 +301,7 @@ class AlcSession implements ActionListener, AlcConstants {
 // Called by the timer
     public void actionPerformed(ActionEvent e) {
         // If the canvas has changed
-        if (Alchemy.canvas.canvasChange()) {
+        if (Alchemy.canvas.canvasChanged()) {
 
             // If the pdfReadPage has been saved
             if (savePage()) {
@@ -317,6 +317,7 @@ class AlcSession implements ActionListener, AlcConstants {
                             Alchemy.canvas.redraw();
                             indicatorTimer.stop();
                             indicatorTimer = null;
+                            Alchemy.canvas.resetCanvasChanged();
                         }
                     });
                     indicatorTimer.start();
@@ -324,14 +325,13 @@ class AlcSession implements ActionListener, AlcConstants {
 
                 Alchemy.canvas.redraw();
 
-                Alchemy.canvas.resetCanvasChange();
                 if (Alchemy.preferences.sessionAutoClear) {
                     Alchemy.canvas.clear();
                 }
                 progressPage();
+                // This may not be needed, because of the 
+                Alchemy.canvas.resetCanvasChanged();
             }
-
-
         }
     }
 }

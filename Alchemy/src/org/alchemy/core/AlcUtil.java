@@ -315,6 +315,7 @@ public class AlcUtil implements AlcConstants {
             try {
                 for (int i = 0; i < totalCommands; i++) {
                     PDFCmd command = pdfReadPage.getCommand(i);
+                    System.out.println(command);
                     if (command instanceof PDFShapeCmd) {
                         PDFShapeCmd shapeCommand = (PDFShapeCmd) command;
                         // Hack into the command to get the shape
@@ -324,6 +325,7 @@ public class AlcUtil implements AlcConstants {
 
                         GeneralPath gp = (GeneralPath) field.get(shapeCommand);
                         java.awt.Rectangle gpBounds = gp.getBounds();
+                        System.out.println(gpBounds);
 
                         // Save the shape if it is within the page size
                         if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
