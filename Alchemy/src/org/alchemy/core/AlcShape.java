@@ -24,6 +24,7 @@ import java.awt.Color;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import java.util.ArrayList;
 
 /**
  * A general shape contained class used by Alchemy
@@ -285,6 +286,44 @@ public class AlcShape implements AlcConstants, Cloneable {
         totalPoints = 1;
     }
 
+    /** Returns point data from the General Path without curve data
+     *  floating point precision
+     * @return  An array of points from the path
+     */
+    public Point[] getPoints() {
+        int pointsSize = (totalPoints > 0) ? totalPoints : 100;
+        ArrayList<Point> points = new ArrayList<Point>(pointsSize);
+        PathIterator count = path.getPathIterator(null);
+        float[] currentPoints = new float[6];
+        while (!count.isDone()) {
+            int currentPointType = count.currentSegment(currentPoints);
+            switch (currentPointType) {
+                case PathIterator.SEG_MOVETO:
+                    points.add(new Point((int) currentPoints[0], (int) currentPoints[1]));
+                    break;
+                case PathIterator.SEG_LINETO:
+                    points.add(new Point((int) currentPoints[0], (int) currentPoints[1]));
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    points.add(new Point((int) currentPoints[2], (int) currentPoints[3]));
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    points.add(new Point((int) currentPoints[4], (int) currentPoints[5]));
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    break;
+            }
+            count.next();
+        }
+        if (points.size() > 0) {
+            Point[] pointArray = new Point[points.size()];
+            return points.toArray(pointArray);
+        } else {
+            return null;
+        }
+
+    }
+
     /** 
      * Return the total number of points in this shape
      * @return Total number of points
@@ -377,10 +416,10 @@ public class AlcShape implements AlcConstants, Cloneable {
      * Set a colour with alpha directly 
      * @param colour
      */
-    public void setAlphaColour(Color colour){
+    public void setAlphaColour(Color colour) {
         this.colour = colour;
     }
-    
+
     /**
      * Get the style of this shape
      * @return  The style of this shape - (1) LINE or (2) SOLID FILL

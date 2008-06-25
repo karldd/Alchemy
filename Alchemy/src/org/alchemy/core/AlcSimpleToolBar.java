@@ -32,6 +32,7 @@ import javax.swing.event.ChangeListener;
 public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants {
 
     final ColourBox colourBox;
+    AlcSliderCustom transparencySlider;
 
     AlcSimpleToolBar() {
 
@@ -160,7 +161,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        final AlcSliderCustom transparencySlider = new AlcSliderCustom(toolBarWidth, 25, 0, 255, 254);
+        transparencySlider = new AlcSliderCustom(toolBarWidth, 25, 0, 255, 254);
         transparencySlider.setBorderPainted(false);
         transparencySlider.setFillPainted(false);
         transparencySlider.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, toolBarLineColour));
@@ -257,7 +258,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
                         Alchemy.plugins.setCurrentCreate(currentModule.getIndex());
                         buttonGroup.setSelected(moduleButton.getModel(), true);
                     }
-                    
+
                 // AFFECT
                 } else {
                     // If triggered by a key
@@ -320,6 +321,11 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         colourBox.update(Alchemy.canvas.getColour());
     }
 
+    @Override
+    void refreshTransparencySlider() {
+        transparencySlider.setSlider(Alchemy.canvas.getAlpha());
+    }
+
     private void changeLineWeight(Point p, Rectangle lineWeightRect, JLabel lineWeightBox) {
         if (lineWeightRect.contains(p)) {
             //int lineWeight = (int) AlcMath.map(p.x, 0, toolBarWidth, 1, 50);
@@ -350,15 +356,10 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
 class ColourBox extends JPanel implements Cloneable {
 
-    final  
-      
-     
+    final int width,  height;
+    Color colour;
 
-    int width,  height; Color colour; 
-        ColourBox  
-          
-          
-        (int width, int height, Color colour) {
+    ColourBox(int width, int height, Color colour) {
         this.width = width;
         this.height = height;
         this.colour = colour;
