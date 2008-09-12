@@ -145,7 +145,6 @@
         <jpf-zip
             basedir="${basedir}/modules"
             includes="*/*.xml"
-            excludes=".svn"
             destdir="${basedir}/modules"/>
         <mkdir dir="${dist.dir}/modules" />
         <copy todir="${dist.dir}/modules">
