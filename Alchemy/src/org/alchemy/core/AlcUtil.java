@@ -302,7 +302,7 @@ public class AlcUtil implements AlcConstants {
             int size = 1;
             BufferedImage buffImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = buffImage.createGraphics();
-            AffineTransform at = g2.getTransform();
+            // AffineTransform at = g2.getTransform();
             PDFRenderer renderer = new PDFRenderer(pdfReadPage, g2, new Rectangle(0, 0, size, size), null, null);
 
             java.awt.Rectangle pageBounds = new java.awt.Rectangle(0, 0, (int) pdfReadPage.getWidth(), (int) pdfReadPage.getHeight());
@@ -327,6 +327,7 @@ public class AlcUtil implements AlcConstants {
                         java.awt.Rectangle gpBounds = gp.getBounds();
                         System.out.println(gpBounds);
 
+                        // TODO - Not returning any shapes, why?
                         // Save the shape if it is within the page size
                         if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
                             // For some reason the shapes come in flipped, o re-flip them here
