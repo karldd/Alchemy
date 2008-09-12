@@ -146,7 +146,12 @@ public class Mirror extends AlcModule implements AlcConstants {
                     GeneralPath hPath = makeHorizontalReflectedShape(originalPath);
                     int index = i * shapeCount;
                     if (canvas.affectShapes.size() == index) {
-                        canvas.affectShapes.add(shape.customClone(hPath));
+                        AlcShape cloneShape = shape.customClone(hPath);
+                        // Make sure there is no transparency when the background is on
+                        if (canvas.isBackgroundActive()) {
+                            cloneShape.setAlpha(255);
+                        }
+                        canvas.affectShapes.add(cloneShape);
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hPath);
@@ -162,7 +167,12 @@ public class Mirror extends AlcModule implements AlcConstants {
                     // Add 1 on if horizontal is also on
                     index += horizontal ? 1 : 0;
                     if (canvas.affectShapes.size() == index) {
-                        canvas.affectShapes.add(shape.customClone(vPath));
+                        AlcShape cloneShape = shape.customClone(vPath);
+                        // Make sure there is no transparency when the background is on
+                        if (canvas.isBackgroundActive()) {
+                            cloneShape.setAlpha(255);
+                        }
+                        canvas.affectShapes.add(cloneShape);
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(vPath);
@@ -174,7 +184,12 @@ public class Mirror extends AlcModule implements AlcConstants {
                     GeneralPath hvPath = makeHorizontalReflectedShape(vPath);
                     int index = i * shapeCount + 2;
                     if (canvas.affectShapes.size() == index) {
-                        canvas.affectShapes.add(shape.customClone(hvPath));
+                        AlcShape cloneShape = shape.customClone(hvPath);
+                        // Make sure there is no transparency when the background is on
+                        if (canvas.isBackgroundActive()) {
+                            cloneShape.setAlpha(255);
+                        }
+                        canvas.affectShapes.add(cloneShape);
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hvPath);

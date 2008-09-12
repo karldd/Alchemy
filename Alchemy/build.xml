@@ -69,6 +69,7 @@
 
     -->    
     
+        
     <!-- Copy the required libraries into the build file -->
     <target name="-pre-jar">
         <unjar src="${file.reference.commons-logging.jar}" dest="${build.classes.dir}"/>
@@ -83,128 +84,41 @@
         <!-- Copy the compiled Plugin classes  - Need to find a better way to do this! -->
         <copy file="${build.classes.dir}/org/alchemy/core/AlcCore.class" todir="${basedir}/modules/core/org/alchemy"/>
         
+        <!-- Classpath for the custom tasks -->
+        <path id="classpath">
+            <fileset dir="lib" includes="*.jar" />
+        </path>
+        
+        <!-- Ant config gives lets us loop -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+            <classpath refid="classpath" />
+        </taskdef>
+        
         
         <!-- CREATES -->
-        <!-- Shapes -->
-        <copy file="${build.classes.dir}/org/alchemy/create/Shapes.class" todir="${basedir}/modules/shapes/org/alchemy/create"/>
-        <copy file="${build.classes.dir}/org/alchemy/create/Shapes$1.class" todir="${basedir}/modules/shapes/org/alchemy/create"/>
-        
-        <!-- Type Shapes -->
-        <copy todir="${basedir}/modules/typeShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="TypeShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Inverse Shapes -->
-        <copy todir="${basedir}/modules/inverseShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="InverseShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Microphone Shapes -->
-        <copy todir="${basedir}/modules/micShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="MicShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Median Shapes -->
-        <copy todir="${basedir}/modules/medianShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="MedianShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Speed Shapes -->
-        <copy todir="${basedir}/modules/speedShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="SpeedShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- X Shapes -->
-        <copy todir="${basedir}/modules/xShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="XShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Trace Shapes -->
-        <copy todir="${basedir}/modules/traceShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="TraceShape" casesensitive="no"/>
-            </fileset>
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="Flickr" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Detach Shapes -->
-        <copy todir="${basedir}/modules/detachShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="DetachShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Scrawl Shapes -->
-        <copy todir="${basedir}/modules/scrawlShapes/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="ScrawlShapes" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Blank -->
-        <copy todir="${basedir}/modules/blank/org/alchemy/create">
-            <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
-                <contains text="Blank" casesensitive="no"/>
-            </fileset>
-        </copy>
+        <for list="shapes,typeShapes,inverseShapes,micShapes,medianShapes,speedShapes,xShapes,traceShapes,detachShapes,scrawlShapes,blank" param="create">
+            <sequential>
+                <copy todir="${basedir}/modules/@{create}/org/alchemy/create">
+                    <fileset dir="${build.classes.dir}/org/alchemy/create/" includes="**/*.class">
+                        <contains text="@{create}" casesensitive="no"/>
+                    </fileset>
+                </copy>
+            </sequential>
+        </for>
         
         
         <!-- AFFECTS -->
-        <!-- Mirror -->
-        <copy todir="${basedir}/modules/mirror/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="Mirror" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Blindness -->
-        <copy todir="${basedir}/modules/blindness/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="Blindness" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Random -->
-        <copy todir="${basedir}/modules/random/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="Random" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Mic Expand -->
-        <copy todir="${basedir}/modules/micExpand/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="MicExpand" casesensitive="no"/>
-            </fileset>
-        </copy>
-        
-        <!-- Repeat -->
-        <copy todir="${basedir}/modules/repeat/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="Repeat" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Displace -->
-        <copy todir="${basedir}/modules/displace/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="Displace" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Camera Colour -->
-        <copy todir="${basedir}/modules/cameraColour/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="CameraColour" casesensitive="no"/>
-            </fileset>
-        </copy>
-        <!-- Colour Switcher -->
-        <copy todir="${basedir}/modules/colourSwitcher/org/alchemy/affect">
-            <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
-                <contains text="ColourSwitcher" casesensitive="no"/>
-            </fileset>
-        </copy>
-        
+        <for list="mirror,blindness,random,micExpand,repeat,displace,cameraColour,colourSwitcher" param="affect">
+            <sequential>
+                <copy todir="${basedir}/modules/@{affect}/org/alchemy/affect">
+                    <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
+                        <contains text="@{affect}" casesensitive="no"/>
+                    </fileset>
+                </copy>
+            </sequential>
+        </for>
+
+
         <!--
         <move file="${build.classes.dir}/org/alchemy/create/ImageShapes.class" todir="${basedir}/modules/imageShapes/alchemy/create"/>
         -->
@@ -223,9 +137,6 @@
          -->
          
         <!-- Define custom JPF specific Ant tasks -->
-        <path id="classpath">
-            <fileset dir="lib" includes="*.jar" />
-        </path>
         <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
             <classpath refid="classpath" />
         </typedef>	
@@ -234,6 +145,7 @@
         <jpf-zip
             basedir="${basedir}/modules"
             includes="*/*.xml"
+            excludes=".svn"
             destdir="${basedir}/modules"/>
         <mkdir dir="${dist.dir}/modules" />
         <copy todir="${dist.dir}/modules">
@@ -255,7 +167,7 @@
         <delete dir="${dist.jar}"/>
         <!-- 
         Unless we zip up the contents to a directory other than 'dist', 
-        the .class files get automatically included.
+        the plugin .class files get automatically included.
         To get around this we make the zip in the main directory than move it.
         Hacky I know...
         -->

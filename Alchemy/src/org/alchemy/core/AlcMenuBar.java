@@ -710,6 +710,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new ExportFileFilter("PNG - Transparent"));
         fc.setFileFilter(new ExportFileFilter("PNG"));
+        fc.setFileFilter(new ExportFileFilter("JPG"));
         fc.setFileFilter(new ExportFileFilter("PDF"));
         fc.setSelectedFile(new File(Alchemy.bundle.getString("defaultFileName")));
 
@@ -722,10 +723,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             if (format.equals("PDF")) {
                 Alchemy.canvas.saveSinglePdf(file);
+            } else if (format.equals("JPG")) {
+                Alchemy.canvas.saveBitmap(file, "jpg");
             } else if (format.equals("PNG")) {
-                Alchemy.canvas.savePng(file);
+                Alchemy.canvas.saveBitmap(file);
             } else if (format.equals("PNG - Transparent")) {
-                Alchemy.canvas.savePng(file, true);
+                Alchemy.canvas.saveBitmap(file, true);
             }
         }
     }
@@ -763,7 +766,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         try {
             File tempBitmap = File.createTempFile("AlchemyTempBitmapFile", ".png");
             tempBitmap.deleteOnExit();
-            if (Alchemy.canvas.savePng(tempBitmap)) {
+            if (Alchemy.canvas.saveBitmap(tempBitmap)) {
                 openSwitch(tempBitmap.toString(), Alchemy.preferences.switchBitmapApp);
             } else {
                 System.out.println("Didn't save???");

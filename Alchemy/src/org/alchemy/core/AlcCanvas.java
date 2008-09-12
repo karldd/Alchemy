@@ -664,6 +664,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             backgroundActive = true;
         }
     }
+    
+    /** Whether the background is active or not */
+    public boolean isBackgroundActive(){
+        return backgroundActive;
+    }
 
     /** Get the Background Colour
      * @return 
@@ -908,24 +913,45 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return buffImage;
     }
     //////////////////////////////////////////////////////////////
-    // SAVE PNG
+    // SAVE BITMAP
     //////////////////////////////////////////////////////////////
-    /** Save the canvas to a PNG file
+    /** Save the canvas to a bitmap file
      * 
-     * @param file  The file object to save the PNG to
+     * @param file  The file object to save the bitmap to
      * @return      True if save worked, otherwise false
      */
-    boolean savePng(File file) {
-        return savePng(file, false);
+    boolean saveBitmap(File file) {
+        return saveBitmap(file, "png", false);
     }
 
-    /** Save the canvas to a PNG file
+    /** Save the canvas to a bitmap file
      * 
-     * @param file          The file object to save the PNG to
+     * @param file          The file object to save the bitmap to
      * @param transparent   An image with transparency or not
      * @return              True if save worked, otherwise false
      */
-    boolean savePng(File file, boolean transparent) {
+    boolean saveBitmap(File file, boolean transparent) {
+        return saveBitmap(file, "png", transparent);
+    }
+
+    /** Save the canvas to a bitmap file
+     * 
+     * @param file          The file object to save the bitmap to
+     * @param format        The file format to save in
+     * @return              True if save worked, otherwise false
+     */
+    boolean saveBitmap(File file, String format) {
+        return saveBitmap(file, format, false);
+    }
+
+    /** Save the canvas to a bitmap file
+     * 
+     * @param file          The file object to save the bitmap to
+     * @param format        The file format to save in
+     * @param transparent   An image with transparency or not
+     * @return              True if save worked, otherwise false
+     */
+    boolean saveBitmap(File file, String format, boolean transparent) {
         try {
             //File file = new File("saveToThisFile.jpg");
             setGuide(false);
@@ -936,7 +962,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
                 buffImage = renderCanvas(true);
             }
             setGuide(true);
-            ImageIO.write(buffImage, "png", file);
+            ImageIO.write(buffImage, format, file);
             return true;
         } catch (IOException ex) {
             System.err.println(ex);

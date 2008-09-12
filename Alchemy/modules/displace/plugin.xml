@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="org.alchemy.affect.displace" version="1.0.2">
+    
+    <requires> 
+        <import plugin-id="org.alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="displace" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="org.alchemy.core" point-id="Affect" id="displaceAffect"> 
+        <parameter id="class" value="org.alchemy.affect.Displace"/> 
+        <parameter id="name" value="Displace"/> 
+        <parameter id="description" value="Displace shape geometry" />
+        <parameter id="icon" value="icon.png" />
+    </extension>
+    
+</plugin>

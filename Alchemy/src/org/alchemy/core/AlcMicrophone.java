@@ -39,7 +39,9 @@ public class AlcMicrophone {
     private TargetDataLine targetDataLine;
     AlcMicInterface parent;
 
-    /** Creates a new instance of AlcMicrophone */
+    /** Creates a new instance of AlcMicrophone
+     * @param bufferSize    Size of the audio buffer - affects latency
+     */
     public AlcMicrophone(int bufferSize) {
         setup(null, bufferSize);
     }
