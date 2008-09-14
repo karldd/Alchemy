@@ -183,11 +183,36 @@
         <copy file="${basedir}/COPYING" todir="${dist.dir}"/>
         <copy file="${basedir}/ReadMe.txt" todir="${dist.dir}"/>
         
-         <!-- LINUX Shell Script to Launch Alchemy -->
-        <copy file="${basedir}/Alchemy" todir="${dist.dir}"/>
-        <chmod file="${dist.dir}/Alchemy" perm="+x"/>
+        
+        <!-- Detect the OS -->
+        <condition property="mac">
+            <os family="mac"/>
+        </condition>
+        
+        <condition property="unix">
+            <and>
+              <os family="unix"/>
+              <not>
+                <os family="mac"/>
+              </not>
+            </and>
+        </condition>
+        
+        <condition property="windows">
+            <os family="windows"/>
+        </condition>
 
+        <!-- Copy Platform specific library files -->        
+        <antcall target="mac"/>
+        <antcall target="unix"/>
+        <antcall target="windows"/>
+
+    </target>
     
+    
+    <target name="mac" if="mac">
+        <echo>MAC!</echo>
+        
         <!-- MAC STUFF 
              Not inlcuded in the distribution jar
              but put in the Mac Alchemy.app 
@@ -196,14 +221,35 @@
         <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/libquaqua64.jnilib" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
+         <!-- JMyron -->
+        <copy file="${basedir}/lib/libJMyron.jnilib" todir="${dist.dir}/lib"/>
+        
+    </target>
+    
+
+    <target name="unix" if="unix">
+        <echo>UNIX!</echo>
+         
+         <!-- LINUX Shell Script to Launch Alchemy -->
+        <copy file="${basedir}/Alchemy" todir="${dist.dir}"/>
+        <chmod file="${dist.dir}/Alchemy" perm="+x"/>
         
         <!-- JMyron -->
-        <copy file="${basedir}/lib/libJMyron.jnilib" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/libJMyron.so" todir="${dist.dir}/lib"/>
+
+    </target>
+    
+
+    <target name="windows" if="windows">
+        <echo>WINDOWS!</echo>
+        
+        <!-- JMyron -->
         <copy file="${basedir}/lib/JMyron.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/DSVL.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/myron_ezcam.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/MSVCP71.DLL" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/msvcr71.dll" todir="${dist.dir}/lib"/>
+        
     </target>
+    
 </project>
