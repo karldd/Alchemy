@@ -6,6 +6,8 @@
     <description>Builds, tests, and runs the project Alchemy.</description>
     <import file="nbproject/build-impl.xml"/>
     <import file="nbproject/profiler-build-impl.xml"/>    
+    
+    <property file="${basedir}/src/org/alchemy/core/AlcResourceBundle.properties"/>
        
     <!--
 
@@ -206,7 +208,7 @@
             <os family="windows"/>
         </condition>
 
-        <!-- Copy Platform specific library files -->        
+        <!-- Create platform specific executables -->        
         <antcall target="mac"/>
         <antcall target="unix"/>
         <antcall target="windows"/>
@@ -214,8 +216,13 @@
     </target>
     
     
+    
+    <!-- 
+    ======================
+    MAC
+    ======================
+    -->
     <target name="mac" if="mac">
-        <echo>MAC!</echo>            
        
         <!-- Create the mac .app executable bundle -->      
         <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" >
@@ -227,14 +234,15 @@
         <jarbundler 
             
             dir="${dist.dir}"
-            name="Alchemy"
-            mainclass="org.alchemy.core.Alchemy" 
-            jar="${dist.dir}/Alchemy.jar"
+            name="${application.title}"
+            mainclass="${main.class}" 
+            jar="${dist.jar}"
             
             icon="${basedir}/res/Alchemy.icns" 
             jvmversion="1.5*" 
-            version="0.0.5.0"
-            infostring="ALPHA 005 (0.0.5.0)" >
+            version="${version.numeric}"
+            infostring="${version.string}, ${copyright}" 
+            arguments="-Xms256m -Xmx512m">
                 
             <!-- Adjust the look, feel and behavior -->
             <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>               
@@ -255,9 +263,14 @@
         
     </target>
     
+    
 
+    <!-- 
+    ======================
+    LINUX
+    ======================
+    -->
     <target name="unix" if="unix">
-        <echo>UNIX!</echo>
          
          <!-- LINUX Shell Script to Launch Alchemy -->
         <copy file="${basedir}/res/Alchemy" todir="${dist.dir}"/>
@@ -268,11 +281,20 @@
 
     </target>
     
+    
 
+    <!-- 
+    ======================
+    WINDOWS
+    ======================
+    -->
     <target name="windows" if="windows">
-        <echo>WINDOWS!</echo>
         
-        <!-- Create the Windows executable bundle -->
+        <!-- 
+        Create the Windows executable bundle 
+        Launch4j needs to be installed into the Program Files folder
+        http://launch4j.sourceforge.net/
+        -->
         <property name="launch4j.dir" location="C:/Program Files/Launch4j" />
         <taskdef name="launch4j"
             classname="net.sf.launch4j.ant.Launch4jTask"
@@ -284,7 +306,7 @@
             <config 
                 dontWrapJar="false"
                 headerType="gui" 
-                jarPath="${dist.dir}/Alchemy.jar" 
+                jarPath="${dist.jar}" 
                 outfile="${dist.dir}/Alchemy.exe" 
                 errTitle="Java Install Required"
                 priority="normal"
@@ -292,8 +314,6 @@
                 customProcName="true"
                 stayAlive="false"
                 icon="${basedir}/res/Alchemy.ico">
-
-            <!--<classPath mainClass="org.alchemy.core.Alchemy" />-->
             
             <jre
                 minVersion="1.5.0"
@@ -303,16 +323,16 @@
                     
                     <opt>-Djava.library.path=lib</opt>
             </jre>
-                        
+
             <versionInfo
-                fileVersion="0.0.5.0"
-                txtFileVersion="ALPHA 005"
-                fileDescription="Alchemy is an open drawing project aimed at exploring how we can sketch, draw, and create on computers in new ways."
-                copyright="Copyright © 2007-2008 Karl D.D. Willis"
-                productVersion="0.0.5.0"
-                txtProductVersion="ALPHA 005"
-                productName="Alchemy"
-                internalName="Alchemy"
+                fileVersion="${version.numeric}"
+                txtFileVersion="${version.string}"
+                productVersion="${version.numeric}"
+                fileDescription="${application.desc}"
+                copyright="${copyright}"
+                txtProductVersion="${version.string}"
+                productName="${application.title}"
+                internalName="${application.title}"
                 originalFilename="Alchemy.exe"
             />
           

@@ -79,10 +79,10 @@ public class Alchemy implements AlcConstants {
     /** Session class - controls automatic saving of the canvas */
     static AlcSession session;
     /** Resource Bundle containing language specific text */
-    static ResourceBundle bundle;
+    static final ResourceBundle bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
     /** Resource bundle containing English language text
      *  Used for storing variable names in standard ascii characters */
-    static ResourceBundle bundleEn;
+    static final ResourceBundle bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en_US"));
     /** Class of utility math functions */
     static AlcMath math = new AlcMath();
     /** Custom reusable colour chooser */
@@ -103,10 +103,6 @@ public class Alchemy implements AlcConstants {
 
         // Create the window
         window = new AlcWindow();
-
-        // LOAD RESOURCE BUNDLE
-        bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
-        bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en_US"));
 
         // Create the preferences window
         preferences.setupWindow(window);
