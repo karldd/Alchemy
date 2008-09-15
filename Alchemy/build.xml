@@ -273,10 +273,11 @@
         <echo>WINDOWS!</echo>
         
         <!-- Create the Windows executable bundle -->
+        <property name="launch4j.dir" location="C:/Program Files/Launch4j" />
         <taskdef name="launch4j"
             classname="net.sf.launch4j.ant.Launch4jTask"
-            classpath="${basedir}/lib/ant/launch4j.jar
-            :${basedir}/lib/ant/xstream.jar" />
+            classpath="${launch4j.dir}/launch4j.jar
+                :${launch4j.dir}/lib/xstream.jar" />
         
             
         <launch4j>
@@ -292,7 +293,7 @@
                 stayAlive="false"
                 icon="${basedir}/res/Alchemy.ico">
 
-            <classPath mainClass="org.alchemy.core.Alchemy" />
+            <!--<classPath mainClass="org.alchemy.core.Alchemy" />-->
             
             <jre
                 minVersion="1.5.0"
