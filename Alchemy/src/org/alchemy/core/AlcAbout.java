@@ -38,6 +38,7 @@ class AlcAbout extends Window implements AlcConstants {
 
         this.addMouseListener(new MouseAdapter() {
 
+            @Override
             public void mousePressed(MouseEvent e) {
                 setVisible(false);
                 dispose();
@@ -51,6 +52,7 @@ class AlcAbout extends Window implements AlcConstants {
 
     }
 
+    @Override
     public void paint(Graphics g) {
         int x = size.width / 2;
 
@@ -61,7 +63,7 @@ class AlcAbout extends Window implements AlcConstants {
 
         g.setFont(AlcToolBar.subToolBarFont);
         g.setColor(Color.white);
-        g.drawString(ALCHEMY_VERSION, 360, 277);
+        g.drawString(Alchemy.bundle.getString("version.string"), 360, 277);
 
     }
 }
