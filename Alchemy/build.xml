@@ -84,14 +84,12 @@
         <!-- Copy the compiled Plugin classes  - Need to find a better way to do this! -->
         <copy file="${build.classes.dir}/org/alchemy/core/AlcCore.class" todir="${basedir}/modules/core/org/alchemy"/>
         
-        <!-- Classpath for the custom tasks -->
-        <path id="classpath">
-            <fileset dir="lib" includes="*.jar" />
-        </path>
         
-        <!-- Ant config gives lets us loop -->
+        <!-- Ant config lets us loop -->
         <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-            <classpath refid="classpath" />
+            <classpath>
+                <pathelement location="${basedir}/lib/ant/ant-contrib-0.6.jar"/>
+            </classpath>
         </taskdef>
         
         
@@ -136,6 +134,12 @@
         </copy>
          -->
          
+         
+        <!-- Classpath for the custom tasks -->
+        <path id="classpath">
+            <fileset dir="lib/jpf" includes="*.jar" />
+        </path>
+         
         <!-- Define custom JPF specific Ant tasks -->
         <typedef resource="org/java/plugin/tools/ant/jpf-tasks.properties">
             <classpath refid="classpath" />
@@ -179,9 +183,9 @@
         <delete file="${dist.dir}/README.TXT"/>
         
         <!-- Copy the manual into the dist directory -->
-        <copy file="${basedir}/Alchemy.pdf" todir="${dist.dir}"/>
-        <copy file="${basedir}/COPYING" todir="${dist.dir}"/>
-        <copy file="${basedir}/ReadMe.txt" todir="${dist.dir}"/>
+        <copy file="${basedir}/res/Alchemy.pdf" todir="${dist.dir}"/>
+        <copy file="${basedir}/res/COPYING" todir="${dist.dir}"/>
+        <copy file="${basedir}/res/ReadMe.txt" todir="${dist.dir}"/>
         
         
         <!-- Detect the OS -->
@@ -211,18 +215,43 @@
     
     
     <target name="mac" if="mac">
-        <echo>MAC!</echo>
+        <echo>MAC!</echo>            
+       
+        <!-- Create the mac .app executable bundle -->      
+        <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" >
+            <classpath>
+                <pathelement location="${basedir}/lib/ant/jarbundler-2.0.0.jar"/>
+            </classpath>
+        </taskdef>
         
-        <!-- MAC STUFF 
-             Not inlcuded in the distribution jar
-             but put in the Mac Alchemy.app 
-             
-        Copy the Quaqua libraries for more mac looking interface support -->
-        <copy file="${basedir}/lib/libquaqua.jnilib" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/libquaqua64.jnilib" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/quaqua.jar" todir="${dist.dir}/lib"/>
+        <jarbundler 
+            
+            dir="${dist.dir}"
+            name="Alchemy"
+            mainclass="org.alchemy.core.Alchemy" 
+            jar="${dist.dir}/Alchemy.jar"
+            
+            icon="${basedir}/res/Alchemy.icns" 
+            jvmversion="1.5*" 
+            version="0.0.5.0"
+            infostring="ALPHA 005 (0.0.5.0)" >
+                
+            <!-- Adjust the look, feel and behavior -->
+            <javaproperty name="apple.laf.useScreenMenuBar" value="true"/>               
+         
+          </jarbundler>
+        
+        <property name="mac.bundle" value="${dist.dir}/Alchemy.app/Contents/Resources/Java" />
+        
+        <!-- Copy the Quaqua libraries for more mac looking interface support -->
+        <copy file="${basedir}/lib/quaqua/libquaqua.jnilib" todir="${mac.bundle}"/>
+        <copy file="${basedir}/lib/quaqua/libquaqua64.jnilib" todir="${mac.bundle}"/>
+        <copy file="${file.reference.quaqua.jar}" todir="${mac.bundle}/lib"/>
          <!-- JMyron -->
-        <copy file="${basedir}/lib/libJMyron.jnilib" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/libJMyron.jnilib" todir="${mac.bundle}"/>
+
+        <!-- Delete the Alchemy Jar file -->
+        <delete file="${dist.dir}/Alchemy.jar"/>
         
     </target>
     
@@ -231,11 +260,11 @@
         <echo>UNIX!</echo>
          
          <!-- LINUX Shell Script to Launch Alchemy -->
-        <copy file="${basedir}/Alchemy" todir="${dist.dir}"/>
-        <chmod file="${dist.dir}/Alchemy" perm="+x"/>
+        <copy file="${basedir}/res/Alchemy" todir="${dist.dir}"/>
+        <chmod file="${dist.dir}/res/Alchemy" perm="+x"/>
         
         <!-- JMyron -->
-        <copy file="${basedir}/lib/libJMyron.so" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/libJMyron.so" todir="${dist.dir}/lib"/>
 
     </target>
     
@@ -243,12 +272,63 @@
     <target name="windows" if="windows">
         <echo>WINDOWS!</echo>
         
+        <!-- Create the Windows executable bundle -->
+        <taskdef name="launch4j"
+            classname="net.sf.launch4j.ant.Launch4jTask"
+            classpath="${basedir}/lib/ant/launch4j.jar
+            :${basedir}/lib/ant/xstream.jar" />
+        
+            
+        <launch4j>
+            <config 
+                dontWrapJar="false"
+                headerType="gui" 
+                jarPath="${dist.dir}/Alchemy.jar" 
+                outfile="${dist.dir}/Alchemy.exe" 
+                errTitle="Java Install Required"
+                priority="normal"
+                downloadUrl="http://java.com/download"
+                customProcName="true"
+                stayAlive="false"
+                icon="${basedir}/res/Alchemy.ico">
+
+            <classPath mainClass="org.alchemy.core.Alchemy" />
+            
+            <jre
+                minVersion="1.5.0"
+                dontUsePrivateJres="false"
+                initialHeapSize="256"
+                maxHeapSize="512">
+                    
+                    <opt>-Djava.library.path=lib</opt>
+            </jre>
+                        
+            <versionInfo
+                fileVersion="0.0.5.0"
+                txtFileVersion="ALPHA 005"
+                fileDescription="Alchemy is an open drawing project aimed at exploring how we can sketch, draw, and create on computers in new ways."
+                copyright="Copyright © 2007-2008 Karl D.D. Willis"
+                productVersion="0.0.5.0"
+                txtProductVersion="ALPHA 005"
+                productName="Alchemy"
+                internalName="Alchemy"
+                originalFilename="Alchemy.exe"
+            />
+          
+          </config>
+        </launch4j>
+
+        
+        
         <!-- JMyron -->
-        <copy file="${basedir}/lib/JMyron.dll" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/DSVL.dll" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/myron_ezcam.dll" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/MSVCP71.DLL" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/msvcr71.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/JMyron.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/DSVL.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/myron_ezcam.dll" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/MSVCP71.DLL" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jmyron/msvcr71.dll" todir="${dist.dir}/lib"/>
+        
+        <!-- Delete the Alchemy Jar file -->
+        <delete file="${dist.dir}/Alchemy.jar"/>
         
     </target>
     
