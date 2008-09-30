@@ -108,7 +108,7 @@
         
         
         <!-- AFFECTS -->
-        <for list="mirror,blindness,random,micExpand,repeat,displace,cameraColour,colourSwitcher" param="affect">
+        <for list="mirror,blindness,random,micExpand,repeat,displace,cameraColour,colourSwitcher,shapeSwap" param="affect">
             <sequential>
                 <copy todir="${basedir}/modules/@{affect}/org/alchemy/affect">
                     <fileset dir="${build.classes.dir}/org/alchemy/affect/" includes="**/*.class">
