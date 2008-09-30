@@ -978,6 +978,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @param file  The file object to save the pdf to
      * @return      True if save worked, otherwise false
      */
+    // TODO - Each PDF page sized differently
     boolean saveSinglePdf(File file) {
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         //int singlePdfWidth = Alchemy.window.getWindowSize().width;

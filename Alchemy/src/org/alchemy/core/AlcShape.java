@@ -24,6 +24,7 @@ import java.awt.Color;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -31,7 +32,7 @@ import java.util.ArrayList;
  * The main shape is stored as a GeneralPath object
  * with other variables defining the colour, style, alpha etc...
  */
-public class AlcShape implements AlcConstants, Cloneable {
+public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
     /** The main path stored as a GeneralPath */
     protected GeneralPath path;
@@ -48,9 +49,9 @@ public class AlcShape implements AlcConstants, Cloneable {
     /** Store the last point */
     private Point lastPt;
     /** For drawing smaller marks - draw lines until x points have been made */
-    private int startPoints = 5;
+    private final int startPoints = 5;
     /** Minimum distance until points are added */
-    private int minMovement = 5;
+    private final int  minMovement = 5;
     /** Keep track of the number of points added */
     private int totalPoints = 0;
 
