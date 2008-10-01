@@ -787,7 +787,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                     commands = new String[]{"open", "-a", path.getName(), file};
                     break;
                 case WINDOWS:
-                    commands = new String[]{"cmd", "/c", "start \"" + path.getName() + "\"", "\"Alchemy\"", file};
+                    //commands = new String[]{"cmd", "/c", "start",  "\""+path.getName()+"\"", file};
+                    commands = new String[]{path.getAbsolutePath(), file};
                     break;
                 case LINUX:
                     commands = new String[]{path.getName(), file};
