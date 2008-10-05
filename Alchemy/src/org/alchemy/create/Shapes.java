@@ -27,6 +27,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Shape.java
@@ -41,7 +47,13 @@ public class Shapes extends AlcModule implements AlcConstants {
     private Point lastPt;
     private int guideSize = -1;
     private GeneralPath secondPath = null;
-    private Color guideColour = new Color(0, 255, 255);
+    private Color guideColour = new Color(0, 255, 255);    
+    //
+    // Debug
+    // TODO - Remove this debug stuff
+    private String debugText;
+    private File debugFile;
+    private String br = System.getProperty("line.separator");
 
     public Shapes() {
     }
@@ -50,6 +62,16 @@ public class Shapes extends AlcModule implements AlcConstants {
     protected void setup() {
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
+        // Debug
+        debugText = "";
+        debugFile = new File(DESKTOP_DIR, "TabletDebug.txt");
+        if(!debugFile.exists()){
+            try {
+                debugFile.createNewFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -61,6 +83,8 @@ public class Shapes extends AlcModule implements AlcConstants {
     protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
         reset();
+        // Debug
+        debugText = "";
     }
 
     private void reset() {
@@ -96,6 +120,9 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        // Debug
+        debugText += e.paramString() + br;
+
         if (e.getClickCount() == 1) {
             if (!straightShapes) {
                 Point p = e.getPoint();
@@ -107,6 +134,9 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        // Debug
+        debugText += e.paramString() + br;
+
         // Detect a doubleclick
         if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
             reset();
@@ -146,6 +176,11 @@ public class Shapes extends AlcModule implements AlcConstants {
     @Override
     public void mouseDragged(MouseEvent e) {
         if (!straightShapes) {
+
+            // Debug
+            debugText += e.paramString() + br;
+
+
             Point p = e.getPoint();
             // Need to test if it is null incase the shape has been auto-cleared
             if (canvas.getCurrentCreateShape() != null) {
@@ -160,6 +195,16 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+
+        // Debug
+        debugText += e.paramString() + br + br;
+        try {
+            writeFile(debugFile, debugText);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
         Point p = e.getPoint();
         // Only if this is a single click
         if (e.getClickCount() <= 1) {
@@ -202,6 +247,43 @@ public class Shapes extends AlcModule implements AlcConstants {
             if (!straightShapes) {
                 canvas.commitShapes();
             }
+        }
+    }
+
+    /**
+     * Change the contents of text file in its entirety, overwriting any
+     * existing text.
+     *
+     * This style of implementation throws all exceptions to the caller.
+     *
+     * @param   file        An existing file which can be written to.
+     * @param   contents    The contents to write to the file
+     * @throws  IllegalArgumentException if param does not comply.
+     * @throws  FileNotFoundException if the file does not exist.
+     * @throws  IOException if problem encountered during write.
+     */
+    private void writeFile(File file, String contents)
+            throws FileNotFoundException, IOException {
+        if (file == null) {
+            throw new IllegalArgumentException("File should not be null.");
+        }
+        if (!file.exists()) {
+            throw new FileNotFoundException("File does not exist: " + file);
+        }
+        if (!file.isFile()) {
+            throw new IllegalArgumentException("Should not be a directory: " + file);
+        }
+        if (!file.canWrite()) {
+            throw new IllegalArgumentException("File cannot be written: " + file);
+        }
+
+        //use buffering
+        Writer output = new BufferedWriter(new FileWriter(file));
+        try {
+            //FileWriter always assumes default encoding is OK!
+            output.write(contents);
+        } finally {
+            output.close();
         }
     }
 }
