@@ -28,7 +28,7 @@ import javax.swing.*;
  * 
  * 
  */
-class AlcSpinner extends JPanel implements AlcShortcutInterface {
+class AlcSpinner extends JPanel implements AlcShortcutInterface, AlcConstants {
 
     protected JSpinner spinner;
     private JLabel label;
@@ -53,7 +53,7 @@ class AlcSpinner extends JPanel implements AlcShortcutInterface {
         this.add(spinner);
 
         label = new JLabel(name);
-        label.setFont(AlcToolBar.toolBarFont);
+        label.setFont(FONT_MEDIUM);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
         this.add(label);

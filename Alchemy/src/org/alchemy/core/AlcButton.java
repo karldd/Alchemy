@@ -23,7 +23,7 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-class AlcButton extends JButton implements AlcShortcutInterface {
+class AlcButton extends JButton implements AlcShortcutInterface, AlcConstants {
 
     private String toolTip;
 
@@ -63,7 +63,7 @@ class AlcButton extends JButton implements AlcShortcutInterface {
             this.setPressedIcon(AlcUtil.getImageIcon(pressedIconUrl));
         }
 
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(FONT_MEDIUM);
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
         if (text != null) {

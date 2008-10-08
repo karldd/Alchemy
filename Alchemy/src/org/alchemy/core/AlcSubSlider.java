@@ -44,7 +44,7 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
                
 
         JLabel label = new JLabel(name);
-        label.setFont(AlcToolBar.subToolBarFont);
+        label.setFont(FONT_SMALL);
         label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
         //label.setPreferredSize(new Dimension(label.getPreferredSize().width, 26));
         this.add(label);

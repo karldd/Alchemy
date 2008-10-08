@@ -20,6 +20,7 @@
 package org.alchemy.core;
 
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -106,4 +107,12 @@ public interface AlcConstants {
     int[] blankPixels = new int[16 * 16];
     Image blankImage = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, blankPixels, 0, 16));
     static final Cursor BLANK = TOOLKIT.createCustomCursor(blankImage, new Point(0, 0), "Blank");
+    
+    //////////////////////////////////////////////////////////////
+    // FONTS 
+    //////////////////////////////////////////////////////////////
+    static final Font FONT_SMALL = new Font("sansserif", Font.PLAIN, 10);
+    static final Font FONT_MEDIUM = new Font("sansserif", Font.PLAIN, 11);
+    static final Font FONT_LARGE = new Font("sansserif", Font.PLAIN, 12);
+    static final Font FONT_BOLD = new Font("sansserif", Font.PLAIN, 11);
 }

@@ -40,7 +40,7 @@ import javax.swing.JMenu;
         //this.setBackground(new Color(0, 0, 0, 0));
         //this.setBackground(new Color(231, 231, 231, 150));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(FONT_MEDIUM);
 
     //JPopupMenu popup = super.getPopupMenu();
 

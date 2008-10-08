@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
  * 
  * 
  */
-class AlcSlider extends JPanel implements AlcShortcutInterface {
+class AlcSlider extends JPanel implements AlcShortcutInterface, AlcConstants{
 
     protected AlcSliderCustom slider;
     private JLabel label;
@@ -48,7 +48,7 @@ class AlcSlider extends JPanel implements AlcShortcutInterface {
 
         if (name != null) {
             label = new JLabel(name);
-            label.setFont(AlcToolBar.toolBarFont);
+            label.setFont(FONT_MEDIUM);
             label.setAlignmentX(Component.CENTER_ALIGNMENT);
             label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
             this.add(label);

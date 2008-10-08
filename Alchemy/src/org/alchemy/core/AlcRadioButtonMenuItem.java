@@ -82,7 +82,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setBackground(AlcToolBar.toolBarHighlightColour);
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(FONT_MEDIUM);
     }
 
     int getIndex() {

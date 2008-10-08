@@ -23,7 +23,7 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-class AlcToggleButton extends JToggleButton implements AlcShortcutInterface {
+class AlcToggleButton extends JToggleButton implements AlcShortcutInterface, AlcConstants{
 
     private String toolTip;
 
@@ -65,7 +65,7 @@ class AlcToggleButton extends JToggleButton implements AlcShortcutInterface {
             this.setPressedIcon(AlcUtil.getImageIcon(pressedIconUrl));
         }
 
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(FONT_MEDIUM);
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);
         if (text != null) {
