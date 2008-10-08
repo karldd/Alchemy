@@ -48,6 +48,7 @@ class AlcSession implements ActionListener, AlcConstants {
     private int currentPdfReadPage = 1;
     /** Number of pages of the read PDF */
     private int maxPdfReadPage;
+    
 
     AlcSession() {
     }
@@ -140,7 +141,7 @@ class AlcSession implements ActionListener, AlcConstants {
     boolean savePage() {
         // If this is the first time or if the file is not actually there
         if (pdfWriteFile == null || !pdfWriteFile.exists()) {
-            String fileName = "Alchemy" + AlcUtil.dateStamp("-yyyy-MM-dd-HH-mm-ss") + ".pdf";
+            String fileName = Alchemy.preferences.sessionFilePreName + AlcUtil.dateStamp(Alchemy.preferences.sessionFileDateFormat) + ".pdf";
             pdfWriteFile = new File(Alchemy.preferences.sessionPath, fileName);
             System.out.println("Current PDF file: " + pdfWriteFile.getPath());
             return Alchemy.canvas.saveSinglePdf(pdfWriteFile);

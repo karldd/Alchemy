@@ -82,7 +82,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         //this.setOpaque(true);
         this.setBackground(AlcToolBar.toolBarHighlightColour);
-        this.setFont(AlcToolBar.toolBarFont);
+        this.setFont(FONT_MEDIUM);
 
         if (accelerator > 0) {
             this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));

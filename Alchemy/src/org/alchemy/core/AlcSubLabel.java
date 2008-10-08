@@ -21,11 +21,10 @@ package org.alchemy.core;
 
 import javax.swing.JLabel;
 
-public class AlcSubLabel extends JLabel {
+public class AlcSubLabel extends JLabel implements AlcConstants{
 
-    /** Creates a new instance of AlcSubLabel */
     public AlcSubLabel(String text) {
-        this.setFont(AlcToolBar.subToolBarBoldFont);
+        this.setFont(FONT_SMALL);
         this.setText(text);
     }
 }

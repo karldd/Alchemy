@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  * Eg, the regular toolbar as well as a simplified kids one
  * 
  */
-public abstract class AlcAbstractToolBar extends JPanel {
+public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants {
 
     /** Keep track of the windowSize */
     Dimension windowSize;
@@ -32,12 +32,6 @@ public abstract class AlcAbstractToolBar extends JPanel {
     static final Color toolBarHighlightColour = new Color(231, 231, 231);
     static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
     static final Color toolBarBoxColour = new Color(190, 190, 190);
-    //////////////////////////////////////////////////////////////
-    // FONTS
-    //////////////////////////////////////////////////////////////
-    static final Font toolBarFont = new Font("sansserif", Font.PLAIN, 11);
-    static final Font subToolBarFont = new Font("sansserif", Font.PLAIN, 10);
-    static final Font subToolBarBoldFont = new Font("sansserif", Font.BOLD, 11);
 
     boolean isToolBarVisible() {
         return this.isVisible();

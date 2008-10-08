@@ -23,11 +23,8 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-public class AlcSubButton extends JButton {
+public class AlcSubButton extends JButton implements AlcConstants {
 
-    /**
-     * Creates a new instance of AlcMainButton
-     */
     public AlcSubButton(String text, URL iconUrl) {
 
         if (iconUrl != null) {
@@ -41,7 +38,7 @@ public class AlcSubButton extends JButton {
             this.setPressedIcon(AlcUtil.getImageIcon(pressedIconUrl));
         }
 
-        this.setFont(AlcToolBar.subToolBarFont);
+        this.setFont(FONT_SMALL);
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
         this.setMargin(new Insets(0, 0, 0, 0));

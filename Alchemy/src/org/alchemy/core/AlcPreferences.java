@@ -76,7 +76,10 @@ class AlcPreferences implements AlcConstants {
     boolean sessionAutoClear;
     /** Link to current setting */
     boolean sessionLink;
-    //////////////////////////////////////////////////////////////
+    /** The start section of the session file name */
+    String sessionFilePreName;
+    /** Date format for the session pdf */
+    String sessionFileDateFormat;    //////////////////////////////////////////////////////////////
     // SWITCH
     //////////////////////////////////////////////////////////////
     /** Switch Vector Application */
@@ -123,6 +126,9 @@ class AlcPreferences implements AlcConstants {
         sessionRecordingInterval = prefs.getInt("Recording Interval", 30000);
         sessionAutoClear = prefs.getBoolean("Auto Clear Canvas", false);
         sessionLink = prefs.getBoolean("Link to Current Session", true);
+        sessionFilePreName = prefs.get("Session File Pre Name", "Alchemy-");
+        sessionFileDateFormat = prefs.get("Session File Date Format", "yyyy-MM-dd-HH-mm-ss");
+
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
         paletteAttached = prefs.getBoolean("Palette Attached", false);
@@ -135,18 +141,20 @@ class AlcPreferences implements AlcConstants {
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
-
-
     }
 
     /** Save the changes on exit */
     void writeChanges() {
+
         prefs.putBoolean("Recording State", sessionRecordingState);
         prefs.putBoolean("Recording Warning", sessionRecordingWarning);
         prefs.put("Session Path", sessionPath);
         prefs.putInt("Recording Interval", sessionRecordingInterval);
         prefs.putBoolean("Auto Clear Canvas", sessionAutoClear);
         prefs.putBoolean("Link to Current Session", sessionLink);
+        prefs.put("Session File Pre Name", sessionFilePreName);
+        prefs.put("Session File Date Format", sessionFileDateFormat);
+
         prefs.putBoolean("Palette Attached", paletteAttached);
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
@@ -255,14 +263,16 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // INTERFACE SELECTOR
         //////////////////////////////////////////////////////////////
-        JPanel centreRow = new JPanel();
+        JPanel centreRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centreRow.setOpaque(false);
+        centreRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
 
 
         String[] interfaceType = {Alchemy.bundle.getString("standard"), Alchemy.bundle.getString("simple")};
 
         final JComboBox interfaceBox = new JComboBox(interfaceType);
+        interfaceBox.setFont(FONT_MEDIUM);
         interfaceBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -292,6 +302,55 @@ class AlcPreferences implements AlcConstants {
         centreRow.add(restart);
 
         masterPanel.add(centreRow);
+
+
+
+        //////////////////////////////////////////////////////////////
+        // SESSION FILE
+        //////////////////////////////////////////////////////////////
+        JPanel sessionPDFNamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        sessionPDFNamePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        sessionPDFNamePanel.setOpaque(false);
+        JLabel sessionPDFNameLabel = new JLabel(Alchemy.bundle.getString("sessionPDFName") + ":");
+        JTextField sessionPDFPreName = new JTextField(sessionFilePreName);
+        sessionPDFPreName.setFont(FONT_MEDIUM);
+        JTextField sessionPDFDateFormat = new JTextField(sessionFileDateFormat);
+        sessionPDFDateFormat.setFont(FONT_MEDIUM);
+        JLabel sessionExtensionLabel = new JLabel(".pdf");
+        sessionExtensionLabel.setFont(FONT_MEDIUM);
+
+        sessionPDFNamePanel.add(sessionPDFNameLabel);
+        sessionPDFNamePanel.add(sessionPDFPreName);
+        sessionPDFNamePanel.add(sessionPDFDateFormat);
+        sessionPDFNamePanel.add(sessionExtensionLabel);
+        masterPanel.add(sessionPDFNamePanel);
+
+        JPanel sessionPDFNameExamplePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        sessionPDFNameExamplePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        sessionPDFNameExamplePanel.setOpaque(false);
+        JLabel sessionPDFNameExample = new JLabel(
+                Alchemy.bundle.getString("output") + ": "+ 
+                Alchemy.preferences.sessionFilePreName + 
+                AlcUtil.dateStamp(Alchemy.preferences.sessionFileDateFormat) + 
+                ".pdf");
+        sessionPDFNameExample.setFont(FONT_SMALL);
+        sessionPDFNameExample.setForeground(Color.GRAY);
+        sessionPDFNameExamplePanel.add(sessionPDFNameExample);
+        masterPanel.add(sessionPDFNameExamplePanel);
+        
+
+        //////////////////////////////////////////////////////////////
+        // MODULES LABEL
+        //////////////////////////////////////////////////////////////
+        JPanel modulesLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        modulesLabelPanel.setOpaque(false);
+        modulesLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        JLabel modulesLabel = new JLabel(Alchemy.bundle.getString("modules") + ":");
+        modulesLabelPanel.setOpaque(false);
+        //modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        modulesLabelPanel.add(modulesLabel);
+        masterPanel.add(modulesLabelPanel);
+
 
         //////////////////////////////////////////////////////////////
         // RESTORE DEFAULT BUTTON
@@ -411,6 +470,7 @@ class AlcPreferences implements AlcConstants {
             final String moduleNodeName = modulePrefix + moduleName;
             final JCheckBox checkBox = new JCheckBox(moduleName);
             checkBox.setBackground(AlcToolBar.toolBarBgStartColour);
+            checkBox.setFont(FONT_MEDIUM);
 
             // CUSTOM MODULES
             if (modulesSet) {

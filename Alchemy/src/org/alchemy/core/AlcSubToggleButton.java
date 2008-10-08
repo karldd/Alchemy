@@ -23,11 +23,8 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-public class AlcSubToggleButton extends JToggleButton {
+public class AlcSubToggleButton extends JToggleButton implements AlcConstants {
 
-    /**
-     * Creates a new instance of AlcMainButton
-     */
     public AlcSubToggleButton(String text, URL iconUrl) {
 
         if (iconUrl != null) {
@@ -44,7 +41,7 @@ public class AlcSubToggleButton extends JToggleButton {
             this.setRolloverSelectedIcon(AlcUtil.getImageIcon(rolloverSelectedIconUrl));
         }
 
-        this.setFont(AlcToolBar.subToolBarFont);
+        this.setFont(FONT_SMALL);
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
         this.setMargin(new Insets(0, 0, 0, 0));

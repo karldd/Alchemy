@@ -66,6 +66,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private boolean mouseEvents = true;
     private boolean createMouseEvents = true;
     private boolean affectMouseEvents = true;
+    /** Mouse down or up */
+    private boolean mouseDown = false;
+    /** If the mouse has just been pressed or not */
+    private boolean mousePressed = false;
     /** Smoothing on or off */
     boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
@@ -354,6 +358,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      */
     public void setAffectMouseEvents(boolean affectMouseEvents) {
         this.affectMouseEvents = affectMouseEvents;
+    }
+
+    /** Mouse (or pen for that matter) down or up
+     * @return  The state of the mouse/pen
+     */
+    public boolean isMouseDown() {
+        return mouseDown;
     }
 
     /** Resize the canvas - called when the window is resized
@@ -664,9 +675,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             backgroundActive = true;
         }
     }
-    
-    /** Whether the background is active or not */
-    public boolean isBackgroundActive(){
+
+    /** Whether the background is active or not
+     * @return State of the background
+     */
+    public boolean isBackgroundActive() {
         return backgroundActive;
     }
 
@@ -1197,6 +1210,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mousePressed(MouseEvent event) {
+        mouseDown = true;
         // Hide the toolbar when clicking on the canvas
         if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() &&
                 !Alchemy.preferences.simpleToolBar && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
@@ -1206,7 +1220,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         if (mouseEvents) {
             // Pass to the current create module
             if (createMouseEvents) {
-                Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
+                // TODO - Implement a tablet library to avoid this location buggyness
+                // Because of a bug reporting tablet pen locations correctly in mousePressed
+                // We instead use mouseDragged for create modules
+                mousePressed = true;
+            //Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
             }
             // Pass to all active affect modules
             if (affectMouseEvents) {
@@ -1279,6 +1297,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mouseReleased(MouseEvent event) {
+        mouseDown = false;
         if (mouseEvents) {
             // Pass to the current create module
             if (createMouseEvents) {
@@ -1301,7 +1320,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         if (mouseEvents) {
             // Pass to the current create module
             if (createMouseEvents) {
-                Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseDragged(event);
+                // Because of a bug reporting tablet pen locations correctly in mousePressed
+                // We instead use mouseDragged for create modules
+                if (mousePressed) {
+                    mousePressed = false;
+                    Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
+                } else {
+                    Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseDragged(event);
+                }
             }
             // Pass to all active affect modules
             if (affectMouseEvents) {
