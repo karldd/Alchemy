@@ -129,6 +129,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
 
         //Lay out the buttons from left to right.
         JPanel buttonPane = new JPanel();
+        buttonPane.setOpaque(false);
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
