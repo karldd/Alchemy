@@ -1018,6 +1018,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
             singleDocument.open();
             PdfContentByte singleContent = singleWriter.getDirectContent();
+            singleContent.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
 
             Graphics2D g2pdf = singleContent.createGraphics(visibleRect.width, visibleRect.height);
 
@@ -1066,7 +1067,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
             // Holds the PDF
             PdfContentByte mainContent = mainWriter.getDirectContent();
-
+            mainContent.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
+            
             // Add each page from the main PDF
             for (int i = 0; i < reader.getNumberOfPages();) {
                 ++i;
