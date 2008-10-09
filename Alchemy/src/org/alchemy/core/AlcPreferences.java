@@ -79,7 +79,15 @@ class AlcPreferences implements AlcConstants {
     /** The start section of the session file name */
     String sessionFilePreName;
     /** Date format for the session pdf */
-    String sessionFileDateFormat;    //////////////////////////////////////////////////////////////
+    String sessionFileDateFormat;
+    /** The default start section of the session file name */
+    private final String defaultSessionFilePreName = "Alchemy-";
+    /** The default Date format for the session pdf */
+    private final String defaultSessionFileDateFormat = "yyyy-MM-dd-HH-mm-ss";
+    /** Session file naming components */
+    private JLabel sessionFileRenameOutput;
+    private JTextField sessionFileRenamePre,  sessionFileRenameDate;
+    //////////////////////////////////////////////////////////////
     // SWITCH
     //////////////////////////////////////////////////////////////
     /** Switch Vector Application */
@@ -126,8 +134,8 @@ class AlcPreferences implements AlcConstants {
         sessionRecordingInterval = prefs.getInt("Recording Interval", 30000);
         sessionAutoClear = prefs.getBoolean("Auto Clear Canvas", false);
         sessionLink = prefs.getBoolean("Link to Current Session", true);
-        sessionFilePreName = prefs.get("Session File Pre Name", "Alchemy-");
-        sessionFileDateFormat = prefs.get("Session File Date Format", "yyyy-MM-dd-HH-mm-ss");
+        sessionFilePreName = prefs.get("Session File Pre Name", defaultSessionFilePreName);
+        sessionFileDateFormat = prefs.get("Session File Date Format", defaultSessionFileDateFormat);
 
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
@@ -231,7 +239,7 @@ class AlcPreferences implements AlcConstants {
         // WINDOW
         //////////////////////////////////////////////////////////////
         prefsWindow = new JDialog(owner);
-        prefsWindow.setPreferredSize(new Dimension(400, 300));
+        prefsWindow.setPreferredSize(new Dimension(400, 400));
         String title = "Alchemy Preferences";
         if (Alchemy.PLATFORM == WINDOWS) {
             title = "Alchemy Options";
@@ -265,7 +273,7 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         JPanel centreRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         centreRow.setOpaque(false);
-        centreRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        centreRow.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
 
 
@@ -284,8 +292,6 @@ class AlcPreferences implements AlcConstants {
                     Alchemy.preferences.simpleToolBar = true;
                 }
                 if (okButton != null) {
-                    //okButton.setSelected(true);
-                    //prefsWindow.getRootPane().setDefaultButton(okButton);
                     okButton.requestFocus();
                 }
             }
@@ -304,40 +310,68 @@ class AlcPreferences implements AlcConstants {
         masterPanel.add(centreRow);
 
 
-
         //////////////////////////////////////////////////////////////
         // SESSION FILE
         //////////////////////////////////////////////////////////////
-        JPanel sessionPDFNamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        sessionPDFNamePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        sessionPDFNamePanel.setOpaque(false);
-        JLabel sessionPDFNameLabel = new JLabel(Alchemy.bundle.getString("sessionPDFName") + ":");
-        JTextField sessionPDFPreName = new JTextField(sessionFilePreName);
-        sessionPDFPreName.setFont(FONT_MEDIUM);
-        JTextField sessionPDFDateFormat = new JTextField(sessionFileDateFormat);
-        sessionPDFDateFormat.setFont(FONT_MEDIUM);
-        JLabel sessionExtensionLabel = new JLabel(".pdf");
-        sessionExtensionLabel.setFont(FONT_MEDIUM);
+        // Panel
+        JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        sessionFileRenamePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        sessionFileRenamePanel.setOpaque(false);
+        // Label
+        JLabel sessionFileRenameLabel = new JLabel(Alchemy.bundle.getString("sessionPDFName") + ":");
+        sessionFileRenamePanel.add(sessionFileRenameLabel);
+        // PreName
+        sessionFileRenamePre = new JTextField(sessionFilePreName);
+        int textHeight = sessionFileRenamePre.getPreferredSize().height;
+        sessionFileRenamePre.setPreferredSize(new Dimension(80, textHeight));
+        sessionFileRenamePre.setFont(FONT_MEDIUM);
 
-        sessionPDFNamePanel.add(sessionPDFNameLabel);
-        sessionPDFNamePanel.add(sessionPDFPreName);
-        sessionPDFNamePanel.add(sessionPDFDateFormat);
-        sessionPDFNamePanel.add(sessionExtensionLabel);
-        masterPanel.add(sessionPDFNamePanel);
 
-        JPanel sessionPDFNameExamplePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        sessionPDFNameExamplePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        sessionPDFNameExamplePanel.setOpaque(false);
-        JLabel sessionPDFNameExample = new JLabel(
-                Alchemy.bundle.getString("output") + ": "+ 
-                Alchemy.preferences.sessionFilePreName + 
-                AlcUtil.dateStamp(Alchemy.preferences.sessionFileDateFormat) + 
+        sessionFileRenamePre.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        refreshSessionPDFNameOutput();
+                    }
+                });
+        sessionFileRenamePanel.add(sessionFileRenamePre);
+
+        // DateFormat
+        sessionFileRenameDate = new JTextField(sessionFileDateFormat);
+        sessionFileRenameDate.setPreferredSize(new Dimension(140, textHeight));
+        sessionFileRenameDate.setFont(FONT_MEDIUM);
+        sessionFileRenameDate.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        refreshSessionPDFNameOutput();
+                    }
+                });
+
+        sessionFileRenamePanel.add(sessionFileRenameDate);
+
+        // Extension
+        JLabel sessionFileRenameExt = new JLabel(".pdf");
+        sessionFileRenameExt.setFont(FONT_MEDIUM);
+        sessionFileRenamePanel.add(sessionFileRenameExt);
+        masterPanel.add(sessionFileRenamePanel);
+
+        // Output Panel
+        JPanel sessionFileRenameOuputPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        sessionFileRenameOuputPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+        sessionFileRenameOuputPanel.setOpaque(false);
+        // Label
+        sessionFileRenameOutput = new JLabel(
+                Alchemy.bundle.getString("output") + ": " +
+                sessionFilePreName +
+                AlcUtil.dateStamp(sessionFileDateFormat) +
                 ".pdf");
-        sessionPDFNameExample.setFont(FONT_SMALL);
-        sessionPDFNameExample.setForeground(Color.GRAY);
-        sessionPDFNameExamplePanel.add(sessionPDFNameExample);
-        masterPanel.add(sessionPDFNameExamplePanel);
-        
+        sessionFileRenameOutput.setFont(FONT_SMALL);
+        sessionFileRenameOutput.setForeground(Color.GRAY);
+        sessionFileRenameOutput.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        sessionFileRenameOuputPanel.add(sessionFileRenameOutput);
+        masterPanel.add(sessionFileRenameOuputPanel);
+
 
         //////////////////////////////////////////////////////////////
         // MODULES LABEL
@@ -347,8 +381,14 @@ class AlcPreferences implements AlcConstants {
         modulesLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         JLabel modulesLabel = new JLabel(Alchemy.bundle.getString("modules") + ":");
         modulesLabelPanel.setOpaque(false);
-        //modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 0));
         modulesLabelPanel.add(modulesLabel);
+        // Restart required
+        JLabel restart2 = new JLabel(restart.getText());
+        restart2.setFont(FONT_SMALL);
+        restart2.setForeground(Color.GRAY);
+        restart2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        modulesLabelPanel.add(restart2);
         masterPanel.add(modulesLabelPanel);
 
 
@@ -360,15 +400,15 @@ class AlcPreferences implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
+                        sessionFilePreName = defaultSessionFilePreName;
+                        sessionFileDateFormat = defaultSessionFileDateFormat;
+                        sessionFileRenamePre.setText(sessionFilePreName);
+                        sessionFileRenameDate.setText(sessionFileDateFormat);
                         resetModules(Alchemy.plugins.creates);
                         resetModules(Alchemy.plugins.affects);
                         refreshModulePanel();
                     }
                 });
-
-        JLabel restart2 = new JLabel(restart.getText());
-        restart2.setFont(restart.getFont());
-        restart2.setForeground(restart.getForeground());
 
 
         //////////////////////////////////////////////////////////////
@@ -380,6 +420,8 @@ class AlcPreferences implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         prefsWindow.setVisible(false);
+                        sessionFileRenamePre.setText(sessionFilePreName);
+                        sessionFileRenameDate.setText(sessionFileDateFormat);
                         refreshModulePanel();
                     }
                 });
@@ -394,6 +436,25 @@ class AlcPreferences implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
+                        // If the session file name has changed
+                        if (!sessionFileRenamePre.getText().equals(sessionFilePreName) || !sessionFileRenameDate.getText().equals(sessionFileDateFormat)) {
+                            try {
+                                // Check that the dateformat is valid
+                                // and does not throw and exception
+                                String dateFormat = AlcUtil.dateStamp(sessionFileRenameDate.getText());
+                                // Check that both of the fields are not blank
+                                if (!sessionFileRenamePre.getText().equals("") && !dateFormat.equals("")) {
+                                    sessionFilePreName = sessionFileRenamePre.getText();
+                                    sessionFileDateFormat = dateFormat;
+                                    // Reset the session so next time a new file is created
+                                    Alchemy.session.restartSession();
+                                }
+
+                            } catch (Exception ex) {
+                                invalidDateFormat();
+                                return;
+                            }
+                        }
                         changeModules();
                         prefsWindow.setVisible(false);
                     }
@@ -404,7 +465,6 @@ class AlcPreferences implements AlcConstants {
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
-        buttonPane.add(restart2);
         buttonPane.add(Box.createHorizontalGlue());
         buttonPane.add(cancelButton);
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -462,6 +522,37 @@ class AlcPreferences implements AlcConstants {
         masterPanel.revalidate();
     }
 
+    private void refreshSessionPDFNameOutput() {
+        try {
+            String dateStamp = AlcUtil.dateStamp(sessionFileRenameDate.getText());
+            sessionFileRenameOutput.setText(Alchemy.bundle.getString("output") + ": " + sessionFileRenamePre.getText() + dateStamp + ".pdf");
+        } catch (Exception ex) {
+            invalidDateFormat();
+        }
+    }
+
+    private void invalidDateFormat() {
+        // Incase the date format is not correct
+        sessionFileRenameDate.setBackground(Color.PINK);
+        sessionFileRenameDate.setText(Alchemy.bundle.getString("invalidDateFormat"));
+        javax.swing.Timer timer = new javax.swing.Timer(1500, new  
+
+              ActionListener( ) {
+
+                
+                
+            
+        
+        
+        public void actionPerformed(ActionEvent e) {
+                sessionFileRenameDate.setBackground(Color.WHITE);
+                sessionFileRenameDate.setText(sessionFileDateFormat);
+            }
+        });
+        timer.start();
+        timer.setRepeats(false);
+    }
+
     private void setupModules(AlcModule[] modules) {
 
         for (int i = 0; i < modules.length; i++) {
@@ -502,9 +593,11 @@ class AlcPreferences implements AlcConstants {
                 prefs.putBoolean("Modules Set", modulesSet);
             }
 
-            checkBox.addActionListener(new ActionListener() {
+            checkBox.addActionListener(new  
 
-                public void actionPerformed(ActionEvent e) {
+                  ActionListener( ) {
+
+                      public void actionPerformed(ActionEvent e) {
                     changeModules = true;
                 //prefs.putBoolean(moduleNodeName, checkBox.isSelected());
                 }

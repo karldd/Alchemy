@@ -111,11 +111,16 @@ public class AlcUtil implements AlcConstants {
      * 
      * @param format    Format for the date stamp see: SimpleDateFormat
      * @return          A string containing a formatted date
+     * @throws IllegalArgumentException     if the given pattern is invalid
      */
-    public static String dateStamp(String format) {
-        SimpleDateFormat formatter = new SimpleDateFormat(format);
-        Date today = new Date();
-        return formatter.format(today);
+    public static String dateStamp(String format) throws IllegalArgumentException {
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat(format, LOCALE);
+            Date today = new Date();
+            return formatter.format(today);
+        } catch (IllegalArgumentException ex) {
+            throw ex;
+        }
     }
 
     /** Zero Pad an int 
