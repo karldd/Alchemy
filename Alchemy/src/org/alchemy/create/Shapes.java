@@ -96,19 +96,15 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
-        if (e.getClickCount() == 1) {
-            if (!straightShapes) {
-                Point p = e.getPoint();
-                canvas.createShapes.add(new AlcShape(p));
-                canvas.redraw();
-            }
+        if (!straightShapes) {
+            Point p = e.getPoint();
+            canvas.createShapes.add(new AlcShape(p));
+            canvas.redraw();
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
         // Detect a doubleclick
         if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
             reset();

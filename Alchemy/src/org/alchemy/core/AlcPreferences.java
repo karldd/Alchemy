@@ -271,7 +271,7 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // INTERFACE SELECTOR
         //////////////////////////////////////////////////////////////
-        JPanel centreRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel centreRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
         centreRow.setOpaque(false);
         centreRow.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
@@ -314,7 +314,7 @@ class AlcPreferences implements AlcConstants {
         // SESSION FILE
         //////////////////////////////////////////////////////////////
         // Panel
-        JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
         sessionFileRenamePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         sessionFileRenamePanel.setOpaque(false);
         // Label
@@ -381,7 +381,7 @@ class AlcPreferences implements AlcConstants {
         modulesLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         JLabel modulesLabel = new JLabel(Alchemy.bundle.getString("modules") + ":");
         modulesLabelPanel.setOpaque(false);
-        modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 3, 0));
+        modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
         modulesLabelPanel.add(modulesLabel);
         // Restart required
         JLabel restart2 = new JLabel(restart.getText());
@@ -445,7 +445,7 @@ class AlcPreferences implements AlcConstants {
                                 // Check that both of the fields are not blank
                                 if (!sessionFileRenamePre.getText().equals("") && !dateFormat.equals("")) {
                                     sessionFilePreName = sessionFileRenamePre.getText();
-                                    sessionFileDateFormat = dateFormat;
+                                    sessionFileDateFormat = sessionFileRenameDate.getText();
                                     // Reset the session so next time a new file is created
                                     Alchemy.session.restartSession();
                                 }
