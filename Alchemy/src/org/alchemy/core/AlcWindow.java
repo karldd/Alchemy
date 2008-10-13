@@ -237,6 +237,11 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                 //setAlwaysOnTop(false);
 
+                // Turn on the menubar
+                if (Alchemy.PLATFORM == MACOSX) {
+                    new fullscreen.NativeOSX().setVisible(true);
+                }
+
                 this.setVisible(true);
                 this.toFront();
 
@@ -273,11 +278,11 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                     // If on a mac and this is the primary monitor
                     // Make room for the mac menubar
-                    if (Alchemy.PLATFORM == MACOSX) {
-                        if (bounds.x == 0) {
-                            bounds.setLocation(bounds.x, 22);
-                        }
-                    }
+//                    if (Alchemy.PLATFORM == MACOSX) {
+//                        if (bounds.x == 0) {
+//                            bounds.setLocation(bounds.x, 22);
+//                        }
+//                    }
 
                     this.setVisible(false);                  //hide everything
 
@@ -288,6 +293,12 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     this.setBounds(bounds);
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
+
+                    // Turn off the menubar
+                    if (Alchemy.PLATFORM == MACOSX) {
+                        new fullscreen.NativeOSX().setVisible(false);
+                    }
+
                     this.setVisible(true);                   //show the frame
 
                     if (Alchemy.preferences.paletteAttached) {
@@ -415,8 +426,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
             // Get the size of the canvas without the titlebar and insets
             Rectangle visibleRect = Alchemy.canvas.getVisibleRect();
-            
-            if(Alchemy.preferences.simpleToolBar){
+
+            if (Alchemy.preferences.simpleToolBar) {
                 visibleRect.width += Alchemy.toolBar.toolBarWidth;
             }
 
@@ -500,7 +511,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     public void keyPressed(KeyEvent event) {
 
         int keyCode = event.getKeyCode();
-        
+
         // Turn off fullscreen mode with just the escape key if in fullscreen mode
         if (keyCode == KeyEvent.VK_ESCAPE) {
             if (isFullscreen()) {
