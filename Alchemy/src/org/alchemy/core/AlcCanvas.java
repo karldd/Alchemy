@@ -23,9 +23,7 @@ import java.awt.*;
 import java.awt.print.*;
 import javax.swing.*;
 import java.awt.event.*;
-
 import java.awt.Graphics2D;
-
 
 // ITEXT
 import com.lowagie.text.Document;
@@ -68,8 +66,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private boolean affectMouseEvents = true;
     /** Mouse down or up */
     private boolean mouseDown = false;
-    /** If the mouse has just been pressed or not */
-    private boolean mousePressed = false;
     /** Smoothing on or off */
     boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
@@ -885,7 +881,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @return
      */
     BufferedImage renderCanvas(boolean vectorMode) {
-        return renderCanvas(vectorMode, false);
+        return renderCanvas(vectorMode, false, 1);
     }
 
     /** Create an image from the canvas
@@ -896,6 +892,29 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @return
      */
     BufferedImage renderCanvas(boolean vectorMode, boolean transparent) {
+        return renderCanvas(vectorMode, transparent, 1);
+    }
+
+    /** Create an image from the canvas
+     * 
+     * @param vectorMode    In vector mode all shapes are rendered from scratch.
+     *                      Otherwise the active shapes are rendered on top of the current canvas image
+     * @param scale         Scale setting to scale the canvas up or down
+     * @return
+     */
+    BufferedImage renderCanvas(boolean vectorMode, double scale) {
+        return renderCanvas(vectorMode, false, scale);
+    }
+
+    /** Create an image from the canvas
+     * 
+     * @param vectorMode    In vector mode all shapes are rendered from scratch.
+     *                      Otherwise the active shapes are rendered on top of the current canvas image
+     * @param transparent   Ignore the background and create a transparent image with only shapes
+     * @param scale         Scale setting to scale the canvas up or down
+     * @return
+     */
+    BufferedImage renderCanvas(boolean vectorMode, boolean transparent, double scale) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -910,6 +929,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         Graphics2D g2 = buffImage.createGraphics();
         // Make sure the record indicator is off
         recordIndicator = false;
+
+        if (scale != 1) {
+            g2.scale(scale, scale);
+        }
 
         if (transparent) {
             vectorCanvas.transparent = true;
@@ -957,6 +980,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return saveBitmap(file, format, false);
     }
 
+    // TODO - Scaleable image export
     /** Save the canvas to a bitmap file
      * 
      * @param file          The file object to save the bitmap to
@@ -966,13 +990,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      */
     boolean saveBitmap(File file, String format, boolean transparent) {
         try {
-            //File file = new File("saveToThisFile.jpg");
             setGuide(false);
             BufferedImage buffImage;
             if (transparent) {
                 buffImage = renderCanvas(true, true);
             } else {
-                buffImage = renderCanvas(true);
+                buffImage = renderCanvas(true, 4.0);
             }
             setGuide(true);
             ImageIO.write(buffImage, format, file);
@@ -991,8 +1014,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @param file  The file object to save the pdf to
      * @return      True if save worked, otherwise false
      */
-    // TODO - Each PDF page sized differently
     boolean saveSinglePdf(File file) {
+        // Get the current 'real' size of the canvas without margins/borders
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         //int singlePdfWidth = Alchemy.window.getWindowSize().width;
         //int singlePdfHeight = Alchemy.window.getWindowSize().height;
@@ -1055,7 +1078,28 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
             PdfReader reader = new PdfReader(mainPdf.getPath());
             PdfReader newPdf = new PdfReader(tempPdf.getPath());
-            Document mainDocument = new Document(reader.getPageSizeWithRotation(1));
+
+            // See if the size of the canvas has increased
+            // Size of the most recent temp PDF
+            com.lowagie.text.Rectangle currentSize = newPdf.getPageSizeWithRotation(1);
+            // Size of the session pdf at present
+            com.lowagie.text.Rectangle oldSize = reader.getPageSizeWithRotation(1);
+            // Sizes to be used from now on
+            float pdfWidth = oldSize.getWidth();
+            float pdfHeight = oldSize.getHeight();
+            float shrinkOffset = 0;
+            if (currentSize.getWidth() > pdfWidth) {
+                pdfWidth = currentSize.getWidth();
+            }
+            if (currentSize.getHeight() > pdfHeight) {
+                pdfHeight = currentSize.getHeight();
+            }
+            // Create an offset if the canvas has shrunk down
+            if (currentSize.getHeight() < pdfHeight) {
+                shrinkOffset = 0 - (currentSize.getHeight() - pdfHeight);
+            }
+            // Use the new bigger canvas size if required
+            Document mainDocument = new Document(new com.lowagie.text.Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
             PdfWriter mainWriter = PdfWriter.getInstance(mainDocument, output);
 
             // Copy the meta data
@@ -1067,26 +1111,37 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
             // Holds the PDF
             PdfContentByte mainContent = mainWriter.getDirectContent();
+            // Set the colour space to RGB
+            // & hopefully avoid the pdf reader switching to CMYK
             mainContent.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
-            
+
             // Add each page from the main PDF
             for (int i = 0; i < reader.getNumberOfPages();) {
                 ++i;
                 mainDocument.newPage();
                 PdfImportedPage page = mainWriter.getImportedPage(reader, i);
-                mainContent.addTemplate(page, 0, 0);
+
+                float yOffset = 0;
+                float pageHeight = page.getHeight();
+                // Because the origin is bottom left
+                // Create an offset to align fromt he top left
+                // This will only happen when a newer bigger page is added
+                if (pageHeight < pdfHeight) {
+                    yOffset = pdfHeight - pageHeight;
+                }
+                mainContent.addTemplate(page, 0, yOffset);
             }
             // Add the last (new) page
             mainDocument.newPage();
             PdfImportedPage lastPage = mainWriter.getImportedPage(newPdf, 1);
-            mainContent.addTemplate(lastPage, 0, 0);
-
+            // If the page has been shrunk down again
+            // move the new page back up into the top left
+            mainContent.addTemplate(lastPage, 0, shrinkOffset);
             output.flush();
             mainDocument.close();
             output.close();
 
             if (dest.exists()) {
-
                 // Save the location of the main pdf
                 String mainPdfPath = mainPdf.getPath();
                 // Delete the old file
@@ -1222,11 +1277,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         if (mouseEvents) {
             // Pass to the current create module
             if (createMouseEvents) {
-                // TODO - Implement a tablet library to avoid this location buggyness
-                // Because of a bug reporting tablet pen locations correctly in mousePressed
-                // We instead use mouseDragged for create modules
-                mousePressed = true;
-            //Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
+                Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
             }
             // Pass to all active affect modules
             if (affectMouseEvents) {
@@ -1322,14 +1373,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         if (mouseEvents) {
             // Pass to the current create module
             if (createMouseEvents) {
-                // Because of a bug reporting tablet pen locations correctly in mousePressed
-                // We instead use mouseDragged for create modules
-                if (mousePressed) {
-                    mousePressed = false;
-                    Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
-                } else {
-                    Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseDragged(event);
-                }
+                Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseDragged(event);
             }
             // Pass to all active affect modules
             if (affectMouseEvents) {
