@@ -21,15 +21,12 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.prefs.*;
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Preference class used to store preferences.
@@ -338,6 +335,7 @@ class AlcPreferences implements AlcConstants {
 
         // DateFormat
         sessionFileRenameDate = new JTextField(sessionFileDateFormat);
+        sessionFileRenameDate.setToolTipText(getDateStampReference());
         sessionFileRenameDate.setPreferredSize(new Dimension(140, textHeight));
         sessionFileRenameDate.setFont(FONT_MEDIUM);
         sessionFileRenameDate.addActionListener(
@@ -522,6 +520,7 @@ class AlcPreferences implements AlcConstants {
         masterPanel.revalidate();
     }
 
+    /** Change the example output text */
     private void refreshSessionPDFNameOutput() {
         try {
             String dateStamp = AlcUtil.dateStamp(sessionFileRenameDate.getText());
@@ -531,26 +530,40 @@ class AlcPreferences implements AlcConstants {
         }
     }
 
+    /** Show the user that the date format was invalid */
     private void invalidDateFormat() {
         // Incase the date format is not correct
         sessionFileRenameDate.setBackground(Color.PINK);
         sessionFileRenameDate.setText(Alchemy.bundle.getString("invalidDateFormat"));
-        javax.swing.Timer timer = new javax.swing.Timer(1500, new  
+        javax.swing.Timer timer = new javax.swing.Timer(1500, new ActionListener() {
 
-              ActionListener( ) {
-
-                
-                
-            
-        
-        
-        public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 sessionFileRenameDate.setBackground(Color.WHITE);
                 sessionFileRenameDate.setText(sessionFileDateFormat);
             }
         });
         timer.start();
         timer.setRepeats(false);
+    }
+
+    /** Returns a string with some examples of how to set the date format */
+    private String getDateStampReference() {
+        Date today = new Date();
+        String[] dateFormats = {"EEEE, MMMM dd, yyyy",
+            "hha '- Alchemy Time!'",
+            "E, MMM d, yyyy",
+            "yyyy.MM.dd 'at' HH.mm.ss"
+        };
+        String dates = "<html>" + Alchemy.bundle.getString("example") + ":<br>";
+        for (int i = 0; i < dateFormats.length; i++) {
+            SimpleDateFormat formatter = new SimpleDateFormat(dateFormats[i], LOCALE);
+            dates += dateFormats[i];
+            dates += " : ";
+            dates += "<font color=#0033cc>" + formatter.format(today) + "</font>";
+            dates += "<br>";
+        }
+        dates += "</html>";
+        return dates;
     }
 
     private void setupModules(AlcModule[] modules) {
@@ -593,11 +606,9 @@ class AlcPreferences implements AlcConstants {
                 prefs.putBoolean("Modules Set", modulesSet);
             }
 
-            checkBox.addActionListener(new  
+            checkBox.addActionListener(new ActionListener() {
 
-                  ActionListener( ) {
-
-                      public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(ActionEvent e) {
                     changeModules = true;
                 //prefs.putBoolean(moduleNodeName, checkBox.isSelected());
                 }
