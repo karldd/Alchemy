@@ -79,12 +79,12 @@ public class Alchemy implements AlcConstants {
     /** Session class - controls automatic saving of the canvas */
     static AlcSession session;
     /** Resource Bundle containing language specific text */
-    static final ResourceBundle bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
+    static ResourceBundle bundle;
     /** Resource bundle containing English language text
      *  Used for storing variable names in standard ascii characters */
-    static final ResourceBundle bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en_US"));
+    static ResourceBundle bundleEn;
     /** Class of utility math functions */
-    static AlcMath math = new AlcMath();
+    static final AlcMath math = new AlcMath();
     /** Custom reusable colour chooser */
     static AlcColourChooser colourChooser;
 
@@ -96,6 +96,21 @@ public class Alchemy implements AlcConstants {
             UIManager.put("OptionPane.informationIcon", appIcon);
             UIManager.put("OptionPane.questionIcon", appIcon);
             UIManager.put("OptionPane.warningIcon", appIcon);
+        }
+
+        // Load the Bundle
+        try {
+            bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle");
+        }
+        try { // Try and get the default bundle
+            bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
+        } catch (Exception ex) {
+            // If that fails lets practice our English!
+            ex.printStackTrace();
+            bundle = bundleEn;
         }
 
         // LOAD PREFERENCES
