@@ -48,9 +48,7 @@ class AlcPlugins implements AlcConstants {
     /** The currently selected affect modules */
     boolean[] currentAffects;
     /** The number of affect modules currently selected */
-    private int numberOfCurrentAffects = 0;
-
-    // PLUGIN
+    private int numberOfCurrentAffects = 0;    // PLUGIN
     private PluginManager pluginManager;
     private int numberOfPlugins;
     private int numberOfCreateModules = 0;
@@ -72,15 +70,20 @@ class AlcPlugins implements AlcConstants {
          * 
          * This is very hacky and not ideal! 
          */
-
-        //Get the Core Plugin as as a resource from the JAR
-        InputStream coreStream = this.getClass().getResourceAsStream("/org/alchemy/data/org.alchemy.core-1.0.0.zip");
-
         File tempCore = null;
 
         try {
             // Create temp file.
             tempCore = new File(TEMP_DIR, "org.alchemy.core-1.0.0.zip");
+
+            if (tempCore.exists()) {
+                System.out.println("Temp Core Exits: " + tempCore.getAbsolutePath());
+                tempCore.delete();
+                System.out.println("Temp Core Deleted...");
+            }
+
+            //Get the Core Plugin as as a resource from the JAR
+            InputStream coreStream = this.getClass().getResourceAsStream("/org/alchemy/data/org.alchemy.core-1.0.0.zip");
 
             // Delete temp file when program exits.
             tempCore.deleteOnExit();
@@ -92,14 +95,19 @@ class AlcPlugins implements AlcConstants {
                 System.err.println("ERROR - Core plugin could not be copied to the temp dir: " + TEMP_DIR);
             }
 
-        } catch (IOException e) {
-            System.err.println(e);
+        } catch (Exception ex) {
+            System.err.println("ERROR - Problem adding the core plugin to the temp dir");
+            ex.printStackTrace();
         }
-
-        //System.out.println(tempCore.toString());
 
         // Folder of the plugins
         File pluginsDir = new File("modules");
+
+        if (!pluginsDir.exists()) {
+            // Tell the user that there must be at least one module loaded
+            AlcUtil.showConfirmDialog("noModulesDialogTitle", "noModulesDialogMessage", Alchemy.bundle);
+            System.exit(0);
+        }
 
         // Get all plugins that end with .zip
         File[] externalPlugins = pluginsDir.listFiles(new FilenameFilter() {
@@ -108,6 +116,13 @@ class AlcPlugins implements AlcConstants {
                 return name.toLowerCase().endsWith(".zip");
             }
         });
+
+        // Check that there are modules installed
+        if (externalPlugins.length == 0) {
+            // Tell the user that there must be at least one module loaded
+            AlcUtil.showConfirmDialog("noModulesDialogTitle", "noModulesDialogMessage", Alchemy.bundle);
+            System.exit(0);
+        }
 
         // Reorder the plugins array
         File[] plugins = new File[externalPlugins.length + 1];
@@ -136,13 +151,9 @@ class AlcPlugins implements AlcConstants {
                 } else if (plugins[i].getName().startsWith("org.alchemy.affect")) {
                     numberOfAffectModules++;
                 }
-            //System.out.println(plugins[i].getName());
             }
-
             // Registers plug-ins and their locations with this plug-in manager.
-
             pluginManager.publishPlugins(locations);
-
 
         } catch (Exception e) {
             throw new RuntimeException(e);
