@@ -22,8 +22,8 @@ package org.alchemy.core;
 import java.awt.Point;
 import java.awt.Color;
 
-import java.awt.geom.GeneralPath;
-import java.awt.geom.PathIterator;
+import java.awt.Rectangle;
+import java.awt.geom.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -51,7 +51,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /** For drawing smaller marks - draw lines until x points have been made */
     private final int startPoints = 5;
     /** Minimum distance until points are added */
-    private final int  minMovement = 5;
+    private final int minMovement = 5;
     /** Keep track of the number of points added */
     private int totalPoints = 0;
 
@@ -142,7 +142,10 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         this.lineWidth = lineWidth;
     }
 
-    private void setupDefaultAttributes() {
+    /** Set the attributes of this shape (Alpha/Colour/Style/LineWidth)
+     *  to the current values of the canvas
+     */
+    public void setupDefaultAttributes() {
         this.alpha = Alchemy.canvas.getAlpha();
         this.colour = Alchemy.canvas.getColour();
         this.style = Alchemy.canvas.getStyle();
@@ -255,6 +258,17 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         path.lineTo(p.x, p.y);
     }
 
+    /** Move the shape by the specified distance.
+     *  Consecutive calls will accumulate the overall distance
+     * @param x     x distance
+     * @param y     y distance
+     */
+    public void move(float x, float y) {
+        AffineTransform move = AffineTransform.getTranslateInstance(x, y);
+        GeneralPath transformedPath = (GeneralPath) path.createTransformedShape(move);
+        this.path = transformedPath;
+    }
+
     //////////////////////////////////////////////////////////////
     // ALCSHAPE GETTERS/SETTERS
     //////////////////////////////////////////////////////////////
@@ -349,14 +363,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public void recalculateTotalPoints() {
         PathIterator count = path.getPathIterator(null);
         int numberOfPoints = 0;
-//        float[] currentPoints = new float[6];
         while (!count.isDone()) {
-//            int currentPointType = count.currentSegment(currentPoints);
-//            switch (currentPointType) {
-//                case PathIterator.SEG_MOVETO:
-//                    System.out.println("Move");
-//                    break;
-//            }
             numberOfPoints++;
             count.next();
         }
@@ -451,6 +458,14 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
+    }
+    
+    /** Get the bounds of this shape 
+     * 
+     * @return Rectangle representing the shapes bounds
+     */
+    public Rectangle getBounds(){
+        return this.path.getBounds();
     }
 
     /**

@@ -271,8 +271,8 @@ public class AlcUtil implements AlcConstants {
 
     /** 
      * Get a set of vector paths (shapes) from a PDF file.
-     * To not return the background rectangle added when Alchemy saves a PDF,
-     * Any shape that is bigger or the same size as the page is ignored
+     * Does not return clipping paths or
+     * any shape that is bigger or the same size as the page
      * 
      * This is a rather long and hacky way using the swing labs
      * PDFRenderer library.
@@ -281,93 +281,126 @@ public class AlcUtil implements AlcConstants {
      * 
      * @param file              The PDF file to retrive the shapes from
      * @param resetLocation     Reset the location of each path to 0,0
-     * @return                  An array of GeneralPath's from the PDF, else null
+     * @return                  An array of AlcShapes from the PDF, else null
      */
-    public static GeneralPath[] getPDFShapes(File file, boolean resetLocation) {
+    public static AlcShape[] getPDFShapesAsArray(File file, boolean resetLocation) {
+        Collection<AlcShape> shapes = getPDFShapes(file, resetLocation);
+        if (shapes != null) {
+            AlcShape[] arr = new AlcShape[shapes.size()];
+            return shapes.toArray(arr);
+        }
+        return null;
+    }
 
-        //File file = new File(HOME_DIR + "/Desktop/Alchemy-2008-06-18-22-32-36.pdf");
+    /** 
+     * Get a set of vector paths (shapes) from a PDF file.
+     * 
+     * @param file              The PDF file to retrive the shapes from
+     * @param resetLocation     Reset the location of each path to 0,0
+     * @return                  A Collection of AlcShapes from the PDF, else null
+     */
+    public static Collection<AlcShape> getPDFShapes(File file, boolean resetLocation) {
         // set up the PDF reading
-        PDFPage pdfReadPage = null;
+        PDFFile pdfFile = null;
+        PDFPage pdfPage = null;
+        int totalPages = 0;
 
         try {
             RandomAccessFile raf = new RandomAccessFile(file, "r");
             FileChannel channel = raf.getChannel();
             java.nio.ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-            pdfReadPage = new PDFFile(buf).getPage(1);
+            pdfFile = new PDFFile(buf);
+            totalPages = pdfFile.getNumPages();
 
-        } catch (IOException e) {
+
+        } catch (Exception ex) {
             System.err.println("Failed to load file");
-            e.printStackTrace();
+            ex.printStackTrace();
             return null;
         }
 
-        if (pdfReadPage != null) {
+        // Create an arraylist to populate with just the shapes
+        ArrayList<AlcShape> shapeList = new ArrayList<AlcShape>(totalPages * 10);
+
+        // Go through each of the pages
+        for (int p = 0; p < totalPages; p++) {
+            pdfPage = pdfFile.getPage(p);
 
             // Token size because we are not actually rendering
             int size = 1;
             BufferedImage buffImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = buffImage.createGraphics();
-            // AffineTransform at = g2.getTransform();
-            PDFRenderer renderer = new PDFRenderer(pdfReadPage, g2, new Rectangle(0, 0, size, size), null, null);
+            PDFRenderer renderer = new PDFRenderer(pdfPage, g2, new Rectangle(0, 0, size, size), null, null);
 
-            java.awt.Rectangle pageBounds = new java.awt.Rectangle(0, 0, (int) pdfReadPage.getWidth(), (int) pdfReadPage.getHeight());
-            //System.out.println("Page Bounds" + pageBounds);
+            java.awt.Rectangle pageBounds = new java.awt.Rectangle(0, 0, (int) pdfPage.getWidth(), (int) pdfPage.getHeight());
 
-            renderer.setup();
-            int totalCommands = pdfReadPage.getCommandCount();
-            ArrayList<GeneralPath> gpList = new ArrayList<GeneralPath>(totalCommands);
+            // Have to run the renderer to populate the command list fully 
+            try {
+                pdfPage.waitForFinish();
+                renderer.run();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+            int totalCommands = pdfPage.getCommandCount();
 
             try {
-                for (int i = 0; i < totalCommands; i++) {
-                    PDFCmd command = pdfReadPage.getCommand(i);
-                    System.out.println(command);
+                for (int c = 0; c < totalCommands; c++) {
+                    PDFCmd command = pdfPage.getCommand(c);
                     if (command instanceof PDFShapeCmd) {
                         PDFShapeCmd shapeCommand = (PDFShapeCmd) command;
-                        // Hack into the command to get the shape
+                        // Hack into the command to get the path
                         Class shapeClass = shapeCommand.getClass();
-                        Field field = shapeClass.getDeclaredField("gp");
-                        field.setAccessible(true);
-
-                        GeneralPath gp = (GeneralPath) field.get(shapeCommand);
+                        Field pathField = shapeClass.getDeclaredField("gp");
+                        pathField.setAccessible(true);
+                        GeneralPath gp = (GeneralPath) pathField.get(shapeCommand);
                         java.awt.Rectangle gpBounds = gp.getBounds();
-                        System.out.println(gpBounds);
+                        // Hack into the command to get the style
+                        Field styleField = shapeClass.getDeclaredField("style");
+                        styleField.setAccessible(true);
+                        int style = (Integer) styleField.get(shapeCommand);
 
-                        // TODO - Not returning any shapes, why?
-                        // Save the shape if it is within the page size
-                        if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
-                            // For some reason the shapes come in flipped, o re-flip them here
-                            AffineTransform verticalReflection = new AffineTransform();
-                            int axis = (gpBounds.y * 2) + gpBounds.height;
-                            // Move the reflection into place and reset to 0,0 if required
-                            if (resetLocation) {
-                                verticalReflection.translate(0 - gpBounds.x, axis - gpBounds.y);
-                            } else {
-                                verticalReflection.translate(0, axis);
+                        // If the style is not a clipping path
+                        if (style != CLIP) {
+                            // Save the shape if it is within the page size
+                            if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
+                                // For some reason the shapes come in flipped, o re-flip them here
+                                AffineTransform verticalReflection = new AffineTransform();
+                                int axis = (gpBounds.y * 2) + gpBounds.height;
+                                // Move the reflection into place and reset to 0,0 if required
+                                if (resetLocation) {
+                                    verticalReflection.translate(0 - gpBounds.x, axis - gpBounds.y);
+                                } else {
+                                    verticalReflection.translate(0, axis);
+                                }
+                                // Reflect it using a negative scale
+                                verticalReflection.scale(1, -1);
+                                GeneralPath reflectedPath = (GeneralPath) gp.createTransformedShape(verticalReflection);
+                                AlcShape shape = new AlcShape(reflectedPath);
+                                shape.recalculateTotalPoints();
+                                if (style == BOTH) {
+                                    shape.setStyle(FILL);
+                                } else {
+                                    shape.setStyle(style);
+                                }
+                                shapeList.add(shape);
                             }
-                            // Reflect it using a negative scale
-                            verticalReflection.scale(1, -1);
-                            GeneralPath reflectedPath = (GeneralPath) gp.createTransformedShape(verticalReflection);
-                            gpList.add(reflectedPath);
                         }
+
                     }
                 }
 
-                // If there are shapes, then return them as an  array
-                if (gpList.size() > 0) {
-                    GeneralPath[] gpArray = new GeneralPath[gpList.size()];
-                    return gpList.toArray(gpArray);
-                }
-            } catch (IllegalArgumentException ex) {
+
+            } catch (Exception ex) {
                 ex.printStackTrace();
-            } catch (IllegalAccessException ex) {
-                ex.printStackTrace();
-            } catch (NoSuchFieldException ex) {
-                ex.printStackTrace();
-            } catch (SecurityException ex) {
-                ex.printStackTrace();
+                return null;
             } finally {
                 g2.dispose();
             }
+        }
+        // If there are shapes, then return them as an  array
+        if (shapeList.size() > 0) {
+            return shapeList;
         }
         return null;
     }
@@ -391,6 +424,46 @@ public class AlcUtil implements AlcConstants {
         }
         in.close();
         out.close();
+    }
+
+    /** List all files within a folder and all its sub folders
+     * 
+     * @param directory The directory to list
+     * @param filter    The filter to use
+     * @param recurse   To list all sub folders or not
+     * @return          An array of files
+     */
+    public static File[] listFilesAsArray(File directory, FilenameFilter filter, boolean recurse) {
+        Collection<File> files = listFiles(directory, filter, recurse);
+        File[] arr = new File[files.size()];
+        return files.toArray(arr);
+    }
+
+    private static Collection<File> listFiles(File directory, FilenameFilter filter, boolean recurse) {
+        // List of files / directories
+        ArrayList<File> files = new ArrayList<File>();
+
+        // Get files / directories in the directory
+        File[] entries = directory.listFiles();
+
+        // Go over entries
+        for (File entry : entries) {
+
+            // If there is no filter or the filter accepts the 
+            // file / directory, add it to the list
+            if (filter == null || filter.accept(directory, entry.getName())) {
+                files.add(entry);
+            }
+
+            // If the file is a directory and the recurse flag
+            // is set, recurse into the directory
+            if (recurse && entry.isDirectory()) {
+                files.addAll(listFiles(entry, filter, recurse));
+            }
+        }
+
+        // Return collection of files
+        return files;
     }
 
     //////////////////////////////////////////////////////////////

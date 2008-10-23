@@ -81,7 +81,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
             public void actionPerformed(ActionEvent e) {
                 Alchemy.canvas.toggleStyle();
-                if (Alchemy.canvas.getStyle() == LINE) {
+                if (Alchemy.canvas.getStyle() == STROKE) {
                     lineWeightBox.setVisible(true);
                 } else {
                     lineWeightBox.setVisible(false);

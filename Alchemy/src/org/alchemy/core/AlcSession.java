@@ -23,6 +23,7 @@ import java.awt.event.*;
 import java.io.*;
 import com.sun.pdfview.*;
 import com.lowagie.text.pdf.PdfReader;
+import eu.medsea.util.MimeUtil;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
@@ -48,7 +49,6 @@ class AlcSession implements ActionListener, AlcConstants {
     private int currentPdfReadPage = 1;
     /** Number of pages of the read PDF */
     private int maxPdfReadPage;
-    
 
     AlcSession() {
     }
@@ -69,7 +69,7 @@ class AlcSession implements ActionListener, AlcConstants {
                 timer.start();
 
             }
-            //Alchemy.canvas.resetCanvasChanged();
+        //Alchemy.canvas.resetCanvasChanged();
 
         } else {
 
@@ -173,7 +173,6 @@ class AlcSession implements ActionListener, AlcConstants {
     /** Save a single pdfReadPage to the current pdf being created, then clear the canvas */
     void saveClearPage() {
         savePage();
-        //Alchemy.canvas.savePdfPage();
         Alchemy.canvas.clear();
         progressPage();
     }
@@ -198,6 +197,13 @@ class AlcSession implements ActionListener, AlcConstants {
     boolean loadSessionFile(File file) {
 
         try {
+
+            // Check this is a pdf file
+            String mime = MimeUtil.getMimeType(file.getAbsoluteFile());
+            if (!mime.equals("application/pdf")) {
+                AlcUtil.showConfirmDialog("notPDFDialogTitle", "notPDFDialogMessage", Alchemy.bundle);
+                return false;
+            }
 
             // First make sure we are not loading the current session file
             if (file.equals(pdfWriteFile)) {
@@ -310,9 +316,11 @@ class AlcSession implements ActionListener, AlcConstants {
                 Alchemy.canvas.setRecordIndicator(true);
 
                 if (indicatorTimer == null) {
-                    indicatorTimer = new javax.swing.Timer(500, new ActionListener() {
+                    indicatorTimer = new javax.swing.Timer(500, new  
 
-                        public void actionPerformed(ActionEvent e) {
+                          ActionListener( ) {
+
+                            public void actionPerformed(ActionEvent e) {
                             //System.out.println("indicatorTimer action called");
                             Alchemy.canvas.setRecordIndicator(false);
                             Alchemy.canvas.redraw();

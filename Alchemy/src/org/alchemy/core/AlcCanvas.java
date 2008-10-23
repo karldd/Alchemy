@@ -80,7 +80,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     /** Alpha of this shape */
     private int alpha = 255;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    private int style = LINE;
+    private int style = STROKE;
     /** Line Weight if the style is line */
     private float lineWidth = 1F;
     //////////////////////////////////////////////////////////////
@@ -192,7 +192,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
                 for (int i = 0; i < activeShapeList[j].size(); i++) {
                     AlcShape currentShape = (AlcShape) activeShapeList[j].get(i);
                     // LINE
-                    if (currentShape.style == LINE) {
+                    if (currentShape.style == STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setColor(currentShape.colour);
@@ -224,7 +224,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             for (int i = 0; i < guideShapes.size(); i++) {
                 AlcShape currentShape = guideShapes.get(i);
                 // LINE
-                if (currentShape.style == LINE) {
+                if (currentShape.style == STROKE) {
                     //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                     g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                     g2.setColor(currentShape.colour);
@@ -759,10 +759,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
     /** Toggle the style between line and solid */
     public void toggleStyle() {
-        if (style == LINE) {
-            style = SOLID;
+        if (style == STROKE) {
+            style = FILL;
         } else {
-            style = LINE;
+            style = STROKE;
         }
     }
 
@@ -1452,7 +1452,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
                 for (int i = 0; i < Alchemy.canvas.fullShapeList[j].size(); i++) {
                     AlcShape currentShape = (AlcShape) Alchemy.canvas.fullShapeList[j].get(i);
                     // LINE
-                    if (currentShape.style == LINE) {
+                    if (currentShape.style == STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setColor(currentShape.colour);
@@ -1468,7 +1468,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
                 for (int i = 0; i < Alchemy.canvas.guideShapes.size(); i++) {
                     AlcShape currentShape = Alchemy.canvas.guideShapes.get(i);
                     // LINE
-                    if (currentShape.style == LINE) {
+                    if (currentShape.style == STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setColor(currentShape.colour);
