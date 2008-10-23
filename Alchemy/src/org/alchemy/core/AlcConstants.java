@@ -82,18 +82,22 @@ public interface AlcConstants {
     //////////////////////////////////////////////////////////////
     // SHAPE STYLE
     //////////////////////////////////////////////////////////////
-    /** Shape Style: Line (0)  */
-    static final int LINE = 0;
-    /** Shape Style: Solid (1)  */
-    static final int SOLID = 1;
+    /** Shape Style: Stroke (1)  */
+    static final int STROKE = 1;
+    /** Shape Style: Fill (2)  */
+    static final int FILL = 2;
+    /** Shape Style: Both (3) - Only used with the PDF Renderer */
+    static final int BOTH = 3;
+    /** Shape Style: Clip (4) - Only used with the PDF Renderer */
+    static final int CLIP = 4;    
     //
     //////////////////////////////////////////////////////////////
     // MODULE TYPES
     //////////////////////////////////////////////////////////////
-    /** Module Type: CREATE (0)  */
-    static final int CREATE = 0;
-    /** Module Type: AFFECT (1)  */
-    static final int AFFECT = 1;
+    /** Module Type: CREATE (1)  */
+    static final int CREATE = 1;
+    /** Module Type: AFFECT (2)  */
+    static final int AFFECT = 2;
     //
     //////////////////////////////////////////////////////////////
     // CURSORS 

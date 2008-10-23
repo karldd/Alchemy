@@ -263,7 +263,7 @@ public class Mirror extends AlcModule implements AlcConstants {
             if (firstSelect) {
                 firstSelect = false;
                 canvas.guideShapes.clear();
-                AlcShape axis = new AlcShape(line, new Color(0, 255, 255), 100, LINE, 1);
+                AlcShape axis = new AlcShape(line, new Color(0, 255, 255), 100, STROKE, 1);
                 canvas.guideShapes.add(axis);
             } else {
                 if (canvas.getCurrentGuideShape() != null) {
