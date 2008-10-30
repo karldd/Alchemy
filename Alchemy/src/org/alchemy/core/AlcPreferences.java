@@ -85,6 +85,11 @@ class AlcPreferences implements AlcConstants {
     private JLabel sessionFileRenameOutput;
     private JTextField sessionFileRenamePre,  sessionFileRenameDate;
     //////////////////////////////////////////////////////////////
+    // SHAPES 
+    //////////////////////////////////////////////////////////////
+    /** Directory to load shapes from */
+    String shapesPath;
+    //////////////////////////////////////////////////////////////
     // SWITCH
     //////////////////////////////////////////////////////////////
     /** Switch Vector Application */
@@ -134,6 +139,9 @@ class AlcPreferences implements AlcConstants {
         sessionFilePreName = prefs.get("Session File Pre Name", defaultSessionFilePreName);
         sessionFileDateFormat = prefs.get("Session File Date Format", defaultSessionFileDateFormat);
 
+        shapesPath = prefs.get("Shapes Path", new File("shapes").getAbsolutePath());
+
+
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
         paletteAttached = prefs.getBoolean("Palette Attached", false);
@@ -160,6 +168,8 @@ class AlcPreferences implements AlcConstants {
         prefs.put("Session File Pre Name", sessionFilePreName);
         prefs.put("Session File Date Format", sessionFileDateFormat);
 
+        prefs.put("Shapes Path", shapesPath);
+        
         prefs.putBoolean("Palette Attached", paletteAttached);
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
@@ -559,7 +569,7 @@ class AlcPreferences implements AlcConstants {
             SimpleDateFormat formatter = new SimpleDateFormat(dateFormats[i], LOCALE);
             dates += dateFormats[i];
             dates += " : ";
-            dates += "<font color=#0033cc>" + formatter.format(today) + "</font>";
+            dates += "<font color=#333333>" + formatter.format(today) + "</font>";
             dates += "<br>";
         }
         dates += "</html>";

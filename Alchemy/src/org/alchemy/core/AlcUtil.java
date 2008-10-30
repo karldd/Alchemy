@@ -20,6 +20,7 @@
 package org.alchemy.core;
 
 import com.sun.pdfview.*;
+import eu.medsea.util.MimeUtil;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.geom.AffineTransform;
@@ -267,6 +268,45 @@ public class AlcUtil implements AlcConstants {
         }
 
         return customCursor;
+    }
+
+    /** Return an array of AlcShape from PDF files in the shapes folder
+     *  If no shapes are found a dialog is displayed telling the user to
+     *  add some shapes to their shapes folder
+     * 
+     * @return  An array of AlcShapes or null if no shapes found
+     */
+    public static AlcShape[] loadShapes() {
+        ArrayList<AlcShape> shapes = new ArrayList<AlcShape>();
+
+        // Folder of the plugins
+        File shapesDir = new File("shapes");
+        // Filter to check the MIME type, not just the file extension
+        FilenameFilter pdfFilter = new FilenameFilter() {
+
+            public boolean accept(File dir, String name) {
+
+                File file = new File(dir, name);
+                String mime = MimeUtil.getMimeType(file.getAbsoluteFile());
+                return (mime.equals("application/pdf")) ? true : false;
+            }
+        };
+
+        // Get the list of PDF files
+        File[] pdfs = listFilesAsArray(shapesDir, pdfFilter, true);
+        // For each pdf add the shapes to the array list
+        for (int i = 0; i < pdfs.length; i++) {
+            shapes.addAll(getPDFShapes(pdfs[i], true));
+        }
+        if (shapes.size() > 0) {
+            AlcShape[] arr = new AlcShape[shapes.size()];
+            return shapes.toArray(arr);
+        }
+        String message = Alchemy.bundle.getString("noShapesMessage1") + "<br>" +
+                Alchemy.preferences.shapesPath + "<br>" +
+                Alchemy.bundle.getString("noShapesMessage2");
+        AlcUtil.showConfirmDialog(Alchemy.bundle.getString("noShapesTitle"), message);
+        return null;
     }
 
     /** 
@@ -605,8 +645,8 @@ public class AlcUtil implements AlcConstants {
      * @return          True if OK, else false if Cancel
      */
     public static boolean showConfirmDialog(String title, String message, ResourceBundle bundle) {
-        String bundleTitle = Alchemy.bundle.getString(title);
-        String bundleMessage = Alchemy.bundle.getString(message);
+        String bundleTitle = bundle.getString(title);
+        String bundleMessage = bundle.getString(message);
         return showConfirmDialog(bundleTitle, bundleMessage);
     }
 
@@ -624,24 +664,6 @@ public class AlcUtil implements AlcConstants {
             return showConfirmDialog(macTitle, macMessage);
         } else {
             return showConfirmDialog(winTitle, winMessage);
-        }
-    }
-
-    /** Show a confirmation dialog specific to the OS style 
-     *  The title and message are taken from the localised Alchemy bundle
-     * 
-     * @param winTitle      Title of the windows dialog
-     * @param winMessage    Message of the windows dialog
-     * @param macTitle      Title of the mac dialog 
-     * @param macMessage    Message of the mac dialog
-     * @param bundle        The bundle to take localised text from
-     * @return              True if OK, else false if Cancel
-     */
-    public static boolean showConfirmDialog(String winTitle, String winMessage, String macTitle, String macMessage, ResourceBundle bundle) {
-        if (Alchemy.PLATFORM == MACOSX) {
-            return showConfirmDialog(Alchemy.bundle.getString(macTitle), Alchemy.bundle.getString(macMessage));
-        } else {
-            return showConfirmDialog(Alchemy.bundle.getString(winTitle), Alchemy.bundle.getString(winMessage));
         }
     }
 

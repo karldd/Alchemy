@@ -80,6 +80,7 @@
         <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.JMyron.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.mime-util.jar}" dest="${build.classes.dir}"/>
     </target>
     <target name="-post-jar">
         
