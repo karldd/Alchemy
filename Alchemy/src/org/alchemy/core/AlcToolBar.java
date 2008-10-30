@@ -825,9 +825,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         if (currentSubToolBarSections > 0) {
 
             // TODO - Check there is enough room for the subtoolbar
-            // If there is overflow collapsable the subtoolbar sections to show just the header
-            // Keep track of the last used section
-            // Click on the header to expand it then collapse other ones if necessary
+            // If there is overflow show a little >> arrow to indicate more content
+            // When the user clicks, the toolbar is displayed in a popup?
             
 //            int layoutWidth = subToolBar.getLayoutWidth();
 //            System.out.println("SubToolbar layout width:" + layoutWidth);

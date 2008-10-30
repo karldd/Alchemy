@@ -172,13 +172,6 @@ public class Alchemy implements AlcConstants {
         }
 
         window.setVisible(true);
-
-//        GeneralPath[] gps = AlcUtil.getPDFShapes(new File(HOME_DIR + "/Desktop/Alchemy-2008-06-18-22-32-36.pdf"), true);
-//        if (gps != null) {
-//            for (int i = 0; i < gps.length; i++) {
-//                canvas.createShapes.add(new AlcShape(gps[i]));
-//            }
-//        }
     }
 
     public static void main(String[] args) {

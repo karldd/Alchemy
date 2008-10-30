@@ -108,8 +108,8 @@ public interface AlcConstants {
     static final Cursor MOVE = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
     static final Cursor TEXT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
     static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-    int[] blankPixels = new int[16 * 16];
-    Image blankImage = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, blankPixels, 0, 16));
+    static final int[] blankPixels = new int[16 * 16];
+    static final Image blankImage = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, blankPixels, 0, 16));
     static final Cursor BLANK = TOOLKIT.createCustomCursor(blankImage, new Point(0, 0), "Blank");
     
     //////////////////////////////////////////////////////////////
