@@ -357,6 +357,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             //this.dispose();
 
             Alchemy.canvas.updateCanvasImage(this.transparent);
+            Alchemy.canvas.repaint();
 
             // MAC
             if (Alchemy.PLATFORM == MACOSX) {
