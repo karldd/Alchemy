@@ -105,7 +105,7 @@ class AlcPlugins implements AlcConstants {
 
         if (!pluginsDir.exists()) {
             // Tell the user that there must be at least one module loaded
-            AlcUtil.showConfirmDialog("noModulesDialogTitle", "noModulesDialogMessage");
+            AlcUtil.showConfirmDialogFromBundle("noModulesDialogTitle", "noModulesDialogMessage");
             System.exit(0);
         }
 
@@ -120,7 +120,7 @@ class AlcPlugins implements AlcConstants {
         // Check that there are modules installed
         if (externalPlugins.length == 0) {
             // Tell the user that there must be at least one module loaded
-            AlcUtil.showConfirmDialog("noModulesDialogTitle", "noModulesDialogMessage");
+            AlcUtil.showConfirmDialogFromBundle("noModulesDialogTitle", "noModulesDialogMessage");
             System.exit(0);
         }
 
@@ -174,7 +174,7 @@ class AlcPlugins implements AlcConstants {
             creates = addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
         } else {
             // Tell the user that there must be at least one create module loaded
-            AlcUtil.showConfirmDialog("noCreateModulesDialogTitle", "noCreateModulesDialogMessage");
+            AlcUtil.showConfirmDialogFromBundle("noCreateModulesDialogTitle", "noCreateModulesDialogMessage");
             System.exit(0);
         }
     }

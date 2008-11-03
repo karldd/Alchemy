@@ -41,7 +41,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     private AlcMenuItem nextPageItem,  previousPageItem,  unloadSessionItem;
     private AlcCheckBoxMenuItem linkSessionItem;
     /** Fullscreen toggle global so it can be set on startup */
-    AlcCheckBoxMenuItem fullScreenItem;
+    AlcCheckBoxMenuItem fullScreenItem, transparentItem;
 
     /** Creates a new instance of AlcMenuBar */
     AlcMenuBar() {
@@ -180,8 +180,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         // VIEW MENU
         //////////////////////////////////////////////////////////////
         AlcMenu viewMenu = new AlcMenu(getS("viewTitle"));
-        // Fullscreen
 
+        // Fullscreen
         String fullScreenTitle = getS("fullScreenTitle");
         fullScreenItem = new AlcCheckBoxMenuItem();
         AbstractAction fullScreenAction = new AbstractAction() {
@@ -200,6 +200,27 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         int fullScreenKey = Alchemy.shortcuts.setShortcut(fullScreenItem, KeyEvent.VK_F, "fullScreenTitle", fullScreenAction, MODIFIER_KEY);
         fullScreenItem.setup(fullScreenTitle, fullScreenKey);
         viewMenu.add(fullScreenItem);
+        
+        
+                // Fullscreen
+        String transparentTitle = getS("transparentTitle");
+        transparentItem = new AlcCheckBoxMenuItem();
+        AbstractAction transparentAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                String source = e.getSource().getClass().getName();
+                if (!source.equals("org.alchemy.core.AlcCheckBoxMenuItem")) {
+                    transparentItem.setState(!transparentItem.getState());
+                }
+                Alchemy.window.setTransparent(!Alchemy.window.isTransparent());
+            }
+        };
+
+        transparentItem.setAction(transparentAction);
+        // Shortcut - Modifier t
+        int transparentKey = Alchemy.shortcuts.setShortcut(transparentItem, KeyEvent.VK_T, "transparentTitle", transparentAction, MODIFIER_KEY);
+        transparentItem.setup(transparentTitle, transparentKey);
+        viewMenu.add(transparentItem);
 
         this.add(viewMenu);
 

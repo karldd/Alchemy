@@ -19,6 +19,7 @@
  */
 package org.alchemy.core;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
@@ -89,8 +90,7 @@ public interface AlcConstants {
     /** Shape Style: Both (3) - Only used with the PDF Renderer */
     static final int BOTH = 3;
     /** Shape Style: Clip (4) - Only used with the PDF Renderer */
-    static final int CLIP = 4;    
-    //
+    static final int CLIP = 4;    //
     //////////////////////////////////////////////////////////////
     // MODULE TYPES
     //////////////////////////////////////////////////////////////
@@ -108,10 +108,11 @@ public interface AlcConstants {
     static final Cursor MOVE = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
     static final Cursor TEXT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
     static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
-    static final int[] blankPixels = new int[16 * 16];
-    static final Image blankImage = Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, blankPixels, 0, 16));
-    static final Cursor BLANK = TOOLKIT.createCustomCursor(blankImage, new Point(0, 0), "Blank");
-    
+    static final Cursor BLANK = TOOLKIT.createCustomCursor(
+            Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, new int[16 * 16], 0, 16)),
+            new Point(0, 0),
+            "Blank");
+    //
     //////////////////////////////////////////////////////////////
     // FONTS 
     //////////////////////////////////////////////////////////////
@@ -119,4 +120,9 @@ public interface AlcConstants {
     static final Font FONT_MEDIUM = new Font("sansserif", Font.PLAIN, 11);
     static final Font FONT_LARGE = new Font("sansserif", Font.PLAIN, 12);
     static final Font FONT_BOLD = new Font("sansserif", Font.PLAIN, 11);
+    //
+    //////////////////////////////////////////////////////////////
+    // COLOURS 
+    //////////////////////////////////////////////////////////////
+    static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 }

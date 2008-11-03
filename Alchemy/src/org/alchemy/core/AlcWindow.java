@@ -45,14 +45,14 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     private static final Dimension minWindowSize = new Dimension(640, 400);
     /** Second monitor black out window */
     private static JWindow[] screens;
+    /** Transparent Window */
+    private boolean transparent = false;
 
     public AlcWindow() {
 
-        super("OSXAdapter");
-
         // Set up our application to respond to the Mac OS X application menu
+        super("OSXAdapter");
         registerForMacOSXEvents();
-
 
         // Exit Function
         addWindowListener(new WindowAdapter() {
@@ -127,6 +127,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         //}
         }
 
+
+
         // LAYERED PANE
         JLayeredPane layeredPane = new JLayeredPane();
         // Add the UI on top of the canvas
@@ -134,12 +136,12 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         layeredPane.add(Alchemy.toolBar, new Integer(2));
 
         // FRAME
-        //this.setSize(windowSize);
-        layeredPane.setPreferredSize(windowSize);          // Set the window size
+        layeredPane.setPreferredSize(windowSize);
+        // Set the layered pane as the main content pane
+        this.setContentPane(layeredPane);
 
-        this.setContentPane(layeredPane);           // Set the layered pane as the main content pane
-
-        this.pack();                                // Finalize window layout
+        // Finalize window layout
+        this.pack();
 
         // Load the old location if available
         // First check it is not off screen
@@ -181,7 +183,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         return windowSize;
     }
 
-    private void resizeWindow(ComponentEvent e) {
+    private void resizeWindow() {
         // Make sure the minimum size is observed
         this.setSize(Math.max(minWindowSize.width, this.getWidth()), Math.max(minWindowSize.height, this.getHeight()));
         // Get and set the new size of the window
@@ -207,9 +209,11 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Rectangle bounds = grapConfig.getBounds();
 
-        if (this.fullscreen != fullscreen) {        //are we actually changing modes.
+        //are we actually changing modes.
+        if (this.fullscreen != fullscreen) {
 
-            this.fullscreen = fullscreen;           //change modes.
+            //change modes.
+            this.fullscreen = fullscreen;
 
             // NORMAL WINDOW
             if (!fullscreen) {
@@ -224,17 +228,18 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     screens = null;
                 }
 
-                this.setVisible(false);                //hide the frame so we can change it.
-
-                this.dispose();                          //remove the frame from being displayable.
-
-                this.setUndecorated(false);              //put the borders back on the frame.
+                //hide the frame so we can change it.
+                this.setVisible(false);
+                //remove the frame from being displayable.
+                this.dispose();
+                //put the borders back on the frame.
+                this.setUndecorated(false);
 
                 this.setFocusable(true);
-                //device.setFullScreenWindow(null);   //needed to unset this window as the fullscreen window.
+                //needed to unset this window as the fullscreen window.
+                //device.setFullScreenWindow(null); 
 
                 this.setBounds(oldBounds);
-
                 //setAlwaysOnTop(false);
 
                 // Turn on the menubar
@@ -284,11 +289,12 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 //                        }
 //                    }
 
-                    this.setVisible(false);                  //hide everything
-
-                    this.dispose();                          //remove the frame from being displayable.
-
-                    this.setUndecorated(true);               //remove borders around the frame
+                    //hide everything
+                    this.setVisible(false);
+                    //remove the frame from being displayable.
+                    this.dispose();
+                    //remove borders around the frame
+                    this.setUndecorated(true);
 
                     this.setBounds(bounds);
                     //setAlwaysOnTop(true);
@@ -326,6 +332,54 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         return fullscreen;
     }
 
+    /** Returns if the window is currently in transparent mode
+     * 
+     * @return  Transparent mode or not
+     */
+    public boolean isTransparent() {
+        return transparent;
+    }
+
+    /** Set the transparent mode of the window
+     * 
+     * @param transparent   True to enter transparent mode, false to exit
+     */
+    public void setTransparent(boolean transparent) {
+
+        // TODO - Test this on Windows
+        
+        if (this.transparent != transparent) {
+            this.transparent = transparent;
+            Rectangle bounds = this.getBounds();
+            //hide everything
+            this.setVisible(false);
+            //remove the frame from being displayable.
+            //this.dispose();
+
+            Alchemy.canvas.updateCanvasImage(this.transparent);
+
+            // MAC
+            if (Alchemy.PLATFORM == MACOSX) {
+                com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
+                // TODO - Figure out why the drop shadow is lost on mac
+            //this.setBounds(bounds);
+            //this.setUndecorated(false);
+
+            }
+            // Finalize window layout
+            //this.pack();
+            this.setVisible(true);
+            //this.validate();
+            
+            resizeWindow();
+
+            // NON-MAC
+            if (Alchemy.PLATFORM != MACOSX) {
+                com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
+            }
+        }
+
+    }
     //////////////////////////////////////////////////////////////
     // PALETTE
     //////////////////////////////////////////////////////////////
@@ -401,7 +455,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // Ask to quit
         if (Alchemy.canvas.shapes.size() > 0) {
 
-            boolean result = AlcUtil.showConfirmDialog("exitDialogTitle", "exitDialogMessage", "quitDialogTitle", "quitDialogMessage", Alchemy.bundle);
+            boolean result = AlcUtil.showConfirmDialogFromBundle("exitDialogTitle", "exitDialogMessage", "quitDialogTitle", "quitDialogMessage");
             if (result) {
                 exit();
                 return true;
@@ -567,7 +621,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     }
 
     public void componentResized(ComponentEvent e) {
-        resizeWindow(e);
+        resizeWindow();
     }
 
     public void lostOwnership(Clipboard clipboard, Transferable contents) {

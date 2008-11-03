@@ -201,14 +201,14 @@ class AlcSession implements ActionListener, AlcConstants {
             // Check this is a pdf file
             String mime = MimeUtil.getMimeType(file.getAbsoluteFile());
             if (!mime.equals("application/pdf")) {
-                AlcUtil.showConfirmDialog("notPDFDialogTitle", "notPDFDialogMessage", Alchemy.bundle);
+                AlcUtil.showConfirmDialogFromBundle("notPDFDialogTitle", "notPDFDialogMessage");
                 return false;
             }
 
             // First make sure we are not loading the current session file
             if (file.equals(pdfWriteFile)) {
 
-                boolean result = AlcUtil.showConfirmDialog("loadSessionPDFDialogTitle", "loadSessionPDFDialogMessage", Alchemy.bundle);
+                boolean result = AlcUtil.showConfirmDialogFromBundle("loadSessionPDFDialogTitle", "loadSessionPDFDialogMessage");
 
                 if (result) {
                     restartSession();
@@ -225,7 +225,7 @@ class AlcSession implements ActionListener, AlcConstants {
             // If the pdf is not an Alchemy pdf
             if (!metaData.contains("Alchemy") && !file.getName().startsWith("Alchemy")) {
 
-                boolean result = AlcUtil.showConfirmDialog("loadForeignPDFDialogTitle", "loadForeignPDFDialogMessage", Alchemy.bundle);
+                boolean result = AlcUtil.showConfirmDialogFromBundle("loadForeignPDFDialogTitle", "loadForeignPDFDialogMessage");
                 if (!result) {
                     return false;
                 }

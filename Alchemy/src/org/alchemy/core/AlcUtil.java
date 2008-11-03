@@ -305,7 +305,7 @@ public class AlcUtil implements AlcConstants {
         String message = Alchemy.bundle.getString("noShapesMessage1") + "<br>" +
                 Alchemy.preferences.shapesPath + "<br>" +
                 Alchemy.bundle.getString("noShapesMessage2");
-        AlcUtil.showConfirmDialog(Alchemy.bundle.getString("noShapesTitle"), message);
+        showConfirmDialog(Alchemy.bundle.getString("noShapesTitle"), message);
         return null;
     }
 
@@ -636,37 +636,6 @@ public class AlcUtil implements AlcConstants {
         return result;
     }
 
-    /** Show a confirmation dialog specific to the OS style 
-     *  The title and message are taken from the localised Alchemy bundle
-     * 
-     * @param title     Title of the dialog
-     * @param message   Message of the dialog
-     * @param bundle    The bundle to take localised text from
-     * @return          True if OK, else false if Cancel
-     */
-    public static boolean showConfirmDialog(String title, String message, ResourceBundle bundle) {
-        String bundleTitle = bundle.getString(title);
-        String bundleMessage = bundle.getString(message);
-        return showConfirmDialog(bundleTitle, bundleMessage);
-    }
-
-    /** Show a confirmation dialog specific to the OS style 
-     *  The title and message are taken from the localised Alchemy bundle
-     * 
-     * @param winTitle      Title of the windows dialog
-     * @param winMessage    Message of the windows dialog
-     * @param macTitle      Title of the mac dialog 
-     * @param macMessage    Message of the mac dialog
-     * @return              True if OK, else false if Cancel
-     */
-    public static boolean showConfirmDialog(String winTitle, String winMessage, String macTitle, String macMessage) {
-        if (Alchemy.PLATFORM == MACOSX) {
-            return showConfirmDialog(macTitle, macMessage);
-        } else {
-            return showConfirmDialog(winTitle, winMessage);
-        }
-    }
-
     /** Show a confirmation dialog specific to the OS style
      *  The title and message are taken from the localised Alchemy bundle
      * 
@@ -699,6 +668,53 @@ public class AlcUtil implements AlcConstants {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /** Show a confirmation dialog specific to the OS style 
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param title     Title of the dialog
+     * @param message   Message of the dialog
+     * @return          True if OK, else false if Cancel
+     */
+    public static boolean showConfirmDialogFromBundle(String title, String message) {
+        String bundleTitle = Alchemy.bundle.getString(title);
+        String bundleMessage = Alchemy.bundle.getString(message);
+        return showConfirmDialog(bundleTitle, bundleMessage);
+    }
+
+    /** Show a confirmation dialog specific to the OS style 
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param winTitle      Title of the windows dialog
+     * @param winMessage    Message of the windows dialog
+     * @param macTitle      Title of the mac dialog 
+     * @param macMessage    Message of the mac dialog
+     * @return              True if OK, else false if Cancel
+     */
+    public static boolean showConfirmDialog(String winTitle, String winMessage, String macTitle, String macMessage) {
+        if (Alchemy.PLATFORM == MACOSX) {
+            return showConfirmDialog(macTitle, macMessage);
+        } else {
+            return showConfirmDialog(winTitle, winMessage);
+        }
+    }
+
+    /** Show a confirmation dialog specific to the OS style 
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param winTitle      Title of the windows dialog
+     * @param winMessage    Message of the windows dialog
+     * @param macTitle      Title of the mac dialog 
+     * @param macMessage    Message of the mac dialog
+     * @return              True if OK, else false if Cancel
+     */
+    public static boolean showConfirmDialogFromBundle(String winTitle, String winMessage, String macTitle, String macMessage) {
+        if (Alchemy.PLATFORM == MACOSX) {
+            return showConfirmDialogFromBundle(macTitle, macMessage);
+        } else {
+            return showConfirmDialogFromBundle(winTitle, winMessage);
         }
     }
 

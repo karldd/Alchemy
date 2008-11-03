@@ -182,6 +182,7 @@ public class Alchemy implements AlcConstants {
 
             if (PLATFORM == MACOSX) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
+                //System.setProperty("apple.awt.draggableWindowBackground", "true");
                 //System.setProperty("com.apple.mrj.application.growbox.intrudes","false");
                 UIManager.setLookAndFeel("ch.randelshofer.quaqua.QuaquaLookAndFeel");
 
