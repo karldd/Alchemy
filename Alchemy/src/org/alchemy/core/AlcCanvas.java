@@ -56,6 +56,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private Color bgColour;
     /** Old colour set when the colours are swapped */
     private Color oldColour;
+    /** Colour used for the background of the window */
+    private Color transColour;
     /** Swap state - true if the background is currently swapped in */
     private boolean backgroundActive = false;
     /** 'Redraw' on or off **/
@@ -132,6 +134,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.bgColour = new Color(Alchemy.preferences.bgColour);
         this.colour = new Color(Alchemy.preferences.colour);
 
+        if (Alchemy.PLATFORM == Alchemy.MACOSX) {
+            transColour = new Color(0, 0, 0, 13);
+        } else {
+            transColour = TRANSPARENT;
+        }
+
         addMouseListener(this);
         addMouseMotionListener(this);
 
@@ -172,8 +180,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             g2.drawImage(image, imageLocation.x, imageLocation.y, null);
         } else {
             // Paint background.
-            g2.setColor(bgColour);
+            //g2.setColor(bgColour);
+            //g2.drawRect(0, 0, w, h);
+            if (Alchemy.window.isTransparent()) {
+                g2.setColor(transColour);
+            } else {
+                g2.setColor(bgColour);
+            }
             g2.fillRect(0, 0, w, h);
+
         }
 
         if (smoothing) {
@@ -293,9 +308,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      */
     void setDrawUnder(boolean drawUnder) {
         this.drawUnder = drawUnder;
-        // Update the canvasImage to be transparent
-        canvasImage = renderCanvas(true, true);
-
+        updateCanvasImage(true);
     }
 
     /** Get the draw under state
@@ -303,6 +316,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      */
     boolean getDrawUnder() {
         return this.drawUnder;
+    }
+
+    /** Update the canvasImage with transparency if required 
+     * 
+     * @param transparency
+     */
+    void updateCanvasImage(boolean transparency) {
+        canvasImage = renderCanvas(true, true);
     }
 
     /** Set Smoothing (AntiAliasing) on or off
@@ -444,12 +465,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         // Add the createShapes and affectShapes to the main array
         // Add to the bottom if drawUnder is on
         if (drawUnder) {
-            for (int i = 0; i < createShapes.size(); i++) {
-                shapes.add(0, createShapes.get(i));
-            }
-            for (int i = 0; i < affectShapes.size(); i++) {
-                shapes.add(0, affectShapes.get(i));
-            }
+            shapes.addAll(0, createShapes);
+            shapes.addAll(0, affectShapes);
             // Refresh the canvasImage after the shapes have been added
             // to keep the ordering correct
             createShapes.clear();
@@ -458,13 +475,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
         // Otherwise add to the top
         } else {
-            canvasImage = renderCanvas(false);
-            for (int i = 0; i < createShapes.size(); i++) {
-                shapes.add(createShapes.get(i));
+            // If the window is transparent
+            if (Alchemy.window.isTransparent()) {
+                canvasImage = renderCanvas(true, true);
+            } else {
+                canvasImage = renderCanvas(false);
             }
-            for (int i = 0; i < affectShapes.size(); i++) {
-                shapes.add(affectShapes.get(i));
-            }
+            shapes.addAll(createShapes);
+            shapes.addAll(affectShapes);
             createShapes.clear();
             affectShapes.clear();
         }
