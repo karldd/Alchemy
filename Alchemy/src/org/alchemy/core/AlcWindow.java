@@ -22,6 +22,7 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
+import java.lang.reflect.Method;
 
 /**
  * AlcWindow
@@ -126,8 +127,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             }
         //}
         }
-
-
 
         // LAYERED PANE
         JLayeredPane layeredPane = new JLayeredPane();
@@ -347,39 +346,72 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     public void setTransparent(boolean transparent) {
 
         // TODO - Test this on Windows
-        
+
         if (this.transparent != transparent) {
             this.transparent = transparent;
-            Rectangle bounds = this.getBounds();
+//            Rectangle bounds = this.getBounds();
             //hide everything
-            this.setVisible(false);
+//            this.setVisible(false);
             //remove the frame from being displayable.
             //this.dispose();
 
             Alchemy.canvas.updateCanvasImage(this.transparent);
             Alchemy.canvas.repaint();
 
+
+            setAlpha(0.5f);
+
             // MAC
-            if (Alchemy.PLATFORM == MACOSX) {
-                com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
-                // TODO - Figure out why the drop shadow is lost on mac
+            //if (Alchemy.PLATFORM == MACOSX) {
+            //com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
+            // TODO - Figure out why the drop shadow is lost on mac
             //this.setBounds(bounds);
             //this.setUndecorated(false);
 
-            }
-            // Finalize window layout
-            //this.pack();
-            this.setVisible(true);
-            //this.validate();
-            
-            resizeWindow();
+            //}
 
-            // NON-MAC
-            if (Alchemy.PLATFORM != MACOSX) {
-                com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
-            }
+            //com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
+
+            //this.setBackground(new Color(0, 0, 0, 0));
+
+
+            // Finalize window layout
+//            this.pack();
+
+
+            //Shape mask = new Area(new Ellipse2D.Float(0, 0, 150, 150));
+            //WindowUtils.setWindowMask(frame, mask);
+//            if (WindowUtils.isWindowAlphaSupported()) {
+//                WindowUtils.setWindowAlpha(this, .7f);
+//            }
+
+            //System.out.println(com.sun.jna.examples.WindowUtils.isWindowAlphaSupported());
+
+
+//            this.setVisible(true);
+        //this.validate();
+
+        //resizeWindow();
+
+
+
+        // NON-MAC
+//            if (Alchemy.PLATFORM != MACOSX) {
+//                com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
+//            }
         }
 
+    }
+
+    private void setAlpha(float alpha) {
+        try {
+            //com.sun.awt.AWTUtilities.setWindowOpacity(this, 0.0f);
+            Class awtutil = Class.forName("com.sun.awt.AWTUtilities");
+            Method setWindowOpaque = awtutil.getMethod("setWindowOpacity", Window.class, float.class);
+            setWindowOpaque.invoke(null, this, (float) alpha);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
     //////////////////////////////////////////////////////////////
     // PALETTE

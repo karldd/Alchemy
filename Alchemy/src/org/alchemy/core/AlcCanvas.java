@@ -134,11 +134,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.bgColour = new Color(Alchemy.preferences.bgColour);
         this.colour = new Color(Alchemy.preferences.colour);
 
-        if (Alchemy.PLATFORM == Alchemy.MACOSX) {
-            transColour = new Color(0, 0, 0, 13);
-        } else {
-            transColour = TRANSPARENT;
-        }
+//        if (Alchemy.PLATFORM == Alchemy.MACOSX) {
+            //transColour = new Color(0, 0, 0, 13);
+            transColour = new Color(0, 0, 0, 10);
+//        } else {
+            //transColour = TRANSPARENT;
+//        }
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -187,7 +188,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
             } else {
                 g2.setColor(bgColour);
             }
-            g2.fillRect(0, 0, w, h);
+            //g2.fillRect(0, 0, w, h);
 
         }
 
