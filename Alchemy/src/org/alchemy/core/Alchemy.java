@@ -195,6 +195,9 @@ public class Alchemy implements AlcConstants {
                 UIManager.put("OptionPane.css", css);
 
             } else {
+//                if(PLATFORM == WINDOWS){
+//                    System.setProperty("sun.java2d.noddraw", "true");
+//                }
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
 
