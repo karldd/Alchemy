@@ -104,13 +104,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     // IMAGE
     //////////////////////////////////////////////////////////////
     /** An image of the canvas drawn behind active shapes */
-    private BufferedImage canvasImage;
+    private Image canvasImage;
     /** Image than can be drawn on the canvas */
-    private BufferedImage image;
+    private Image image;
     /** Display the Image or not */
     private boolean imageDisplay = false;
     /** Position to display the image */
     private Point imageLocation = new Point(0, 0);
+    /** An image used to fake transparency in fullscreen mode */
+    private Image transparentImage;
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
@@ -135,10 +137,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.colour = new Color(Alchemy.preferences.colour);
 
 //        if (Alchemy.PLATFORM == Alchemy.MACOSX) {
-            //transColour = new Color(0, 0, 0, 13);
-            transColour = new Color(0, 0, 0, 10);
+        //transColour = new Color(0, 0, 0, 13);
+        transColour = new Color(0, 0, 0, 10);
 //        } else {
-            //transColour = TRANSPARENT;
+        //transColour = TRANSPARENT;
 //        }
 
         addMouseListener(this);
@@ -177,20 +179,24 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         int w = visibleRect.width;
         int h = visibleRect.height;
 
-        if (imageDisplay && image != null) {
-            g2.drawImage(image, imageLocation.x, imageLocation.y, null);
-        } else {
-            // Paint background.
-            //g2.setColor(bgColour);
-            //g2.drawRect(0, 0, w, h);
-            if (Alchemy.window.isTransparent()) {
-                g2.setColor(transColour);
-            } else {
-                g2.setColor(bgColour);
-            }
-            //g2.fillRect(0, 0, w, h);
+        // Draw the 'fake' Transparent Image
+        if (Alchemy.window.isTransparent() && transparentImage != null) {
+            g2.drawImage(transparentImage, 0, 0, null);
 
+            // Draw the image if present
+            if (imageDisplay && image != null) {
+                g2.drawImage(image, imageLocation.x, imageLocation.y, null);
+            }
+        } else {
+            // Draw the image if present
+            if (imageDisplay && image != null) {
+                g2.drawImage(image, imageLocation.x, imageLocation.y, null);
+            }
+            // Paint background.
+            g2.setColor(bgColour);
+            g2.fillRect(0, 0, w, h);
         }
+
 
         if (smoothing) {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -837,7 +843,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         return this.image;
     }
 
-    /** Check if an mage is defined or not
+    /** Check if an Image is defined or not
      * 
      * @return Image display on or off
      */
@@ -893,13 +899,21 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.imageLocation.y = 0;
     }
 
+    /** Set the transparent image to be drawn behind the canvas
+     * 
+     * @param transparentImage
+     */
+    void setTransparentImage(Image transparentImage) {
+        this.transparentImage = transparentImage;
+    }
+
     /** Create an image from the canvas
      * 
      * @param vectorMode    In vector mode all shapes are rendered from scratch.
      *                      Otherwise the active shapes are rendered on top of the current canvas image
      * @return
      */
-    BufferedImage renderCanvas(boolean vectorMode) {
+    Image renderCanvas(boolean vectorMode) {
         return renderCanvas(vectorMode, false, 1);
     }
 
@@ -910,7 +924,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @param transparent   Ignore the background and create a transparent image with only shapes
      * @return
      */
-    BufferedImage renderCanvas(boolean vectorMode, boolean transparent) {
+    Image renderCanvas(boolean vectorMode, boolean transparent) {
         return renderCanvas(vectorMode, transparent, 1);
     }
 
@@ -921,7 +935,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @param scale         Scale setting to scale the canvas up or down
      * @return
      */
-    BufferedImage renderCanvas(boolean vectorMode, double scale) {
+    Image renderCanvas(boolean vectorMode, double scale) {
         return renderCanvas(vectorMode, false, scale);
     }
 
@@ -933,7 +947,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
      * @param scale         Scale setting to scale the canvas up or down
      * @return
      */
-    BufferedImage renderCanvas(boolean vectorMode, boolean transparent, double scale) {
+    Image renderCanvas(boolean vectorMode, boolean transparent, double scale) {
         // Get the canvas size with out the frame/decorations
         java.awt.Rectangle visibleRect = this.getVisibleRect();
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -1010,14 +1024,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     boolean saveBitmap(File file, String format, boolean transparent) {
         try {
             setGuide(false);
-            BufferedImage buffImage;
+            Image bitmapImage;
             if (transparent) {
-                buffImage = renderCanvas(true, true);
+                bitmapImage = renderCanvas(true, true);
             } else {
-                buffImage = renderCanvas(true, 4.0);
+                bitmapImage = renderCanvas(true, 4.0);
             }
             setGuide(true);
-            ImageIO.write(buffImage, format, file);
+            ImageIO.write((BufferedImage) bitmapImage, format, file);
             return true;
         } catch (IOException ex) {
             System.err.println(ex);

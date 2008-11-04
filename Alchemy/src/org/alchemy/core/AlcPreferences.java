@@ -107,6 +107,8 @@ class AlcPreferences implements AlcConstants {
     Point canvasLocation;
     /** Canvas Window size */
     Dimension canvasSize;
+    /** Transparent Fullscreen mode */
+    boolean transparentFullscreen;
     /** Simplified toolbar for kids */
     boolean simpleToolBar;
     //////////////////////////////////////////////////////////////
@@ -130,6 +132,9 @@ class AlcPreferences implements AlcConstants {
     private void loadPreferences() {
         prefs = Preferences.userNodeForPackage(getClass());
 
+        modulesSet = prefs.getBoolean("Modules Set", false);
+
+
         sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
         sessionPath = prefs.get("Session Path", DESKTOP_DIR);
@@ -141,15 +146,16 @@ class AlcPreferences implements AlcConstants {
 
         shapesPath = prefs.get("Shapes Path", new File("shapes").getAbsolutePath());
 
-
         switchVectorApp = prefs.get("Switch Vector Application", null);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
+
         paletteAttached = prefs.getBoolean("Palette Attached", false);
         paletteLocation = stringToPoint(prefs.get("Palette Location", null));
         canvasLocation = stringToPoint(prefs.get("Canvas Location", null));
         canvasSize = stringToDimension(prefs.get("Canvas Size", null));
+        transparentFullscreen = prefs.getBoolean("Transparent Fullscreen", false);
         simpleToolBar = prefs.getBoolean("Simple ToolBar", false);
-        modulesSet = prefs.getBoolean("Modules Set", false);
+
         smoothing = prefs.getBoolean("Smoothing", true);
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
@@ -158,6 +164,8 @@ class AlcPreferences implements AlcConstants {
 
     /** Save the changes on exit */
     void writeChanges() {
+
+        prefs.putBoolean("Modules Set", modulesSet);
 
         prefs.putBoolean("Recording State", sessionRecordingState);
         prefs.putBoolean("Recording Warning", sessionRecordingWarning);
@@ -169,12 +177,12 @@ class AlcPreferences implements AlcConstants {
         prefs.put("Session File Date Format", sessionFileDateFormat);
 
         prefs.put("Shapes Path", shapesPath);
-        
+
         prefs.putBoolean("Palette Attached", paletteAttached);
         prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
         prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
         prefs.putBoolean("Simple ToolBar", simpleToolBar);
-        prefs.putBoolean("Modules Set", modulesSet);
+        prefs.putBoolean("Transparent Fullscreen", transparentFullscreen);
 
         prefs.putInt("Background Colour", Alchemy.canvas.getBgColour().getRGB());
         prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());

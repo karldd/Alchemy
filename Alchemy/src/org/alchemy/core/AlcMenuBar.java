@@ -202,9 +202,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         viewMenu.add(fullScreenItem);
         
         
-                // Fullscreen
+        // Transparent Fullscreen
         String transparentTitle = getS("transparentTitle");
         transparentItem = new AlcCheckBoxMenuItem();
+        if(Alchemy.window.isTransparent()){
+            transparentItem.setSelected(true);
+        }
         AbstractAction transparentAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {

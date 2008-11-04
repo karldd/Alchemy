@@ -22,7 +22,6 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
-import java.lang.reflect.Method;
 
 /**
  * AlcWindow
@@ -46,8 +45,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     private static final Dimension minWindowSize = new Dimension(640, 400);
     /** Second monitor black out window */
     private static JWindow[] screens;
-    /** Transparent Window */
-    private boolean transparent = false;
 
     public AlcWindow() {
 
@@ -207,6 +204,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // The current monitor where the main window is located
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Rectangle bounds = grapConfig.getBounds();
+        int currentDevice = 0;
 
         //are we actually changing modes.
         if (this.fullscreen != fullscreen) {
@@ -225,6 +223,11 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                         screens[i].dispose();
                     }
                     screens = null;
+                }
+
+                if (Alchemy.preferences.transparentFullscreen) {
+                    Alchemy.canvas.setTransparentImage(null);
+                    Alchemy.canvas.redraw();
                 }
 
                 //hide the frame so we can change it.
@@ -262,10 +265,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                         int index = 0;
                         for (int i = 0; i < devices.length; i++) {
                             Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
-                            //System.out.println(i + " - " + screenBounds);
-                            // If not the current monitor
-                            // make a new full size window for each
+                            // If not the current monitor make a new black window for each
                             if (!screenBounds.equals(bounds)) {
+                                //System.out.println(i + " - " + screenBounds);
                                 screens[index] = new JWindow(this);
                                 screens[index].setBounds(screenBounds);
                                 // Set the window background to black
@@ -276,9 +278,12 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                                 screens[index].setFocusable(false);
                                 screens[index].setVisible(true);
                                 index++;
+                            } else {
+                                currentDevice = i;
                             }
                         }
                     }
+
 
                     // If on a mac and this is the primary monitor
                     // Make room for the mac menubar
@@ -292,6 +297,32 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     this.setVisible(false);
                     //remove the frame from being displayable.
                     this.dispose();
+
+                    // If the current monitor and transparency is on
+                    if (Alchemy.preferences.transparentFullscreen) {
+
+                        Robot robot = null;
+                        if (devices[currentDevice] != null) {
+                            robot = new Robot(devices[currentDevice]);
+                        } else {
+                            robot = new Robot();
+                        }
+                        // Reset the location to zero
+                        Rectangle newBounds = new Rectangle(0, 0, bounds.width, bounds.height);
+                        Image screenCapture = null;
+                        try {
+                            screenCapture = robot.createScreenCapture(newBounds);
+                        } catch (IllegalArgumentException ex) {
+                            // If an error is thrown then use the old bounds
+                            screenCapture = robot.createScreenCapture(bounds);
+                            ex.printStackTrace();
+                        }
+                        Alchemy.canvas.setTransparentImage(screenCapture);
+                        Alchemy.canvas.updateCanvasImage(true);
+                        Alchemy.canvas.repaint();
+
+                    }
+
                     //remove borders around the frame
                     this.setUndecorated(true);
 
@@ -336,83 +367,30 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * @return  Transparent mode or not
      */
     public boolean isTransparent() {
-        return transparent;
+        return Alchemy.preferences.transparentFullscreen;
     }
 
-    /** Set the transparent mode of the window
+    /** Set the transparent mode of the window for fullscreen
      * 
-     * @param transparent   True to enter transparent mode, false to exit
+     * @param transparent   True to enter transparent mode for fullscreen, false to exit
      */
     public void setTransparent(boolean transparent) {
-
-        // TODO - Test this on Windows
-
-        if (this.transparent != transparent) {
-            this.transparent = transparent;
-//            Rectangle bounds = this.getBounds();
-            //hide everything
-//            this.setVisible(false);
-            //remove the frame from being displayable.
-            //this.dispose();
-
-            Alchemy.canvas.updateCanvasImage(this.transparent);
-            Alchemy.canvas.repaint();
-
-
-            setAlpha(0.5f);
-
-            // MAC
-            //if (Alchemy.PLATFORM == MACOSX) {
-            //com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
-            // TODO - Figure out why the drop shadow is lost on mac
-            //this.setBounds(bounds);
-            //this.setUndecorated(false);
-
-            //}
-
-            //com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
-
-            //this.setBackground(new Color(0, 0, 0, 0));
-
-
-            // Finalize window layout
-//            this.pack();
-
-
-            //Shape mask = new Area(new Ellipse2D.Float(0, 0, 150, 150));
-            //WindowUtils.setWindowMask(frame, mask);
-//            if (WindowUtils.isWindowAlphaSupported()) {
-//                WindowUtils.setWindowAlpha(this, .7f);
-//            }
-
-            //System.out.println(com.sun.jna.examples.WindowUtils.isWindowAlphaSupported());
-
-
-//            this.setVisible(true);
-        //this.validate();
-
-        //resizeWindow();
-
-
-
-        // NON-MAC
-//            if (Alchemy.PLATFORM != MACOSX) {
-//                com.sun.jna.examples.WindowUtils.setWindowTransparent(this, this.transparent);
-//            }
-        }
-
+        Alchemy.preferences.transparentFullscreen = transparent;
     }
 
-    private void setAlpha(float alpha) {
-        try {
-            //com.sun.awt.AWTUtilities.setWindowOpacity(this, 0.0f);
-            Class awtutil = Class.forName("com.sun.awt.AWTUtilities");
-            Method setWindowOpaque = awtutil.getMethod("setWindowOpacity", Window.class, float.class);
-            setWindowOpaque.invoke(null, this, (float) alpha);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
+//
+//    /** Reflection to call a Java 6_10 class that sets the window transparency */
+//    private void setAlpha(float alpha) {
+//        try {
+//            //com.sun.awt.AWTUtilities.setWindowOpacity(this, 0.0f);
+//            Class awtutil = Class.forName("com.sun.awt.AWTUtilities");
+//            Method setWindowOpaque = awtutil.getMethod("setWindowOpacity", Window.class, float.class);
+//            setWindowOpaque.invoke(null, this,alpha);
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+//    
     //////////////////////////////////////////////////////////////
     // PALETTE
     //////////////////////////////////////////////////////////////
