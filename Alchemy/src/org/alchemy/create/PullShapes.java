@@ -19,7 +19,10 @@
 package org.alchemy.create;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 /**
@@ -31,18 +34,21 @@ public class PullShapes extends AlcModule implements AlcConstants {
     private AlcToolBarSubSection subToolBarSection;
     //
     private AlcShape[] shapes;
-    private boolean pathsLoaded = false;
-    private int pathNum = 0;
-    //
-    private int baseMaxPoint = 0;
-    private int baseHalfPoint = 0;
-    private int basePointCount = 0;
-    private AlcShape baseShape = null;
-    private Point[] basePoints;
-    //
-    private AlcShape currentShape = null;
-    private Point oldP;
-
+    private boolean pathsLoaded = false;    // Timing
+    private long mouseDelayGap = 51;
+    private boolean mouseFirstRun = true;
+    private long mouseDelayTime;
+    private boolean mouseDown = false;
+//    private int pathNum = 0;
+//    //
+//    private int baseMaxPoint = 0;
+//    private int baseHalfPoint = 0;
+//    private int basePointCount = 0;
+//    private AlcShape baseShape = null;
+//    private Point[] basePoints;
+//    //
+//    private AlcShape currentShape = null;
+//    private Point oldP;
     public PullShapes() {
     }
 
@@ -63,7 +69,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
         subToolBarSection = new AlcToolBarSubSection(this);
 
 
-        AlcSubButton directoryButton = new AlcSubButton("Reload", null);
+        AlcSubButton directoryButton = new AlcSubButton("Reload", AlcUtil.getUrlPath("reload.png", getClassLoader()));
 
         directoryButton.addActionListener(
                 new ActionListener() {
@@ -73,6 +79,23 @@ public class PullShapes extends AlcModule implements AlcConstants {
                     }
                 });
         subToolBarSection.add(directoryButton);
+
+
+        // Spacing Slider
+        int initialSliderValue = 25;
+        final AlcSubSlider spacingSlider = new AlcSubSlider("Spacing", 0, 100, initialSliderValue);
+        spacingSlider.setToolTipText("Adjust the spacing interval");
+        spacingSlider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!spacingSlider.getValueIsAdjusting()) {
+                            int value = spacingSlider.getValue();
+                            mouseDelayGap = 1 + value * 2;
+                        }
+                    }
+                });
+        subToolBarSection.add(spacingSlider);
     }
 
     private void loadShapes() {
@@ -85,7 +108,10 @@ public class PullShapes extends AlcModule implements AlcConstants {
     private void addRandomShape(MouseEvent e) {
         int rand = (int) math.random(shapes.length);
         AlcShape movedShape = (AlcShape) shapes[rand].clone();
-        movedShape.move(e.getX(), e.getY());
+        Rectangle bounds = movedShape.getBounds();
+        int x = e.getX() - (bounds.width >> 1);
+        int y = e.getY() - (bounds.height >> 1);
+        movedShape.move(x, y);
         movedShape.setupDefaultAttributes();
         canvas.createShapes.add(movedShape);
         canvas.redraw();
@@ -96,6 +122,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
         if (pathsLoaded) {
 
+            mouseDelayTime = System.currentTimeMillis();
             addRandomShape(e);
 
 
@@ -118,7 +145,13 @@ public class PullShapes extends AlcModule implements AlcConstants {
     public void mouseDragged(MouseEvent e) {
         if (pathsLoaded) {
 
-            addRandomShape(e);
+            if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
+                mouseDelayTime = System.currentTimeMillis();
+                //System.out.println(e.getPoint());
+                addRandomShape(e);
+            }
+
+
 
 //            Point p = e.getPoint();
 //            if (basePointCount < baseHalfPoint) {
