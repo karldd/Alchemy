@@ -287,7 +287,7 @@
         <launch4j>
             <config 
                 dontWrapJar="false"
-                headerType="console" 
+                headerType="gui" 
                 jarPath="${dist.jar}" 
                 outfile="${dist.dir}/Alchemy.exe" 
                 errTitle="Java Install Required"
