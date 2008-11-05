@@ -176,6 +176,9 @@
         <copy todir="${dist.dir}/shapes">
             <fileset dir="${basedir}/shapes" />
         </copy>
+        <!-- Delete the lib directory
+             Required libs are added manually based on the platform -->
+        <delete dir="${dist.dir}/lib"/>
         
         
         <!-- Detect the OS -->
