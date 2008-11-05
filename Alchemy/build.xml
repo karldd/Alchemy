@@ -156,7 +156,17 @@
                 <include name="**/*.zip"/>
                 <exclude name="**/*core*"/>
             </fileset>
-        </copy>     
+        </copy>  
+        
+        <!-- Delete the old modules then copy the new ones to the base directory -->
+        <delete>
+            <fileset dir="${basedir}/modules" includes="*.zip"/>
+        </delete>
+        <copy todir="${basedir}/modules">
+            <fileset dir="${build.dir}/modules">
+                <include name="*.zip"/>
+            </fileset>
+        </copy>  
                
         <!-- Copy the manual into the dist directory -->
         <copy file="${basedir}/res/Alchemy.pdf" todir="${dist.dir}"/>
