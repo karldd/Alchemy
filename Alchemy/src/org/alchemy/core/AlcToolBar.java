@@ -456,13 +456,17 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 group.add(createMenuItem);
                 createButton.addItem(createMenuItem);
 
-                // Range from 0 - 8 mapped to keys 1 - 9
+                // The first 9 modules are mapped to keys 1 - 9
                 if (createCount < 9) {
                     Alchemy.shortcuts.setShortcut(createMenuItem, zero + createCount + 1, currentModule.getName(), createMenuItemAction);
 
-                // Last key is mapped to 0
+                // The 10th module is mapped to the 0 key
                 } else if (createCount == 9) {
                     Alchemy.shortcuts.setShortcut(createMenuItem, zero, currentModule.getName(), createMenuItemAction);
+
+                // The next 9 modules are mapped to keys 1 - 9 with the ALT key
+                } else if (createCount > 9) {
+                    Alchemy.shortcuts.setShortcut(createMenuItem, zero + (createCount - 9), currentModule.getName(), createMenuItemAction, KeyEvent.ALT_MASK);
                 }
                 createCount++;
             }
@@ -525,6 +529,12 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                     // Range from 0 - 8 mapped to keys 1 - 9
                     if (affectCount < 9) {
                         Alchemy.shortcuts.setShortcut(affectMenuItem, zero + affectCount + 1, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                    // The 10th module is mapped to the 0 key
+                    } else if (affectCount == 9) {
+                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                    // The next 9 modules are mapped to keys 1 - 9 with the SHIFT key
+                    } else if (affectCount > 9) {
+                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero + (affectCount - 9), currentModule.getName(), affectMenuItemAction, KeyEvent.SHIFT_MASK);
                     }
                     affectCount++;
                 }
@@ -827,7 +837,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             // TODO - Check there is enough room for the subtoolbar
             // If there is overflow show a little >> arrow to indicate more content
             // When the user clicks, the toolbar is displayed in a popup?
-            
+
 //            int layoutWidth = subToolBar.getLayoutWidth();
 //            System.out.println("SubToolbar layout width:" + layoutWidth);
 //            if (layoutWidth > windowSize.width) {
@@ -1007,9 +1017,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         fgbgButton.setSelectedIcon(new ImageIcon(swapOn));
     }
 
-    
     @Override
-    void refreshTransparencySlider(){
+    void refreshTransparencySlider() {
         transparencySlider.setValue(Alchemy.canvas.getAlpha());
     }
 }
