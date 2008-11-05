@@ -108,7 +108,7 @@ public class Repeat extends AlcModule {
     }
 
     private void repeatShape(Point pt, int activeShape) {
-        AlcShape originalShape = (AlcShape) canvas.shapes.get(activeShape);
+        AlcShape originalShape = canvas.shapes.get(activeShape);
         // Make a completely new shape
         AlcShape shape = (AlcShape) originalShape.clone();
         GeneralPath path = shape.getPath();
@@ -160,7 +160,7 @@ public class Repeat extends AlcModule {
     private void mouseInside(Point p) {
         int currentActiveShape = -1;
         for (int i = canvas.shapes.size() - 1; i >= 0; i--) {
-            AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
+            AlcShape thisShape = canvas.shapes.get(i);
             GeneralPath currentPath = thisShape.getPath();
             Rectangle bounds = new Rectangle(currentPath.getBounds());
             // If already repeating a shape
