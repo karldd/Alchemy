@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="org.alchemy.affect.shapeSwap" version="1.0.0">
+    
+    <requires> 
+        <import plugin-id="org.alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="shapeSwap" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="org.alchemy.core" point-id="Affect" id="shapeSwapAffect"> 
+        <parameter id="class" value="org.alchemy.affect.ShapeSwap"/> 
+        <parameter id="name" value="Shape Swap"/> 
+        <parameter id="description" value="Swap shapes with other users" />
+        <parameter id="icon" value="icon.gif" />
+    </extension>
+    
+</plugin>

@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="org.alchemy.affect.repeat" version="1.0.3">
+    
+    <requires> 
+        <import plugin-id="org.alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="repeat" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="org.alchemy.core" point-id="Affect" id="repeatAffect"> 
+        <parameter id="class" value="org.alchemy.affect.Repeat"/> 
+        <parameter id="name" value="Repeat"/> 
+        <parameter id="description" value="Repeat existing shapes" />
+        <parameter id="icon" value="icon.png" />
+    </extension>
+    
+</plugin>

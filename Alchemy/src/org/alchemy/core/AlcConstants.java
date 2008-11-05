@@ -22,7 +22,6 @@ package org.alchemy.core;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
@@ -55,19 +54,19 @@ public interface AlcConstants {
     /** Version of Java that's in use, whether 1.1 or 1.3 or whatever stored as a float */
     static final float JAVA_VERSION = new Float(JAVA_VERSION_NAME.substring(0, 3)).floatValue();
     /** Current platform in use. Equivalent to System.getProperty("os.name"), just used internally */
-    static String PLATFORM_NAME = System.getProperty("os.name");
+    static final String PLATFORM_NAME = System.getProperty("os.name");
     /** The users name */
-    static String USER_NAME = System.getProperty("user.name");
+    static final String USER_NAME = System.getProperty("user.name");
     /** File Separator */
-    static String FILE_SEPARATOR = System.getProperty("file.separator");
+    static final String FILE_SEPARATOR = System.getProperty("file.separator");
     /** The users home directory */
-    static String HOME_DIR = System.getProperty("user.home");
+    static final String HOME_DIR = System.getProperty("user.home");
     /** The users destop directory */
-    static String DESKTOP_DIR = System.getProperty("user.home") + FILE_SEPARATOR + "Desktop";
+    static final String DESKTOP_DIR = System.getProperty("user.home") + FILE_SEPARATOR + "Desktop";
     /** The default temp directory */
-    static String TEMP_DIR = System.getProperty("java.io.tmpdir");
+    static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
     /** Default Locale */
-    static Locale LOCALE = Locale.getDefault();
+    static final Locale LOCALE = Locale.getDefault();
     //
     //////////////////////////////////////////////////////////////
     // MATH CONSTANTS

@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+
+<plugin id="org.alchemy.create.typeShapes" version="1.0.6">
+    
+    <requires> 
+        <import plugin-id="org.alchemy.core"/> 
+    </requires> 
+    
+    <runtime>
+        <library id="typeShapes" path="/" type="code">
+            <export prefix="*" /> 
+        </library>
+        <library type="resources" path="data/" id="data" />
+    </runtime>
+    
+    <extension plugin-id="org.alchemy.core" point-id="Create" id="typeShapesCreate"> 
+        <parameter id="class" value="org.alchemy.create.TypeShapes"/> 
+        <parameter id="name" value="Type Shapes"/> 
+        <parameter id="description" value="Shapes generated from type characters" />
+        <parameter id="icon" value="icon.png" />
+    </extension>
+    
+</plugin>
