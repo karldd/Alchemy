@@ -246,7 +246,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                 // Turn on the menubar
                 if (Alchemy.PLATFORM == MACOSX) {
-                    new fullscreen.NativeOSX().setVisible(true);
+                    AlcNative.setMenubarVisible(true);
                 }
 
                 this.setVisible(true);
@@ -332,7 +332,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                     // Turn off the menubar
                     if (Alchemy.PLATFORM == MACOSX) {
-                        new fullscreen.NativeOSX().setVisible(false);
+                        AlcNative.setMenubarVisible(false);
                     }
 
                     this.setVisible(true);                   //show the frame

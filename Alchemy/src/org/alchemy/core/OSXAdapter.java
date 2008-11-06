@@ -64,12 +64,6 @@ public class OSXAdapter implements InvocationHandler {
     protected Method targetMethod;
     protected String proxySignature;
     static Object macOSXApplication;
-    
-
-    static {
-        // Ensure hide menubar native JNI library is loaded
-        System.loadLibrary("hide_menubar");
-    }
 
     // Pass this method an Object and Method equipped to perform application shutdown logic
     // The method passed should return a boolean stating whether or not the quit should occur
