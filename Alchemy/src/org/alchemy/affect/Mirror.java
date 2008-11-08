@@ -106,7 +106,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     public void actionPerformed(ActionEvent e) {
                         selectAxis = true;
                         firstSelect = true;
-                        canvas.setCreateMouseEvents(false);
+                        canvas.setCreateEvents(false);
                         canvas.commitShapes();
                     }
                 });
@@ -285,7 +285,7 @@ public class Mirror extends AlcModule implements AlcConstants {
             horizontalAxis = e.getX();
             verticalAxis = e.getY();
             selectAxis = false;
-            canvas.setCreateMouseEvents(true);
+            canvas.setEvents(true);
             canvas.redraw();
         }
 
