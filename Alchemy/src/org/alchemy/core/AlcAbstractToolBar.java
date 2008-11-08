@@ -6,7 +6,6 @@ package org.alchemy.core;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import javax.swing.JPanel;
 
 /**
@@ -54,6 +53,9 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     }
 
     void queueColourButtonRefresh() {
+    }
+    
+    void toggleColourButton(){
     }
 
     void refreshTransparencySlider() {

@@ -144,7 +144,7 @@ public class Shapes extends AlcModule implements AlcConstants {
     @Override
     public void mouseDragged(MouseEvent e) {
         if (!straightShapes) {
-
+           
             Point p = e.getPoint();
             // Need to test if it is null incase the shape has been auto-cleared
             if (canvas.getCurrentCreateShape() != null) {

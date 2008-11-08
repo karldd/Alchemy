@@ -113,6 +113,16 @@ public interface AlcConstants {
             "Blank");
     //
     //////////////////////////////////////////////////////////////
+    // PEN TYPES
+    //////////////////////////////////////////////////////////////
+    /** Pen Type: STYLUS (1)  */
+    static final int STYLUS = 1;
+    /** Pen Type: ERASER (2)  */
+    static final int ERASER = 2;
+    /** Pen Type: CURSOR (3)  */
+    static final int CURSOR = 3;
+    //
+    //////////////////////////////////////////////////////////////
     // FONTS 
     //////////////////////////////////////////////////////////////
     static final Font FONT_SMALL = new Font("sansserif", Font.PLAIN, 10);

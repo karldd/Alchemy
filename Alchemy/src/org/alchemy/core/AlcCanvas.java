@@ -43,13 +43,7 @@ import java.awt.geom.AffineTransform;
 import java.io.*;
 
 // JPEN
-import jpen.PButtonEvent;
-import jpen.PKind;
-import jpen.PKindEvent;
-import jpen.PLevel;
-import jpen.PLevelEvent;
-import jpen.PScrollEvent;
-import jpen.PenManager;
+import jpen.*;
 import jpen.event.PenListener;
 
 /** 
@@ -57,7 +51,7 @@ import jpen.event.PenListener;
  * Stores all shapes created and handles all graphics related stuff
  * Think saving pdfs, printing, and of course displaying! 
  */
-public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListener, MouseListener, PenListener, Printable {
+public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, PenListener, Printable {
 
     //////////////////////////////////////////////////////////////
     // GLOBAL SETTINGS
@@ -66,24 +60,33 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     private Color bgColour;
     /** Old colour set when the colours are swapped */
     private Color oldColour;
-    /** Colour used for the background of the window */
-    private Color transColour;
     /** Swap state - true if the background is currently swapped in */
     private boolean backgroundActive = false;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
-    /** MouseEvents on or off - stop mouse events to the modules when inside the UI */
-    private boolean mouseEvents = true;
-    private boolean createMouseEvents = true;
-    private boolean affectMouseEvents = true;
-    /** Mouse down or up */
-    private boolean mouseDown = false;
     /** Smoothing on or off */
     boolean smoothing;
     /** Boolean used by the timer to determine if there has been canvas activity */
     private boolean canvasChanged = false;
     /** Draw under the other shapes on the canvas */
     private boolean drawUnder = false;
+    //////////////////////////////////////////////////////////////
+    // PEN SETTINGS
+    //////////////////////////////////////////////////////////////
+    /** Events on or off - stop mouse/pen events to the modules when inside the UI */
+    private boolean events = true;
+    private boolean createEvents = true;
+    private boolean affectEvents = true;
+    /** Pen down or up */
+    private boolean penDown = false;
+    /** The type of pen - STYLUS / ERASER / CURSOR */
+    private int penType = CURSOR;
+    /** Pen Pressure if available */
+    private float penPressure = 0F;
+    /** Pen Tilt X if available */
+    private float penTiltX = 0F;
+    /** Pen Tilt Y if available */
+    private float penTiltY = 0F;
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
@@ -145,13 +148,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.smoothing = Alchemy.preferences.smoothing;
         this.bgColour = new Color(Alchemy.preferences.bgColour);
         this.colour = new Color(Alchemy.preferences.colour);
-
-//        if (Alchemy.PLATFORM == Alchemy.MACOSX) {
-        //transColour = new Color(0, 0, 0, 13);
-        transColour = new Color(0, 0, 0, 10);
-//        } else {
-        //transColour = TRANSPARENT;
-//        }
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -377,32 +373,60 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.canvasChanged = false;
     }
 
-    /** Turn on/off mouseEvents being sent to modules
-     * @param mouseEvents 
+    /** Turn on/off Events being sent to modules
+     * @param events 
      */
-    public void setMouseEvents(boolean mouseEvents) {
-        this.mouseEvents = mouseEvents;
+    public void setEvents(boolean events) {
+        this.events = events;
     }
 
-    /** Turn on/off mouseEvents being sent to create modules
-     * @param createMouseEvents 
+    /** Turn on/off Events being sent to create modules
+     * @param createEvents 
      */
-    public void setCreateMouseEvents(boolean createMouseEvents) {
-        this.createMouseEvents = createMouseEvents;
+    public void setCreateEvents(boolean createEvents) {
+        this.createEvents = createEvents;
     }
 
-    /** Turn on/off mouseEvents being sent to affect modules
-     * @param affectMouseEvents 
+    /** Turn on/off Events being sent to affect modules
+     * @param affectEvents 
      */
-    public void setAffectMouseEvents(boolean affectMouseEvents) {
-        this.affectMouseEvents = affectMouseEvents;
+    public void setAffectEvents(boolean affectEvents) {
+        this.affectEvents = affectEvents;
     }
 
-    /** Mouse (or pen for that matter) down or up
-     * @return  The state of the mouse/pen
+    /** Pen (or mouse) down or up
+     * @return  The state of the pen or mouse
      */
-    public boolean isMouseDown() {
-        return mouseDown;
+    public boolean isPenDown() {
+        return penDown;
+    }
+
+    /** Pen Pressure if available 
+     * @return
+     */
+    public float getPenPressure() {
+        return penPressure;
+    }
+
+    /** Pen Tilt X if available 
+     * @return
+     */
+    public float getPenTiltX() {
+        return penTiltX;
+    }
+
+    /** Pen Tilt Y if available 
+     * @return
+     */
+    public float getPenTiltY() {
+        return penTiltY;
+    }
+
+    /** The type of pen being used
+     * @return  STYLUS (1) /  ERASER (2) / CURSOR (3) or zero for unknown
+     */
+    public int getPenType() {
+        return penType;
     }
 
     /** Resize the canvas - called when the window is resized
@@ -699,23 +723,24 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
     }
 
-    /** Toggle the colour between black and white */
-    void toggleColour() {
-        if (backgroundActive) {
-            colour = new Color(oldColour.getRed(), oldColour.getGreen(), oldColour.getBlue(), alpha);
-            backgroundActive = false;
-        } else {
-            oldColour = colour;
-            colour = new Color(bgColour.getRGB());
-            backgroundActive = true;
-        }
-    }
-
     /** Whether the background is active or not
      * @return State of the background
      */
     public boolean isBackgroundActive() {
         return backgroundActive;
+    }
+
+    public void setBackgroundActive(boolean backgroundActive) {
+        // Save the foreground colour and bring the bg colour to the front
+        if (backgroundActive) {
+            oldColour = colour;
+            colour = new Color(bgColour.getRGB());
+            this.backgroundActive = true;
+        } else {
+            // Revert to the old foreground colour
+            colour = new Color(oldColour.getRed(), oldColour.getGreen(), oldColour.getBlue(), alpha);
+            this.backgroundActive = false;
+        }
     }
 
     /** Get the Background Colour
@@ -1295,13 +1320,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         if (!Alchemy.preferences.paletteAttached) {
             Alchemy.toolBar.toggleToolBar(event.getY());
         }
-        if (mouseEvents) {
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseMoved(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1314,20 +1339,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mousePressed(MouseEvent event) {
-        mouseDown = true;
+        penDown = true;
         // Hide the toolbar when clicking on the canvas
         if (!Alchemy.preferences.paletteAttached && Alchemy.toolBar.isToolBarVisible() &&
                 !Alchemy.preferences.simpleToolBar && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
             Alchemy.toolBar.setToolBarVisible(false);
         }
 
-        if (mouseEvents) {
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1340,13 +1365,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mouseClicked(MouseEvent event) {
-        if (mouseEvents) {
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseClicked(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1359,13 +1384,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mouseEntered(MouseEvent event) {
-        if (mouseEvents) {
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseEntered(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1378,13 +1403,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mouseExited(MouseEvent event) {
-        if (mouseEvents) {
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseExited(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1397,14 +1422,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mouseReleased(MouseEvent event) {
-        mouseDown = false;
-        if (mouseEvents) {
+        penDown = false;
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseReleased(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1417,13 +1442,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
     }
 
     public void mouseDragged(MouseEvent event) {
-        if (mouseEvents) {
+        if (events) {
             // Pass to the current create module
-            if (createMouseEvents) {
+            if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mouseDragged(event);
             }
             // Pass to all active affect modules
-            if (affectMouseEvents) {
+            if (affectEvents) {
                 if (Alchemy.plugins.hasCurrentAffects()) {
                     for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
                         if (Alchemy.plugins.currentAffects[i]) {
@@ -1433,6 +1458,46 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
                 }
             }
         }
+    }
+
+    public void penButtonEvent(PButtonEvent ev) {
+    }
+
+    public void penKindEvent(PKindEvent ev) {
+        // Set the current pen type
+        // Changing the background/foreground setting as required
+        if (ev.pen.getKind() == PKind.valueOf(PKind.Type.STYLUS)) {
+            if (backgroundActive) {
+                setBackgroundActive(false);
+                Alchemy.toolBar.toggleColourButton();
+            }
+            penType = STYLUS;
+        } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
+            if (!backgroundActive) {
+                setBackgroundActive(true);
+                Alchemy.toolBar.toggleColourButton();
+            }
+            penType = ERASER;
+        } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
+            penType = CURSOR;
+        } else {
+            penType = 0;
+        }
+    }
+
+    public void penLevelEvent(PLevelEvent ev) {
+        // Register the pen pressure and tilt
+        if (penDown && penType != CURSOR) {
+            penPressure = ev.pen.getLevelValue(PLevel.Type.PRESSURE);
+            penTiltX = ev.pen.getLevelValue(PLevel.Type.TILT_X);
+            penTiltY = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
+        }
+    }
+
+    public void penScrollEvent(PScrollEvent ev) {
+    }
+
+    public void penTock(long availableMillis) {
     }
 
     /** Vector Canvas
@@ -1530,34 +1595,5 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
             g2.dispose();
         }
-    }
-
-    public void penButtonEvent(PButtonEvent ev) {
-        //System.out.println(ev);
-    }
-
-    public void penKindEvent(PKindEvent ev) {
-        //System.out.println(ev);
-    }
-
-    public void penLevelEvent(PLevelEvent ev) {
-        System.out.println(ev);
-        // if this event was not a movement, do nothing
-        if (!ev.isMovement()) {
-            return;
-        // check if the user is using the tablet mouse, or the pen. If it's the mouse, do nothing
-        }
-//        if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
-//            System.out.println("Cursor");
-//            return;
-//        }
-        //System.out.println(ev.pen.getLevelValue(PLevel.Type.PRESSURE));
-    }
-
-    public void penScrollEvent(PScrollEvent ev) {
-    }
-
-    public void penTock(long availableMillis) {
-        //System.out.println("TOCK - available period fraction: " + availableMillis);
     }
 }
