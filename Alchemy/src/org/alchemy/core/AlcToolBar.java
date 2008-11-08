@@ -48,8 +48,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     JPanel toolBars;
     /** Detach toolbar button */
     private JButton detachButton;
-    /** Foreground Background Button */
-    private AlcToggleButton fgbgButton;
     /** Transparency slider */
     private AlcSlider transparencySlider;
     /** Sections within the sub toolbar - either loaded or not */
@@ -62,6 +60,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 //    private int subToolBarRows;
     /** Colour picker - gets updated each time the bg colour is changed */
     AlcColourPicker picker;
+    /** Foreground Background Button - gets updated whent he colours are swapped */
+    AlcToggleButton fgbgButton;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
     //////////////////////////////////////////////////////////////
@@ -350,8 +350,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 } else {
                     fgbgButton.setText(getS("fgTitle"));
                 }
-                Alchemy.canvas.toggleColour();
-                refreshColourButton();
+                Alchemy.canvas.setBackgroundActive(!Alchemy.canvas.isBackgroundActive());
             }
         };
 
@@ -1015,6 +1014,11 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         g.drawRect(6, 6, 17, 17);
 
         fgbgButton.setSelectedIcon(new ImageIcon(swapOn));
+    }
+
+    @Override
+    void toggleColourButton() {
+        fgbgButton.setSelected(!fgbgButton.isSelected());
     }
 
     @Override
