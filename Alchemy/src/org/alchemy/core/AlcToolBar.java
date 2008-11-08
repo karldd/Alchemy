@@ -685,7 +685,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         if (visible != toolBarVisible) {
             this.setVisible(visible);
             toolBarVisible = visible;
-            Alchemy.canvas.setMouseEvents(!visible);
+            Alchemy.canvas.setEvents(!visible);
             if (!visible) {
                 // Be sure to set the cursor back to the cross hair
                 Alchemy.canvas.restoreCursor();
