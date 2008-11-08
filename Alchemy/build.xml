@@ -86,6 +86,7 @@
         <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.JMyron.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.mime-util.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
         
         
         <!-- Copy the module folder over to be built.-->
@@ -245,6 +246,9 @@
 
          <!-- Alchemy Native -->
         <copy file="${basedir}/lib/libAlcNative.jnilib" todir="${mac.bundle}"/>
+        
+        <!-- JPen -->
+        <copy file="${basedir}/lib/jpen/libjpen-2.jnilib" todir="${mac.bundle}"/>
 
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>
@@ -265,6 +269,10 @@
         
         <!-- JMyron -->
         <copy file="${basedir}/lib/jmyron/libJMyron.so" todir="${dist.dir}/lib"/>
+        
+        <!-- JPen -->
+        <copy file="${basedir}/lib/jpen/libjpen-2.so" todir="${dist.dir}/lib"/>
+        
     </target>
     
     
@@ -327,6 +335,9 @@
         <copy file="${basedir}/lib/jmyron/myron_ezcam.dll" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/jmyron/MSVCP71.DLL" todir="${dist.dir}/lib"/>
         <copy file="${basedir}/lib/jmyron/msvcr71.dll" todir="${dist.dir}/lib"/>
+        
+        <!-- JPen -->
+        <copy file="${basedir}/lib/jpen/jpen-2.dll" todir="${dist.dir}/lib"/>
         
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>

@@ -42,12 +42,22 @@ import com.sun.pdfview.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
 
+// JPEN
+import jpen.PButtonEvent;
+import jpen.PKind;
+import jpen.PKindEvent;
+import jpen.PLevel;
+import jpen.PLevelEvent;
+import jpen.PScrollEvent;
+import jpen.PenManager;
+import jpen.event.PenListener;
+
 /** 
  * The Alchemy canvas
  * Stores all shapes created and handles all graphics related stuff
  * Think saving pdfs, printing, and of course displaying! 
  */
-public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListener, MouseListener, Printable {
+public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListener, MouseListener, PenListener, Printable {
 
     //////////////////////////////////////////////////////////////
     // GLOBAL SETTINGS
@@ -163,6 +173,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
         activeShapeList[1] = affectShapes;
 
         vectorCanvas = new VectorCanvas();
+
+        PenManager pm = new PenManager(this);
+        pm.pen.addListener(this);
+
 
         this.setCursor(CROSS);
     }
@@ -1516,5 +1530,34 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseMotionListen
 
             g2.dispose();
         }
+    }
+
+    public void penButtonEvent(PButtonEvent ev) {
+        //System.out.println(ev);
+    }
+
+    public void penKindEvent(PKindEvent ev) {
+        //System.out.println(ev);
+    }
+
+    public void penLevelEvent(PLevelEvent ev) {
+        System.out.println(ev);
+        // if this event was not a movement, do nothing
+        if (!ev.isMovement()) {
+            return;
+        // check if the user is using the tablet mouse, or the pen. If it's the mouse, do nothing
+        }
+//        if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
+//            System.out.println("Cursor");
+//            return;
+//        }
+        //System.out.println(ev.pen.getLevelValue(PLevel.Type.PRESSURE));
+    }
+
+    public void penScrollEvent(PScrollEvent ev) {
+    }
+
+    public void penTock(long availableMillis) {
+        //System.out.println("TOCK - available period fraction: " + availableMillis);
     }
 }
