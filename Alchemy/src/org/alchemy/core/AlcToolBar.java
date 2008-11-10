@@ -141,6 +141,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_H, "toggleCursor", hideCursorAction);
 
+        this.windowSize = new Dimension(Alchemy.window.getWindowSize().width, mainToolBar.getHeight());
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
@@ -892,10 +893,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Sets and manages a timer used to delay hiding of the toolbar */
     private void setTimer() {
         if (toolBarTimer == null) {
-            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
+            toolBarTimer = new javax.swing.Timer(1000, new  
 
-                public void actionPerformed(ActionEvent e) {
-                    if (!insideToolBar) {
+                  ActionListener( ) {
+
+                     public 
+                          
+                             void  actionPerformed(ActionEvent  e){ 
+                                if (!insideToolBar) {
                         if (isPopupMenusVisible()) {
                             if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");

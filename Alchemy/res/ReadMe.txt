@@ -1,5 +1,5 @@
 Alchemy 
-ALPHA 005
+ALPHA 006 PRE
 
 
 
@@ -30,6 +30,19 @@ Download Alchemy: http://al.chemy.org/download/
 Alchemy Forum: http://al.chemy.org/forum/
 
 Version History
+--------------------------------------
+ALPHA 006
+
+FEATURES
++ 
+
+CHANGES
++ 
+
+BUG FIXES
++ 
+
+
 --------------------------------------
 ALPHA 005
 

@@ -27,14 +27,28 @@ import java.util.*;
 import java.util.prefs.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 
 /**
- * Preference class used to store preferences.
+ * Preference class used to store persistant data
  */
 class AlcPreferences implements AlcConstants {
 
     /** Preferences package */
     static Preferences prefs;
+    /** File holding the preferences xml */
+    private File preferencesFile;
+    /** The name of the preferences file */
+    private final String preferencesFileName = "Preferences.xml";
     /** The preferences window */
     private JDialog prefsWindow;
     /** Main content panel for the window */
@@ -124,14 +138,35 @@ class AlcPreferences implements AlcConstants {
     int colour;
 
     AlcPreferences() {
-        moduleList = loadModuleList();
+
+        boolean found = loadPreferencesFile();
+        // If the file is there, then load em up
+        if (found) {
+            if (preferencesFile.exists()) {
+                try {
+                    Preferences.importPreferences(new FileInputStream(preferencesFile));
+                    System.out.println("Preferences Loaded");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                // Else make sure to get rid of any old preferences left
+                prefs = Preferences.userNodeForPackage(getClass());
+                removePreferences();
+                System.out.println("Preferences not found. Reseting...");
+            }
+        }
+
+        //moduleList = loadModuleList();
+
+        // Else the defaults will be loaded here
         loadPreferences();
     }
 
     /** Load the preference nodes */
     private void loadPreferences() {
-        prefs = Preferences.userNodeForPackage(getClass());
 
+        prefs = Preferences.userNodeForPackage(getClass());
         modulesSet = prefs.getBoolean("Modules Set", false);
 
 
@@ -160,6 +195,52 @@ class AlcPreferences implements AlcConstants {
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
+    }
+
+    /** Load the Alchemy preferences file
+     * @return True if found else false
+     */
+    private boolean loadPreferencesFile() {
+        boolean found = false;
+        File file = null;
+        try {
+            // There may be a more fail safe way to do this...
+            switch (Alchemy.PLATFORM) {
+                case WINDOWS:
+                    String winPath = HOME_DIR + FILE_SEPARATOR + "Application Data" + FILE_SEPARATOR + "Alchemy";
+                    File winDir = new File(winPath);
+                    if (!winDir.exists()) {
+                        winDir.mkdir();
+                    }
+                    file = new File(winPath, preferencesFileName);
+                    break;
+
+                case MACOSX:
+                    String macPath = HOME_DIR + FILE_SEPARATOR + "Library" + FILE_SEPARATOR + "Application Support" + FILE_SEPARATOR + "Alchemy";
+                    File macDir = new File(macPath);
+                    if (!macDir.exists()) {
+                        macDir.mkdir();
+                    }
+                    file = new File(macPath, preferencesFileName);
+                    break;
+
+                case LINUX:
+                    // TODO - find a way to localise the Linux preferences file
+                    file = new File(preferencesFileName);
+                    break;
+            }
+
+            if (file.exists()) {
+                found = true;
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+
+        preferencesFile = file;
+        return found;
     }
 
     /** Save the changes on exit */
@@ -202,6 +283,67 @@ class AlcPreferences implements AlcConstants {
         if (canvasSize != null) {
             prefs.put("Canvas Size", dimensionToString(canvasSize));
         }
+
+        // Export to an XML file
+        try {
+            // Create the file if it does not exist
+            if (!preferencesFile.exists()) {
+                preferencesFile.createNewFile();
+            }
+            // Write out the Preferences file as XML
+            FileOutputStream outputStream = new FileOutputStream(preferencesFile);
+            prefs.exportSubtree(outputStream);
+
+            // Format the XML so it is actually readable!
+            if (preferencesFile.exists()) {
+                if (preferencesFile.canRead()) {
+                    final String dtd = "http://java.sun.com/dtd/preferences.dtd";
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    // factory.setValidating(false);
+                    // Hack here to make sure we don't connect to the internet
+                    builder.setEntityResolver(new EntityResolver() {
+
+                        public InputSource resolveEntity(String publicId, String systemId) {
+                            if (systemId.equals(dtd)) {
+                                return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
+                            } else {
+                                return null;
+                            }
+                        }
+                    });
+
+                    InputSource in = new InputSource(new FileInputStream(preferencesFile));
+                    Document doc = builder.parse(in);
+
+                    Transformer tf = TransformerFactory.newInstance().newTransformer();
+                    tf.setOutputProperty(OutputKeys.INDENT, "yes");
+                    tf.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, dtd);
+                    //tf.setOutputProperty("{http://xml. customer .org/xslt}indent-amount", "4");
+                    tf.transform(new DOMSource(doc), new StreamResult(preferencesFile));
+
+                    System.out.println("Preferences saved to file.");
+
+                    removePreferences();
+                } else {
+                    System.out.println("Error reading preferences file");
+                }
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Error creating the preferences file");
+            ex.printStackTrace();
+        }
+    }
+
+    /** Remove the preferences */
+    private void removePreferences() {
+        try {
+            prefs.removeNode();
+
+        } catch (BackingStoreException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /** Reset the preferences */
@@ -209,7 +351,6 @@ class AlcPreferences implements AlcConstants {
         try {
             prefs.removeNode();
             loadPreferences();
-
 
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
@@ -262,9 +403,11 @@ class AlcPreferences implements AlcConstants {
         prefsWindow.setTitle(title);
         prefsWindow.setResizable(false);
         // Action to close the window when you hit the escape key
-        AbstractAction closeAction = new AbstractAction() {
+        AbstractAction closeAction = new  
 
-            public void actionPerformed(ActionEvent e) {
+              AbstractAction( ) {
+
+                public void actionPerformed(ActionEvent e) {
                 prefsWindow.setVisible(false);
             }
         };
@@ -296,9 +439,11 @@ class AlcPreferences implements AlcConstants {
 
         final JComboBox interfaceBox = new JComboBox(interfaceType);
         interfaceBox.setFont(FONT_MEDIUM);
-        interfaceBox.addActionListener(new ActionListener() {
+        interfaceBox.addActionListener(new  
 
-            public void actionPerformed(ActionEvent e) {
+              ActionListener( ) {
+
+                   public void actionPerformed(ActionEvent e) {
                 // STANDARD                
                 if (interfaceBox.getSelectedIndex() == 0) {
                     Alchemy.preferences.simpleToolBar = false;
@@ -343,9 +488,17 @@ class AlcPreferences implements AlcConstants {
 
 
         sessionFileRenamePre.addActionListener(
-                new ActionListener() {
+                new  
 
-                    public void actionPerformed(ActionEvent e) {
+                      ActionListener( ) {
+
+                        
+                    
+                
+        
+           
+        
+         public void actionPerformed(ActionEvent e) {
                         refreshSessionPDFNameOutput();
                     }
                 });
@@ -357,9 +510,15 @@ class AlcPreferences implements AlcConstants {
         sessionFileRenameDate.setPreferredSize(new Dimension(140, textHeight));
         sessionFileRenameDate.setFont(FONT_MEDIUM);
         sessionFileRenameDate.addActionListener(
-                new ActionListener() {
+                new  
 
-                    public void actionPerformed(ActionEvent e) {
+                      ActionListener( ) {
+
+                        
+                    
+                
+        
+            public void actionPerformed(ActionEvent e) {
                         refreshSessionPDFNameOutput();
                     }
                 });
@@ -413,9 +572,20 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         JButton defaultButton = new JButton(Alchemy.bundle.getString("restoreDefaults"));
         defaultButton.addActionListener(
-                new ActionListener() {
+                new  
 
-                    public void actionPerformed(ActionEvent e) {
+                      ActionListener( ) {
+
+                          
+                          
+                        
+                        
+                        
+                        
+                        
+                    
+                
+            public void actionPerformed(ActionEvent e) {
                         sessionFilePreName = defaultSessionFilePreName;
                         sessionFileDateFormat = defaultSessionFileDateFormat;
                         sessionFileRenamePre.setText(sessionFilePreName);
@@ -432,9 +602,11 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         JButton cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
         cancelButton.addActionListener(
-                new ActionListener() {
+                new  
 
-                    public void actionPerformed(ActionEvent e) {
+                      ActionListener( ) {
+
+                        public void actionPerformed(ActionEvent e) {
                         prefsWindow.setVisible(false);
                         sessionFileRenamePre.setText(sessionFilePreName);
                         sessionFileRenameDate.setText(sessionFileDateFormat);
@@ -449,9 +621,14 @@ class AlcPreferences implements AlcConstants {
         okButton.setMnemonic(KeyEvent.VK_ENTER);
 
         okButton.addActionListener(
-                new ActionListener() {
+                new  
 
-                    public void actionPerformed(ActionEvent e) {
+                      ActionListener( ) {
+
+                         public  void 
+                             
+                                actionPerformed   (ActionEvent e)
+                                 {
                         // If the session file name has changed
                         if (!sessionFileRenamePre.getText().equals(sessionFilePreName) || !sessionFileRenameDate.getText().equals(sessionFileDateFormat)) {
                             try {
@@ -459,7 +636,7 @@ class AlcPreferences implements AlcConstants {
                                 // and does not throw and exception
                                 String dateFormat = AlcUtil.dateStamp(sessionFileRenameDate.getText());
                                 // Check that both of the fields are not blank
-                                if (!sessionFileRenamePre.getText().equals("") && !dateFormat.equals("")) {
+                                if (!sessionFileRenamePre.getText().equals("")  && !dateFormat.equals("")) {
                                     sessionFilePreName = sessionFileRenamePre.getText();
                                     sessionFileDateFormat = sessionFileRenameDate.getText();
                                     // Reset the session so next time a new file is created
@@ -553,9 +730,16 @@ class AlcPreferences implements AlcConstants {
         // Incase the date format is not correct
         sessionFileRenameDate.setBackground(Color.PINK);
         sessionFileRenameDate.setText(Alchemy.bundle.getString("invalidDateFormat"));
-        javax.swing.Timer timer = new javax.swing.Timer(1500, new ActionListener() {
+        javax.swing.Timer timer = new javax.swing.Timer(1500, new  
 
-            public void actionPerformed(ActionEvent e) {
+              ActionListener( ) {
+
+                
+                
+            
+        
+        
+        public void actionPerformed(ActionEvent e) {
                 sessionFileRenameDate.setBackground(Color.WHITE);
                 sessionFileRenameDate.setText(sessionFileDateFormat);
             }
@@ -624,9 +808,11 @@ class AlcPreferences implements AlcConstants {
                 prefs.putBoolean("Modules Set", modulesSet);
             }
 
-            checkBox.addActionListener(new ActionListener() {
+            checkBox.addActionListener(new  
 
-                public void actionPerformed(ActionEvent e) {
+                  ActionListener( ) {
+
+                      public void actionPerformed(ActionEvent e) {
                     changeModules = true;
                 //prefs.putBoolean(moduleNodeName, checkBox.isSelected());
                 }
@@ -660,6 +846,7 @@ class AlcPreferences implements AlcConstants {
         }
     }
 
+    /** Load modules from the modules.txt list */
     private String[] loadModuleList() {
         ArrayList<String> modules = new ArrayList<String>();
         Scanner s = null;
