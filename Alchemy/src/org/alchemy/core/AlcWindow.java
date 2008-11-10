@@ -167,8 +167,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         } else {
             this.requestFocus();
         }
-
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -510,6 +508,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         }
         // Save changes to the preferences
         Alchemy.preferences.writeChanges();
+        
+        // TODO - Write this out as a file?
+        
         this.dispose();
         System.exit(0);
     }

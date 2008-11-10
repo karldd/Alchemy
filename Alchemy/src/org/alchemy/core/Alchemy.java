@@ -20,6 +20,7 @@
 package org.alchemy.core;
 
 import java.awt.*;
+import java.io.File;
 import javax.swing.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -112,6 +113,7 @@ public class Alchemy implements AlcConstants {
             ex.printStackTrace();
             bundle = bundleEn;
         }
+        
 
         // LOAD PREFERENCES
         preferences = new AlcPreferences();
