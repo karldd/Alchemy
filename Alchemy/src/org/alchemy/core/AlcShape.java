@@ -28,8 +28,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * A general shape contained class used by Alchemy
- * The main shape is stored as a GeneralPath object
+ * A shape class used by Alchemy<br>
+ * The main shape is stored as a {@link GeneralPath} object
  * with other variables defining the colour, style, alpha etc...
  */
 public class AlcShape implements AlcConstants, Cloneable, Serializable {

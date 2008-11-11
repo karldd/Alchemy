@@ -22,11 +22,7 @@ package org.alchemy.core;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
-/**
- * AlcSeparator
- * 
- * 
- */
+/** Custom separator to fit the subtoolbar */
 public class AlcSubSeparator extends JLabel {
 
     public AlcSubSeparator() {

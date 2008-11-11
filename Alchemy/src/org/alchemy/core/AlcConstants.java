@@ -28,8 +28,8 @@ import java.awt.image.MemoryImageSource;
 import java.util.Locale;
 
 /**
- * Constant values used in Alchemy <br />
- * Some of this is taken from Processings' PConstants <br />
+ * Constant values used in Alchemy <br>
+ * Some of this is taken from Processings' PConstants <br>
  * http://dev.processing.org/source/index.cgi/trunk/processing/core/src/processing/core/PConstants.java?view=markup
  */
 public interface AlcConstants {
@@ -101,12 +101,19 @@ public interface AlcConstants {
     //////////////////////////////////////////////////////////////
     // CURSORS 
     //////////////////////////////////////////////////////////////
+    /** Cursor - Default Cursor */
     static final Cursor ARROW = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    /** Cursor - Cross Cursor */
     static final Cursor CROSS = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    /** Cursor - Hand Cursor */
     static final Cursor HAND = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    /** Cursor - Move Cursor */
     static final Cursor MOVE = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+    /** Cursor - Text Cursor */
     static final Cursor TEXT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    /** Cursor - Wait Cursor */
     static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+    /** Cursor - Blank Cursor */
     static final Cursor BLANK = TOOLKIT.createCustomCursor(
             Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, new int[16 * 16], 0, 16)),
             new Point(0, 0),
@@ -129,9 +136,5 @@ public interface AlcConstants {
     static final Font FONT_MEDIUM = new Font("sansserif", Font.PLAIN, 11);
     static final Font FONT_LARGE = new Font("sansserif", Font.PLAIN, 12);
     static final Font FONT_BOLD = new Font("sansserif", Font.PLAIN, 11);
-    //
-    //////////////////////////////////////////////////////////////
-    // COLOURS 
-    //////////////////////////////////////////////////////////////
-    static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+
 }

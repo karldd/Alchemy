@@ -23,6 +23,7 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
+/** Custom toggle button to fit the subtoolbar */
 public class AlcSubToggleButton extends JToggleButton implements AlcConstants {
 
     public AlcSubToggleButton(String text, URL iconUrl) {

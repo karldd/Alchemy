@@ -211,6 +211,11 @@ public class AlcUtil implements AlcConstants {
         return null;
     }
 
+    /** Returns an Imagen from a String, or null if the name was invalid.
+     * 
+     * @param name  The name to the image
+     * @return      Image or null if invalid
+     */
     public static Image getImage(String name) {
         URL imgUrl = Alchemy.class.getResource("/org/alchemy/data/" + name);
         if (imgUrl != null) {
@@ -221,6 +226,11 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
+    /** Returns an Image from a URL, or null if the name was invalid.
+     * 
+     * @param imgUrl    The URL to the image
+     * @return          Image or null if invalid
+     */
     public static Image getImage(URL imgUrl) {
         if (imgUrl != null) {
             ImageIcon icon = new ImageIcon(imgUrl);

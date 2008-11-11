@@ -21,6 +21,7 @@ package org.alchemy.core;
 
 import javax.swing.JLabel;
 
+/** Custom label to fit the subtoolbar */
 public class AlcSubLabel extends JLabel implements AlcConstants{
 
     public AlcSubLabel(String text) {

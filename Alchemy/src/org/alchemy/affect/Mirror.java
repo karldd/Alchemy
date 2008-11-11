@@ -148,7 +148,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     if (canvas.affectShapes.size() == index) {
                         AlcShape cloneShape = shape.customClone(hPath);
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundActive()) {
+                        if (canvas.isBackgroundColourActive()) {
                             cloneShape.setAlpha(255);
                         }
                         canvas.affectShapes.add(cloneShape);
@@ -169,7 +169,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     if (canvas.affectShapes.size() == index) {
                         AlcShape cloneShape = shape.customClone(vPath);
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundActive()) {
+                        if (canvas.isBackgroundColourActive()) {
                             cloneShape.setAlpha(255);
                         }
                         canvas.affectShapes.add(cloneShape);
@@ -186,7 +186,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                     if (canvas.affectShapes.size() == index) {
                         AlcShape cloneShape = shape.customClone(hvPath);
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundActive()) {
+                        if (canvas.isBackgroundColourActive()) {
                             cloneShape.setAlpha(255);
                         }
                         canvas.affectShapes.add(cloneShape);

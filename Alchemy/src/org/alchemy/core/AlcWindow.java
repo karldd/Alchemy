@@ -46,7 +46,10 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     /** Second monitor black out window */
     private static JWindow[] screens;
 
-    public AlcWindow() {
+    /** The Alchemy window <br>
+     *  Handles things like fullscreen, setup of the canvas/toolbar, exiting etc...
+     */
+    AlcWindow() {
 
         // Set up our application to respond to the Mac OS X application menu
         super("OSXAdapter");
@@ -173,7 +176,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     // WINDOW
     //////////////////////////////////////////////////////////////
     /** Get the Window Size as a Dimension */
-    public Dimension getWindowSize() {
+    Dimension getWindowSize() {
         return windowSize;
     }
 
@@ -195,7 +198,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * @param fullscreen true = change to fullscreen, 
      *                   false = change to windowed
      */
-    public void setFullscreen(boolean fullscreen) {
+    void setFullscreen(boolean fullscreen) {
 
         //GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
@@ -356,7 +359,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * 
      * @return true = fullscreen, false = windowed.
      */
-    public boolean isFullscreen() {
+    boolean isFullscreen() {
         return fullscreen;
     }
 
@@ -364,7 +367,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * 
      * @return  Transparent mode or not
      */
-    public boolean isTransparent() {
+    boolean isTransparent() {
         return Alchemy.preferences.transparentFullscreen;
     }
 
@@ -372,7 +375,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * 
      * @param transparent   True to enter transparent mode for fullscreen, false to exit
      */
-    public void setTransparent(boolean transparent) {
+    void setTransparent(boolean transparent) {
         Alchemy.preferences.transparentFullscreen = transparent;
     }
 
@@ -393,7 +396,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     // PALETTE
     //////////////////////////////////////////////////////////////
     /** Set the toolbar into a floating palette or on the main window */
-    public void setPalette(boolean seperate) {
+    void setPalette(boolean seperate) {
         // PALETTE
         if (seperate) {
             // If this is not being called at startup
@@ -460,7 +463,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * 
      * @return Passed to the Mac quit handler - do or don't quit
      */
-    public boolean exitAlchemy() {
+    boolean exitAlchemy() {
         // Ask to quit
         if (Alchemy.canvas.shapes.size() > 0) {
 
@@ -508,9 +511,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         }
         // Save changes to the preferences
         Alchemy.preferences.writeChanges();
-        
+
         // TODO - Write this out as a file?
-        
+
         this.dispose();
         System.exit(0);
     }
@@ -524,7 +527,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * Checks the platform, then attempts to register with the Apple EAWT
      * See OSXAdapter.java to see how this is done without directly referencing any Apple APIs
      */
-    public void registerForMacOSXEvents() {
+    private void registerForMacOSXEvents() {
         if (Alchemy.PLATFORM == MACOSX) {
             try {
                 // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
@@ -545,7 +548,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * General info dialog; fed to the OSXAdapter as the method to call when 
      * "About OSXAdapter" is selected from the application menu
      */
-    public void showAbout() {
+    void showAbout() {
         new AlcAbout(Alchemy.window);
     }
 
@@ -553,7 +556,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * General preferences dialog; fed to the OSXAdapter as the method to call when
      * "Preferences..." is selected from the application menu
      */
-    public void showPreferences() {
+    void showPreferences() {
         Alchemy.preferences.showWindow();
     }
 

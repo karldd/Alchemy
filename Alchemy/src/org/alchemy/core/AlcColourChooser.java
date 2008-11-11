@@ -26,7 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 
 /**
- * AlcColourChooser
+ * A custom colour chooser
  * @author Karl D.D. Willis
  */
 public class AlcColourChooser extends JColorChooser implements AlcConstants {
