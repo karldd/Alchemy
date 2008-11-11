@@ -23,11 +23,7 @@ import java.awt.FlowLayout;
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 
-/**
- * AlcSubSlider
- * 
- * 
- */
+/** Custom slider to fit the subtoolbar */
 public class AlcSubSlider extends JPanel implements AlcConstants {
 
     private AlcSliderCustom slider;

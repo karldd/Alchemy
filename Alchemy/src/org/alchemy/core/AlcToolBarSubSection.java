@@ -24,7 +24,8 @@ import java.awt.FlowLayout;
 import javax.swing.JPanel;
 
 /**
- * AlcSubToolBarSection
+ * A 'section' added to the subtoolbar by a module<br>
+ * Contaning subbuttons, subsliders, sublabels etc...
  * 
  */
 public class AlcToolBarSubSection extends JPanel {

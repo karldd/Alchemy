@@ -24,7 +24,7 @@ import java.awt.event.KeyEvent;
 import java.net.URL;
 
 /**
- * Alchemy module <br />
+ * Alchemy module <br>
  * This is an 'abstract class' which must be extended to make an Alchemy plugin
  * 
  */
@@ -218,23 +218,21 @@ public abstract class AlcModule {
     void setSortOrderIndex(int i) {
         this.sortIndex = i;
     }
-
-
     //////////////////////////////////////////////////////////////
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
     /**
      * The below mouse events are called when the modules is active (selected by the user)
      * The full MouseEvent is passed in, as described here:
-     * <p/>
      * http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/MouseEvent.html
-     * <p/>
+     * <br>
      * Useful things you can do with this MouseEvent:
      * <pre>
      * int x = e.getX();
      * int y = e.getY();
      * Point p = e.getPoint();
      * </pre>
+     * @param e The mouse event
      */
     public void mousePressed(MouseEvent e) {
     }
@@ -263,15 +261,15 @@ public abstract class AlcModule {
     /**
      * The below key events are called when the modules is active (selected by the user)
      * The full KeyEvent is passed in, as described here:
-     * <p/>
      * http://java.sun.com/j2se/1.4.2/docs/api/java/awt/event/KeyEvent.html
-     * <p/>
+     * <br>
      * Useful things you can do with this KeyEvent:
      * <pre>
      *  char keyChar = e.getKeyChar();
      *  int keyCode = e.getKeyCode();
      *  String keyText = e.getKeyText(keyCode);
      * </pre>
+     * @param e The key event
      */
     public void keyPressed(KeyEvent e) {
     }

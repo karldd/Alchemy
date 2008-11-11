@@ -47,8 +47,8 @@ import jpen.*;
 import jpen.event.PenListener;
 
 /** 
- * The Alchemy canvas
- * Stores all shapes created and handles all graphics related stuff
+ * The Alchemy canvas <br>
+ * Stores all shapes created and handles all graphics related stuff<br>
  * Think saving pdfs, printing, and of course displaying! 
  */
 public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, PenListener, Printable {
@@ -280,17 +280,19 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // CANVAS FUNCTIONALITY
     //////////////////////////////////////////////////////////////
+    /** Redraw the canvas */
     public void redraw() {
         redraw(false);
     }
 
     /** Redraw the canvas
-     *  @param vector   
+     *  @param fullRedraw   Specify if the full set of vector shapes should be redrawn
+     *                  or just add the new shape to the existing buffer image
      */
-    public void redraw(boolean vector) {
+    public void redraw(boolean fullRedraw) {
         applyAffects();
         if (redraw) {
-            if (vector) {
+            if (fullRedraw) {
                 canvasImage = renderCanvas(true);
             }
             this.repaint();
@@ -476,7 +478,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         System.gc();
     }
 
-    /** Set the cursor
+    /** Set the cursor temporarily - can be restored with {@link #restoreCursor()}
      * @param cursor    New temp cursor
      */
     public void setTempCursor(Cursor cursor) {
@@ -726,11 +728,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Whether the background is active or not
      * @return State of the background
      */
-    public boolean isBackgroundActive() {
+    public boolean isBackgroundColourActive() {
         return backgroundActive;
     }
 
-    public void setBackgroundActive(boolean backgroundActive) {
+    /** Set the background colour to be active 
+     * @param backgroundActive  
+     */
+    public void setBackgroundColourActive(boolean backgroundActive) {
         // Save the foreground colour and bring the bg colour to the front
         if (backgroundActive) {
             oldColour = colour;
@@ -854,10 +859,16 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.guides = guides;
     }
 
+    /** Returns if the record indicator (used with session auto-saving) is enabled 
+     * @return
+     */
     public boolean isRecordIndicatorEnabled() {
         return recordIndicator;
     }
 
+    /** Set the display of the record indicator (used with session auto-saving)
+     * @param recordIndicator   On or off
+     */
     public void setRecordIndicator(boolean recordIndicator) {
         this.recordIndicator = recordIndicator;
     }
@@ -1468,13 +1479,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         // Changing the background/foreground setting as required
         if (ev.pen.getKind() == PKind.valueOf(PKind.Type.STYLUS)) {
             if (backgroundActive) {
-                setBackgroundActive(false);
+                setBackgroundColourActive(false);
                 Alchemy.toolBar.toggleColourButton();
             }
             penType = STYLUS;
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
             if (!backgroundActive) {
-                setBackgroundActive(true);
+                setBackgroundColourActive(true);
                 Alchemy.toolBar.toggleColourButton();
             }
             penType = ERASER;

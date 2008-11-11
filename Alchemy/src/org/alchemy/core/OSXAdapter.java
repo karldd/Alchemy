@@ -58,7 +58,7 @@ package org.alchemy.core;
 
 import java.lang.reflect.*;
 
-public class OSXAdapter implements InvocationHandler {
+class OSXAdapter implements InvocationHandler {
 
     protected Object targetObject;
     protected Method targetMethod;

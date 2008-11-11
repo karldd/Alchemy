@@ -390,6 +390,10 @@ class AlcPreferences implements AlcConstants {
 
     /** Initialise the preference window */
     void setupWindow(AlcWindow owner) {
+        
+        // TODO - Implement tabs
+        // For mac - http://explodingpixels.wordpress.com/2008/05/02/sexy-swing-app-the-unified-toolbar/
+        // http://explodingpixels.wordpress.com/2008/05/03/sexy-swing-app-the-unified-toolbar-now-fully-draggable/
 
         //////////////////////////////////////////////////////////////
         // WINDOW
@@ -403,11 +407,9 @@ class AlcPreferences implements AlcConstants {
         prefsWindow.setTitle(title);
         prefsWindow.setResizable(false);
         // Action to close the window when you hit the escape key
-        AbstractAction closeAction = new  
+        AbstractAction closeAction = new AbstractAction() {
 
-              AbstractAction( ) {
-
-                public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 prefsWindow.setVisible(false);
             }
         };
@@ -439,11 +441,9 @@ class AlcPreferences implements AlcConstants {
 
         final JComboBox interfaceBox = new JComboBox(interfaceType);
         interfaceBox.setFont(FONT_MEDIUM);
-        interfaceBox.addActionListener(new  
+        interfaceBox.addActionListener(new ActionListener() {
 
-              ActionListener( ) {
-
-                   public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 // STANDARD                
                 if (interfaceBox.getSelectedIndex() == 0) {
                     Alchemy.preferences.simpleToolBar = false;
@@ -488,17 +488,9 @@ class AlcPreferences implements AlcConstants {
 
 
         sessionFileRenamePre.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                        
-                    
-                
-        
-           
-        
-         public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) {
                         refreshSessionPDFNameOutput();
                     }
                 });
@@ -510,15 +502,9 @@ class AlcPreferences implements AlcConstants {
         sessionFileRenameDate.setPreferredSize(new Dimension(140, textHeight));
         sessionFileRenameDate.setFont(FONT_MEDIUM);
         sessionFileRenameDate.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                        
-                    
-                
-        
-            public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) {
                         refreshSessionPDFNameOutput();
                     }
                 });
@@ -572,20 +558,9 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         JButton defaultButton = new JButton(Alchemy.bundle.getString("restoreDefaults"));
         defaultButton.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                          
-                          
-                        
-                        
-                        
-                        
-                        
-                    
-                
-            public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) {
                         sessionFilePreName = defaultSessionFilePreName;
                         sessionFileDateFormat = defaultSessionFileDateFormat;
                         sessionFileRenamePre.setText(sessionFilePreName);
@@ -602,11 +577,9 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         JButton cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
         cancelButton.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                        public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) {
                         prefsWindow.setVisible(false);
                         sessionFileRenamePre.setText(sessionFilePreName);
                         sessionFileRenameDate.setText(sessionFileDateFormat);
@@ -621,14 +594,9 @@ class AlcPreferences implements AlcConstants {
         okButton.setMnemonic(KeyEvent.VK_ENTER);
 
         okButton.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                         public  void 
-                             
-                                actionPerformed   (ActionEvent e)
-                                 {
+                    public void actionPerformed(ActionEvent e) {
                         // If the session file name has changed
                         if (!sessionFileRenamePre.getText().equals(sessionFilePreName) || !sessionFileRenameDate.getText().equals(sessionFileDateFormat)) {
                             try {
@@ -636,7 +604,7 @@ class AlcPreferences implements AlcConstants {
                                 // and does not throw and exception
                                 String dateFormat = AlcUtil.dateStamp(sessionFileRenameDate.getText());
                                 // Check that both of the fields are not blank
-                                if (!sessionFileRenamePre.getText().equals("")  && !dateFormat.equals("")) {
+                                if (!sessionFileRenamePre.getText().equals("") && !dateFormat.equals("")) {
                                     sessionFilePreName = sessionFileRenamePre.getText();
                                     sessionFileDateFormat = sessionFileRenameDate.getText();
                                     // Reset the session so next time a new file is created
@@ -730,16 +698,9 @@ class AlcPreferences implements AlcConstants {
         // Incase the date format is not correct
         sessionFileRenameDate.setBackground(Color.PINK);
         sessionFileRenameDate.setText(Alchemy.bundle.getString("invalidDateFormat"));
-        javax.swing.Timer timer = new javax.swing.Timer(1500, new  
+        javax.swing.Timer timer = new javax.swing.Timer(1500, new ActionListener() {
 
-              ActionListener( ) {
-
-                
-                
-            
-        
-        
-        public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) {
                 sessionFileRenameDate.setBackground(Color.WHITE);
                 sessionFileRenameDate.setText(sessionFileDateFormat);
             }
@@ -808,11 +769,9 @@ class AlcPreferences implements AlcConstants {
                 prefs.putBoolean("Modules Set", modulesSet);
             }
 
-            checkBox.addActionListener(new  
+            checkBox.addActionListener(new ActionListener() {
 
-                  ActionListener( ) {
-
-                      public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(ActionEvent e) {
                     changeModules = true;
                 //prefs.putBoolean(moduleNodeName, checkBox.isSelected());
                 }

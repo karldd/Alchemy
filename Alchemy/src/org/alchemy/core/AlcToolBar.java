@@ -351,7 +351,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 } else {
                     fgbgButton.setText(getS("fgTitle"));
                 }
-                Alchemy.canvas.setBackgroundActive(!Alchemy.canvas.isBackgroundActive());
+                Alchemy.canvas.setBackgroundColourActive(!Alchemy.canvas.isBackgroundColourActive());
             }
         };
 

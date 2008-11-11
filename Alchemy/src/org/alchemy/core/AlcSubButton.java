@@ -23,6 +23,7 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
+/** Custom button to fit the subtoolbar */
 public class AlcSubButton extends JButton implements AlcConstants {
 
     public AlcSubButton(String text, URL iconUrl) {

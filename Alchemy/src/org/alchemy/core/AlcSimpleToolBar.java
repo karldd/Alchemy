@@ -27,7 +27,8 @@ import javax.swing.event.ChangeListener;
 
 /**
  *
- * AlcSimpleToolBar.java
+ * Simple toolbar (left side bar style)<br>
+ * Used for kids workshops and what not
  */
 public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants {
 

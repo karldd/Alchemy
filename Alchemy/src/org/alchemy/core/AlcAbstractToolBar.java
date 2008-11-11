@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * Abstract class to allow multiple toolbar implementations
+ * Abstract class to allow multiple toolbar implementations <br>
  * Eg, the regular toolbar as well as a simplified kids one
  * 
  */
