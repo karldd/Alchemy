@@ -144,7 +144,8 @@ public class Shapes extends AlcModule implements AlcConstants {
     @Override
     public void mouseDragged(MouseEvent e) {
         if (!straightShapes) {
-           
+            
+           System.out.println(canvas.getPenPressure());
             Point p = e.getPoint();
             // Need to test if it is null incase the shape has been auto-cleared
             if (canvas.getCurrentCreateShape() != null) {
@@ -159,7 +160,7 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        
         Point p = e.getPoint();
         // Only if this is a single click
         if (e.getClickCount() <= 1) {
