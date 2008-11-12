@@ -145,15 +145,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         // Load the old location if available
         // First check it is not off screen
         if (Alchemy.preferences.canvasLocation != null) {
-            boolean onscreen = false;
-            GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-            for (int i = 0; i < devices.length; i++) {
-                Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
-                if (screenBounds.contains(Alchemy.preferences.canvasLocation)) {
-                    onscreen = true;
-                //System.out.println("CONTAINED within: " + screenBounds);
-                }
-            }
+            // Check if the canvas window is onscreen
+            boolean onscreen = checkOnscreen(Alchemy.preferences.canvasLocation);
             if (onscreen) {
                 this.setLocation(Alchemy.preferences.canvasLocation);
             } else {
@@ -379,6 +372,25 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         Alchemy.preferences.transparentFullscreen = transparent;
     }
 
+    /** Check if a point is on screen
+     *  Used to make sure the window is not in dead space (from a detached monitor)
+     * 
+     * @param location  The location to check
+     * @return          True if the point is onscreen otherwise false
+     */
+    private boolean checkOnscreen(Point location) {
+        boolean onscreen = false;
+        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        for (int i = 0; i < devices.length; i++) {
+            Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
+            if (screenBounds.contains(location)) {
+                onscreen = true;
+
+            }
+        }
+        return onscreen;
+    }
+
 //
 //    /** Reflection to call a Java 6_10 class that sets the window transparency */
 //    private void setAlpha(float alpha) {
@@ -406,15 +418,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
             // Make sure the palette will not be offscreen
             if (Alchemy.preferences.paletteLocation != null) {
-                boolean onscreen = false;
-                GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-                for (int i = 0; i < devices.length; i++) {
-                    Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
-                    if (screenBounds.contains(Alchemy.preferences.paletteLocation)) {
-                        onscreen = true;
-                    //System.out.println("CONTAINED within: " + screenBounds);
-                    }
-                }
+                // Check that the palette is onscreen
+                boolean onscreen = checkOnscreen(Alchemy.preferences.paletteLocation);
                 if (onscreen) {
                     Alchemy.palette.setLocation(Alchemy.preferences.paletteLocation);
                 } else {
@@ -560,20 +565,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         Alchemy.preferences.showWindow();
     }
 
-    /** 
-     * General load file handler; fed to the OSXAdapter as the method to call when a file is dragged into the dock icon
-     */
-//    public void loadFile(String path) {
-//        try {
-//            currentImage = ImageIO.read(new File(path));
-//            imageLabel.setIcon(new ImageIcon(currentImage));
-//            imageLabel.setBackground((Color) colors[colorComboBox.getSelectedIndex()]);
-//            imageLabel.setText("");
-//        } catch (IOException ioe) {
-//            System.out.println("Could not load image " + path);
-//        }
-//        repaint();
-//    }
     //////////////////////////////////////////////////////////////
     // KEY EVENTS
     //////////////////////////////////////////////////////////////
