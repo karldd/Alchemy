@@ -84,7 +84,6 @@
         <unjar src="${file.reference.jpf.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.foxtrot.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/>
-        <unjar src="${file.reference.JMyron.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.mime-util.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
         
@@ -115,7 +114,7 @@
         
         
         <!-- AFFECTS -->
-        <for list="mirror,blindness,random,micExpand,repeat,displace,cameraColour,colourSwitcher,shapeSwap" param="affect">
+        <for list="mirror,blindness,random,micExpand,repeat,displace,colourSwitcher,shapeSwap" param="affect">
             <sequential>
                 <copy todir="${build.dir}/modules/@{affect}/org/alchemy/affect">
                     <!-- Include all files that begin with the module name -->
@@ -244,10 +243,7 @@
         <copy file="${file.reference.quaqua.jar}" todir="${mac.bundle}/lib"/>
         <copy file="${basedir}/lib/quaqua/libquaqua.jnilib" todir="${mac.bundle}"/>
         <copy file="${basedir}/lib/quaqua/libquaqua64.jnilib" todir="${mac.bundle}"/>
-
-         <!-- JMyron -->
-        <copy file="${basedir}/lib/jmyron/libJMyron.jnilib" todir="${mac.bundle}"/>
-
+         
          <!-- Alchemy Native -->
         <copy file="${basedir}/lib/libAlcNative.jnilib" todir="${mac.bundle}"/>
         
@@ -270,9 +266,6 @@
          <!-- LINUX Shell Script to Launch Alchemy -->
         <copy file="${basedir}/res/Alchemy" todir="${dist.dir}"/>
         <chmod file="${dist.dir}/res/Alchemy" perm="+x"/>
-        
-        <!-- JMyron -->
-        <copy file="${basedir}/lib/jmyron/libJMyron.so" todir="${dist.dir}/lib"/>
         
         <!-- JPen -->
         <copy file="${basedir}/lib/jpen/libjpen-2.so" todir="${dist.dir}/lib"/>
@@ -301,7 +294,7 @@
         <launch4j>
             <config 
                 dontWrapJar="false"
-                headerType="gui" 
+                headerType="console" 
                 jarPath="${dist.jar}" 
                 outfile="${dist.dir}/Alchemy.exe" 
                 errTitle="Java Install Required"
@@ -332,18 +325,11 @@
         </launch4j>
 
         
-        
-        <!-- JMyron -->
-        <copy file="${basedir}/lib/jmyron/JMyron.dll" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/jmyron/DSVL.dll" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/jmyron/myron_ezcam.dll" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/jmyron/MSVCP71.DLL" todir="${dist.dir}/lib"/>
-        <copy file="${basedir}/lib/jmyron/msvcr71.dll" todir="${dist.dir}/lib"/>
-        
         <!-- JPen -->
         <copy file="${basedir}/lib/jpen/jpen-2.dll" todir="${dist.dir}/lib"/>
         
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>
+         
     </target>
 </project>
