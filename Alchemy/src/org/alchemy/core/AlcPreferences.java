@@ -139,27 +139,26 @@ class AlcPreferences implements AlcConstants {
 
     AlcPreferences() {
 
-        boolean found = loadPreferencesFile();
-        // If the file is there, then load em up
-        if (found) {
-            if (preferencesFile.exists()) {
-                try {
-                    Preferences.importPreferences(new FileInputStream(preferencesFile));
-                    System.out.println("Preferences Loaded");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            } else {
-                // Else make sure to get rid of any old preferences left
-                prefs = Preferences.userNodeForPackage(getClass());
-                removePreferences();
-                System.out.println("Preferences not found. Reseting...");
-            }
-        }
+//        boolean found = loadPreferencesFile();
+//        // If the file is there, then load em up
+//        if (found) {
+//            if (preferencesFile.exists()) {
+//                try {
+//                    Preferences.importPreferences(new FileInputStream(preferencesFile));
+//                    System.out.println("Preferences Loaded");
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            } else {
+//                // Else make sure to get rid of any old preferences left
+//                prefs = Preferences.userNodeForPackage(getClass());
+//                removePreferences();
+//                System.out.println("Preferences not found. Reseting...");
+//            }
+//        }
 
         //moduleList = loadModuleList();
 
-        // Else the defaults will be loaded here
         loadPreferences();
     }
 
@@ -168,7 +167,6 @@ class AlcPreferences implements AlcConstants {
 
         prefs = Preferences.userNodeForPackage(getClass());
         modulesSet = prefs.getBoolean("Modules Set", false);
-
 
         sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
@@ -283,57 +281,6 @@ class AlcPreferences implements AlcConstants {
         if (canvasSize != null) {
             prefs.put("Canvas Size", dimensionToString(canvasSize));
         }
-
-        // Export to an XML file
-        try {
-            // Create the file if it does not exist
-            if (!preferencesFile.exists()) {
-                preferencesFile.createNewFile();
-            }
-            // Write out the Preferences file as XML
-            FileOutputStream outputStream = new FileOutputStream(preferencesFile);
-            prefs.exportSubtree(outputStream);
-
-            // Format the XML so it is actually readable!
-            if (preferencesFile.exists()) {
-                if (preferencesFile.canRead()) {
-                    final String dtd = "http://java.sun.com/dtd/preferences.dtd";
-                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder builder = factory.newDocumentBuilder();
-                    // factory.setValidating(false);
-                    // Hack here to make sure we don't connect to the internet
-                    builder.setEntityResolver(new EntityResolver() {
-
-                        public InputSource resolveEntity(String publicId, String systemId) {
-                            if (systemId.equals(dtd)) {
-                                return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
-                            } else {
-                                return null;
-                            }
-                        }
-                    });
-
-                    InputSource in = new InputSource(new FileInputStream(preferencesFile));
-                    Document doc = builder.parse(in);
-
-                    Transformer tf = TransformerFactory.newInstance().newTransformer();
-                    tf.setOutputProperty(OutputKeys.INDENT, "yes");
-                    tf.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, dtd);
-                    //tf.setOutputProperty("{http://xml. customer .org/xslt}indent-amount", "4");
-                    tf.transform(new DOMSource(doc), new StreamResult(preferencesFile));
-
-                    System.out.println("Preferences saved to file.");
-
-                    removePreferences();
-                } else {
-                    System.out.println("Error reading preferences file");
-                }
-            }
-
-        } catch (Exception ex) {
-            System.out.println("Error creating the preferences file");
-            ex.printStackTrace();
-        }
     }
 
     /** Remove the preferences */
@@ -355,6 +302,66 @@ class AlcPreferences implements AlcConstants {
         } catch (BackingStoreException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    /** Export the preferences as a *nicely formatted* XML file
+     * 
+     * @param file  The file to be created
+     */
+    private boolean exportPreferences(File file){
+        boolean result = false;
+        // Export to an XML file
+        try {
+//            // Create the file if it does not exist
+//            if (!preferencesFile.exists()) {
+//                preferencesFile.createNewFile();
+//            }
+            // Write out the Preferences file as XML
+            FileOutputStream outputStream = new FileOutputStream(file);
+            prefs.exportSubtree(outputStream);
+
+            // Format the XML so it is actually readable!
+            if (file.exists()) {
+                if (file.canRead()) {
+                    final String dtd = "http://java.sun.com/dtd/preferences.dtd";
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    // factory.setValidating(false);
+                    // Hack here to make sure we don't connect to the internet
+                    builder.setEntityResolver(new EntityResolver() {
+
+                        public InputSource resolveEntity(String publicId, String systemId) {
+                            if (systemId.equals(dtd)) {
+                                return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
+                            } else {
+                                return null;
+                            }
+                        }
+                    });
+
+                    InputSource in = new InputSource(new FileInputStream(file));
+                    Document doc = builder.parse(in);
+
+                    Transformer tf = TransformerFactory.newInstance().newTransformer();
+                    tf.setOutputProperty(OutputKeys.INDENT, "yes");
+                    tf.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, dtd);
+                    //tf.setOutputProperty("{http://xml. customer .org/xslt}indent-amount", "4");
+                    tf.transform(new DOMSource(doc), new StreamResult(file));
+
+                    System.out.println("Preferences saved to file.");
+
+                    result = true;
+                    
+                } else {
+                    System.out.println("Error reading preferences file");
+                }
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Error creating the preferences file");
+            ex.printStackTrace();
+        }
+        return result;
     }
 
     /** Reset the modules to defaults */
