@@ -836,6 +836,44 @@ public class AlcUtil implements AlcConstants {
     }
 
     //////////////////////////////////////////////////////////////
+    // HEX/BINARY CONVERSION
+    //////////////////////////////////////////////////////////////
+    /**
+     * Converts a byte, char, int, or color to a String containing the equivalent hexadecimal notation. 
+     * For example color(0, 102, 153, 255) will convert to the String "FF006699".
+     * @param i
+     * @return
+     */
+    public static String hex(byte i) {
+        return hex(i, 2);
+    }
+
+    public static String hex(char c) {
+        return hex(c, 4);
+    }
+
+    public static String hex(int i) {
+        return hex(i, 8);
+    }
+
+    public static String hex(int i, int digits) {
+        String stuff = Integer.toHexString(i).toUpperCase();
+
+        int length = stuff.length();
+        if (length > digits) {
+            return stuff.substring(length - digits);
+
+        } else if (length < digits) {
+            return "00000000".substring(8 - (digits - length)) + stuff;
+        }
+        return stuff;
+    }
+
+    public static int unhex(String s) {
+        // has to parse as a Long so that it'll work for numbers bigger than 2^31
+        return (int) (Long.parseLong(s, 16));
+    }
+    //////////////////////////////////////////////////////////////
     // DEBUGGING
     //////////////////////////////////////////////////////////////
     /** Print a float array

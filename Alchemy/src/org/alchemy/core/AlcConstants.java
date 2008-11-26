@@ -19,7 +19,6 @@
  */
 package org.alchemy.core;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Point;
@@ -102,22 +101,23 @@ public interface AlcConstants {
     // CURSORS 
     //////////////////////////////////////////////////////////////
     /** Cursor - Default Cursor */
-    static final Cursor ARROW = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    static final Cursor CURSOR_ARROW = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
     /** Cursor - Cross Cursor */
-    static final Cursor CROSS = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    static final Cursor CURSOR_CROSS = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
     /** Cursor - Hand Cursor */
-    static final Cursor HAND = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    static final Cursor CURSOR_HAND = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     /** Cursor - Move Cursor */
-    static final Cursor MOVE = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
+    static final Cursor CURSOR_MOVE = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
     /** Cursor - Text Cursor */
-    static final Cursor TEXT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
+    static final Cursor CURSOR_TEXT = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
     /** Cursor - Wait Cursor */
-    static final Cursor WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+    static final Cursor CURSOR_WAIT = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
     /** Cursor - Blank Cursor */
-    static final Cursor BLANK = TOOLKIT.createCustomCursor(
+    static final Cursor CURSOR_BLANK = TOOLKIT.createCustomCursor(
             Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, new int[16 * 16], 0, 16)),
             new Point(0, 0),
             "Blank");
+    static final Cursor CURSOR_CIRCLE_SMALL = AlcUtil.getCursor("cursor-circle-small.gif");
     //
     //////////////////////////////////////////////////////////////
     // PEN TYPES

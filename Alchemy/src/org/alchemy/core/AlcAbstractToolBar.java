@@ -54,8 +54,8 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
 
     void queueColourButtonRefresh() {
     }
-    
-    void toggleColourButton(){
+
+    void toggleColourButton() {
     }
 
     void refreshTransparencySlider() {
@@ -90,32 +90,10 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
         return Alchemy.bundle.getString(stringName);
     }
 
-    /** Check if the module should be loaded */
+    /** Check if the module should be loaded or not */
     boolean loadModule(AlcModule module) {
-        boolean load = false;
         String moduleName = module.getName();
         String moduleNodeName = Alchemy.preferences.modulePrefix + moduleName;
-
-
-        if (!Alchemy.preferences.modulesSet) {
-            // NO MODULES SET
-            if (Alchemy.preferences.moduleList == null) {
-                load = true;
-            // LIST DEFINED - Find a match in the list
-            } else {
-                for (int j = 0; j < Alchemy.preferences.moduleList.length; j++) {
-                    if (Alchemy.preferences.moduleList[j].equals(moduleName)) {
-                        load = true;
-                        break;
-                    }
-                }
-            }
-
-
-        // MODULES SET - Look for and load from the prefs node
-        } else if (AlcPreferences.prefs.getBoolean(moduleNodeName, false)) {
-            load = true;
-        }
-        return load;
+        return AlcPreferences.prefs.getBoolean(moduleNodeName, true);
     }
 }

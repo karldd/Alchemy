@@ -149,8 +149,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.bgColour = new Color(Alchemy.preferences.bgColour);
         this.colour = new Color(Alchemy.preferences.colour);
 
-        addMouseListener(this);
-        addMouseMotionListener(this);
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
 
         shapes = new ArrayList<AlcShape>(100);
         shapes.ensureCapacity(100);
@@ -174,7 +174,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         pm.pen.addListener(this);
 
 
-        this.setCursor(CROSS);
+        this.setCursor(CURSOR_CROSS);
     }
 
     /** Bitmap Canvas

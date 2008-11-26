@@ -45,33 +45,36 @@ class AlcPreferences implements AlcConstants {
 
     /** Preferences package */
     static Preferences prefs;
-    /** File holding the preferences xml */
-    private File preferencesFile;
-    /** The name of the preferences file */
-    private final String preferencesFileName = "Preferences.xml";
+    //////////////////////////////////////////////////////////////
+    //  WINDOW LAYOUT 
+    //////////////////////////////////////////////////////////////
     /** The preferences window */
-    private JDialog prefsWindow;
-    /** Main content panel for the window */
-    JPanel masterPanel;
+    private JFrame prefsWindow;
+    /** Background content panel for the window */
+    private JPanel bgPanel;
+    /** General content panel*/
+    private JPanel generalPanel;
+    /** Session content panel*/
+    private JPanel sessionPanel;
+    /** Modules content panel*/
+    private JPanel modulesPanel;
     /** Default / Cancel / OK Button Pane */
-    JPanel buttonPane;
+    private JPanel buttonPane;
     /** Ok Button */
-    JButton okButton;
+    private JButton okButton;
     //////////////////////////////////////////////////////////////
     //  MODULES
     //////////////////////////////////////////////////////////////    
     /** Scroll pane for the module listing */
-    JScrollPane scrollPane;
+    private JScrollPane scrollPane;
     /** Panel containing the modules */
-    JPanel modulePanel;
-    /** A module list loaded from /modules/modules.txt */
-    String[] moduleList;
-    /** If the simple modules have been customised */
-    boolean modulesSet;
+    private JPanel modulePanel;
+    /** If the modules have been customised */
+    private boolean modulesSet;
     /** Prefix for the preference node name */
-    String modulePrefix = "Module - ";
+    final String modulePrefix = "Module - ";
     /** Change modules when the prefs window is closed */
-    boolean changeModules = false;
+    private boolean changeModules = false;
     //////////////////////////////////////////////////////////////
     // SESSION
     //////////////////////////////////////////////////////////////
@@ -138,27 +141,6 @@ class AlcPreferences implements AlcConstants {
     int colour;
 
     AlcPreferences() {
-
-//        boolean found = loadPreferencesFile();
-//        // If the file is there, then load em up
-//        if (found) {
-//            if (preferencesFile.exists()) {
-//                try {
-//                    Preferences.importPreferences(new FileInputStream(preferencesFile));
-//                    System.out.println("Preferences Loaded");
-//                } catch (Exception ex) {
-//                    ex.printStackTrace();
-//                }
-//            } else {
-//                // Else make sure to get rid of any old preferences left
-//                prefs = Preferences.userNodeForPackage(getClass());
-//                removePreferences();
-//                System.out.println("Preferences not found. Reseting...");
-//            }
-//        }
-
-        //moduleList = loadModuleList();
-
         loadPreferences();
     }
 
@@ -193,52 +175,6 @@ class AlcPreferences implements AlcConstants {
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
-    }
-
-    /** Load the Alchemy preferences file
-     * @return True if found else false
-     */
-    private boolean loadPreferencesFile() {
-        boolean found = false;
-        File file = null;
-        try {
-            // There may be a more fail safe way to do this...
-            switch (Alchemy.PLATFORM) {
-                case WINDOWS:
-                    String winPath = HOME_DIR + FILE_SEPARATOR + "Application Data" + FILE_SEPARATOR + "Alchemy";
-                    File winDir = new File(winPath);
-                    if (!winDir.exists()) {
-                        winDir.mkdir();
-                    }
-                    file = new File(winPath, preferencesFileName);
-                    break;
-
-                case MACOSX:
-                    String macPath = HOME_DIR + FILE_SEPARATOR + "Library" + FILE_SEPARATOR + "Application Support" + FILE_SEPARATOR + "Alchemy";
-                    File macDir = new File(macPath);
-                    if (!macDir.exists()) {
-                        macDir.mkdir();
-                    }
-                    file = new File(macPath, preferencesFileName);
-                    break;
-
-                case LINUX:
-                    // TODO - find a way to localise the Linux preferences file
-                    file = new File(preferencesFileName);
-                    break;
-            }
-
-            if (file.exists()) {
-                found = true;
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
-
-        preferencesFile = file;
-        return found;
     }
 
     /** Save the changes on exit */
@@ -303,12 +239,12 @@ class AlcPreferences implements AlcConstants {
             ex.printStackTrace();
         }
     }
-    
+
     /** Export the preferences as a *nicely formatted* XML file
      * 
      * @param file  The file to be created
      */
-    private boolean exportPreferences(File file){
+    private boolean exportPreferences(File file) {
         boolean result = false;
         // Export to an XML file
         try {
@@ -351,7 +287,7 @@ class AlcPreferences implements AlcConstants {
                     System.out.println("Preferences saved to file.");
 
                     result = true;
-                    
+
                 } else {
                     System.out.println("Error reading preferences file");
                 }
@@ -370,34 +306,13 @@ class AlcPreferences implements AlcConstants {
             AlcModule currentModule = modules[i];
             String moduleName = currentModule.getName();
             final String moduleNodeName = modulePrefix + moduleName;
-
-            if (moduleList == null) {
-                prefs.putBoolean(moduleNodeName, true);
-
-            // MODULE LIST
-            } else {
-                // No preferences, check if it is a default
-                boolean hit = false;
-                for (int j = 0; j < moduleList.length; j++) {
-                    if (moduleName.equals(moduleList[j])) {
-                        prefs.putBoolean(moduleNodeName, true);
-                        hit = true;
-                        break;
-                    }
-                }
-                // Set the preference to false
-                if (!hit) {
-                    prefs.putBoolean(moduleNodeName, false);
-                }
-
-                prefs.putBoolean("Modules Set", modulesSet);
-            }
+            prefs.putBoolean(moduleNodeName, true);
         }
     }
 
     /** Initialise the preference window */
     void setupWindow(AlcWindow owner) {
-        
+
         // TODO - Implement tabs
         // For mac - http://explodingpixels.wordpress.com/2008/05/02/sexy-swing-app-the-unified-toolbar/
         // http://explodingpixels.wordpress.com/2008/05/03/sexy-swing-app-the-unified-toolbar-now-fully-draggable/
@@ -405,8 +320,18 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // WINDOW
         //////////////////////////////////////////////////////////////
-        prefsWindow = new JDialog(owner);
-        prefsWindow.setPreferredSize(new Dimension(400, 400));
+        prefsWindow = new JFrame();
+        final int javaVersion = new Integer(JAVA_VERSION_NAME.substring(6, 8));
+
+        if (Alchemy.PLATFORM == MACOSX) {
+            // Try and detect if this is OSX 10.5 
+            // TODO - Fix OSX 10.5 detection
+            if (javaVersion >= 13) {
+                prefsWindow.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
+            }
+        }
+        final Dimension prefsWindowSize = new Dimension(500, 450);
+        prefsWindow.setPreferredSize(prefsWindowSize);
         String title = "Alchemy Preferences";
         if (Alchemy.PLATFORM == WINDOWS) {
             title = "Alchemy Options";
@@ -424,23 +349,92 @@ class AlcPreferences implements AlcConstants {
         prefsWindow.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
         prefsWindow.getRootPane().getActionMap().put("Escape", closeAction);
 
+        if (Alchemy.PLATFORM == MACOSX) {
+            // Shortcut to close with a modifier - w on mac
+            prefsWindow.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, MODIFIER_KEY), "Close");
+            prefsWindow.getRootPane().getActionMap().put("Close", closeAction);
+        }
+
 
         //////////////////////////////////////////////////////////////
         // MASTER PANEL
         //////////////////////////////////////////////////////////////
-        masterPanel = new JPanel();
-        masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
-        masterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        masterPanel.setOpaque(true);
-        masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        JPanel masterPanel = new JPanel();
+        // Turn off the layout manager just for the master panel
+        masterPanel.setLayout(null);
+        // Make this transparent so we can display the unified toolbar on OSX 10.5
+        masterPanel.setOpaque(false);
 
+
+        //////////////////////////////////////////////////////////////
+        // TAB PANEL
+        //////////////////////////////////////////////////////////////
+        final int tabPanelHeight = 64;
+        JPanel tabPanel = new JPanel() {
+
+            final Color unifiedLineColour = new Color(64, 64, 64);
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (g instanceof Graphics2D) {
+                    Graphics2D g2 = (Graphics2D) g;
+                    int targetWidth = getRootPane().getSize().width;
+                    int heightMinusOne = tabPanelHeight - 1;
+
+                    // OSX 10.5 Unified toolbar
+                    if (Alchemy.PLATFORM == MACOSX && javaVersion >= 13) {
+                        g2.setPaint(unifiedLineColour);
+                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
+                    } else {
+                        GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarBgStartColour, 0, tabPanelHeight, AlcToolBar.toolBarBgEndColour, true);
+                        g2.setPaint(gradientPaint);
+                        g2.fillRect(0, 0, targetWidth, tabPanelHeight);
+                        g2.setPaint(AlcAbstractToolBar.toolBarLineColour);
+                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
+                    }
+                }
+            }
+        };
+        tabPanel.setOpaque(false);
+        tabPanel.setBounds(0, 0, prefsWindowSize.width, tabPanelHeight);
+        tabPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        //////////////////////////////////////////////////////////////
+        // TAB BUTTONS
+        //////////////////////////////////////////////////////////////
+
+        ButtonGroup tabButtons = new ButtonGroup();
+        AlcToggleButton styleTest = new AlcToggleButton("General", null, AlcUtil.getUrlPath("preferences-general.png"), true);
+        styleTest.setSelected(true);
+        AlcToggleButton underOverTest = new AlcToggleButton("Advanced", null, AlcUtil.getUrlPath("preferences-advanced.png"), true);
+        tabButtons.add(styleTest);
+        tabPanel.add(styleTest);
+        tabButtons.add(underOverTest);
+        tabPanel.add(underOverTest);
+
+        masterPanel.add(tabPanel);
+
+        // TODO - Divide up the prefs panels General / Session / Modules
+
+
+        //////////////////////////////////////////////////////////////
+        // BACKGROUND PANEL
+        //////////////////////////////////////////////////////////////
+        bgPanel = new JPanel();
+        bgPanel.setOpaque(true);
+        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width, prefsWindowSize.height - tabPanelHeight - 22);
+        bgPanel.setLayout(new BoxLayout(bgPanel, BoxLayout.PAGE_AXIS));
+        bgPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        masterPanel.add(bgPanel);
 
         //////////////////////////////////////////////////////////////
         // INTERFACE SELECTOR
         //////////////////////////////////////////////////////////////
         JPanel centreRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
         centreRow.setOpaque(false);
-        centreRow.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        centreRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
 
 
@@ -474,7 +468,7 @@ class AlcPreferences implements AlcConstants {
         restart.setForeground(Color.GRAY);
         centreRow.add(restart);
 
-        masterPanel.add(centreRow);
+        bgPanel.add(centreRow);
 
 
         //////////////////////////////////////////////////////////////
@@ -522,7 +516,7 @@ class AlcPreferences implements AlcConstants {
         JLabel sessionFileRenameExt = new JLabel(".pdf");
         sessionFileRenameExt.setFont(FONT_MEDIUM);
         sessionFileRenamePanel.add(sessionFileRenameExt);
-        masterPanel.add(sessionFileRenamePanel);
+        bgPanel.add(sessionFileRenamePanel);
 
         // Output Panel
         JPanel sessionFileRenameOuputPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -538,7 +532,7 @@ class AlcPreferences implements AlcConstants {
         sessionFileRenameOutput.setForeground(Color.GRAY);
         sessionFileRenameOutput.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         sessionFileRenameOuputPanel.add(sessionFileRenameOutput);
-        masterPanel.add(sessionFileRenameOuputPanel);
+        bgPanel.add(sessionFileRenameOuputPanel);
 
 
         //////////////////////////////////////////////////////////////
@@ -557,7 +551,7 @@ class AlcPreferences implements AlcConstants {
         restart2.setForeground(Color.GRAY);
         restart2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         modulesLabelPanel.add(restart2);
-        masterPanel.add(modulesLabelPanel);
+        bgPanel.add(modulesLabelPanel);
 
 
         //////////////////////////////////////////////////////////////
@@ -641,6 +635,7 @@ class AlcPreferences implements AlcConstants {
         //masterPanel.add(buttonPane);
 
         prefsWindow.getContentPane().add(masterPanel);
+    //prefsWindow.pack();
     }
 
     void showWindow() {
@@ -648,9 +643,10 @@ class AlcPreferences implements AlcConstants {
         if (scrollPane == null) {
             setupModulePanel();
             //Add the scroll pane to this panel.
-            masterPanel.add(scrollPane);
-            masterPanel.add(buttonPane);
+            bgPanel.add(scrollPane);
+            bgPanel.add(buttonPane);
             prefsWindow.pack();
+
         //prefsWindow.getRootPane().setDefaultButton(okButton);
         }
 
@@ -683,11 +679,11 @@ class AlcPreferences implements AlcConstants {
     }
 
     private void refreshModulePanel() {
-        masterPanel.remove(scrollPane);
+        bgPanel.remove(scrollPane);
         setupModulePanel();
-        masterPanel.add(scrollPane);
-        masterPanel.add(buttonPane);
-        masterPanel.revalidate();
+        bgPanel.add(scrollPane);
+        bgPanel.add(buttonPane);
+        bgPanel.revalidate();
     }
 
     /** Change the example output text */
@@ -746,35 +742,8 @@ class AlcPreferences implements AlcConstants {
             checkBox.setBackground(AlcToolBar.toolBarBgStartColour);
             checkBox.setFont(FONT_MEDIUM);
 
-            // CUSTOM MODULES
-            if (modulesSet) {
-                // Set the state of the checkbox
-                checkBox.setSelected(prefs.getBoolean(moduleNodeName, false));
-
-            // DEFAULT - ALL ON    
-            } else if (moduleList == null) {
-                checkBox.setSelected(true);
-                prefs.putBoolean(moduleNodeName, true);
-
-            // MODULE LIST
-            } else {
-                // No preferences, check if it is a default
-                boolean hit = false;
-                for (int j = 0; j < moduleList.length; j++) {
-                    if (moduleName.equals(moduleList[j])) {
-                        checkBox.setSelected(true);
-                        prefs.putBoolean(moduleNodeName, true);
-                        hit = true;
-                        break;
-                    }
-                }
-                // Set the preference to false
-                if (!hit) {
-                    prefs.putBoolean(moduleNodeName, false);
-                }
-
-                prefs.putBoolean("Modules Set", modulesSet);
-            }
+            // Set the state of the checkbox
+            checkBox.setSelected(prefs.getBoolean(moduleNodeName, true));
 
             checkBox.addActionListener(new ActionListener() {
 
@@ -812,32 +781,6 @@ class AlcPreferences implements AlcConstants {
         }
     }
 
-    /** Load modules from the modules.txt list */
-    private String[] loadModuleList() {
-        ArrayList<String> modules = new ArrayList<String>();
-        Scanner s = null;
-        try {
-            s = new Scanner(new BufferedReader(new FileReader("modules" + FILE_SEPARATOR + "modules.txt")));
-            s.useDelimiter(", ");
-            while (s.hasNext()) {
-
-                String module = s.next();
-                modules.add(module);
-            //System.out.println("Module Name:" + module);
-
-            }
-            String[] moduleArray = new String[modules.size()];
-            moduleArray = modules.toArray(moduleArray);
-            return moduleArray;
-        } catch (FileNotFoundException ex) {
-            //ex.printStackTrace();
-            return null;
-        } finally {
-            if (s != null) {
-                s.close();
-            }
-        }
-    }
     //////////////////////////////////////////////////////////////
     // UTILITIES
     //////////////////////////////////////////////////////////////
