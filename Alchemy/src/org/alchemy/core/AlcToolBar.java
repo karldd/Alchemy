@@ -131,10 +131,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         AbstractAction hideCursorAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                if (Alchemy.canvas.getCursor() == BLANK) {
-                    Alchemy.canvas.setCursor(CROSS);
+                if (Alchemy.canvas.getCursor() == CURSOR_BLANK) {
+                    Alchemy.canvas.setCursor(CURSOR_CROSS);
                 } else {
-                    Alchemy.canvas.setCursor(BLANK);
+                    Alchemy.canvas.setCursor(CURSOR_BLANK);
                 }
             }
         };
@@ -320,8 +320,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                     colourButton.hidePopup();
                     if (Alchemy.PLATFORM == MACOSX) {
                         Alchemy.canvas.restoreCursor();
-                        //Alchemy.canvas.setCursor(CROSS);
-                        setCursor(ARROW);
+                        //Alchemy.canvas.setCursor(CURSOR_CROSS);
+                        setCursor(CURSOR_ARROW);
                     }
                     refreshColourButton();
                 }
@@ -414,10 +414,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             // The current module
             AlcModule currentModule = Alchemy.plugins.creates[i];
 
-            // To load or not
-            boolean load = loadModule(currentModule);
-
-            if (load) {
+            // Check if this module should be loaded
+            if (loadModule(currentModule)) {
 
                 final AlcRadioButtonMenuItem createMenuItem = new AlcRadioButtonMenuItem();
 
@@ -690,8 +688,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             if (!visible) {
                 // Be sure to set the cursor back to the cross hair
                 Alchemy.canvas.restoreCursor();
-                //Alchemy.canvas.setCursor(CROSS);
-                this.setCursor(ARROW);
+                //Alchemy.canvas.setCursor(CURSOR_CROSS);
+                this.setCursor(CURSOR_ARROW);
                 colourButton.hidePopup();
                 createButton.hidePopup();
                 if (affectButton != null) {

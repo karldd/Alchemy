@@ -91,8 +91,7 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
         g2.dispose();
 
 
-        final Cursor pickerCursor = AlcUtil.getCursor("cursor-picker.gif");
-        this.setCursor(pickerCursor);
+        this.setCursor(CURSOR_CIRCLE_SMALL);
 
         this.addMouseListener(new MouseAdapter() {
 
@@ -101,8 +100,8 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
                 // OSX does not seem to obey the set cursor so set the other cursors
                 // TODO - OSX bug here cursor changes back to arrow when entering the canvas
                 if (Alchemy.PLATFORM == MACOSX) {
-                    Alchemy.canvas.setTempCursor(pickerCursor);
-                    Alchemy.toolBar.setCursor(pickerCursor);
+                    Alchemy.canvas.setTempCursor(CURSOR_CIRCLE_SMALL);
+                    Alchemy.toolBar.setCursor(CURSOR_CIRCLE_SMALL);
                 }
             }
 
@@ -110,8 +109,8 @@ class AlcColourPicker extends JMenuItem implements AlcConstants {
             public void mouseExited(MouseEvent e) {
                 if (Alchemy.PLATFORM == MACOSX) {
                     Alchemy.canvas.restoreCursor();
-                    //Alchemy.canvas.setCursor(CROSS);
-                    Alchemy.toolBar.setCursor(ARROW);
+                    //Alchemy.canvas.setCursor(CURSOR_CROSS);
+                    Alchemy.toolBar.setCursor(CURSOR_ARROW);
                 }
             }
         });

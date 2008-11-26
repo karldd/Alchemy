@@ -34,6 +34,9 @@ public class AlcColourChooser extends JColorChooser implements AlcConstants {
     AlcColourChooser(Color initialColor) {
         super(initialColor);
 
+        // TODO - Create a cross platform Colour Picker
+        // https://quaqua.dev.java.net/source/browse/quaqua/trunk/Quaqua/src/ch/randelshofer/quaqua/colorchooser/Quaqua15ColorPicker.java?rev=11&view=markup
+        
         if (Alchemy.PLATFORM != MACOSX) {
             String singleChooser = "DefaultHSBChooserPanel";
             // Just want to show the HSB panel

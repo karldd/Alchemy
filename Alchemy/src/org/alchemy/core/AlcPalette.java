@@ -50,7 +50,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         mainPalette.setBackground(AlcToolBar.toolBarBgColour);
         mainPalette.setBorder(new LineBorder(AlcToolBar.toolBarLineColour, 1));
         mainPalette.setLayout(new BorderLayout());
-        mainPalette.setCursor(ARROW);
+        mainPalette.setCursor(CURSOR_ARROW);
         this.addKeyListener(this);
         this.addMouseListener(this);
 
@@ -108,7 +108,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
 
     public void mouseEntered(MouseEvent event) {
         // Set the default cursor
-        Alchemy.canvas.setTempCursor(ARROW);
+        Alchemy.canvas.setTempCursor(CURSOR_ARROW);
     }
 
     public void mouseExited(MouseEvent event) {

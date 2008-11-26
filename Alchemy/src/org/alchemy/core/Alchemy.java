@@ -20,7 +20,6 @@
 package org.alchemy.core;
 
 import java.awt.*;
-import java.io.File;
 import javax.swing.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -38,7 +37,6 @@ public class Alchemy implements AlcConstants {
     public static String SHIFT_KEY_STRING = "Shift";
     public static String ALT_KEY_STRING = "Alt";
     
-
     static {
         if (PLATFORM_NAME.indexOf("Mac") != -1) {
             PLATFORM = MACOSX;
@@ -90,7 +88,7 @@ public class Alchemy implements AlcConstants {
     static AlcColourChooser colourChooser;
 
     Alchemy() {
-
+        
         if (PLATFORM == MACOSX) {
             Object appIcon = LookAndFeel.makeIcon(getClass(), "/org/alchemy/data/alchemy-logo64.png");
             UIManager.put("OptionPane.errorIcon", appIcon);
@@ -174,6 +172,9 @@ public class Alchemy implements AlcConstants {
         }
 
         window.setVisible(true);
+        
+        //AlcColourSelector cs = new AlcColourSelector();
+        //cs.show();
     }
 
     public static void main(String[] args) {

@@ -18,7 +18,7 @@
         <parameter id="class" value="org.alchemy.create.PullShapes"/> 
         <parameter id="name" value="Pull Shapes"/> 
         <parameter id="description" value="Combine and randomise forms loaded from the Alchemy 'shapes' folder" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>
