@@ -19,7 +19,6 @@
  */
 package org.alchemy.core;
 
-import java.awt.*;
 import javax.swing.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -85,8 +84,6 @@ public class Alchemy implements AlcConstants {
     static ResourceBundle bundleEn;
     /** Class of utility math functions */
     static final AlcMath math = new AlcMath();
-    /** Custom reusable colour chooser */
-    static AlcColourChooser colourChooser;
     /** Custom reusable colour selector */
     static AlcColourSelector colourSelector;
 
@@ -141,8 +138,6 @@ public class Alchemy implements AlcConstants {
         // LOAD SHORTCUTS
         shortcuts = new AlcShortcuts(window);
 
-        // Colour chooser
-        colourChooser = new AlcColourChooser(Color.WHITE);
         // Colour Selector
         colourSelector = new AlcColourSelector(bundle.getString("colourTitle"));
         //cs.setVisible(true);

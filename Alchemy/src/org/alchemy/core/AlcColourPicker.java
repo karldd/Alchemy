@@ -21,7 +21,7 @@ package org.alchemy.core;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
@@ -33,7 +33,11 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
     private BufferedImage colourArray;
     private AlcPopupButton parent;
-    private JFrame[] screens;
+    private BufferedImage[] screenShots;
+    private GraphicsDevice[] devices;
+    private int currentDevice = 0;
+    private JDialog eyeDropperWindow;
+    private javax.swing.Timer eyeDropperTimer;
 
     AlcColourPicker(AlcPopupButton parent) {
 
@@ -63,10 +67,33 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
      *  When the user clicks on the image, the colour from that point  is loaded
      */
     private void startEyeDropper() {
-        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
-        // As many screens as devices
-        screens = new JFrame[devices.length];
+
+        eyeDropperWindow = new JDialog(Alchemy.window, false);
+        eyeDropperWindow.setUndecorated(true);
+        eyeDropperWindow.setBounds(new Rectangle(12, 12));
+        eyeDropperWindow.setCursor(CURSOR_EYEDROPPER);
+        eyeDropperWindow.setAlwaysOnTop(true);
+        // Get rid of the window shadow on Mac
+        if (Alchemy.PLATFORM == MACOSX) {
+            eyeDropperWindow.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+        }
+        eyeDropperWindow.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                stopEyeDropper();
+            }
+        });
+        eyeDropperTimer = new javax.swing.Timer(5, new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+                updateEyeDropper();
+            }
+        });
+
+        devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        screenShots = new BufferedImage[devices.length];
 
         for (int i = 0; i < devices.length; i++) {
             try {
@@ -76,64 +103,94 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                 Robot robot = new Robot(devices[i]);
 
                 Rectangle newBounds = new Rectangle(0, 0, screenBounds.width, screenBounds.height);
-                final BufferedImage screenCapture = robot.createScreenCapture(newBounds);
-
-                screens[i] = new JFrame(gc);
-                screens[i].setUndecorated(true);
-                // Get rid of the window shadow on Mac
-                if (Alchemy.PLATFORM == MACOSX) {
-                    screens[i].getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
-                }
-                screens[i].setBounds(screenBounds);
-                screens[i].setCursor(CURSOR_EYEDROPPER);
-                JPanel imagePanel = new JPanel() {
-
-                    @Override
-                    public void paintComponent(Graphics g) {
-                        //super.paintComponent(g);
-                        g.drawImage(screenCapture, 0, 0, null);
-                    }
-                };
-
-                screens[i].setContentPane(imagePanel);
-                final JFrame screen = screens[i];
-                screens[i].addMouseListener(new MouseAdapter() {
-
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
-                        Color colour = new Color(screenCapture.getRGB(e.getX(), e.getY()));
-                        System.out.println(colour);
-                        Alchemy.canvas.setColour(colour);
-                        Alchemy.toolBar.refreshColourButton();
-                        stopEyeDropper();
-                    }
-
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        // So that the cursor is constantly displayed
-                        // Bring the window to the front
-                        screen.toFront();
-                    }
-                });
-                //screens[i].pack();
-                screens[i].setVisible(true);
+                screenShots[i] = robot.createScreenCapture(newBounds);
 
             } catch (Exception ex) {
-                System.err.println("Error Picking a screen colour");
+                System.err.println("Error creating a screenshot for the eye dropper");
                 ex.printStackTrace();
             }
         }
-        // Primary monitor
-        screens[0].toFront();
+
+        JPanel imagePanel = new JPanel() {
+
+            @Override
+            public void paintComponent(Graphics g) {
+
+                Point pos = this.getLocationOnScreen();
+                Point offset = new Point(-pos.x, -pos.y);
+                Rectangle bounds = devices[currentDevice].getDefaultConfiguration().getBounds();
+                Point origin = bounds.getLocation();
+                // Primary monitor
+                if (origin.x == 0 && origin.y == 0) {
+                    g.drawImage(screenShots[currentDevice], offset.x, offset.y, null);
+                // Non-primary monitor
+                } else {
+                    g.drawImage(screenShots[currentDevice], offset.x + origin.x, offset.y + origin.y, null);
+                }
+            }
+        };
+
+        eyeDropperWindow.setContentPane(imagePanel);
+        eyeDropperWindow.toFront();
+        eyeDropperTimer.start();
+        eyeDropperWindow.setVisible(true);
+
+    }
+
+    /** Update the picker window */
+    private void updateEyeDropper() {
+        if (eyeDropperWindow != null) {
+            PointerInfo info = MouseInfo.getPointerInfo();
+            GraphicsDevice device = info.getDevice();
+            Point mouseLoc = info.getLocation();
+            eyeDropperWindow.setLocation(mouseLoc.x - 6, mouseLoc.y - 6);
+            // Figure out which device to select the correct screenshot
+            for (int i = 0; i < devices.length; i++) {
+                if (devices[i].equals(device)) {
+                    currentDevice = i;
+                }
+            }
+            eyeDropperWindow.repaint();
+        }
+
     }
 
     /** Dispose of the screens created for the eye dropper */
     private void stopEyeDropper() {
-        for (int i = 0; i < screens.length; i++) {
-            screens[i].setVisible(false);
-            screens[i].dispose();
+        if (eyeDropperWindow != null) {
+            try {
+
+                PointerInfo info = MouseInfo.getPointerInfo();
+                Point mouseLoc = info.getLocation();
+
+                Rectangle bounds = devices[currentDevice].getDefaultConfiguration().getBounds();
+                Point origin = bounds.getLocation();
+                Color c;
+                // Primary monitor
+                if (origin.x == 0 && origin.y == 0) {
+                    // Offset to pick out the bottom left corner
+                    c = new Color(screenShots[currentDevice].getRGB(mouseLoc.x - 6, mouseLoc.y + 6));
+                // Non-primary monitor
+                } else {
+                    c = new Color(screenShots[currentDevice].getRGB(mouseLoc.x - origin.x - 6, mouseLoc.y - origin.y + 6));
+                }
+
+                Alchemy.canvas.setColour(c);
+                Alchemy.toolBar.refreshColourButton();
+
+                if (eyeDropperTimer.isRunning()) {
+                    eyeDropperTimer.stop();
+                }
+                eyeDropperWindow.setVisible(false);
+                eyeDropperWindow.dispose();
+                screenShots = null;
+                devices = null;
+
+            } catch (Exception ex) {
+                System.err.println("Error selecting colour from the eye dropper");
+                ex.printStackTrace();
+            }
         }
-        screens = null;
     }
 
     /** Start and show the colour selector */
@@ -143,7 +200,6 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
             public void actionPerformed(ActionEvent event) {
                 Alchemy.canvas.setColour(Alchemy.colourSelector.getColour());
-
                 Alchemy.toolBar.refreshColourButton();
             }
         };
