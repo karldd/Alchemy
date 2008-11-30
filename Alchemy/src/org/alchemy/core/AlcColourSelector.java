@@ -31,29 +31,30 @@ import javax.swing.text.*;
  * Based on code from the lovely Processing ColorSelector [sic]
  * http://dev.processing.org/source/index.cgi/trunk/processing/app/src/processing/app/tools/ColorSelector.java?view=markup
  */
-public class AlcColourSelector implements DocumentListener, AlcConstants {
+public class AlcColourSelector extends JFrame implements DocumentListener, AlcConstants {
 
-    JDialog frame;
-    int hue, saturation, brightness;  // range 360, 100, 100
-    int red, green, blue;   // range 256, 256, 256
-    ColorRange range;
-    ColorSlider slider;
-    JTextField hueField, saturationField, brightnessField;
-    JTextField redField, greenField, blueField;
-    JTextField hexField;
-    JPanel colorPanel;
+    private int hue,  saturation,  brightness;  // range 360, 100, 100
+    private int red,  green,  blue;   // range 256, 256, 256
+    private ColourRange range;
+    private ColourSlider slider;
+    private JTextField hueField,  saturationField,  brightnessField;
+    private JTextField redField,  greenField,  blueField;
+    private JTextField hexField;
+    private JPanel colourPanel;
+    private JButton okButton,  cancelButton;
+    private boolean updating;
+    private int labelH;
 
-    AlcColourSelector() {
+    AlcColourSelector(String title) {
 
-        frame = new JDialog(Alchemy.window, "Color Selector");
-        frame.getContentPane().setLayout(new BorderLayout());
+        super(title);
+
+        this.getContentPane().setLayout(new BorderLayout());
 
         Box box = Box.createHorizontalBox();
         box.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        range = new ColorRange();
-        range.addMouseListener(range);
-        range.addMouseMotionListener(range);
+        range = new ColourRange();
 
         Box rangeBox = new Box(BoxLayout.Y_AXIS);
         rangeBox.setAlignmentY(0);
@@ -62,9 +63,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         box.add(rangeBox);
         box.add(Box.createHorizontalStrut(10));
 
-        slider = new ColorSlider();
-        slider.addMouseListener(slider);
-        slider.addMouseMotionListener(slider);
+        slider = new ColourSlider();
 
         Box sliderBox = new Box(BoxLayout.Y_AXIS);
         sliderBox.setAlignmentY(0);
@@ -76,26 +75,23 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         box.add(createColorFields());
         box.add(Box.createHorizontalStrut(10));
 
-        frame.getContentPane().add(box, BorderLayout.CENTER);
-        frame.pack();
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
 
-        frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() {
+        this.getContentPane().add(box, BorderLayout.CENTER);
+        // TODO - Align the button pane to the bottom
+        this.getContentPane().add(createButtonPanel(), BorderLayout.SOUTH);
 
-            @Override
-            public void windowClosing(WindowEvent e) {
-                frame.setVisible(false);
+        this.pack();
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);
+
+        this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+
+        AlcUtil.registerWindowCloseKeys(this.getRootPane(), new AbstractAction() {
+
+            public void actionPerformed(ActionEvent actionEvent) {
+                setVisible(false);
             }
         });
-//        Base.registerWindowCloseKeys(frame.getRootPane(), new ActionListener() {
-//
-//            public void actionPerformed(ActionEvent actionEvent) {
-//                frame.setVisible(false);
-//            }
-//        });
-//        Base.setIcon(frame);
 
         hueField.getDocument().addDocumentListener(this);
         saturationField.getDocument().addDocumentListener(this);
@@ -106,27 +102,54 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         hexField.getDocument().addDocumentListener(this);
 
         hexField.setText("FFFFFF");
-    //slider.requestFocus();
     }
 
-    public void show() {
-        frame.setVisible(true);
-    //frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    /** Creates and shows a JDialog with the Alchemy colour pane and the given actions 
+     * 
+     * @param okListener        The ActionListener for the OK button
+     * @param cancelListener    The ActionListener for the CANCEL button
+     */
+    public void show(ActionListener okListener, ActionListener cancelListener) {
+        show(okListener, cancelListener, null);
     }
 
-    public void hide() {
-        frame.setVisible(false);
-    //frame.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    /** Creates and shows a JDialog with the Alchemy colour pane and the given actions 
+     * 
+     * @param okListener        The ActionListener for the OK button
+     * @param cancelListener    The ActionListener for the CANCEL button
+     * @param initialColour     The initial colour to display
+     */
+    public void show(ActionListener okListener, ActionListener cancelListener, Color initialColour) {
+        okButton.addActionListener(okListener);
+        cancelButton.addActionListener(cancelListener);
+        if (initialColour != null) {
+            setColour(initialColour);
+        }
+        range.init = true;
+        this.setVisible(true);
+    }
+
+    /**  Gets the current color value from the colour selector
+     * @return  The current colour value
+     */
+    public Color getColour() {
+        return new Color(red, green, blue);
+    }
+
+    public void setColour(Color colour) {
+        updateRGB2(colour.getRGB());
+        updateHSB();
+        updateHex();
+        range.repaint();
+        slider.repaint();
+        colourPanel.repaint();
     }
 
     public void changedUpdate(DocumentEvent e) {
-        //System.out.println("changed");
     }
 
     public void removeUpdate(DocumentEvent e) {
-        //System.out.println("remove");
     }
-    boolean updating;
 
     public void insertUpdate(DocumentEvent e) {
         if (updating) {
@@ -178,14 +201,14 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         }
         range.repaint();
         slider.repaint();
-        colorPanel.repaint();
+        colourPanel.repaint();
         updating = false;
     }
 
     /**
      * Set the RGB values based on the current HSB values.
      */
-    protected void updateRGB() {
+    private void updateRGB() {
         int rgb = Color.HSBtoRGB((float) hue / 359f,
                 (float) saturation / 99f,
                 (float) brightness / 99f);
@@ -198,7 +221,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
      * and by updateHex(), to unpack the hex colors and assign them.
      * @param rgb 
      */
-    protected void updateRGB2(int rgb) {
+    private void updateRGB2(int rgb) {
         red = (rgb >> 16) & 0xff;
         green = (rgb >> 8) & 0xff;
         blue = rgb & 0xff;
@@ -211,7 +234,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
     /**
      * Set the HSB values based on the current RGB values.
      */
-    protected void updateHSB() {
+    private void updateHSB() {
         float hsb[] = new float[3];
         Color.RGBtoHSB(red, green, blue, hsb);
 
@@ -224,7 +247,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         brightnessField.setText(String.valueOf(brightness));
     }
 
-    protected void updateHex() {
+    private void updateHex() {
         hexField.setText(AlcUtil.hex(red, 2) +
                 AlcUtil.hex(green, 2) +
                 AlcUtil.hex(blue, 2));
@@ -240,7 +263,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
      * @param max
      * @return 
      */
-    protected int bounded(int current, final JTextField field, final int max) {
+    private int bounded(int current, final JTextField field, final int max) {
         String text = field.getText();
         if (text.length() == 0) {
             return 0;
@@ -248,9 +271,24 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         try {
             int value = Integer.parseInt(text);
             if (value > max) {
-                SwingUtilities.invokeLater(new Runnable() {
+                SwingUtilities.invokeLater(new  
 
-                    public void run() {
+                      Runnable() {
+
+                        
+                    
+                
+                 
+            
+             
+            
+             
+        
+    
+
+    public    
+           
+        void run() {
                         field.setText(String.valueOf(max));
                     }
                 });
@@ -263,36 +301,39 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         }
     }
 
-    protected Container createColorFields() {
+    private Container createColorFields() {
         Box box = Box.createVerticalBox();
         box.setAlignmentY(0);
 
-        colorPanel = new JPanel() {
+        colourPanel = new  
 
-            @Override
+              JPanel( ) {
+
+                   
+                   
+                @Override
             public void paintComponent(Graphics g) {
                 g.setColor(new Color(red, green, blue));
                 Dimension size = getSize();
                 g.fillRect(0, 0, size.width, size.height);
             }
         };
-        colorPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        colourPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
         Dimension dim = new Dimension(60, 40);
-        colorPanel.setMinimumSize(dim);
+        colourPanel.setMinimumSize(dim);
         //colorPanel.setMaximumSize(dim);
         //colorPanel.setPreferredSize(dim);
-        box.add(colorPanel);
-        box.add(Box.createVerticalStrut(10));
+        box.add(colourPanel);
+        box.add(Box.createVerticalStrut(15));
 
-        Box row;
+        Box row = Box.createHorizontalBox();
 
-        row = Box.createHorizontalBox();
         row.add(createFixedLabel("H:"));
         row.add(hueField = new NumberField(4, false));
         row.add(new JLabel(" \u00B0"));  // degree symbol
         row.add(Box.createHorizontalGlue());
         box.add(row);
-        box.add(Box.createVerticalStrut(5));
+        //box.add(Box.createVerticalStrut(5));
 
         row = Box.createHorizontalBox();
         row.add(createFixedLabel("S:"));
@@ -300,7 +341,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         row.add(new JLabel(" %"));
         row.add(Box.createHorizontalGlue());
         box.add(row);
-        box.add(Box.createVerticalStrut(5));
+        //box.add(Box.createVerticalStrut(5));
 
         row = Box.createHorizontalBox();
         row.add(createFixedLabel("B:"));
@@ -308,51 +349,101 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         row.add(new JLabel(" %"));
         row.add(Box.createHorizontalGlue());
         box.add(row);
+
         box.add(Box.createVerticalStrut(10));
 
-        //
-
+        // RGB
         row = Box.createHorizontalBox();
         row.add(createFixedLabel("R:"));
         row.add(redField = new NumberField(4, false));
         row.add(Box.createHorizontalGlue());
         box.add(row);
-        box.add(Box.createVerticalStrut(5));
+        //box.add(Box.createVerticalStrut(5));
 
         row = Box.createHorizontalBox();
         row.add(createFixedLabel("G:"));
         row.add(greenField = new NumberField(4, false));
         row.add(Box.createHorizontalGlue());
         box.add(row);
-        box.add(Box.createVerticalStrut(5));
+        //box.add(Box.createVerticalStrut(5));
 
         row = Box.createHorizontalBox();
         row.add(createFixedLabel("B:"));
         row.add(blueField = new NumberField(4, false));
         row.add(Box.createHorizontalGlue());
         box.add(row);
+
         box.add(Box.createVerticalStrut(10));
 
-        //
-
+        // HEX
         row = Box.createHorizontalBox();
         row.add(createFixedLabel("#"));
         row.add(hexField = new NumberField(5, true));
         row.add(Box.createHorizontalGlue());
         box.add(row);
-        box.add(Box.createVerticalStrut(10));
+        //box.add(Box.createVerticalStrut(10));
 
         box.add(Box.createVerticalGlue());
         return box;
     }
-    int labelH;
+
+    private JPanel createButtonPanel() {
+
+        // Reset Button
+//        JButton resetButton = new JButton(Alchemy.bundle.getString("reset"));
+//        resetButton.addActionListener(
+//                new ActionListener() {
+//
+//                    public void actionPerformed(ActionEvent e) {
+//                        //
+//                    }
+//                });
+
+        // Cancel Button
+        cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
+        cancelButton.setMnemonic(KeyEvent.VK_ESCAPE);
+        cancelButton.addActionListener(
+                new  
+
+                      ActionListener( ) {
+
+                        public void actionPerformed(ActionEvent e) {
+                        setVisible(false);
+                    }
+                });
+
+        // Ok Button
+        okButton = new JButton(Alchemy.bundle.getString("ok"));
+        okButton.setMnemonic(KeyEvent.VK_ENTER);
+        okButton.addActionListener(
+                new  
+
+                      ActionListener( ) {
+
+                        public void actionPerformed(ActionEvent e) {
+                        setVisible(false);
+                    }
+                });
+
+        JPanel buttonPane = new JPanel();
+        buttonPane.setOpaque(false);
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
+        buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+//        buttonPane.add(resetButton);
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(cancelButton);
+        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+        buttonPane.add(okButton);
+
+        return buttonPane;
+    }
 
     /** Return a label of a fixed width     
      * 
      * @param title
      * @return
      */
-    protected JLabel createFixedLabel(String title) {
+    private JLabel createFixedLabel(String title) {
         JLabel label = new JLabel(title);
         if (labelH == 0) {
             labelH = label.getPreferredSize().height;
@@ -364,16 +455,23 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         return label;
     }
 
-    class ColorRange extends JPanel implements MouseListener, MouseMotionListener {
+    /** ColourRange panel to select a colour visually */
+    class ColourRange extends JPanel implements MouseListener, MouseMotionListener {
 
         static final int WIDE = 256;
         static final int HIGH = 256;
-        int lastX, lastY;
-        private int pixels[] = new int[WIDE * HIGH];
+         
+         
+         int lastX     ,  lastY      ;
+           private int pixels[] = new int[WIDE * HIGH];
         private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
+        boolean init = true;
 
-        void ColorRange() {
+        ColourRange() {
             this.setPreferredSize(new Dimension(WIDE, HIGH));
+            this.setCursor(CURSOR_CIRCLE);
+            this.addMouseListener(this);
+            this.addMouseMotionListener(this);
         }
 
         @Override
@@ -381,9 +479,18 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
 
             int index = 0;
             float fhue = hue / 359f;
+            Color targetColour = new Color(red, green, blue);
             for (int j = 0; j < 256; j++) {
                 for (int i = 0; i < 256; i++) {
                     Color c = Color.getHSBColor(fhue, i / 255f, (255 - j) / 255f);
+                    if (init) {
+                        if (nearlyEquals(targetColour, c)) {
+                            lastX = i;
+                            lastY = j;
+                            //System.out.println("HIT: " + lastX + " " + lastY);
+                            init = false;
+                        }
+                    }
                     pixels[index++] = c.getRGB();
                 }
             }
@@ -394,7 +501,24 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
             g2.drawImage(colourArray, 0, 0, null);
 
             g2.setColor((brightness > 50) ? Color.BLACK : Color.WHITE);
-            g2.drawRect(lastX - 4, lastY - 4, 9, 9);
+            g2.drawRect(lastX - 4, lastY - 4, 8, 8);
+        }
+
+        /** Work out if two colours are nearly equal */
+        private boolean nearlyEquals(Color c1, Color c2) {
+            boolean result = false;
+            final int difference = 1;
+            if (c1.equals(c2)) {
+                result = true;
+            } else {
+                int red = Math.abs(c1.getRed() - c2.getRed());
+                int green = Math.abs(c1.getGreen() - c2.getGreen());
+                int blue = Math.abs(c1.getBlue() - c2.getBlue());
+                if (red + green + blue <= difference) {
+                    result = true;
+                }
+            }
+            return result;
         }
 
         void updateMouse(int mouseX, int mouseY) {
@@ -439,23 +563,9 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         }
 
         public void mouseEntered(MouseEvent e) {
-            System.out.println("ENTER");
-            // OSX does not seem to obey the set cursor so set the other cursors
-            // TODO - OSX bug here cursor changes back to arrow when entering the canvas
-            if (Alchemy.PLATFORM == MACOSX) {
-//                Alchemy.canvas.setTempCursor(CURSOR_CIRCLE_SMALL);
-//                Alchemy.toolBar.setCursor(CURSOR_CIRCLE_SMALL);
-                this.setCursor(CURSOR_CIRCLE_SMALL);
-            }
         }
 
         public void mouseExited(MouseEvent e) {
-            if (Alchemy.PLATFORM == MACOSX) {
-//                Alchemy.canvas.restoreCursor();
-//                //Alchemy.canvas.setCursor(CURSOR_CROSS);
-//                Alchemy.toolBar.setCursor(CURSOR_ARROW);
-                this.setCursor(CURSOR_ARROW);
-            }
         }
 
         public void mouseDragged(MouseEvent e) {
@@ -466,16 +576,19 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         }
     }
 
-    class ColorSlider extends JPanel implements MouseListener, MouseMotionListener {
+    /** ColourSlider class to select a hue */
+    class ColourSlider extends JPanel implements MouseListener, MouseMotionListener {
 
         static final int WIDE = 20;
         static final int HIGH = 256;
         private int pixels[] = new int[WIDE * HIGH];
         private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
 
-        void ColorSlider() {
+        ColourSlider() {
             this.setPreferredSize(new Dimension(WIDE, HIGH));
-            this.setCursor(CURSOR_CIRCLE_SMALL);
+            this.addMouseListener(this);
+            this.addMouseMotionListener(this);
+
         }
 
         @Override
@@ -484,7 +597,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
             int index = 0;
             int sel = 255 - (int) (255 * (hue / 359f));
             for (int j = 0; j < 256; j++) {
-                Color c = Color.getHSBColor((255f - j) / 359f, 1f, 1f);
+                Color c = Color.getHSBColor((255f - j) / 255f, 1f, 1f);
                 if (j == sel) {
                     c = new Color(0xFF000000);
                 }
@@ -500,6 +613,7 @@ public class AlcColourSelector implements DocumentListener, AlcConstants {
         }
 
         void updateMouse(int mouseX, int mouseY) {
+
             if ((mouseX >= 0) && (mouseX < 256) &&
                     (mouseY >= 0) && (mouseY < 256)) {
                 int nhue = 359 - (int) (359 * (mouseY / 255.0f));

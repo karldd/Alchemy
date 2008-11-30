@@ -27,16 +27,12 @@ import java.util.*;
 import java.util.prefs.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
+import org.xml.sax.*;
 
 /**
  * Preference class used to store persistant data
@@ -338,23 +334,13 @@ class AlcPreferences implements AlcConstants {
         }
         prefsWindow.setTitle(title);
         prefsWindow.setResizable(false);
-        // Action to close the window when you hit the escape key
-        AbstractAction closeAction = new AbstractAction() {
 
-            public void actionPerformed(ActionEvent e) {
+        AlcUtil.registerWindowCloseKeys(prefsWindow.getRootPane(), new AbstractAction() {
+
+            public void actionPerformed(ActionEvent actionEvent) {
                 prefsWindow.setVisible(false);
             }
-        };
-        // Link the action to the Escape Key
-        prefsWindow.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
-        prefsWindow.getRootPane().getActionMap().put("Escape", closeAction);
-
-        if (Alchemy.PLATFORM == MACOSX) {
-            // Shortcut to close with a modifier - w on mac
-            prefsWindow.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, MODIFIER_KEY), "Close");
-            prefsWindow.getRootPane().getActionMap().put("Close", closeAction);
-        }
-
+        });
 
         //////////////////////////////////////////////////////////////
         // MASTER PANEL

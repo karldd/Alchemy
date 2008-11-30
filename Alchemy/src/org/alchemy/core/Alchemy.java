@@ -37,6 +37,7 @@ public class Alchemy implements AlcConstants {
     public static String SHIFT_KEY_STRING = "Shift";
     public static String ALT_KEY_STRING = "Alt";
     
+
     static {
         if (PLATFORM_NAME.indexOf("Mac") != -1) {
             PLATFORM = MACOSX;
@@ -86,9 +87,11 @@ public class Alchemy implements AlcConstants {
     static final AlcMath math = new AlcMath();
     /** Custom reusable colour chooser */
     static AlcColourChooser colourChooser;
+    /** Custom reusable colour selector */
+    static AlcColourSelector colourSelector;
 
     Alchemy() {
-        
+
         if (PLATFORM == MACOSX) {
             Object appIcon = LookAndFeel.makeIcon(getClass(), "/org/alchemy/data/alchemy-logo64.png");
             UIManager.put("OptionPane.errorIcon", appIcon);
@@ -111,7 +114,7 @@ public class Alchemy implements AlcConstants {
             ex.printStackTrace();
             bundle = bundleEn;
         }
-        
+
 
         // LOAD PREFERENCES
         preferences = new AlcPreferences();
@@ -140,6 +143,9 @@ public class Alchemy implements AlcConstants {
 
         // Colour chooser
         colourChooser = new AlcColourChooser(Color.WHITE);
+        // Colour Selector
+        colourSelector = new AlcColourSelector(bundle.getString("colourTitle"));
+        //cs.setVisible(true);
 
         // LOAD PLUGINS
         plugins = new AlcPlugins();
@@ -172,9 +178,8 @@ public class Alchemy implements AlcConstants {
         }
 
         window.setVisible(true);
-        
-        //AlcColourSelector cs = new AlcColourSelector();
-        //cs.show();
+
+
     }
 
     public static void main(String[] args) {

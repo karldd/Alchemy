@@ -23,18 +23,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 import javax.swing.border.Border;
 //import javax.swing.plaf.basic.BasicPopupMenuUI;
-class AlcPopupMenu extends JPopupMenu {
+class AlcPopupMenu extends JPopupMenu implements AlcConstants {
 
     /** Creates a new instance of AlcPopupMenu */
     AlcPopupMenu() {
 
-        //this.setUI(new AlcPopupMenuUI());
-        //this.setLightWeightPopupEnabled(false);
-        //this.setUI(new BasicPopupMenuUI());
-        //this.setOpaque(true);
         // Set the colour for the bg
         this.setBackground(AlcToolBar.toolBarHighlightColour);
-
 
         Border outline = BorderFactory.createLineBorder(AlcToolBar.toolBarLineColour, 1);
         Border empty = BorderFactory.createEmptyBorder(2, 2, 2, 2);

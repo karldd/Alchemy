@@ -23,6 +23,8 @@ import com.sun.pdfview.*;
 import eu.medsea.util.MimeUtil;
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
@@ -820,6 +822,21 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
+    /**
+     * Registers key events for a Ctrl-W and ESC with an ActionListener
+     * that will take care of disposing the window.
+     * @param root          The window
+     * @param closeAction   The action to be called 
+     */
+    public static void registerWindowCloseKeys(JRootPane root, Action closeAction) {
+        // Shortcut to close with escape
+        root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Close Window");
+        // Shortcut to close with a modifier - w
+        root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, MODIFIER_KEY), "Close Window");
+        // Assign the action for the two keys
+        root.getActionMap().put("Close Window",closeAction);
+    }
+
     //////////////////////////////////////////////////////////////
     // COLOUR
     //////////////////////////////////////////////////////////////
@@ -828,7 +845,7 @@ public class AlcUtil implements AlcConstants {
      * @param rgb   An rgb colour (bit-shifted int format)
      * @return      The brightness as an int
      */
-    public static int getColorBrightness(int rgb) {
+    public static int getColourBrightness(int rgb) {
         int oldR = (rgb >>> 16) & 255;
         int oldG = (rgb >>> 8) & 255;
         int oldB = (rgb >>> 0) & 255;

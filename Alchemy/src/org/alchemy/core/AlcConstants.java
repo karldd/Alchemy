@@ -117,7 +117,8 @@ public interface AlcConstants {
             Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, new int[16 * 16], 0, 16)),
             new Point(0, 0),
             "Blank");
-    static final Cursor CURSOR_CIRCLE_SMALL = AlcUtil.getCursor("cursor-circle-small.gif");
+    static final Cursor CURSOR_CIRCLE = AlcUtil.getCursor("cursor-circle.png");
+    static final Cursor CURSOR_EYEDROPPER = AlcUtil.getCursor("cursor-eyedropper.png");
     //
     //////////////////////////////////////////////////////////////
     // PEN TYPES
