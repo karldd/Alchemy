@@ -73,7 +73,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
                 GraphicsConfiguration gc = devices[i].getDefaultConfiguration();
                 Rectangle screenBounds = gc.getBounds();
-                Robot robot = robot = new Robot(devices[i]);
+                Robot robot = new Robot(devices[i]);
 
                 Rectangle newBounds = new Rectangle(0, 0, screenBounds.width, screenBounds.height);
                 final BufferedImage screenCapture = robot.createScreenCapture(newBounds);
@@ -90,7 +90,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
                     @Override
                     public void paintComponent(Graphics g) {
-                        super.paintComponent(g);
+                        //super.paintComponent(g);
                         g.drawImage(screenCapture, 0, 0, null);
                     }
                 };
@@ -115,6 +115,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                         screen.toFront();
                     }
                 });
+                //screens[i].pack();
                 screens[i].setVisible(true);
 
             } catch (Exception ex) {
