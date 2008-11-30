@@ -87,14 +87,14 @@ public class ColourSwitcher extends AlcModule {
 
 
         //  Colour
-        final AlcSubToggleButton baseColourButton = new AlcSubToggleButton("Colour", AlcUtil.getUrlPath("colour.png", getClassLoader()));
+        final AlcSubToggleButton baseColourButton = new AlcSubToggleButton("Base Colour", AlcUtil.getUrlPath("colour.png", getClassLoader()));
         baseColourButton.setToolTipText("Set the base colour to diverge from");
 
         // Action called when the user sets the colour
         final ActionListener okAction = new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                baseColour = colourChooser.getColor();
+                baseColour = colourSelector.getColour();
                 subToolBarSection.add(rangeSlider);
                 subToolBarSection.revalidate();
                 switchColour = true;
@@ -123,7 +123,7 @@ public class ColourSwitcher extends AlcModule {
 
                     public void actionPerformed(ActionEvent e) {
                         if (!switchColour) {
-                            colourChooser.show(okAction, cancelAction);
+                            colourSelector.show(okAction, cancelAction);
                         } else {
                             subToolBarSection.remove(rangeSlider);
                             subToolBarSection.revalidate();
