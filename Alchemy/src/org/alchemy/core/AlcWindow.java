@@ -337,7 +337,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     this.toFront();
 
                 } catch (Exception e) {
-                    System.err.println(e);
+                    System.err.println("Error Entering Fullscreen");
+                    e.printStackTrace();
                 }
             }
 

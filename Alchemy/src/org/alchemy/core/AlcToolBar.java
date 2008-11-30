@@ -286,48 +286,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         String colourTitle = getS("colourTitle");
         colourButton = new AlcPopupButton(colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("colour.png"));
-        picker = new AlcColourPicker();
-        picker.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-                // Check if the colour chooser needs to be launched
-                if (e.getX() >= 75 && e.getY() <= 15) {
-
-                    // Action to change the colour
-                    ActionListener colorAction = new ActionListener() {
-
-                        public void actionPerformed(ActionEvent event) {
-                            Alchemy.canvas.setColour(Alchemy.colourChooser.getColor());
-                            //Alchemy.canvas.setColour(Alchemy);
-                            refreshColourButton();
-                        }
-                    };
-
-                    // Set the current colour 
-                    Alchemy.colourChooser.setColor(Alchemy.canvas.getColour());
-                    Alchemy.colourChooser.show(colorAction, null);
-
-                // Dialog to hold the colour chooser
-//                    JDialog dialog = JColorChooser.createDialog(Alchemy.window, getS("colourTitle"), true, Alchemy.colourPane, colorAction, null);
-//                    dialog.setBackground(AlcToolBar.toolBarBgColour);
-//                    dialog.setResizable(false);
-//                    dialog.setVisible(true);
-
-                } else {
-                    Alchemy.canvas.setColour(picker.getColor(e.getX(), e.getY()));
-                    colourButton.hidePopup();
-                    if (Alchemy.PLATFORM == MACOSX) {
-                        Alchemy.canvas.restoreCursor();
-                        //Alchemy.canvas.setCursor(CURSOR_CROSS);
-                        setCursor(CURSOR_ARROW);
-                    }
-                    refreshColourButton();
-                }
-            }
-        });
-
+        picker = new AlcColourPicker(colourButton);
         colourButton.addItem(picker);
         toolBar.add(colourButton);
 

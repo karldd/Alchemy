@@ -60,8 +60,12 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         mainPalette.add("West", titleBar);
 
         this.setContentPane(mainPalette);
-//        this.pack();
-//        this.setVisible(true);
+        //this.setAlwaysOnTop(true);
+        
+        // Get rid of the window shadow on Mac
+        if (Alchemy.PLATFORM == MACOSX) {
+            this.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+        }
     }
 
     void shiftPalette(int x, int y) {
@@ -115,7 +119,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         // Set the cursor back to a cross hair when leaving the palette
         if (!this.contains(event.getPoint())) {
             Alchemy.canvas.restoreCursor();
-            //Alchemy.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+        //Alchemy.canvas.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         }
     }
 

@@ -109,7 +109,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
                 scaledImage.getRGB(0, 0, imageSize.width, imageSize.height, pixels, 0, imageSize.width);
                 // Then convert them all to grey for easy access
                 for (int i = 0; i < pixels.length; i++) {
-                    pixels[i] = AlcUtil.getColorBrightness(pixels[i]);
+                    pixels[i] = AlcUtil.getColourBrightness(pixels[i]);
                 }
                 pixelsLoaded = true;
 

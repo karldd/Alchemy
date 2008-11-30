@@ -31,16 +31,12 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
     private boolean inside;
 
     /** Creates a new instance of AlcPopupButton */
-//    public AlcPopupButton(Action action) {
-//        super(action);
-//    }
-    /** Creates a new instance of AlcPopupButton */
     AlcPopupButton(String text, String toolTip, URL iconUrl) {
         super(text, toolTip, iconUrl);
-        makePopup();
+        makePopup(text);
     }
 
-    private void makePopup() {
+    private void makePopup(final String text) {
         popup = new AlcPopupMenu();
 
         // Add a mouse listener to detect when the button is pressed and display the popup menu
@@ -49,8 +45,14 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
             @Override
             public void mousePressed(MouseEvent e) {
                 popup.show(e.getComponent(), 0, uiPopupMenuY);
-                //popup.requestFocus();
-                Alchemy.canvas.setTempCursor(CURSOR_ARROW);
+                // If this is not the colour menu which has it's own cursor
+                if (!text.equals(Alchemy.bundle.getString("colourTitle"))) {
+                    Alchemy.canvas.setTempCursor(CURSOR_ARROW);
+                }
+                // Get rid of the window shadow on Mac
+                if (Alchemy.PLATFORM == MACOSX) {
+                    popup.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+                }
             }
         });
 
@@ -65,13 +67,9 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
             public void mouseExited(MouseEvent e) {
                 inside = popup.contains(e.getPoint());
             }
-            });
+        });
     }
 
-//    public void setup(String text, String toolTip, URL iconUrl) {
-//        super.setup(text, toolTip, iconUrl);
-//        makePopup();
-//    }
     /** Add an interface element to the popup menu */
     void addItem(Component item) {
         popup.add(item);
@@ -89,7 +87,6 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
 
     /** Test to see if the cursor is inside the popup */
     boolean isInside() {
-        //System.out.println("INSIDE: " + inside);
         return inside;
     }
 }
