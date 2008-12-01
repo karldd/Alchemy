@@ -94,7 +94,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         eyeDropperWindow.setBounds(new Rectangle(12, 12));
         eyeDropperWindow.setCursor(CURSOR_EYEDROPPER);
         eyeDropperWindow.setAlwaysOnTop(true);
-        
+
         // Get rid of the window shadow on Mac
         if (Alchemy.PLATFORM == MACOSX) {
             eyeDropperWindow.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
@@ -198,15 +198,9 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     /** Start and show the colour selector */
     private void startColourSelector() {
         // Action to change the colour
-        ActionListener colorAction = new  
+        ActionListener colorAction = new ActionListener() {
 
-              ActionListener( ) {
-
-                
-                
-            
-        
-         public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 Alchemy.canvas.setColour(Alchemy.colourSelector.getColour());
                 Alchemy.toolBar.refreshColourButton();
             }
@@ -234,10 +228,20 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         // Launch Colour Picker
         if (x >= 60 && x < 80 && y <= 20) {
 
-            parent.hidePopup();
             Alchemy.toolBar.setToolBarVisible(false);
 
-            startEyeDropper();
+            // Allow some time for the dozy screen grabbing robot to create a shot
+            // WITHOUT the toolbar and colour picker onscreen
+            javax.swing.Timer initialDelay = new javax.swing.Timer(50, new ActionListener() {
+
+                public void actionPerformed(ActionEvent evt) {
+                    startEyeDropper();
+                }
+            });
+
+            initialDelay.setRepeats(false);
+            initialDelay.start();
+
 
         // Launch Colour Selector
         } else if (e.getX() >= 80 && e.getY() <= 20) {
