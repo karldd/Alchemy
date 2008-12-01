@@ -68,7 +68,6 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
      */
     private void startEyeDropper() {
 
-
         eyeDropperWindow = new JDialog(Alchemy.window, false);
         eyeDropperWindow.setUndecorated(true);
         eyeDropperWindow.setBounds(new Rectangle(12, 12));
@@ -226,6 +225,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         // Launch Colour Picker
         if (x >= 60 && x < 80 && y <= 20) {
 
+            Alchemy.toolBar.setToolBarVisible(false);
             startEyeDropper();
 
         // Launch Colour Selector
