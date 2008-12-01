@@ -68,29 +68,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
      */
     private void startEyeDropper() {
 
-        eyeDropperWindow = new JDialog(Alchemy.window, false);
-        eyeDropperWindow.setUndecorated(true);
-        eyeDropperWindow.setBounds(new Rectangle(12, 12));
-        eyeDropperWindow.setCursor(CURSOR_EYEDROPPER);
-        eyeDropperWindow.setAlwaysOnTop(true);
-        // Get rid of the window shadow on Mac
-        if (Alchemy.PLATFORM == MACOSX) {
-            eyeDropperWindow.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
-        }
-        eyeDropperWindow.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                stopEyeDropper();
-            }
-        });
-        eyeDropperTimer = new javax.swing.Timer(5, new ActionListener() {
-
-            public void actionPerformed(ActionEvent evt) {
-                updateEyeDropper();
-            }
-        });
-
+        // Create a screenshot of each monitor
         devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         screenShots = new BufferedImage[devices.length];
 
@@ -109,6 +87,31 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                 ex.printStackTrace();
             }
         }
+
+        // Create a small window that follows the mouse and captures mouse events
+        eyeDropperWindow = new JDialog(Alchemy.window, false);
+        eyeDropperWindow.setUndecorated(true);
+        eyeDropperWindow.setBounds(new Rectangle(12, 12));
+        eyeDropperWindow.setCursor(CURSOR_EYEDROPPER);
+        eyeDropperWindow.setAlwaysOnTop(true);
+        
+        // Get rid of the window shadow on Mac
+        if (Alchemy.PLATFORM == MACOSX) {
+            eyeDropperWindow.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+        }
+        eyeDropperWindow.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                stopEyeDropper();
+            }
+        });
+        eyeDropperTimer = new javax.swing.Timer(5, new ActionListener() {
+
+            public void actionPerformed(ActionEvent evt) {
+                updateEyeDropper();
+            }
+        });
 
         JPanel imagePanel = new JPanel() {
 
@@ -195,9 +198,15 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     /** Start and show the colour selector */
     private void startColourSelector() {
         // Action to change the colour
-        ActionListener colorAction = new ActionListener() {
+        ActionListener colorAction = new  
 
-            public void actionPerformed(ActionEvent event) {
+              ActionListener( ) {
+
+                
+                
+            
+        
+         public void actionPerformed(ActionEvent event) {
                 Alchemy.canvas.setColour(Alchemy.colourSelector.getColour());
                 Alchemy.toolBar.refreshColourButton();
             }
@@ -225,7 +234,9 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         // Launch Colour Picker
         if (x >= 60 && x < 80 && y <= 20) {
 
+            parent.hidePopup();
             Alchemy.toolBar.setToolBarVisible(false);
+
             startEyeDropper();
 
         // Launch Colour Selector
