@@ -141,6 +141,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private static VectorCanvas vectorCanvas;
     /** Previous cursor */
     Cursor oldCursor;
+    /** Automatic toggling of the toolbar */
+    private boolean autoToggleToolBar;
 
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
@@ -148,6 +150,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.smoothing = Alchemy.preferences.smoothing;
         this.bgColour = new Color(Alchemy.preferences.bgColour);
         this.colour = new Color(Alchemy.preferences.colour);
+        this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -873,6 +876,21 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.recordIndicator = recordIndicator;
     }
 
+    /** Manage the automatic toggling of the toolbar */
+    void setAutoToggleToolBar(boolean manageToolBar) {
+        if (!Alchemy.preferences.paletteAttached) {
+            this.autoToggleToolBar = manageToolBar;
+        }
+    }
+
+    /** If the toolbar is being automatically toggled on/off or not */
+    boolean isAutoToggleToolBar() {
+        if (Alchemy.preferences.paletteAttached) {
+            return false;
+        } else {
+            return this.autoToggleToolBar;
+        }
+    }
     //////////////////////////////////////////////////////////////
     // IMAGE
     //////////////////////////////////////////////////////////////
@@ -1328,7 +1346,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
-        if (!Alchemy.preferences.paletteAttached) {
+        if (isAutoToggleToolBar()) {
             Alchemy.toolBar.toggleToolBar(event.getY());
         }
         if (events) {

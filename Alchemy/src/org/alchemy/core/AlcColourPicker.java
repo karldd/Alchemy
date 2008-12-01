@@ -68,6 +68,8 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
      */
     private void startEyeDropper() {
 
+        Alchemy.canvas.setAutoToggleToolBar(false);
+
         // Create a screenshot of each monitor
         devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
         screenShots = new BufferedImage[devices.length];
@@ -188,6 +190,14 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                 screenShots = null;
                 devices = null;
 
+
+                if (Alchemy.PLATFORM == MACOSX) {
+                    Alchemy.canvas.restoreCursor();
+                    setCursor(CURSOR_ARROW);
+                }
+
+                Alchemy.canvas.setAutoToggleToolBar(true);
+
             } catch (Exception ex) {
                 System.err.println("Error selecting colour from the eye dropper");
                 ex.printStackTrace();
@@ -198,9 +208,15 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     /** Start and show the colour selector */
     private void startColourSelector() {
         // Action to change the colour
-        ActionListener colorAction = new ActionListener() {
+        ActionListener colorAction = new  
 
-            public void actionPerformed(ActionEvent event) {
+              ActionListener( ) {
+
+                
+                
+            
+        
+         public void actionPerformed(ActionEvent event) {
                 Alchemy.canvas.setColour(Alchemy.colourSelector.getColour());
                 Alchemy.toolBar.refreshColourButton();
             }
@@ -232,9 +248,14 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
             // Allow some time for the dozy screen grabbing robot to create a shot
             // WITHOUT the toolbar and colour picker onscreen
-            javax.swing.Timer initialDelay = new javax.swing.Timer(50, new ActionListener() {
+            javax.swing.Timer initialDelay = new javax.swing.Timer(50, new  
 
-                public void actionPerformed(ActionEvent evt) {
+                  ActionListener( ) {
+
+                    
+                
+            
+            public void actionPerformed(ActionEvent evt) {
                     startEyeDropper();
                 }
             });
