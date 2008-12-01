@@ -58,9 +58,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     private int currentSubToolBarSections = 0;
     /** The number of rows in the sub toolbar */
 //    private int subToolBarRows;
-    /** Colour picker - gets updated each time the bg colour is changed */
-    AlcColourPicker picker;
-    /** Foreground Background Button - gets updated whent he colours are swapped */
+    /** Colour picker */
+    private AlcColourPicker picker;
+    /** Foreground Background Button - gets updated when the colours are swapped */
     AlcToggleButton fgbgButton;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
@@ -610,8 +610,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         if (y < 10) {
             // Show the toolbar
             setToolBarVisible(true);
-            insideToolBar =
-                    true;
+            insideToolBar = true;
 
         } else if (y > getTotalHeight() + 5) {
             // If rolling out of a popup menu set the toolbar to dissapear with a timer
