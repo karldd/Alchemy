@@ -95,7 +95,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         eyeDropperWindow.setUndecorated(true);
         eyeDropperWindow.setBounds(new Rectangle(12, 12));
         eyeDropperWindow.setCursor(CURSOR_EYEDROPPER);
-        eyeDropperWindow.setAlwaysOnTop(true);
+        //eyeDropperWindow.setAlwaysOnTop(true);
 
         // Get rid of the window shadow on Mac
         if (Alchemy.PLATFORM == MACOSX) {
@@ -135,7 +135,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         };
 
         eyeDropperWindow.setContentPane(imagePanel);
-        eyeDropperWindow.toFront();
+        //eyeDropperWindow.toFront();
         eyeDropperTimer.start();
         eyeDropperWindow.setVisible(true);
 
