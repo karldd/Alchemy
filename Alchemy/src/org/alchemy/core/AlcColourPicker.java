@@ -135,6 +135,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         };
 
         eyeDropperWindow.setContentPane(imagePanel);
+        eyeDropperWindow.setFocusableWindowState(false);
         //eyeDropperWindow.toFront();
         eyeDropperTimer.start();
         eyeDropperWindow.setVisible(true);
