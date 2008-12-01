@@ -95,6 +95,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         eyeDropperWindow.setUndecorated(true);
         eyeDropperWindow.setBounds(new Rectangle(12, 12));
         eyeDropperWindow.setCursor(CURSOR_EYEDROPPER);
+        //Alchemy.canvas.setTempCursor(CURSOR_EYEDROPPER);
         //eyeDropperWindow.setAlwaysOnTop(true);
 
         // Get rid of the window shadow on Mac
@@ -135,7 +136,9 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         };
 
         eyeDropperWindow.setContentPane(imagePanel);
-        eyeDropperWindow.setFocusableWindowState(false);
+        if (Alchemy.PLATFORM != MACOSX) {
+            eyeDropperWindow.setFocusableWindowState(false);
+        }
         //eyeDropperWindow.toFront();
         eyeDropperTimer.start();
         eyeDropperWindow.setVisible(true);
@@ -192,10 +195,10 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                 devices = null;
 
 
-                if (Alchemy.PLATFORM == MACOSX) {
-                    Alchemy.canvas.restoreCursor();
-                    setCursor(CURSOR_ARROW);
-                }
+                //if (Alchemy.PLATFORM == MACOSX) {
+                Alchemy.canvas.restoreCursor();
+                //setCursor(CURSOR_ARROW);
+                //}
 
                 Alchemy.canvas.setAutoToggleToolBar(true);
 
@@ -209,15 +212,9 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     /** Start and show the colour selector */
     private void startColourSelector() {
         // Action to change the colour
-        ActionListener colorAction = new  
+        ActionListener colorAction = new ActionListener() {
 
-              ActionListener( ) {
-
-                
-                
-            
-        
-         public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 Alchemy.canvas.setColour(Alchemy.colourSelector.getColour());
                 Alchemy.toolBar.refreshColourButton();
             }
@@ -245,18 +242,15 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         // Launch Colour Picker
         if (x >= 60 && x < 80 && y <= 20) {
 
-            Alchemy.toolBar.setToolBarVisible(false);
+            if (!Alchemy.preferences.paletteAttached) {
+                Alchemy.toolBar.setToolBarVisible(false);
+            }
 
             // Allow some time for the dozy screen grabbing robot to create a shot
             // WITHOUT the toolbar and colour picker onscreen
-            javax.swing.Timer initialDelay = new javax.swing.Timer(50, new  
+            javax.swing.Timer initialDelay = new javax.swing.Timer(50, new ActionListener() {
 
-                  ActionListener( ) {
-
-                    
-                
-            
-            public void actionPerformed(ActionEvent evt) {
+                public void actionPerformed(ActionEvent evt) {
                     startEyeDropper();
                 }
             });
