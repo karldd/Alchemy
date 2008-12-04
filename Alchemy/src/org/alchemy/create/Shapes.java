@@ -145,7 +145,7 @@ public class Shapes extends AlcModule implements AlcConstants {
     public void mouseDragged(MouseEvent e) {
         if (!straightShapes) {
             
-           System.out.println(canvas.getPenPressure());
+           System.out.println(canvas.getPenType() + " " + canvas.getPenPressure());
             Point p = e.getPoint();
             // Need to test if it is null incase the shape has been auto-cleared
             if (canvas.getCurrentCreateShape() != null) {
