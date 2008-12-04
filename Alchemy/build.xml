@@ -128,11 +128,7 @@
             <fileset dir="${build.classes.dir}/org/alchemy/affect" includes="**/*"/>
             <fileset dir="${build.classes.dir}/org/alchemy/create" includes="**/*"/>
         </delete>
-        
     </target>
-    
-    
-    
     <target name="-post-jar">
          
         <!-- Classpath for the custom tasks -->
@@ -269,7 +265,6 @@
         
         <!-- JPen -->
         <copy file="${basedir}/lib/jpen/libjpen-2.so" todir="${dist.dir}/lib"/>
-        
     </target>
     
     
@@ -310,6 +305,7 @@
                 maxHeapSize="512">
                     <opt>-Djava.library.path=lib</opt>
                 </jre>
+                
                 <versionInfo
                 fileVersion="${version.numeric}"
                 txtFileVersion="${version.string}"
@@ -320,7 +316,7 @@
                 productName="${application.title}"
                 internalName="${application.title}"
                 originalFilename="Alchemy.exe"
-            />
+                />
             </config>
         </launch4j>
 
@@ -330,6 +326,5 @@
         
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>
-         
     </target>
 </project>
