@@ -119,9 +119,6 @@ public class Alchemy implements AlcConstants {
         // Create the window
         window = new AlcWindow();
 
-        // Create the preferences window
-        preferences.setupWindow(window);
-
         // LOCALE specific text for the Swing components
         UIManager.put("FileChooser.cancelButtonText", bundle.getString("cancel"));
         UIManager.put("FileChooser.newFolderButtonText", bundle.getString("newFolder"));
@@ -165,6 +162,7 @@ public class Alchemy implements AlcConstants {
 
         window.setupWindow();
         shortcuts.setupWindow();
+        preferences.setupWindow();
         plugins.initialiseModules();
 
         if (Alchemy.preferences.simpleToolBar) {
