@@ -128,7 +128,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         JLabel colourPicker = new JLabel(colourPickerIcon);
         colourPicker.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, toolBarLineColour));
         colourPicker.setToolTipText(getS("colourDescription"));
-        final Cursor pickerCursor = AlcUtil.getCursor("cursor-picker.gif");
+        final Cursor pickerCursor = AlcUtil.getCursor("cursor-circle.png");
         colourPicker.setCursor(pickerCursor);
         colourPicker.addMouseListener(new MouseAdapter() {
 

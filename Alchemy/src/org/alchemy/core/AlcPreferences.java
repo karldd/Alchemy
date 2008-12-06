@@ -52,21 +52,27 @@ class AlcPreferences implements AlcConstants {
     private JPanel generalPanel;
     /** Session content panel*/
     private JPanel sessionPanel;
-    /** Modules content panel*/
-    private JPanel modulesPanel;
-    /** Default / Cancel / OK Button Pane */
-    private JPanel buttonPane;
+    /** The general tab */
+    private final int GENERAL = 1;
+    /** The session tab */
+    private final int SESSION = 2;
+    /** The currently selected tab */
+    private int currentTab = GENERAL;
     /** Ok Button */
     private JButton okButton;
+    /** Size of the preferences window */
+    private final Dimension prefsWindowSize = new Dimension(500, 450);
+    /** Height of the tab panel */
+    private final int tabPanelHeight = 64;
     //////////////////////////////////////////////////////////////
     //  MODULES
     //////////////////////////////////////////////////////////////    
     /** Scroll pane for the module listing */
     private JScrollPane scrollPane;
-    /** Panel containing the modules */
-    private JPanel modulePanel;
     /** If the modules have been customised */
     private boolean modulesSet;
+    /** Panel containing the module check boxes */
+    private JPanel modulesPanel;
     /** Prefix for the preference node name */
     final String modulePrefix = "Module - ";
     /** Change modules when the prefs window is closed */
@@ -296,7 +302,7 @@ class AlcPreferences implements AlcConstants {
         return result;
     }
 
-    /** Reset the modules to defaults */
+    /** Reset the module preferences to defaults */
     private void resetModules(AlcModule[] modules) {
         for (int i = 0; i < modules.length; i++) {
             AlcModule currentModule = modules[i];
@@ -307,55 +313,98 @@ class AlcPreferences implements AlcConstants {
     }
 
     /** Initialise the preference window */
-    void setupWindow(AlcWindow owner) {
+    void setupWindow() {
 
-        // TODO - Implement tabs
-        // For mac - http://explodingpixels.wordpress.com/2008/05/02/sexy-swing-app-the-unified-toolbar/
-        // http://explodingpixels.wordpress.com/2008/05/03/sexy-swing-app-the-unified-toolbar-now-fully-draggable/
+        // PREFERENCES WINDOW
+        prefsWindow = getPrefsWindow();
 
-        //////////////////////////////////////////////////////////////
-        // WINDOW
-        //////////////////////////////////////////////////////////////
-        prefsWindow = new JFrame();
-        final int javaVersion = new Integer(JAVA_VERSION_NAME.substring(6, 8));
-
-        if (Alchemy.PLATFORM == MACOSX) {
-            // Try and detect if this is OSX 10.5 
-            // TODO - Fix OSX 10.5 detection
-            if (javaVersion >= 13) {
-                prefsWindow.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
-            }
-        }
-        final Dimension prefsWindowSize = new Dimension(500, 450);
-        prefsWindow.setPreferredSize(prefsWindowSize);
-        String title = "Alchemy Preferences";
-        if (Alchemy.PLATFORM == WINDOWS) {
-            title = "Alchemy Options";
-        }
-        prefsWindow.setTitle(title);
-        prefsWindow.setResizable(false);
-
-        AlcUtil.registerWindowCloseKeys(prefsWindow.getRootPane(), new AbstractAction() {
-
-            public void actionPerformed(ActionEvent actionEvent) {
-                prefsWindow.setVisible(false);
-            }
-        });
-
-        //////////////////////////////////////////////////////////////
-        // MASTER PANEL
-        //////////////////////////////////////////////////////////////
+        // MASTER PANEL 
+        // The very top level panel in the window containing the tab panel and all content
         JPanel masterPanel = new JPanel();
         // Turn off the layout manager just for the master panel
         masterPanel.setLayout(null);
         // Make this transparent so we can display the unified toolbar on OSX 10.5
         masterPanel.setOpaque(false);
 
-
-        //////////////////////////////////////////////////////////////
         // TAB PANEL
-        //////////////////////////////////////////////////////////////
-        final int tabPanelHeight = 64;
+        // Contains the buttons
+        masterPanel.add(getTabPanel());
+
+        // BACKGROUND PANEL
+        // The coloured panel that starts below the button panel
+        // Content is added to this panel
+        bgPanel = new JPanel();
+        bgPanel.setOpaque(true);
+        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width, prefsWindowSize.height - tabPanelHeight - 22);
+        bgPanel.setLayout(new BoxLayout(bgPanel, BoxLayout.PAGE_AXIS));
+        bgPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        masterPanel.add(bgPanel);
+
+
+        // GENERAL PANEL
+        generalPanel = getGeneralPanel();
+        bgPanel.add(generalPanel);
+
+        // BUTTON PANEL
+        bgPanel.add(getButtonPanel());
+
+        prefsWindow.getContentPane().add(masterPanel);
+        prefsWindow.pack();
+    }
+
+    /** Show the preferences window */
+    void showWindow() {
+        changeModules = false;
+//        if (scrollPane == null) {
+//            getModulesPane();
+//            //Add the scroll pane to this panel.
+//            bgPanel.add(scrollPane);
+//            bgPanel.add(buttonPane);
+//            prefsWindow.pack();
+//
+//        //prefsWindow.getRootPane().setDefaultButton(okButton);
+//        }
+
+        Point loc = AlcUtil.calculateCenter(prefsWindow);
+        prefsWindow.setLocation(loc.x, loc.y);
+        prefsWindow.setVisible(true);
+    }
+    //////////////////////////////////////////////////////////////
+    // WINDOW
+    //////////////////////////////////////////////////////////////
+    private JFrame getPrefsWindow() {
+
+        final JFrame w = new JFrame();
+        if (Alchemy.PLATFORM == MACOSX) {
+            // Try and detect if this is OSX 10.5 
+            // TODO - Fix OSX 10.5 detection
+            if (JAVA_SUBVERSION >= 13) {
+                w.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
+            }
+        }
+        w.setPreferredSize(prefsWindowSize);
+        String title = "Alchemy Preferences";
+        if (Alchemy.PLATFORM == WINDOWS) {
+            title = "Alchemy Options";
+        }
+        w.setTitle(title);
+        w.setResizable(false);
+
+        AlcUtil.registerWindowCloseKeys(w.getRootPane(), new AbstractAction() {
+
+            public void actionPerformed(ActionEvent actionEvent) {
+                w.setVisible(false);
+            }
+        });
+        return w;
+    }
+
+    //////////////////////////////////////////////////////////////
+    // TAB PANEL
+    //////////////////////////////////////////////////////////////
+    private JPanel getTabPanel() {
+
         JPanel tabPanel = new JPanel() {
 
             final Color unifiedLineColour = new Color(64, 64, 64);
@@ -369,7 +418,7 @@ class AlcPreferences implements AlcConstants {
                     int heightMinusOne = tabPanelHeight - 1;
 
                     // OSX 10.5 Unified toolbar
-                    if (Alchemy.PLATFORM == MACOSX && javaVersion >= 13) {
+                    if (Alchemy.PLATFORM == MACOSX && JAVA_SUBVERSION >= 13) {
                         g2.setPaint(unifiedLineColour);
                         g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
                     } else {
@@ -389,7 +438,6 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TAB BUTTONS
         //////////////////////////////////////////////////////////////
-
         ButtonGroup tabButtons = new ButtonGroup();
         AlcToggleButton styleTest = new AlcToggleButton("General", null, AlcUtil.getUrlPath("preferences-general.png"), true);
         styleTest.setSelected(true);
@@ -398,36 +446,26 @@ class AlcPreferences implements AlcConstants {
         tabPanel.add(styleTest);
         tabButtons.add(underOverTest);
         tabPanel.add(underOverTest);
+        return tabPanel;
+    }
+    //////////////////////////////////////////////////////////////
+    // GENERAL TAB
+    //////////////////////////////////////////////////////////////
+    private JPanel getGeneralPanel() {
 
-        masterPanel.add(tabPanel);
+        final JPanel gp = new JPanel();
+        gp.setLayout(new BoxLayout(gp, BoxLayout.PAGE_AXIS));
 
-        // TODO - Divide up the prefs panels General / Session / Modules
-
-
-        //////////////////////////////////////////////////////////////
-        // BACKGROUND PANEL
-        //////////////////////////////////////////////////////////////
-        bgPanel = new JPanel();
-        bgPanel.setOpaque(true);
-        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width, prefsWindowSize.height - tabPanelHeight - 22);
-        bgPanel.setLayout(new BoxLayout(bgPanel, BoxLayout.PAGE_AXIS));
-        bgPanel.setBackground(AlcToolBar.toolBarBgStartColour);
-        bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        masterPanel.add(bgPanel);
-
-        //////////////////////////////////////////////////////////////
         // INTERFACE SELECTOR
-        //////////////////////////////////////////////////////////////
-        JPanel centreRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
-        centreRow.setOpaque(false);
-        centreRow.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-        centreRow.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
-
+        JPanel interfaceSelector = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+        interfaceSelector.setOpaque(false);
+        interfaceSelector.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        interfaceSelector.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
 
         String[] interfaceType = {Alchemy.bundle.getString("standard"), Alchemy.bundle.getString("simple")};
 
         final JComboBox interfaceBox = new JComboBox(interfaceType);
-        interfaceBox.setFont(FONT_MEDIUM);
+        //interfaceBox.setFont(FONT_MEDIUM);
         interfaceBox.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
@@ -447,19 +485,72 @@ class AlcPreferences implements AlcConstants {
         if (Alchemy.preferences.simpleToolBar) {
             interfaceBox.setSelectedIndex(1);
         }
-        centreRow.add(interfaceBox);
+        interfaceSelector.add(interfaceBox);
 
         JLabel restart = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
         restart.setFont(new Font("sansserif", Font.PLAIN, 10));
         restart.setForeground(Color.GRAY);
-        centreRow.add(restart);
+        interfaceSelector.add(restart);
+        gp.add(interfaceSelector);
 
-        bgPanel.add(centreRow);
 
+        // MODULES LABEL
+        JPanel modulesLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        modulesLabelPanel.setOpaque(false);
+        modulesLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        JLabel modulesLabel = new JLabel(Alchemy.bundle.getString("modules") + ":");
+        modulesLabelPanel.setOpaque(false);
+        modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
+        modulesLabelPanel.add(modulesLabel);
+        // Restart required
+        JLabel restart2 = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
+        restart2.setFont(FONT_SMALL);
+        restart2.setForeground(Color.GRAY);
+        restart2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        modulesLabelPanel.add(restart2);
+        gp.add(modulesLabelPanel);
 
-        //////////////////////////////////////////////////////////////
-        // SESSION FILE
-        //////////////////////////////////////////////////////////////
+        gp.add(getModulesPane());
+        return gp;
+    }
+
+    private JScrollPane getModulesPane() {
+
+        modulesPanel = getModulesPanel();
+        //Create the scroll pane and add the panel to it.
+        scrollPane = new JScrollPane(modulesPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //scrollPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        scrollPane.setPreferredSize(new Dimension(prefsWindowSize.width - 30, 230));
+
+        return scrollPane;
+    }
+
+    private JPanel getModulesPanel() {
+        JPanel mp = new JPanel();
+        mp.setOpaque(true);
+        mp.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        mp.setBackground(AlcToolBar.toolBarBgStartColour);
+        int plugins = Alchemy.plugins.creates.length + Alchemy.plugins.affects.length;
+        mp.setLayout(new GridLayout(plugins, 1, 5, 5));
+        //JCheckBox[] checkBoxes = new JCheckBox[plugins];
+
+        setupModules(Alchemy.plugins.creates, mp);
+        setupModules(Alchemy.plugins.affects, mp);
+        modulesSet = true;
+        return mp;
+    }
+
+    private void refreshModulePanel() {
+        generalPanel.remove(scrollPane);
+        generalPanel.add(getModulesPane());
+        bgPanel.revalidate();
+    }
+    //////////////////////////////////////////////////////////////
+    // SESSION PANEL
+    //////////////////////////////////////////////////////////////
+    private JPanel getSessionPanel() {
+
+        JPanel sp = new JPanel();
         // Panel
         JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
         sessionFileRenamePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -502,7 +593,7 @@ class AlcPreferences implements AlcConstants {
         JLabel sessionFileRenameExt = new JLabel(".pdf");
         sessionFileRenameExt.setFont(FONT_MEDIUM);
         sessionFileRenamePanel.add(sessionFileRenameExt);
-        bgPanel.add(sessionFileRenamePanel);
+        sp.add(sessionFileRenamePanel);
 
         // Output Panel
         JPanel sessionFileRenameOuputPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -518,28 +609,22 @@ class AlcPreferences implements AlcConstants {
         sessionFileRenameOutput.setForeground(Color.GRAY);
         sessionFileRenameOutput.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         sessionFileRenameOuputPanel.add(sessionFileRenameOutput);
-        bgPanel.add(sessionFileRenameOuputPanel);
+        sp.add(sessionFileRenameOuputPanel);
 
+        return sp;
+    }
 
-        //////////////////////////////////////////////////////////////
-        // MODULES LABEL
-        //////////////////////////////////////////////////////////////
-        JPanel modulesLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        modulesLabelPanel.setOpaque(false);
-        modulesLabelPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        JLabel modulesLabel = new JLabel(Alchemy.bundle.getString("modules") + ":");
-        modulesLabelPanel.setOpaque(false);
-        modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
-        modulesLabelPanel.add(modulesLabel);
-        // Restart required
-        JLabel restart2 = new JLabel(restart.getText());
-        restart2.setFont(FONT_SMALL);
-        restart2.setForeground(Color.GRAY);
-        restart2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        modulesLabelPanel.add(restart2);
-        bgPanel.add(modulesLabelPanel);
+    /** Change the example output text */
+    private void refreshSessionPDFNameOutput() {
+        try {
+            String dateStamp = AlcUtil.dateStamp(sessionFileRenameDate.getText());
+            sessionFileRenameOutput.setText(Alchemy.bundle.getString("output") + ": " + sessionFileRenamePre.getText() + dateStamp + ".pdf");
+        } catch (Exception ex) {
+            invalidDateFormat();
+        }
+    }
 
-
+    private JPanel getButtonPanel() {
         //////////////////////////////////////////////////////////////
         // RESTORE DEFAULT BUTTON
         //////////////////////////////////////////////////////////////
@@ -548,13 +633,16 @@ class AlcPreferences implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        sessionFilePreName = defaultSessionFilePreName;
-                        sessionFileDateFormat = defaultSessionFileDateFormat;
-                        sessionFileRenamePre.setText(sessionFilePreName);
-                        sessionFileRenameDate.setText(sessionFileDateFormat);
-                        resetModules(Alchemy.plugins.creates);
-                        resetModules(Alchemy.plugins.affects);
-                        refreshModulePanel();
+                        if (currentTab == GENERAL) {
+                            resetModules(Alchemy.plugins.creates);
+                            resetModules(Alchemy.plugins.affects);
+                            refreshModulePanel();
+                        } else if (currentTab == SESSION) {
+                            sessionFilePreName = defaultSessionFilePreName;
+                            sessionFileDateFormat = defaultSessionFileDateFormat;
+                            sessionFileRenamePre.setText(sessionFilePreName);
+                            sessionFileRenameDate.setText(sessionFileDateFormat);
+                        }
                     }
                 });
 
@@ -608,7 +696,7 @@ class AlcPreferences implements AlcConstants {
                     }
                 });
 
-        buttonPane = new JPanel();
+        JPanel buttonPane = new JPanel();
         buttonPane.setOpaque(false);
         buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.LINE_AXIS));
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
@@ -618,68 +706,7 @@ class AlcPreferences implements AlcConstants {
         buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPane.add(okButton);
 
-        //masterPanel.add(buttonPane);
-
-        prefsWindow.getContentPane().add(masterPanel);
-    //prefsWindow.pack();
-    }
-
-    void showWindow() {
-        changeModules = false;
-        if (scrollPane == null) {
-            setupModulePanel();
-            //Add the scroll pane to this panel.
-            bgPanel.add(scrollPane);
-            bgPanel.add(buttonPane);
-            prefsWindow.pack();
-
-        //prefsWindow.getRootPane().setDefaultButton(okButton);
-        }
-
-        Point loc = AlcUtil.calculateCenter(prefsWindow);
-        prefsWindow.setLocation(loc.x, loc.y);
-        prefsWindow.setVisible(true);
-    }
-
-    private void setupModulePanel() {
-        modulePanel = new JPanel();
-        modulePanel.setOpaque(true);
-        modulePanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        modulePanel.setBackground(AlcToolBar.toolBarBgStartColour);
-        int plugins = Alchemy.plugins.creates.length + Alchemy.plugins.affects.length;
-        modulePanel.setLayout(new GridLayout(plugins, 1, 5, 5));
-        //JCheckBox[] checkBoxes = new JCheckBox[plugins];
-
-        setupModules(Alchemy.plugins.creates);
-        setupModules(Alchemy.plugins.affects);
-        modulesSet = true;
-
-
-        //Create the scroll pane and add the panel to it.
-        scrollPane = new JScrollPane(modulePanel);
-        //scrollPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setPreferredSize(new Dimension(300, 200));
-
-    }
-
-    private void refreshModulePanel() {
-        bgPanel.remove(scrollPane);
-        setupModulePanel();
-        bgPanel.add(scrollPane);
-        bgPanel.add(buttonPane);
-        bgPanel.revalidate();
-    }
-
-    /** Change the example output text */
-    private void refreshSessionPDFNameOutput() {
-        try {
-            String dateStamp = AlcUtil.dateStamp(sessionFileRenameDate.getText());
-            sessionFileRenameOutput.setText(Alchemy.bundle.getString("output") + ": " + sessionFileRenamePre.getText() + dateStamp + ".pdf");
-        } catch (Exception ex) {
-            invalidDateFormat();
-        }
+        return buttonPane;
     }
 
     /** Show the user that the date format was invalid */
@@ -718,7 +745,7 @@ class AlcPreferences implements AlcConstants {
         return dates;
     }
 
-    private void setupModules(AlcModule[] modules) {
+    private void setupModules(AlcModule[] modules, JPanel panel) {
 
         for (int i = 0; i < modules.length; i++) {
             AlcModule currentModule = modules[i];
@@ -739,14 +766,14 @@ class AlcPreferences implements AlcConstants {
                 }
             });
 
-            modulePanel.add(checkBox);
+            panel.add(checkBox);
         }
     }
 
     private void changeModules() {
         // If there has actually been some changes
         if (changeModules) {
-            Component[] components = modulePanel.getComponents();
+            Component[] components = modulesPanel.getComponents();
             int creates = Alchemy.plugins.getNumberOfCreateModules();
             for (int i = 0; i < components.length; i++) {
                 if (components[i] instanceof JCheckBox) {
