@@ -45,7 +45,7 @@ class AlcPreferences implements AlcConstants {
     //  WINDOW LAYOUT 
     //////////////////////////////////////////////////////////////
     /** The preferences window */
-    private JFrame prefsWindow;
+    private JDialog prefsWindow;
     /** Background content panel for the window */
     private JPanel bgPanel;
     /** General content panel*/
@@ -69,7 +69,7 @@ class AlcPreferences implements AlcConstants {
     //////////////////////////////////////////////////////////////
     private AlcToggleButton generalTabButton;
     private JComboBox interfaceBox;
-    private JCheckBox recordOnStartup;
+    private JCheckBox recordOnStartUp;
     private JTextField sessionDirectoryTextField;
     private JLabel sessionFileRenameOutput;
     private JTextField sessionFileRenamePre,  sessionFileRenameDate;
@@ -379,7 +379,7 @@ class AlcPreferences implements AlcConstants {
         sessionFileRenamePre.setText(sessionFilePreName);
         sessionFileRenameDate.setText(sessionFileDateFormat);
         sessionDirectoryTextField.setText(sessionPath);
-        recordOnStartup.setSelected(sessionRecordingState);
+        recordOnStartUp.setSelected(sessionRecordingState);
         if (Alchemy.preferences.simpleToolBar) {
             interfaceBox.setSelectedIndex(1);
         } else {
@@ -396,19 +396,20 @@ class AlcPreferences implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // WINDOW
     //////////////////////////////////////////////////////////////
-    private JFrame getPrefsWindow() {
+    private JDialog getPrefsWindow() {
 
-        final JFrame w = new JFrame();
-        if (Alchemy.PLATFORM == MACOSX) {
-            // Try and detect if this is OSX 10.5 
-            // TODO - Fix OSX 10.5 detection
-            if (JAVA_SUBVERSION >= 13) {
-                w.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
-            }
-        }
+        final JDialog w = new JDialog(Alchemy.window);
+        // Brush Metal Look does not work with JDialog
+        // Works with JFrame, but an owner can not be specified causing the menubar to disappear!
+//        if (Alchemy.PLATFORM == MACOSX) {
+//            // Try and detect if this is OSX 10.5 
+//            if (JAVA_SUBVERSION >= 13) {
+//                w.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
+//                System.out.println("Client Property: "+w.getRootPane().getClientProperty("apple.awt.brushMetalLook"));
+//            }
+//        }
         w.setPreferredSize(prefsWindowSize);
         w.setResizable(false);
-        
         AlcUtil.registerWindowCloseKeys(w.getRootPane(), new AbstractAction() {
 
             public void actionPerformed(ActionEvent actionEvent) {
@@ -427,6 +428,8 @@ class AlcPreferences implements AlcConstants {
 
             // Draw the background colour
             final Color unifiedLineColour = new Color(64, 64, 64);
+//            final Color tabButtonStartColour = new Color(187, 187, 187);
+//            final Color tabButtonEndColour = new Color(150, 150, 150);
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -436,17 +439,17 @@ class AlcPreferences implements AlcConstants {
                     int targetWidth = getRootPane().getSize().width;
                     int heightMinusOne = tabPanelHeight - 1;
 
-                    // OSX 10.5 Unified toolbar
-                    if (Alchemy.PLATFORM == MACOSX && JAVA_SUBVERSION >= 13) {
-                        g2.setPaint(unifiedLineColour);
-                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
-                    } else {
+//                    // OSX 10.5 Unified toolbar
+//                    if (Alchemy.PLATFORM == MACOSX && JAVA_SUBVERSION >= 13) {
+//                        g2.setPaint(unifiedLineColour);
+//                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
+//                    } else {
                         GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarBgStartColour, 0, tabPanelHeight, AlcToolBar.toolBarBgEndColour, true);
                         g2.setPaint(gradientPaint);
                         g2.fillRect(0, 0, targetWidth, tabPanelHeight);
                         g2.setPaint(AlcAbstractToolBar.toolBarLineColour);
                         g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
-                    }
+//                    }
                 }
             }
         };
@@ -481,7 +484,7 @@ class AlcPreferences implements AlcConstants {
         tabButtons.add(generalTabButton);
         tabPanel.add(generalTabButton);
         // Session button
-        AlcToggleButton sessionTabButton = new AlcToggleButton(Alchemy.bundle.getString("sessionTitle"), null, AlcUtil.getUrlPath("preferences-advanced.png"), true);
+        AlcToggleButton sessionTabButton = new AlcToggleButton(Alchemy.bundle.getString("sessionTitle"), null, AlcUtil.getUrlPath("preferences-session.png"), true);
 
         sessionTabButton.addActionListener(
                 new ActionListener() {
@@ -597,12 +600,12 @@ class AlcPreferences implements AlcConstants {
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
         leftPanel.setAlignmentY(Component.TOP_ALIGNMENT);
         // Session Recording
-        JLabel sessionRecording = new JLabel("Session Recording:");
+        JLabel sessionRecording = new JLabel(Alchemy.bundle.getString("sessionRecording") + ":");
         sessionRecording.setAlignmentX(Component.RIGHT_ALIGNMENT);
         leftPanel.add(sessionRecording);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 22)));
         //Session Directory
-        JLabel sessionDirectory = new JLabel("Session Directory:");
+        JLabel sessionDirectory = new JLabel(Alchemy.bundle.getString("sessionDirectory") + ":");
         sessionDirectory.setAlignmentX(Component.RIGHT_ALIGNMENT);
         leftPanel.add(sessionDirectory);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 53)));
@@ -619,10 +622,10 @@ class AlcPreferences implements AlcConstants {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
         rightPanel.setAlignmentY(Component.TOP_ALIGNMENT);
         // Record on startup
-        recordOnStartup = new JCheckBox(Alchemy.bundle.getString("recordStartUpTitle"));
-        recordOnStartup.setAlignmentX(Component.LEFT_ALIGNMENT);
-        recordOnStartup.setSelected(sessionRecordingState);
-        rightPanel.add(recordOnStartup);
+        recordOnStartUp = new JCheckBox(Alchemy.bundle.getString("recordOnStartUp"));
+        recordOnStartUp.setAlignmentX(Component.LEFT_ALIGNMENT);
+        recordOnStartUp.setSelected(sessionRecordingState);
+        rightPanel.add(recordOnStartUp);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         // Session Directory
         sessionDirectoryTextField = new JTextField(sessionPath);
@@ -631,7 +634,7 @@ class AlcPreferences implements AlcConstants {
         sessionDirectoryTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         rightPanel.add(sessionDirectoryTextField);
         // Select
-        JButton selectButton = new JButton("Select...");
+        JButton selectButton = new JButton(Alchemy.bundle.getString("select") + "...");
         selectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         selectButton.addActionListener(new ActionListener() {
 
@@ -688,7 +691,7 @@ class AlcPreferences implements AlcConstants {
 
         // Output Label
         sessionFileRenameOutput = new JLabel(
-                Alchemy.bundle.getString("output") + ": " +
+                Alchemy.bundle.getString("example") + ": " +
                 sessionFilePreName +
                 AlcUtil.dateStamp(sessionFileDateFormat) +
                 ".pdf");
@@ -730,7 +733,7 @@ class AlcPreferences implements AlcConstants {
                 sessionPath = DESKTOP_DIR;
                 sessionDirectoryTextField.setText(sessionPath);
                 sessionRecordingState = false;
-                recordOnStartup.setSelected(sessionRecordingState);
+                recordOnStartUp.setSelected(sessionRecordingState);
                 interfaceBox.setSelectedIndex(0);
             }
         });
@@ -788,8 +791,8 @@ class AlcPreferences implements AlcConstants {
                             Alchemy.session.restartSession();
                         }
                         // IF the record on statup check box has changed
-                        if (sessionRecordingState != recordOnStartup.isSelected()) {
-                            sessionRecordingState = recordOnStartup.isSelected();
+                        if (sessionRecordingState != recordOnStartUp.isSelected()) {
+                            sessionRecordingState = recordOnStartUp.isSelected();
                         }
                         prefsWindow.setVisible(false);
                     }

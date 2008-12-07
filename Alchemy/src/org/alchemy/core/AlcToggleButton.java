@@ -31,11 +31,17 @@ class AlcToggleButton extends JToggleButton implements AlcShortcutInterface, Alc
     private String toolTip;
     private boolean preferenceButton = false;
     // Colours for the preferences button
-    private Color centreTop = new Color(185, 185, 185);
-    private Color centreMiddle = new Color(139, 139, 139);
-    private Color centreBottom = new Color(149, 149, 149);
-    private Color innerMiddle = new Color(122, 122, 122);
-    private Color outerMiddle = new Color(85, 85, 85);
+    // Colours for the mac united toolbar
+//    private Color centreTop = new Color(185, 185, 185);
+//    private Color centreMiddle = new Color(139, 139, 139);
+//    private Color centreBottom = new Color(149, 149, 149);
+//    private Color innerMiddle = new Color(122, 122, 122);
+//    private Color outerMiddle = new Color(85, 85, 85);
+    private Color centreTop = new Color(233, 233, 233);
+    private Color centreMiddle = new Color(187, 187, 187);
+    private Color centreBottom = new Color(197, 197, 197);
+    private Color innerMiddle = new Color(170, 170, 170);
+    private Color outerMiddle = new Color(133, 133, 133);
     private Image backgroundImage;
 
     AlcToggleButton() {

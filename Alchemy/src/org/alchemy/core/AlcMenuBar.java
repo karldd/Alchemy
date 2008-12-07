@@ -333,19 +333,6 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         autoClearItem.setState(Alchemy.preferences.sessionAutoClear);
         sessionMenu.add(autoClearItem);
 
-        // Default Recording
-        AbstractAction defaultRecordingAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
-                Alchemy.preferences.sessionRecordingState = source.getState();
-            }
-        };
-        AlcCheckBoxMenuItem defaultRecordingItem = new AlcCheckBoxMenuItem(defaultRecordingAction);
-        defaultRecordingItem.setup(getS("recordStartUpTitle"));
-        defaultRecordingItem.setState(Alchemy.preferences.sessionRecordingState);
-        sessionMenu.add(defaultRecordingItem);
-
         sessionMenu.add(new JSeparator());
 
         // Load Session PDF
@@ -444,21 +431,6 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         restartItem.setup(restartTitle);
         sessionMenu.add(restartItem);
 
-        // Default Directory
-        final String setSessionDirTitle = getS("setSessionDirTitle");
-        AbstractAction directoryAction = new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                File file = AlcUtil.showFileChooser(true);
-                if (file != null) {
-                    System.out.println(file.getPath());
-                    Alchemy.preferences.sessionPath = file.getPath();
-                }
-            }
-        };
-        AlcMenuItem directoryItem = new AlcMenuItem(directoryAction);
-        directoryItem.setup(setSessionDirTitle);
-        sessionMenu.add(directoryItem);
         this.add(sessionMenu);
 
 
