@@ -63,7 +63,7 @@ class AlcPreferences implements AlcConstants {
     /** Size of the preferences window */
     private final Dimension prefsWindowSize = new Dimension(500, 450);
     /** Height of the tab panel */
-    private final int tabPanelHeight = 64;
+    private final int tabPanelHeight = 65;
     //////////////////////////////////////////////////////////////
     // INTERFACE ELEMENTS
     //////////////////////////////////////////////////////////////
@@ -329,7 +329,7 @@ class AlcPreferences implements AlcConstants {
         // Turn off the layout manager just for the master panel
         masterPanel.setLayout(null);
         // Make this transparent so we can display the unified toolbar on OSX 10.5
-        masterPanel.setOpaque(false);
+//        masterPanel.setOpaque(false);
 
         // TAB PANEL
         // Contains the buttons
@@ -340,9 +340,10 @@ class AlcPreferences implements AlcConstants {
         // Content is added to this panel
         bgPanel = new JPanel();
         bgPanel.setOpaque(true);
-        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width, prefsWindowSize.height - tabPanelHeight - 22);
+        int bgPanelOffset = (Alchemy.PLATFORM == MACOSX) ? 22 : 32;
+        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width-5, prefsWindowSize.height - tabPanelHeight - bgPanelOffset);
         bgPanel.setLayout(new BorderLayout());
-        bgPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        bgPanel.setBackground(AlcToolBar.toolBarHighlightColour);
         bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         masterPanel.add(bgPanel);
 
@@ -511,6 +512,7 @@ class AlcPreferences implements AlcConstants {
     private JPanel getGeneralPanel() {
 
         final JPanel gp = new JPanel();
+        gp.setOpaque(false);
         gp.setLayout(new BoxLayout(gp, BoxLayout.PAGE_AXIS));
 
         // INTERFACE SELECTOR
@@ -567,7 +569,7 @@ class AlcPreferences implements AlcConstants {
 
     private JPanel getModulesPanel() {
         JPanel mp = new JPanel();
-        mp.setOpaque(true);
+        //mp.setOpaque(true);
         mp.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         mp.setBackground(AlcToolBar.toolBarBgStartColour);
         int plugins = Alchemy.plugins.creates.length + Alchemy.plugins.affects.length;
@@ -592,11 +594,13 @@ class AlcPreferences implements AlcConstants {
 
         // Top Panel
         JPanel sp = new JPanel();
+        sp.setOpaque(false);
         sp.setLayout(new BoxLayout(sp, BoxLayout.LINE_AXIS));
         sp.add(Box.createHorizontalGlue());
 
         // LEFT PANEL
         JPanel leftPanel = new JPanel();
+        leftPanel.setOpaque(false);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
         leftPanel.setAlignmentY(Component.TOP_ALIGNMENT);
         // Session Recording
@@ -619,11 +623,13 @@ class AlcPreferences implements AlcConstants {
 
         // RIGHT PANEL
         JPanel rightPanel = new JPanel();
+        rightPanel.setOpaque(false);
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
         rightPanel.setAlignmentY(Component.TOP_ALIGNMENT);
         // Record on startup
         recordOnStartUp = new JCheckBox(Alchemy.bundle.getString("recordOnStartUp"));
         recordOnStartUp.setAlignmentX(Component.LEFT_ALIGNMENT);
+        recordOnStartUp.setOpaque(false);
         recordOnStartUp.setSelected(sessionRecordingState);
         rightPanel.add(recordOnStartUp);
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -633,6 +639,7 @@ class AlcPreferences implements AlcConstants {
         sessionDirectoryTextField.setEnabled(false);
         sessionDirectoryTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
         rightPanel.add(sessionDirectoryTextField);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         // Select
         JButton selectButton = new JButton(Alchemy.bundle.getString("select") + "...");
         selectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -649,6 +656,7 @@ class AlcPreferences implements AlcConstants {
         rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         // Panel
         JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        sessionFileRenamePanel.setOpaque(false);
         // PreName
         sessionFileRenamePre = new JTextField(sessionFilePreName);
         int textHeight = sessionFileRenamePre.getPreferredSize().height;
