@@ -49,7 +49,6 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         userShortcuts = new ArrayList<AlcShortcutMapper>(50);
         defaultShortcuts = new ArrayList<AlcShortcutMapper>(50);
         this.setPreferredSize(new Dimension(400, 300));
-
     }
 
     void setupWindow() {
@@ -61,9 +60,8 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         //masterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
         masterPanel.setOpaque(true);
-        masterPanel.setBackground(AlcToolBar.toolBarBgStartColour);
+        masterPanel.setBackground(AlcToolBar.toolBarHighlightColour);
         masterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
 
 
         //////////////////////////////////////////////////////////////
@@ -134,24 +132,27 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
         buttonPane.add(Box.createHorizontalGlue());
-        buttonPane.add(cancelButton);
-        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
-        buttonPane.add(okButton);
+        if (Alchemy.PLATFORM == MACOSX) {
+            buttonPane.add(cancelButton);
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(okButton);
+        } else {
+            buttonPane.add(okButton);
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(cancelButton);
+        }
+
 
         masterPanel.add(buttonPane);
         //getRootPane().setDefaultButton(okButton);
 
-        // Action to close the window when you hit the escape key
-        AbstractAction closeAction = new AbstractAction() {
+        AlcUtil.registerWindowCloseKeys(this.getRootPane(), new AbstractAction() {
 
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent actionEvent) {
                 setVisible(false);
             }
-        };
-
-        this.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
-        this.getRootPane().getActionMap().put("Escape", closeAction);
-
+        });
+        
         this.getContentPane().add(masterPanel);
         this.pack();
     //this.setResizable(false);

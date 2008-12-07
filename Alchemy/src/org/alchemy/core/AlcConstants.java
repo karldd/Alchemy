@@ -21,6 +21,7 @@ package org.alchemy.core;
 
 import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
@@ -121,7 +122,10 @@ public interface AlcConstants {
             "Blank");
     static final Cursor CURSOR_CIRCLE = AlcUtil.getCursor("cursor-circle.png");
     static final Cursor CURSOR_EYEDROPPER = AlcUtil.getCursor("cursor-eyedropper.png");
-    //
+    //////////////////////////////////////////////////////////////
+    // ICONS
+    //////////////////////////////////////////////////////////////
+    static final Image ICON_TITLEBAR = AlcUtil.getImage("titlebar.png");
     //////////////////////////////////////////////////////////////
     // PEN TYPES
     //////////////////////////////////////////////////////////////

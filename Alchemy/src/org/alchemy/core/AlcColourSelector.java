@@ -31,7 +31,7 @@ import javax.swing.text.*;
  * Based on code from the lovely Processing ColorSelector [sic]
  * http://dev.processing.org/source/index.cgi/trunk/processing/app/src/processing/app/tools/ColorSelector.java?view=markup
  */
-public class AlcColourSelector extends JFrame implements DocumentListener, AlcConstants {
+public class AlcColourSelector extends JDialog implements DocumentListener, AlcConstants {
 
     private int hue,  saturation,  brightness;  // range 360, 100, 100
     private int red,  green,  blue;   // range 256, 256, 256
@@ -47,10 +47,11 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
 
     AlcColourSelector(String title) {
 
-        super(title);
+        super(Alchemy.window, title);
 
         this.getContentPane().setLayout(new BorderLayout());
-
+        this.getContentPane().setBackground(AlcToolBar.toolBarHighlightColour);
+        
         Box box = Box.createHorizontalBox();
         box.setBorder(new EmptyBorder(12, 12, 12, 12));
 
@@ -75,9 +76,7 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
         box.add(createColorFields());
         box.add(Box.createHorizontalStrut(10));
 
-
         this.getContentPane().add(box, BorderLayout.CENTER);
-        // TODO - Align the button pane to the bottom
         this.getContentPane().add(createButtonPanel(), BorderLayout.SOUTH);
 
         this.pack();
@@ -271,24 +270,9 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
         try {
             int value = Integer.parseInt(text);
             if (value > max) {
-                SwingUtilities.invokeLater(new  
+                SwingUtilities.invokeLater(new Runnable() {
 
-                      Runnable() {
-
-                        
-                    
-                
-                 
-            
-             
-            
-             
-        
-    
-
-    public    
-           
-        void run() {
+                    public void run() {
                         field.setText(String.valueOf(max));
                     }
                 });
@@ -305,13 +289,9 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
         Box box = Box.createVerticalBox();
         box.setAlignmentY(0);
 
-        colourPanel = new  
+        colourPanel = new JPanel() {
 
-              JPanel( ) {
-
-                   
-                   
-                @Override
+            @Override
             public void paintComponent(Graphics g) {
                 g.setColor(new Color(red, green, blue));
                 Dimension size = getSize();
@@ -403,11 +383,9 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
         cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
         cancelButton.setMnemonic(KeyEvent.VK_ESCAPE);
         cancelButton.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                        public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) {
                         setVisible(false);
                     }
                 });
@@ -416,11 +394,9 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
         okButton = new JButton(Alchemy.bundle.getString("ok"));
         okButton.setMnemonic(KeyEvent.VK_ENTER);
         okButton.addActionListener(
-                new  
+                new ActionListener() {
 
-                      ActionListener( ) {
-
-                        public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent e) {
                         setVisible(false);
                     }
                 });
@@ -431,9 +407,16 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
         buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 //        buttonPane.add(resetButton);
         buttonPane.add(Box.createHorizontalGlue());
-        buttonPane.add(cancelButton);
-        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
-        buttonPane.add(okButton);
+        if (Alchemy.PLATFORM == MACOSX) {
+            buttonPane.add(cancelButton);
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(okButton);
+        } else {
+            buttonPane.add(okButton);
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(cancelButton);
+        }
+
 
         return buttonPane;
     }
@@ -460,10 +443,8 @@ public class AlcColourSelector extends JFrame implements DocumentListener, AlcCo
 
         static final int WIDE = 256;
         static final int HIGH = 256;
-         
-         
-         int lastX     ,  lastY      ;
-           private int pixels[] = new int[WIDE * HIGH];
+        int lastX, lastY;
+        private int pixels[] = new int[WIDE * HIGH];
         private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
         boolean init = true;
 
