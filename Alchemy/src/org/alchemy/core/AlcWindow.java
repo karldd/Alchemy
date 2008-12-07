@@ -76,9 +76,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Let the exitAlchemy function take care of closing
         //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        Image titleBarIcon = AlcUtil.getImage("titlebar.png");
-        if (titleBarIcon != null) {
-            this.setIconImage(titleBarIcon);
+        if (ICON_TITLEBAR != null) {
+            this.setIconImage(ICON_TITLEBAR);
         }
 
 

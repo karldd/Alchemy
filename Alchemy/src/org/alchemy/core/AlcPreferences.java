@@ -341,7 +341,7 @@ class AlcPreferences implements AlcConstants {
         bgPanel = new JPanel();
         bgPanel.setOpaque(true);
         int bgPanelOffset = (Alchemy.PLATFORM == MACOSX) ? 22 : 32;
-        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width-5, prefsWindowSize.height - tabPanelHeight - bgPanelOffset);
+        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width - 4, prefsWindowSize.height - tabPanelHeight - bgPanelOffset);
         bgPanel.setLayout(new BorderLayout());
         bgPanel.setBackground(AlcToolBar.toolBarHighlightColour);
         bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -399,7 +399,7 @@ class AlcPreferences implements AlcConstants {
     //////////////////////////////////////////////////////////////
     private JDialog getPrefsWindow() {
 
-        final JDialog w = new JDialog(Alchemy.window);
+        JDialog w = new JDialog(Alchemy.window, true);
         // Brush Metal Look does not work with JDialog
         // Works with JFrame, but an owner can not be specified causing the menubar to disappear!
 //        if (Alchemy.PLATFORM == MACOSX) {
@@ -431,7 +431,6 @@ class AlcPreferences implements AlcConstants {
             final Color unifiedLineColour = new Color(64, 64, 64);
 //            final Color tabButtonStartColour = new Color(187, 187, 187);
 //            final Color tabButtonEndColour = new Color(150, 150, 150);
-
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -445,11 +444,11 @@ class AlcPreferences implements AlcConstants {
 //                        g2.setPaint(unifiedLineColour);
 //                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    } else {
-                        GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarBgStartColour, 0, tabPanelHeight, AlcToolBar.toolBarBgEndColour, true);
-                        g2.setPaint(gradientPaint);
-                        g2.fillRect(0, 0, targetWidth, tabPanelHeight);
-                        g2.setPaint(AlcAbstractToolBar.toolBarLineColour);
-                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
+                    GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarBgStartColour, 0, tabPanelHeight, AlcToolBar.toolBarBgEndColour, true);
+                    g2.setPaint(gradientPaint);
+                    g2.fillRect(0, 0, targetWidth, tabPanelHeight);
+                    g2.setPaint(AlcAbstractToolBar.toolBarLineColour);
+                    g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    }
                 }
             }
@@ -603,6 +602,9 @@ class AlcPreferences implements AlcConstants {
         leftPanel.setOpaque(false);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
         leftPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        if (Alchemy.PLATFORM != MACOSX) {
+            leftPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        }
         // Session Recording
         JLabel sessionRecording = new JLabel(Alchemy.bundle.getString("sessionRecording") + ":");
         sessionRecording.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -612,7 +614,7 @@ class AlcPreferences implements AlcConstants {
         JLabel sessionDirectory = new JLabel(Alchemy.bundle.getString("sessionDirectory") + ":");
         sessionDirectory.setAlignmentX(Component.RIGHT_ALIGNMENT);
         leftPanel.add(sessionDirectory);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 53)));
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 55)));
         //Session PDF Name
         JLabel sessionPDFName = new JLabel(Alchemy.bundle.getString("sessionPDFName") + ":");
         sessionPDFName.setAlignmentX(Component.RIGHT_ALIGNMENT);
