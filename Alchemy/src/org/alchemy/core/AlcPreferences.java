@@ -340,8 +340,17 @@ class AlcPreferences implements AlcConstants {
         // Content is added to this panel
         bgPanel = new JPanel();
         bgPanel.setOpaque(true);
-        int bgPanelOffset = (Alchemy.PLATFORM == MACOSX) ? 22 : 32;
-        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width - 4, prefsWindowSize.height - tabPanelHeight - bgPanelOffset);
+        int bgPanelHeightOffset = 32;
+        if (Alchemy.PLATFORM == MACOSX) {
+            bgPanelHeightOffset = 22;
+        } else if (Alchemy.PLATFORM == LINUX) {
+            bgPanelHeightOffset = 0;
+        }
+        int bgPanelWidthOffset = 0;
+        if (Alchemy.PLATFORM == WINDOWS) {
+            bgPanelWidthOffset = 4;
+        }
+        bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width + bgPanelWidthOffset, prefsWindowSize.height - tabPanelHeight - bgPanelHeightOffset);
         bgPanel.setLayout(new BorderLayout());
         bgPanel.setBackground(AlcToolBar.toolBarHighlightColour);
         bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
