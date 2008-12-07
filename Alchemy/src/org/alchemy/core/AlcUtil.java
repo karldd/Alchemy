@@ -734,7 +734,7 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser() {
-        return showFileChooser(null, null, false);
+        return showFileChooser(null, null, false, null);
     }
 
     /** Ask for a location with a file chooser. 
@@ -742,7 +742,7 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser(String title) {
-        return showFileChooser(title, null, false);
+        return showFileChooser(title, null, false, null);
     }
 
     /** Ask for a location with a file chooser. 
@@ -750,7 +750,7 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser(File defaultDir) {
-        return showFileChooser(null, defaultDir, false);
+        return showFileChooser(null, defaultDir, false, null);
     }
 
     /** Ask for a location with a file chooser. 
@@ -758,7 +758,16 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser(boolean foldersOnly) {
-        return showFileChooser(null, null, foldersOnly);
+        return showFileChooser(null, null, foldersOnly, null);
+    }
+
+    /** Ask for a location with a file chooser. 
+     *  @param  foldersOnly      to select only folders or not
+     *  @param parent            the parent component of the dialog, can be null; see showDialog for details
+     * @return                   file/folder selected by the user
+     */
+    public static File showFileChooser(boolean foldersOnly, Component parent) {
+        return showFileChooser(null, null, foldersOnly, parent);
     }
 
     /** Ask for a location with a file chooser. 
@@ -767,7 +776,7 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser(File defaultDir, boolean foldersOnly) {
-        return showFileChooser(null, defaultDir, foldersOnly);
+        return showFileChooser(null, defaultDir, foldersOnly, null);
     }
 
     /** Ask for a location with a file chooser. 
@@ -776,7 +785,7 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser(String title, boolean foldersOnly) {
-        return showFileChooser(title, null, foldersOnly);
+        return showFileChooser(title, null, foldersOnly, null);
     }
 
     /** Ask for a location with a file chooser. 
@@ -785,16 +794,17 @@ public class AlcUtil implements AlcConstants {
      *  @return                     file/folder selected by the user
      */
     public static File showFileChooser(String title, File defaultDir) {
-        return showFileChooser(title, defaultDir, false);
+        return showFileChooser(title, defaultDir, false, null);
     }
 
     /** Ask for a location with a file chooser. 
      *  @param  title               the name of the popup title
      *  @param  foldersOnly         to select only folders or not
      *  @param defaultDir           the default directory
-     *  @return                     file/folder selected by the user
+     *  @param parent               the parent component of the dialog, can be null; see showDialog for details
+     * @return                     file/folder selected by the user
      */
-    public static File showFileChooser(String title, File defaultDir, boolean foldersOnly) {
+    public static File showFileChooser(String title, File defaultDir, boolean foldersOnly, Component parent) {
         AlcFileChooser fc = null;
 
         if (defaultDir != null && defaultDir.exists()) {
@@ -812,7 +822,7 @@ public class AlcUtil implements AlcConstants {
         }
 
         // in response to a button click:
-        int returnVal = fc.showOpenDialog(Alchemy.window);
+        int returnVal = (parent == null) ? fc.showOpenDialog(Alchemy.window) : fc.showOpenDialog(parent);
 
         if (returnVal == AlcFileChooser.APPROVE_OPTION) {
             return fc.getSelectedFile();
@@ -834,7 +844,7 @@ public class AlcUtil implements AlcConstants {
         // Shortcut to close with a modifier - w
         root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, MODIFIER_KEY), "Close Window");
         // Assign the action for the two keys
-        root.getActionMap().put("Close Window",closeAction);
+        root.getActionMap().put("Close Window", closeAction);
     }
 
     //////////////////////////////////////////////////////////////
