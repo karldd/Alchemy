@@ -65,6 +65,15 @@ class AlcPreferences implements AlcConstants {
     /** Height of the tab panel */
     private final int tabPanelHeight = 64;
     //////////////////////////////////////////////////////////////
+    // INTERFACE ELEMENTS
+    //////////////////////////////////////////////////////////////
+    private AlcToggleButton generalTabButton;
+    private JComboBox interfaceBox;
+    private JCheckBox recordOnStartup;
+    private JTextField sessionDirectoryTextField;
+    private JLabel sessionFileRenameOutput;
+    private JTextField sessionFileRenamePre,  sessionFileRenameDate;
+    //////////////////////////////////////////////////////////////
     //  MODULES
     //////////////////////////////////////////////////////////////    
     /** Scroll pane for the module listing */
@@ -99,11 +108,7 @@ class AlcPreferences implements AlcConstants {
     /** The default start section of the session file name */
     private final String defaultSessionFilePreName = "Alchemy-";
     /** The default Date format for the session pdf */
-    private final String defaultSessionFileDateFormat = "yyyy-MM-dd-HH-mm-ss";
-    /** Session file naming components */
-    private JLabel sessionFileRenameOutput;
-    private JTextField sessionFileRenamePre,  sessionFileRenameDate;
-    //////////////////////////////////////////////////////////////
+    private final String defaultSessionFileDateFormat = "yyyy-MM-dd-HH-mm-ss";    //////////////////////////////////////////////////////////////
     // SHAPES 
     //////////////////////////////////////////////////////////////
     /** Directory to load shapes from */
@@ -336,7 +341,7 @@ class AlcPreferences implements AlcConstants {
         bgPanel = new JPanel();
         bgPanel.setOpaque(true);
         bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width, prefsWindowSize.height - tabPanelHeight - 22);
-        bgPanel.setLayout(new BoxLayout(bgPanel, BoxLayout.PAGE_AXIS));
+        bgPanel.setLayout(new BorderLayout());
         bgPanel.setBackground(AlcToolBar.toolBarBgStartColour);
         bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         masterPanel.add(bgPanel);
@@ -344,10 +349,16 @@ class AlcPreferences implements AlcConstants {
 
         // GENERAL PANEL
         generalPanel = getGeneralPanel();
-        bgPanel.add(generalPanel);
+
+        // SESSION PANEL
+        sessionPanel = getSessionPanel();
+
+        // Add only the general panel
+        bgPanel.add(generalPanel, BorderLayout.PAGE_START);
+        prefsWindow.setTitle(Alchemy.bundle.getString("generalTitle"));
 
         // BUTTON PANEL
-        bgPanel.add(getButtonPanel());
+        bgPanel.add(getButtonPanel(), BorderLayout.PAGE_END);
 
         prefsWindow.getContentPane().add(masterPanel);
         prefsWindow.pack();
@@ -356,19 +367,31 @@ class AlcPreferences implements AlcConstants {
     /** Show the preferences window */
     void showWindow() {
         changeModules = false;
-//        if (scrollPane == null) {
-//            getModulesPane();
-//            //Add the scroll pane to this panel.
-//            bgPanel.add(scrollPane);
-//            bgPanel.add(buttonPane);
-//            prefsWindow.pack();
-//
-//        //prefsWindow.getRootPane().setDefaultButton(okButton);
-//        }
-
         Point loc = AlcUtil.calculateCenter(prefsWindow);
         prefsWindow.setLocation(loc.x, loc.y);
         prefsWindow.setVisible(true);
+    }
+
+    /** Hide the preferences window */
+    void hideWindow() {
+        prefsWindow.setVisible(false);
+        refreshModulePanel();
+        sessionFileRenamePre.setText(sessionFilePreName);
+        sessionFileRenameDate.setText(sessionFileDateFormat);
+        sessionDirectoryTextField.setText(sessionPath);
+        recordOnStartup.setSelected(sessionRecordingState);
+        if (Alchemy.preferences.simpleToolBar) {
+            interfaceBox.setSelectedIndex(1);
+        } else {
+            interfaceBox.setSelectedIndex(0);
+        }
+        if (currentTab == SESSION) {
+            bgPanel.remove(sessionPanel);
+            bgPanel.add(generalPanel, BorderLayout.PAGE_START);
+            prefsWindow.setTitle(Alchemy.bundle.getString("generalTitle"));
+            currentTab = GENERAL;
+            generalTabButton.setSelected(true);
+        }
     }
     //////////////////////////////////////////////////////////////
     // WINDOW
@@ -384,17 +407,12 @@ class AlcPreferences implements AlcConstants {
             }
         }
         w.setPreferredSize(prefsWindowSize);
-        String title = "Alchemy Preferences";
-        if (Alchemy.PLATFORM == WINDOWS) {
-            title = "Alchemy Options";
-        }
-        w.setTitle(title);
         w.setResizable(false);
-
+        
         AlcUtil.registerWindowCloseKeys(w.getRootPane(), new AbstractAction() {
 
             public void actionPerformed(ActionEvent actionEvent) {
-                w.setVisible(false);
+                hideWindow();
             }
         });
         return w;
@@ -407,6 +425,7 @@ class AlcPreferences implements AlcConstants {
 
         JPanel tabPanel = new JPanel() {
 
+            // Draw the background colour
             final Color unifiedLineColour = new Color(64, 64, 64);
 
             @Override
@@ -438,14 +457,49 @@ class AlcPreferences implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TAB BUTTONS
         //////////////////////////////////////////////////////////////
+        // Button Groupp
         ButtonGroup tabButtons = new ButtonGroup();
-        AlcToggleButton styleTest = new AlcToggleButton("General", null, AlcUtil.getUrlPath("preferences-general.png"), true);
-        styleTest.setSelected(true);
-        AlcToggleButton underOverTest = new AlcToggleButton("Advanced", null, AlcUtil.getUrlPath("preferences-advanced.png"), true);
-        tabButtons.add(styleTest);
-        tabPanel.add(styleTest);
-        tabButtons.add(underOverTest);
-        tabPanel.add(underOverTest);
+        // General button
+        generalTabButton = new AlcToggleButton(Alchemy.bundle.getString("generalTitle"), null, AlcUtil.getUrlPath("preferences-general.png"), true);
+        generalTabButton.setSelected(true);
+
+        generalTabButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        if (currentTab == SESSION) {
+                            bgPanel.remove(sessionPanel);
+                            bgPanel.add(generalPanel, BorderLayout.PAGE_START);
+                            prefsWindow.setTitle(Alchemy.bundle.getString("generalTitle"));
+                            currentTab = GENERAL;
+                            bgPanel.revalidate();
+                            bgPanel.repaint();
+                        }
+                    }
+                });
+
+        tabButtons.add(generalTabButton);
+        tabPanel.add(generalTabButton);
+        // Session button
+        AlcToggleButton sessionTabButton = new AlcToggleButton(Alchemy.bundle.getString("sessionTitle"), null, AlcUtil.getUrlPath("preferences-advanced.png"), true);
+
+        sessionTabButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        if (currentTab == GENERAL) {
+                            bgPanel.remove(generalPanel);
+                            bgPanel.add(sessionPanel, BorderLayout.PAGE_START);
+                            prefsWindow.setTitle(Alchemy.bundle.getString("sessionTitle"));
+                            currentTab = SESSION;
+                            bgPanel.revalidate();
+                            bgPanel.repaint();
+                        }
+                    }
+                });
+
+        tabButtons.add(sessionTabButton);
+        tabPanel.add(sessionTabButton);
         return tabPanel;
     }
     //////////////////////////////////////////////////////////////
@@ -463,27 +517,11 @@ class AlcPreferences implements AlcConstants {
         interfaceSelector.add(new JLabel(Alchemy.bundle.getString("interface") + ": "));
 
         String[] interfaceType = {Alchemy.bundle.getString("standard"), Alchemy.bundle.getString("simple")};
-
-        final JComboBox interfaceBox = new JComboBox(interfaceType);
-        //interfaceBox.setFont(FONT_MEDIUM);
-        interfaceBox.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                // STANDARD                
-                if (interfaceBox.getSelectedIndex() == 0) {
-                    Alchemy.preferences.simpleToolBar = false;
-                // SIMPLE
-                } else {
-                    Alchemy.preferences.simpleToolBar = true;
-                }
-                if (okButton != null) {
-                    okButton.requestFocus();
-                }
-            }
-        });
-
+        interfaceBox = new JComboBox(interfaceType);
         if (Alchemy.preferences.simpleToolBar) {
             interfaceBox.setSelectedIndex(1);
+        } else {
+            interfaceBox.setSelectedIndex(0);
         }
         interfaceSelector.add(interfaceBox);
 
@@ -492,7 +530,6 @@ class AlcPreferences implements AlcConstants {
         restart.setForeground(Color.GRAY);
         interfaceSelector.add(restart);
         gp.add(interfaceSelector);
-
 
         // MODULES LABEL
         JPanel modulesLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -543,49 +580,101 @@ class AlcPreferences implements AlcConstants {
     private void refreshModulePanel() {
         generalPanel.remove(scrollPane);
         generalPanel.add(getModulesPane());
-        bgPanel.revalidate();
+        generalPanel.revalidate();
     }
     //////////////////////////////////////////////////////////////
     // SESSION PANEL
     //////////////////////////////////////////////////////////////
     private JPanel getSessionPanel() {
 
+        // Top Panel
         JPanel sp = new JPanel();
+        sp.setLayout(new BoxLayout(sp, BoxLayout.LINE_AXIS));
+        sp.add(Box.createHorizontalGlue());
+
+        // LEFT PANEL
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
+        leftPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        // Session Recording
+        JLabel sessionRecording = new JLabel("Session Recording:");
+        sessionRecording.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        leftPanel.add(sessionRecording);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 22)));
+        //Session Directory
+        JLabel sessionDirectory = new JLabel("Session Directory:");
+        sessionDirectory.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        leftPanel.add(sessionDirectory);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 53)));
+        //Session PDF Name
+        JLabel sessionPDFName = new JLabel(Alchemy.bundle.getString("sessionPDFName") + ":");
+        sessionPDFName.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        leftPanel.add(sessionPDFName);
+        sp.add(leftPanel);
+        sp.add(Box.createRigidArea(new Dimension(10, 0)));
+
+
+        // RIGHT PANEL
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.PAGE_AXIS));
+        rightPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        // Record on startup
+        recordOnStartup = new JCheckBox(Alchemy.bundle.getString("recordStartUpTitle"));
+        recordOnStartup.setAlignmentX(Component.LEFT_ALIGNMENT);
+        recordOnStartup.setSelected(sessionRecordingState);
+        rightPanel.add(recordOnStartup);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        // Session Directory
+        sessionDirectoryTextField = new JTextField(sessionPath);
+        sessionDirectoryTextField.setMaximumSize(new Dimension(300, 30));
+        sessionDirectoryTextField.setEnabled(false);
+        sessionDirectoryTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(sessionDirectoryTextField);
+        // Select
+        JButton selectButton = new JButton("Select...");
+        selectButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        selectButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                File file = AlcUtil.showFileChooser(true, prefsWindow);
+                if (file != null) {
+                    sessionDirectoryTextField.setText(file.getPath());
+                }
+            }
+        });
+        rightPanel.add(selectButton);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         // Panel
-        JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
-        sessionFileRenamePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        sessionFileRenamePanel.setOpaque(false);
-        // Label
-        JLabel sessionFileRenameLabel = new JLabel(Alchemy.bundle.getString("sessionPDFName") + ":");
-        sessionFileRenamePanel.add(sessionFileRenameLabel);
+        JPanel sessionFileRenamePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         // PreName
         sessionFileRenamePre = new JTextField(sessionFilePreName);
         int textHeight = sessionFileRenamePre.getPreferredSize().height;
-        sessionFileRenamePre.setPreferredSize(new Dimension(80, textHeight));
+        sessionFileRenamePre.setPreferredSize(new Dimension(100, textHeight));
         sessionFileRenamePre.setFont(FONT_MEDIUM);
+        // Actions to update the output on lose of focus or when enter is pressed
+        AbstractAction pdfNameActionUpdate = new AbstractAction() {
 
+            public void actionPerformed(ActionEvent e) {
+                refreshSessionPDFNameOutput();
+            }
+        };
+        FocusAdapter pdfNameFocusUpdate = new FocusAdapter() {
 
-        sessionFileRenamePre.addActionListener(
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        refreshSessionPDFNameOutput();
-                    }
-                });
+            @Override
+            public void focusLost(FocusEvent e) {
+                refreshSessionPDFNameOutput();
+            }
+        };
+        sessionFileRenamePre.addActionListener(pdfNameActionUpdate);
+        sessionFileRenamePre.addFocusListener(pdfNameFocusUpdate);
         sessionFileRenamePanel.add(sessionFileRenamePre);
-
         // DateFormat
         sessionFileRenameDate = new JTextField(sessionFileDateFormat);
         sessionFileRenameDate.setToolTipText(getDateStampReference());
-        sessionFileRenameDate.setPreferredSize(new Dimension(140, textHeight));
+        sessionFileRenameDate.setPreferredSize(new Dimension(160, textHeight));
         sessionFileRenameDate.setFont(FONT_MEDIUM);
-        sessionFileRenameDate.addActionListener(
-                new ActionListener() {
-
-                    public void actionPerformed(ActionEvent e) {
-                        refreshSessionPDFNameOutput();
-                    }
-                });
+        sessionFileRenameDate.addActionListener(pdfNameActionUpdate);
+        sessionFileRenameDate.addFocusListener(pdfNameFocusUpdate);
 
         sessionFileRenamePanel.add(sessionFileRenameDate);
 
@@ -593,13 +682,11 @@ class AlcPreferences implements AlcConstants {
         JLabel sessionFileRenameExt = new JLabel(".pdf");
         sessionFileRenameExt.setFont(FONT_MEDIUM);
         sessionFileRenamePanel.add(sessionFileRenameExt);
-        sp.add(sessionFileRenamePanel);
+        sessionFileRenamePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(sessionFileRenamePanel);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
-        // Output Panel
-        JPanel sessionFileRenameOuputPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        sessionFileRenameOuputPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
-        sessionFileRenameOuputPanel.setOpaque(false);
-        // Label
+        // Output Label
         sessionFileRenameOutput = new JLabel(
                 Alchemy.bundle.getString("output") + ": " +
                 sessionFilePreName +
@@ -607,9 +694,10 @@ class AlcPreferences implements AlcConstants {
                 ".pdf");
         sessionFileRenameOutput.setFont(FONT_SMALL);
         sessionFileRenameOutput.setForeground(Color.GRAY);
-        sessionFileRenameOutput.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        sessionFileRenameOuputPanel.add(sessionFileRenameOutput);
-        sp.add(sessionFileRenameOuputPanel);
+        rightPanel.add(sessionFileRenameOutput);
+
+        sp.add(rightPanel);
+        sp.add(Box.createHorizontalGlue());
 
         return sp;
     }
@@ -629,38 +717,35 @@ class AlcPreferences implements AlcConstants {
         // RESTORE DEFAULT BUTTON
         //////////////////////////////////////////////////////////////
         JButton defaultButton = new JButton(Alchemy.bundle.getString("restoreDefaults"));
-        defaultButton.addActionListener(
-                new ActionListener() {
+        defaultButton.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        if (currentTab == GENERAL) {
-                            resetModules(Alchemy.plugins.creates);
-                            resetModules(Alchemy.plugins.affects);
-                            refreshModulePanel();
-                        } else if (currentTab == SESSION) {
-                            sessionFilePreName = defaultSessionFilePreName;
-                            sessionFileDateFormat = defaultSessionFileDateFormat;
-                            sessionFileRenamePre.setText(sessionFilePreName);
-                            sessionFileRenameDate.setText(sessionFileDateFormat);
-                        }
-                    }
-                });
+            public void actionPerformed(ActionEvent e) {
+                resetModules(Alchemy.plugins.creates);
+                resetModules(Alchemy.plugins.affects);
+                refreshModulePanel();
+                sessionFilePreName = defaultSessionFilePreName;
+                sessionFileDateFormat = defaultSessionFileDateFormat;
+                sessionFileRenamePre.setText(sessionFilePreName);
+                sessionFileRenameDate.setText(sessionFileDateFormat);
+                sessionPath = DESKTOP_DIR;
+                sessionDirectoryTextField.setText(sessionPath);
+                sessionRecordingState = false;
+                recordOnStartup.setSelected(sessionRecordingState);
+                interfaceBox.setSelectedIndex(0);
+            }
+        });
 
 
         //////////////////////////////////////////////////////////////
         // CANCEL BUTTON
         //////////////////////////////////////////////////////////////
         JButton cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
-        cancelButton.addActionListener(
-                new ActionListener() {
+        cancelButton.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        prefsWindow.setVisible(false);
-                        sessionFileRenamePre.setText(sessionFilePreName);
-                        sessionFileRenameDate.setText(sessionFileDateFormat);
-                        refreshModulePanel();
-                    }
-                });
+            public void actionPerformed(ActionEvent e) {
+                hideWindow();
+            }
+        });
 
         //////////////////////////////////////////////////////////////
         // OK BUTTON
@@ -672,6 +757,9 @@ class AlcPreferences implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
+                        boolean restart = false;
+                        // Set the interface to simple or not
+                        Alchemy.preferences.simpleToolBar = (interfaceBox.getSelectedIndex() == 1) ? true : false;
                         // If the session file name has changed
                         if (!sessionFileRenamePre.getText().equals(sessionFilePreName) || !sessionFileRenameDate.getText().equals(sessionFileDateFormat)) {
                             try {
@@ -682,8 +770,7 @@ class AlcPreferences implements AlcConstants {
                                 if (!sessionFileRenamePre.getText().equals("") && !dateFormat.equals("")) {
                                     sessionFilePreName = sessionFileRenamePre.getText();
                                     sessionFileDateFormat = sessionFileRenameDate.getText();
-                                    // Reset the session so next time a new file is created
-                                    Alchemy.session.restartSession();
+                                    restart = true;
                                 }
 
                             } catch (Exception ex) {
@@ -691,7 +778,19 @@ class AlcPreferences implements AlcConstants {
                                 return;
                             }
                         }
-                        changeModules();
+                        // If the session directory has changed
+                        if (!sessionDirectoryTextField.getText().equals(sessionPath)) {
+                            sessionPath = sessionDirectoryTextField.getText();
+                            restart = true;
+                        }
+                        // Restart the session so that next time a new file is created
+                        if (restart) {
+                            Alchemy.session.restartSession();
+                        }
+                        // IF the record on statup check box has changed
+                        if (sessionRecordingState != recordOnStartup.isSelected()) {
+                            sessionRecordingState = recordOnStartup.isSelected();
+                        }
                         prefsWindow.setVisible(false);
                     }
                 });
@@ -702,9 +801,15 @@ class AlcPreferences implements AlcConstants {
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
         buttonPane.add(Box.createHorizontalGlue());
-        buttonPane.add(cancelButton);
-        buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
-        buttonPane.add(okButton);
+        if (Alchemy.PLATFORM == MACOSX) {
+            buttonPane.add(cancelButton);
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(okButton);
+        } else {
+            buttonPane.add(okButton);
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(cancelButton);
+        }
 
         return buttonPane;
     }
