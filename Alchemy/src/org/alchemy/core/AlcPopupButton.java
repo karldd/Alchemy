@@ -20,20 +20,27 @@
 package org.alchemy.core;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 class AlcPopupButton extends AlcButton implements AlcConstants {
 
     private final static int uiPopupMenuY = 47;
     private AlcPopupMenu popup;
     private boolean inside;
+    private boolean clickOk = true;
 
     /** Creates a new instance of AlcPopupButton */
     AlcPopupButton(String text, String toolTip, URL iconUrl) {
         super(text, toolTip, iconUrl);
         makePopup(text);
+
+        popup.addPopupMenuListener(createPopupMenuListener());
     }
 
     private void makePopup(final String text) {
@@ -44,14 +51,10 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                popup.show(e.getComponent(), 0, uiPopupMenuY);
-                // If this is not the colour menu which has it's own cursor
-                if (!text.equals(Alchemy.bundle.getString("colourTitle"))) {
-                    Alchemy.canvas.setTempCursor(CURSOR_ARROW);
-                }
-                // Get rid of the window shadow on Mac
-                if (Alchemy.PLATFORM == MACOSX) {
-                    popup.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+
+                if (clickOk) {
+                    clickOk = false;
+                    showPopup(e, text);
                 }
             }
         });
@@ -80,13 +83,52 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
         return popup.isVisible();
     }
 
+    /** Test to see if the cursor is inside the popup */
+    boolean isInside() {
+        return inside;
+    }
+
     /** Hide the popup menu */
     void hidePopup() {
         popup.setVisible(false);
     }
 
-    /** Test to see if the cursor is inside the popup */
-    boolean isInside() {
-        return inside;
+    private void showPopup(MouseEvent e, String text) {
+        popup.show(e.getComponent(), 0, uiPopupMenuY);
+        // If this is not the colour menu which has it's own cursor
+        if (!text.equals(Alchemy.bundle.getString("colourTitle"))) {
+            Alchemy.canvas.setTempCursor(CURSOR_ARROW);
+        }
+        // Get rid of the window shadow on Mac
+        if (Alchemy.PLATFORM == MACOSX) {
+            popup.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+        }
+    }
+
+    private PopupMenuListener createPopupMenuListener() {
+        return new PopupMenuListener() {
+
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+            }
+
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                // Buggy hack here but 
+                // When the popup is clicked on then clicked off again
+                // It is first set to invisible then mousePressed() is called
+                // Use a timer to delay the reseting of the clickOk variable
+                javax.swing.Timer initialDelay = new javax.swing.Timer(50, new ActionListener() {
+
+                    public void actionPerformed(ActionEvent evt) {
+                        clickOk = true;
+                    }
+                });
+
+                initialDelay.setRepeats(false);
+                initialDelay.start();
+            }
+
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        };
     }
 }

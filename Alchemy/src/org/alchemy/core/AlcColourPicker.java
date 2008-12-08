@@ -225,8 +225,11 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
     @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        g2.drawImage(colourArray, 0, 0, null);
+        this.setOpaque(true);
+        Rectangle size = this.getBounds();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, size.width, size.height);
+        g.drawImage(colourArray, 0, 0, null);
     }
 
     public void mouseClicked(MouseEvent e) {

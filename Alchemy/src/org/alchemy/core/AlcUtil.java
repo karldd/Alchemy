@@ -288,7 +288,7 @@ public class AlcUtil implements AlcConstants {
      * 
      * @return  An array of AlcShapes or null if no shapes found
      */
-    public static AlcShape[] loadShapes() {
+    public static AlcShape[] getShapes() {
         ArrayList<AlcShape> shapes = new ArrayList<AlcShape>();
 
         // Folder of the plugins
