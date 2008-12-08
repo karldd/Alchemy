@@ -18,6 +18,7 @@
  */
 package org.alchemy.core;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -39,6 +40,7 @@ public class AlcSubComboBox extends JPanel implements AlcConstants {
 
         comboBox = new JComboBox();
         comboBox.setFont(FONT_SMALL);
+        comboBox.setPreferredSize(new Dimension(75, 16));
         //comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.add(comboBox);
 
