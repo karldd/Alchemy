@@ -138,7 +138,8 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
         if (rootPdfs != null && rootPdfs.length > 0) {
             // Initialise the array holding all shape lists
-            shapeLists = new ArrayList[rootPdfs.length + folders.length];
+            // Equal to each folder plus the root folder
+            shapeLists = new ArrayList[folders.length + 1];
             // Initialise the root shape list
             ArrayList<AlcShape> rootShapes = new ArrayList<AlcShape>();
             for (int i = 0; i < rootPdfs.length; i++) {
