@@ -37,30 +37,32 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
     private AlcToolBarSubSection subToolBarSection;
     //
-    private AlcShape[] shapes;
-    private boolean pathsLoaded = false;    // Timing
+    // Timing
     private long mouseDelayGap = 51;
     private long mouseDelayTime;
     //
     private boolean hasFolders = false;
+    private boolean hasShapes = false;
+    private int currentFolder = 0;
     private String[] folderNames;
     private ArrayList[] shapeLists;
+    private AlcSubComboBox folderSelector;
 
     public PullShapes() {
     }
 
     @Override
     protected void setup() {
-        createSubToolBarSection();
         loadShapes();
+        createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
 
     }
 
     @Override
     protected void reselect() {
-        toolBar.addSubToolBarSection(subToolBarSection);
         loadShapes();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
     private void createSubToolBarSection() {
@@ -97,28 +99,24 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
         // Only add if there are folders present
         if (hasFolders) {
-            AlcSubComboBox folderSelector = new AlcSubComboBox("Folder");
-            folderSelector.addItem("Hello");
-            folderSelector.addItem("Again");
+            folderSelector = new AlcSubComboBox("Folder");
+            folderSelector.setToolTipText("Select which folder of shapes to use");
+            for (int i = 0; i < folderNames.length; i++) {
+                folderSelector.addItem(folderNames[i]);
+            }
             subToolBarSection.add(folderSelector);
         }
     }
 
     private void loadShapes() {
-//        shapes = AlcUtil.getShapes();
-//        if (shapes != null) {
-//            pathsLoaded = true;
-//        }
-
-        ArrayList<AlcShape> shapeArrayList = new ArrayList<AlcShape>();
         // Folder of the plugins
         File shapesDir = new File("shapes");
 
-        // Filter for the folders
+        // Filter for the folders not starting with '.'
         FileFilter folderFilter = new FileFilter() {
 
             public boolean accept(File pathname) {
-                return (pathname.isDirectory()) ? true : false;
+                return (pathname.isDirectory() && !pathname.getName().startsWith(".")) ? true : false;
             }
         };
 
@@ -133,65 +131,71 @@ public class PullShapes extends AlcModule implements AlcConstants {
             }
         };
 
-
+        // Folders in the root shapes folder
         File[] folders = shapesDir.listFiles(folderFilter);
+        // Pdf files in the root shapes folder
         File[] rootPdfs = shapesDir.listFiles(pdfFilter);
-        
-        if(rootPdfs.length > 0){
+
+        if (rootPdfs != null && rootPdfs.length > 0) {
+            // Initialise the array holding all shape lists
             shapeLists = new ArrayList[rootPdfs.length + folders.length];
+            // Initialise the root shape list
+            ArrayList<AlcShape> rootShapes = new ArrayList<AlcShape>();
+            for (int i = 0; i < rootPdfs.length; i++) {
+                // Add the shapes from each pdf to the root shape list
+                rootShapes.addAll(AlcUtil.getPDFShapes(rootPdfs[i], true));
+            }
+            // Add the rootShapes to the main array
+            shapeLists[0] = rootShapes;
+            hasShapes = true;
         }
 
         if (folders.length > 0) {
             hasFolders = true;
-            
-            folderNames = new String[folders.length];
-            shapeLists = new ArrayList[folders.length];
+            int count = 1;
+            // If there were not root pdfs
+            if (shapeLists == null) {
+                shapeLists = new ArrayList[folders.length];
+                count = 0;
+            }
+
+            // Add an extra slot for 'ALL' shapes
+            folderNames = new String[folders.length + 1];
+            folderNames[0] = "All Shapes";
+            int folderNameCount = 1;
+
+            // For every folder
             for (int i = 0; i < folders.length; i++) {
                 // Get every pdf in each folder
                 File[] pdfs = AlcUtil.listFilesAsArray(folders[i], pdfFilter, true);
-                
+                ArrayList<AlcShape> folderShapes = new ArrayList<AlcShape>();
+                for (int j = 0; j < pdfs.length; j++) {
+                    // Add the shapes from each pdf to the folder shape list
+                    folderShapes.addAll(AlcUtil.getPDFShapes(pdfs[j], true));
+                }
+                // Store this folder of shapes in the main array
+                shapeLists[count] = folderShapes;
+                count++;
+                //System.out.println(folders[i].getName());
+                // Store the folder name
+                folderNames[folderNameCount] = folders[i].getName();
+                folderNameCount++;
+                hasShapes = true;
             }
-
-        } else {
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //Filter to check the MIME type, not just the file extension
-
-
-    // Get the list of PDF files
-//        File[] pdfs = AlcUtil.listFilesAsArray(shapesDir, pdfFilter, true);
-    // For each pdf add the shapes to the array list
-//        for (int i = 0; i < pdfs.length; i++) {
-//            shapeArrayList.addAll(AlcUtil.getPDFShapes(pdfs[i], true));
-//        }
-//        if (shapeArrayList.size() > 0) {
-//            AlcShape[] arr = new AlcShape[shapeArrayList.size()];
-////            return shapeArrayList.toArray(arr);
-//        }
-//        String message = Alchemy.bundle.getString("noShapesMessage1") + "<br>" +
-//                Alchemy.preferences.shapesPath + "<br>" +
-//                Alchemy.bundle.getString("noShapesMessage2");
-//        showConfirmDialog(Alchemy.bundle.getString("noShapesTitle"), message);
-//        
-
     }
 
     private void addRandomShape(MouseEvent e) {
-        int rand = (int) math.random(shapes.length);
-        AlcShape movedShape = (AlcShape) shapes[rand].clone();
+
+        // The folder to get a shape from
+        int folder = currentFolder;
+        // If set to "All Shapes"
+        if (currentFolder == 0 && hasFolders) {
+            folder = (int) math.random(shapeLists.length);
+        }
+        int rand = (int) math.random(shapeLists[folder].size());
+        AlcShape shape = (AlcShape) shapeLists[folder].get(rand);
+        AlcShape movedShape = (AlcShape) shape.clone();
         Rectangle bounds = movedShape.getBounds();
         int x = e.getX() - (bounds.width >> 1);
         int y = e.getY() - (bounds.height >> 1);
@@ -201,11 +205,19 @@ public class PullShapes extends AlcModule implements AlcConstants {
         canvas.redraw();
     }
 
+    private int getFolder() {
+        if (hasFolders) {
+            return folderSelector.getSelectedIndex();
+        } else {
+            return 0;
+        }
+    }
+
     @Override
     public void mousePressed(MouseEvent e) {
 
-        if (pathsLoaded) {
-
+        if (hasShapes) {
+            currentFolder = getFolder();
             mouseDelayTime = System.currentTimeMillis();
             addRandomShape(e);
         }
@@ -213,7 +225,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (pathsLoaded) {
+        if (hasShapes) {
 
             if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
                 mouseDelayTime = System.currentTimeMillis();
@@ -225,7 +237,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (pathsLoaded) {
+        if (hasShapes) {
             canvas.commitShapes();
         }
     }

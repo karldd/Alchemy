@@ -19,6 +19,7 @@
 package org.alchemy.core;
 
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 
 /**
@@ -51,5 +52,17 @@ public class AlcSubComboBox extends JPanel implements AlcConstants {
 
     public void addItem(Object object) {
         comboBox.addItem(object);
+    }
+
+    public void addActionListener(ActionListener l) {
+        comboBox.addActionListener(l);
+    }
+
+    public void setSelectedIndex(int index) {
+        comboBox.setSelectedIndex(index);
+    }
+
+    public int getSelectedIndex() {
+        return comboBox.getSelectedIndex();
     }
 }

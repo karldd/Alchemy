@@ -34,10 +34,13 @@ public class ColourSwitcher extends AlcModule {
 
     private boolean switchColour = true;
     private boolean switchAlpha = true;
+    private boolean constantColour = false;
     private AlcToolBarSubSection subToolBarSection;
     private Color baseColour = null;
     private float[] baseHSB = new float[3];
-    private int baseRange = 50;
+    private int baseRange = 50;    // Timing
+    private long mouseDelayGap = 50;
+    private long mouseDelayTime;
 
     public ColourSwitcher() {
     }
@@ -129,15 +132,65 @@ public class ColourSwitcher extends AlcModule {
                             subToolBarSection.revalidate();
                             switchColour = false;
                         }
-
                     }
                 });
 
+        // Constant switching
+        AlcSubToggleButton constantButton = new AlcSubToggleButton("Constant", AlcUtil.getUrlPath("constant.png", getClassLoader()));
+        constantButton.setToolTipText("Switch colours constantly");
+
+        constantButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        constantColour = !constantColour;
+                    }
+                });
+        constantButton.setSelected(constantColour);
+        subToolBarSection.add(constantButton);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
 
+        mouseDelayTime = System.currentTimeMillis();
+ 
+        Color newColour = getNewColour();
+
+        if (newColour != null) {
+            for (int i = 0; i < canvas.createShapes.size(); i++) {
+                canvas.createShapes.get(i).setAlphaColour(newColour);
+            }
+            for (int j = 0; j < canvas.affectShapes.size(); j++) {
+                canvas.affectShapes.get(j).setAlphaColour(newColour);
+            }
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+        if (constantColour) {
+            if (System.currentTimeMillis() - mouseDelayTime >= mouseDelayGap) {
+                mouseDelayTime = System.currentTimeMillis();
+                
+                Color newColour = getNewColour();
+
+                if (newColour != null) {
+
+                    if (canvas.getCurrentCreateShape() != null) {
+                        canvas.getCurrentCreateShape().setAlphaColour(newColour);
+                    }
+                    if (canvas.getCurrentAffectShape() != null) {
+                        canvas.getCurrentAffectShape().setAlphaColour(newColour);
+                    }
+                }
+
+            }
+        }
+    }
+
+    private Color getNewColour() {
         Color oldColour = canvas.getColour();
         Color newColour = null;
 
@@ -157,15 +210,7 @@ public class ColourSwitcher extends AlcModule {
             canvas.setAlpha(alpha);
             newColour = new Color(oldColour.getRed(), oldColour.getGreen(), oldColour.getBlue(), alpha);
         }
-
-        if (newColour != null) {
-            for (int i = 0; i < canvas.createShapes.size(); i++) {
-                canvas.createShapes.get(i).setAlphaColour(newColour);
-            }
-            for (int j = 0; j < canvas.affectShapes.size(); j++) {
-                canvas.affectShapes.get(j).setAlphaColour(newColour);
-            }
-        }
+        return newColour;
     }
 
     private Color getRandomColour() {
