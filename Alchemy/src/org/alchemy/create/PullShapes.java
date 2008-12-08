@@ -18,9 +18,13 @@
  */
 package org.alchemy.create;
 
-import java.awt.Point;
+import eu.medsea.util.MimeUtil;
 import java.awt.Rectangle;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
@@ -36,27 +40,21 @@ public class PullShapes extends AlcModule implements AlcConstants {
     private AlcShape[] shapes;
     private boolean pathsLoaded = false;    // Timing
     private long mouseDelayGap = 51;
-    private boolean mouseFirstRun = true;
     private long mouseDelayTime;
-    private boolean mouseDown = false;
-//    private int pathNum = 0;
-//    //
-//    private int baseMaxPoint = 0;
-//    private int baseHalfPoint = 0;
-//    private int basePointCount = 0;
-//    private AlcShape baseShape = null;
-//    private Point[] basePoints;
-//    //
-//    private AlcShape currentShape = null;
-//    private Point oldP;
+    //
+    private boolean hasFolders = false;
+    private String[] folderNames;
+    private ArrayList[] shapeLists;
+
     public PullShapes() {
     }
 
     @Override
     protected void setup() {
         createSubToolBarSection();
-        toolBar.addSubToolBarSection(subToolBarSection);
         loadShapes();
+        toolBar.addSubToolBarSection(subToolBarSection);
+
     }
 
     @Override
@@ -96,13 +94,99 @@ public class PullShapes extends AlcModule implements AlcConstants {
                     }
                 });
         subToolBarSection.add(spacingSlider);
+
+        // Only add if there are folders present
+        if (hasFolders) {
+            AlcSubComboBox folderSelector = new AlcSubComboBox("Folder");
+            folderSelector.addItem("Hello");
+            folderSelector.addItem("Again");
+            subToolBarSection.add(folderSelector);
+        }
     }
 
     private void loadShapes() {
-        shapes = AlcUtil.loadShapes();
-        if (shapes != null) {
-            pathsLoaded = true;
+//        shapes = AlcUtil.getShapes();
+//        if (shapes != null) {
+//            pathsLoaded = true;
+//        }
+
+        ArrayList<AlcShape> shapeArrayList = new ArrayList<AlcShape>();
+        // Folder of the plugins
+        File shapesDir = new File("shapes");
+
+        // Filter for the folders
+        FileFilter folderFilter = new FileFilter() {
+
+            public boolean accept(File pathname) {
+                return (pathname.isDirectory()) ? true : false;
+            }
+        };
+
+        // Filter to check for PDFs
+        FilenameFilter pdfFilter = new FilenameFilter() {
+
+            public boolean accept(File dir, String name) {
+
+                File file = new File(dir, name);
+                String mime = MimeUtil.getMimeType(file.getAbsoluteFile());
+                return (mime.equals("application/pdf")) ? true : false;
+            }
+        };
+
+
+        File[] folders = shapesDir.listFiles(folderFilter);
+        File[] rootPdfs = shapesDir.listFiles(pdfFilter);
+        
+        if(rootPdfs.length > 0){
+            shapeLists = new ArrayList[rootPdfs.length + folders.length];
         }
+
+        if (folders.length > 0) {
+            hasFolders = true;
+            
+            folderNames = new String[folders.length];
+            shapeLists = new ArrayList[folders.length];
+            for (int i = 0; i < folders.length; i++) {
+                // Get every pdf in each folder
+                File[] pdfs = AlcUtil.listFilesAsArray(folders[i], pdfFilter, true);
+                
+            }
+
+        } else {
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Filter to check the MIME type, not just the file extension
+
+
+    // Get the list of PDF files
+//        File[] pdfs = AlcUtil.listFilesAsArray(shapesDir, pdfFilter, true);
+    // For each pdf add the shapes to the array list
+//        for (int i = 0; i < pdfs.length; i++) {
+//            shapeArrayList.addAll(AlcUtil.getPDFShapes(pdfs[i], true));
+//        }
+//        if (shapeArrayList.size() > 0) {
+//            AlcShape[] arr = new AlcShape[shapeArrayList.size()];
+////            return shapeArrayList.toArray(arr);
+//        }
+//        String message = Alchemy.bundle.getString("noShapesMessage1") + "<br>" +
+//                Alchemy.preferences.shapesPath + "<br>" +
+//                Alchemy.bundle.getString("noShapesMessage2");
+//        showConfirmDialog(Alchemy.bundle.getString("noShapesTitle"), message);
+//        
+
     }
 
     private void addRandomShape(MouseEvent e) {
@@ -124,20 +208,6 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
             mouseDelayTime = System.currentTimeMillis();
             addRandomShape(e);
-
-
-//            baseShape = new AlcShape(paths[pathNum]);
-//            baseShape.recalculateTotalPoints();
-//            baseHalfPoint = baseShape.getTotalPoints() / 2;
-//            baseMaxPoint = baseShape.getTotalPoints();
-//            basePoints = baseShape.getPoints();
-//            
-//            System.out.println("baseMaxPoint: "+ baseMaxPoint + " baseHalfPoint : " + baseHalfPoint);
-//
-//            currentShape = new AlcShape(p);
-//            canvas.setCurrentCreateShape(currentShape);
-//            oldP = p;
-
         }
     }
 
@@ -150,23 +220,6 @@ public class PullShapes extends AlcModule implements AlcConstants {
                 //System.out.println(e.getPoint());
                 addRandomShape(e);
             }
-
-
-
-//            Point p = e.getPoint();
-//            if (basePointCount < baseHalfPoint) {
-//                Point p1 = basePoints[basePointCount];
-//                Point p2 = basePoints[baseMaxPoint - basePointCount];
-//                float distance = AlcMath.distance(p1.x, p1.y, p2.x, p2.y);
-//
-//                Point newP = rightAngle(oldP, p, distance);
-//                currentShape.addCurvePoint(newP);
-//                canvas.setCurrentCreateShape(currentShape);
-//
-//                basePointCount++;
-//            }
-//            canvas.redraw();
-//            oldP = p;
         }
     }
 
@@ -175,17 +228,5 @@ public class PullShapes extends AlcModule implements AlcConstants {
         if (pathsLoaded) {
             canvas.commitShapes();
         }
-    }
-
-    private Point rightAngle(Point p1, Point p2, double distance) {
-
-        // Calculate the angle between the last point and the new point
-        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - HALF_PI;
-        //System.out.println(angle);
-        // Convert the polar coordinates to cartesian
-        double x = p1.x + (distance * Math.cos(angle));
-        double y = p1.y + (distance * Math.sin(angle));
-
-        return new Point((int) x, (int) y);
     }
 }

@@ -20,6 +20,7 @@
 package org.alchemy.core;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -31,6 +32,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     private int moduleType = -1;
     private static int checkX;
     private String toolTip;
+    
 
     static {
         if (Alchemy.PLATFORM == MACOSX) {
@@ -80,7 +82,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
 
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
-        //this.setOpaque(true);
+        this.setOpaque(true);
         this.setBackground(AlcToolBar.toolBarHighlightColour);
         this.setFont(FONT_MEDIUM);
 

@@ -830,11 +830,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             return true;
         }
 
-//if (createButton != null) {
         if (createButton.isPopupVisible()) {
             return true;
         }
-//}
         if (affectButton != null) {
             if (affectButton.isPopupVisible()) {
                 return true;
@@ -855,8 +853,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                             if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");
                                 setToolBarVisible(false);
-                                insideToolBar =
-                                        false;
+                                insideToolBar = false;
                             }
 
                         } else {

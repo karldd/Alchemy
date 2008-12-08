@@ -142,6 +142,8 @@ public interface AlcConstants {
     static final Font FONT_SMALL = new Font("sansserif", Font.PLAIN, 10);
     static final Font FONT_MEDIUM = new Font("sansserif", Font.PLAIN, 11);
     static final Font FONT_LARGE = new Font("sansserif", Font.PLAIN, 12);
-    static final Font FONT_BOLD = new Font("sansserif", Font.PLAIN, 11);
+    static final Font FONT_SMALL_BOLD = new Font("sansserif", Font.BOLD, 10);
+    static final Font FONT_MEDIUM_BOLD = new Font("sansserif", Font.BOLD, 11);
+    static final Font FONT_LARGE_BOLD = new Font("sansserif", Font.BOLD, 12);
 
 }
