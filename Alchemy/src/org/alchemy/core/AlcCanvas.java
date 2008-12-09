@@ -1096,7 +1096,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             if (transparent) {
                 bitmapImage = renderCanvas(true, true);
             } else {
-                bitmapImage = renderCanvas(true, 4.0);
+                bitmapImage = renderCanvas(true);
             }
             setGuide(true);
             ImageIO.write((BufferedImage) bitmapImage, format, file);

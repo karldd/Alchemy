@@ -314,11 +314,16 @@ public class AlcUtil implements AlcConstants {
             AlcShape[] arr = new AlcShape[shapes.size()];
             return shapes.toArray(arr);
         }
+        showNoShapesDialog();
+        return null;
+    }
+
+    /** Show a dialog informing the user there are no shapes loaded */
+    public static void showNoShapesDialog() {
         String message = Alchemy.bundle.getString("noShapesMessage1") + "<br>" +
                 Alchemy.preferences.shapesPath + "<br>" +
                 Alchemy.bundle.getString("noShapesMessage2");
         showConfirmDialog(Alchemy.bundle.getString("noShapesTitle"), message);
-        return null;
     }
 
     /** 
