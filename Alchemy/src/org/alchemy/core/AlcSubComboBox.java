@@ -59,6 +59,10 @@ public class AlcSubComboBox extends JPanel implements AlcConstants {
     public void addItem(Object object) {
         comboBox.addItem(object);
     }
+    
+    public void removeAllItems(){
+        comboBox.removeAllItems();
+    }
 
     public void addActionListener(ActionListener l) {
         comboBox.addActionListener(l);

@@ -41,9 +41,8 @@ public class PullShapes extends AlcModule implements AlcConstants {
     private long mouseDelayGap = 51;
     private long mouseDelayTime;
     //
-    private boolean hasFolders = false;
-    private boolean hasShapes = false;
-    private int currentFolder = 0;
+    private boolean hasFolders,  hasRootShapes,  hasShapes;
+    private int currentFolder;
     private String[] folderNames;
     private ArrayList[] shapeLists;
     private AlcSubComboBox folderSelector;
@@ -76,6 +75,9 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
                     public void actionPerformed(ActionEvent e) {
                         loadShapes();
+                        folderSelector.removeAllItems();
+                        // TODO - Bug test this
+                        setupFolderSelector();
                     }
                 });
         subToolBarSection.add(directoryButton);
@@ -101,14 +103,26 @@ public class PullShapes extends AlcModule implements AlcConstants {
         if (hasFolders) {
             folderSelector = new AlcSubComboBox("Folder");
             folderSelector.setToolTipText("Select which folder of shapes to use");
-            for (int i = 0; i < folderNames.length; i++) {
-                folderSelector.addItem(folderNames[i]);
-            }
+            setupFolderSelector();
             subToolBarSection.add(folderSelector);
         }
     }
 
+    private void setupFolderSelector() {
+        for (int i = 0; i < folderNames.length; i++) {
+            folderSelector.addItem(folderNames[i]);
+        }
+    }
+
     private void loadShapes() {
+        // Initialise variables
+        hasFolders = false;
+        hasRootShapes = false;
+        hasShapes = false;
+        currentFolder = 0;
+        shapeLists = null;
+        folderNames = null;
+
         // Folder of the plugins
         File shapesDir = new File("shapes");
 
@@ -137,6 +151,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
         File[] rootPdfs = shapesDir.listFiles(pdfFilter);
 
         if (rootPdfs != null && rootPdfs.length > 0) {
+            hasRootShapes = true;
             // Initialise the array holding all shape lists
             // Equal to each folder plus the root folder
             shapeLists = new ArrayList[folders.length + 1];
@@ -184,34 +199,48 @@ public class PullShapes extends AlcModule implements AlcConstants {
                 hasShapes = true;
             }
         }
+        if (!hasShapes) {
+            AlcUtil.showNoShapesDialog();
+        }
     }
 
     private void addRandomShape(MouseEvent e) {
 
         // The folder to get a shape from
         int folder = currentFolder;
+        if (!hasRootShapes) {
+            folder = currentFolder - 1;
+        }
         // If set to "All Shapes"
         if (currentFolder == 0 && hasFolders) {
             folder = (int) math.random(shapeLists.length);
         }
         int rand = (int) math.random(shapeLists[folder].size());
-        AlcShape shape = (AlcShape) shapeLists[folder].get(rand);
-        AlcShape movedShape = (AlcShape) shape.clone();
-        Rectangle bounds = movedShape.getBounds();
-        int x = e.getX() - (bounds.width >> 1);
-        int y = e.getY() - (bounds.height >> 1);
-        movedShape.move(x, y);
-        movedShape.setupDefaultAttributes();
-        canvas.createShapes.add(movedShape);
-        canvas.redraw();
+        if (shapeLists[folder].size() > 0) {
+            AlcShape shape = (AlcShape) shapeLists[folder].get(rand);
+            AlcShape movedShape = (AlcShape) shape.clone();
+            Rectangle bounds = movedShape.getBounds();
+            int x = e.getX() - (bounds.width >> 1);
+            int y = e.getY() - (bounds.height >> 1);
+            movedShape.move(x, y);
+            movedShape.setupDefaultAttributes();
+            canvas.createShapes.add(movedShape);
+            canvas.redraw();
+        }
     }
 
     private int getFolder() {
+        int folder = 0;
         if (hasFolders) {
-            return folderSelector.getSelectedIndex();
-        } else {
-            return 0;
+//            if (hasRootShapes) {
+            folder = folderSelector.getSelectedIndex();
+//            } else {
+//                if (folderSelector.getSelectedIndex() > 0) {
+//                    folder = folderSelector.getSelectedIndex() - 1;
+//                }
+//            }
         }
+        return folder;
     }
 
     @Override
@@ -219,6 +248,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
         if (hasShapes) {
             currentFolder = getFolder();
+            //System.out.println("Current Folder = " + currentFolder);
             mouseDelayTime = System.currentTimeMillis();
             addRandomShape(e);
         }
