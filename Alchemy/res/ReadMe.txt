@@ -1,5 +1,5 @@
 Alchemy 
-ALPHA 006 PRE
+ALPHA 006
 
 
 
@@ -34,13 +34,30 @@ Version History
 ALPHA 006
 
 FEATURES
-+ 
++ Jpeg export functionality added
++ Session file names can now be set in the options/preferences
++ Transparent Fullscreen mode added
++ Colour eye dropper added
++ Pull Shapes module added
 
 CHANGES
-+ 
++ Colour Switcher module 'Constant' button added, it can now change colours constantly when the pen is dragged
++ Options/Preferences interface redesigned
++ Fullscreen mode now hides the mac menubar
++ Changing the canvas size during a session now changes the canvas size of the session PDF
++ JPen library added (but not yet used), to allow pen pressure/tilt access
++ Camera colour module has been removed because of numerous bugs, it may be readded if we find a good java video library
++ Colour Picker popup and secondary window redesigned and standard across all platforms now
++ Shapes folder added to store PDF shapes used by PullShapes
++ iText PDF library update
 
 BUG FIXES
-+ 
++ Mirror module transparency bug fix
++ Switch menus opening properly in the specified application, not the default application
++ PDF colour accuracy fix, PDF colour format set to DEVICERGB
++ Shortcuts interface bug fixed
++ Language bundle loading fix 
++ Dialogs added for when the modules folder is missing
 
 
 --------------------------------------

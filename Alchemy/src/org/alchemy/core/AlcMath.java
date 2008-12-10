@@ -49,6 +49,8 @@ public class AlcMath implements AlcConstants {
      * <P>
      * The number returned will range from zero up to
      * (but not including) 'howbig'.
+     * @param howbig
+     * @return 
      */
     public final float random(float howbig) {
         // for some reason (rounding error?) Math.random() * 3
