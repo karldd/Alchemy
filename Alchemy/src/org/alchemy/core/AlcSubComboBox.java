@@ -48,19 +48,21 @@ public class AlcSubComboBox extends JPanel implements AlcConstants {
         //comboBox.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.add(comboBox);
 
-        JLabel label = new JLabel(name);
-        label.setFont(FONT_SMALL);
-        label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
-        //label.setPreferredSize(new Dimension(label.getPreferredSize().width, 26));
-        this.add(label);
+        if (name != null) {
+            JLabel label = new JLabel(name);
+            label.setFont(FONT_SMALL);
+            label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
+            //label.setPreferredSize(new Dimension(label.getPreferredSize().width, 26));
+            this.add(label);
+        }
 
     }
 
     public void addItem(Object object) {
         comboBox.addItem(object);
     }
-    
-    public void removeAllItems(){
+
+    public void removeAllItems() {
         comboBox.removeAllItems();
     }
 

@@ -263,9 +263,43 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param x     x distance
      * @param y     y distance
      */
-    public void move(float x, float y) {
+    public void move(double x, double y) {
         AffineTransform move = AffineTransform.getTranslateInstance(x, y);
         GeneralPath transformedPath = (GeneralPath) path.createTransformedShape(move);
+        this.path = transformedPath;
+    }
+
+    /** Scale the shape by a certain factor
+     * 
+     * @param sx    X scale factor
+     * @param sy    Y scale factor
+     */
+    public void scale(double sx, double sy) {
+        AffineTransform scale = AffineTransform.getScaleInstance(sx, sy);
+        GeneralPath transformedPath = (GeneralPath) path.createTransformedShape(scale);
+        this.path = transformedPath;
+    }
+
+    /** Rotate the shape using the shapes centre as the anchor point
+     * 
+     * @param theta     The angle of rotation in radians
+     */
+    public void rotate(double theta) {
+        Rectangle bounds = this.path.getBounds();
+        int x = bounds.x + bounds.width / 2;
+        int y = bounds.y + bounds.height / 2;
+        rotate(theta, x, y);
+    }
+
+    /** Rotate the shape
+     * 
+     * @param theta     The angle of rotation in radians
+     * @param x         The coordinates of the x anchor point
+     * @param y         The coordinates of the y anchor point
+     */
+    public void rotate(double theta, double x, double y) {
+        AffineTransform rotate = AffineTransform.getRotateInstance(theta, x, y);
+        GeneralPath transformedPath = (GeneralPath) path.createTransformedShape(rotate);
         this.path = transformedPath;
     }
 
@@ -459,12 +493,12 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
-    
+
     /** Get the bounds of this shape 
      * 
      * @return Rectangle representing the shapes bounds
      */
-    public Rectangle getBounds(){
+    public Rectangle getBounds() {
         return this.path.getBounds();
     }
 

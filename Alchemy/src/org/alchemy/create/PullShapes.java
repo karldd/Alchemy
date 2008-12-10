@@ -46,6 +46,9 @@ public class PullShapes extends AlcModule implements AlcConstants {
     private String[] folderNames;
     private ArrayList[] shapeLists;
     private AlcSubComboBox folderSelector;
+    //
+    private boolean scale = true;
+    private boolean rotate = true;
 
     public PullShapes() {
     }
@@ -68,9 +71,18 @@ public class PullShapes extends AlcModule implements AlcConstants {
         subToolBarSection = new AlcToolBarSubSection(this);
 
 
-        AlcSubButton directoryButton = new AlcSubButton("Reload", AlcUtil.getUrlPath("reload.png", getClassLoader()));
+        // Only add if there are folders present
+        if (hasFolders) {
+            folderSelector = new AlcSubComboBox(null);
+            folderSelector.setToolTipText("Select which folder of shapes to use");
+            setupFolderSelector();
+            subToolBarSection.add(folderSelector);
+        }
 
-        directoryButton.addActionListener(
+        // Reload
+        AlcSubButton reloadButton = new AlcSubButton("Reload", AlcUtil.getUrlPath("reload.png", getClassLoader()));
+        reloadButton.setToolTipText("Reload shapes from the 'shapes' folder in the Alchemy directory");
+        reloadButton.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
@@ -80,7 +92,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
                         setupFolderSelector();
                     }
                 });
-        subToolBarSection.add(directoryButton);
+        subToolBarSection.add(reloadButton);
 
 
         // Spacing Slider
@@ -99,13 +111,31 @@ public class PullShapes extends AlcModule implements AlcConstants {
                 });
         subToolBarSection.add(spacingSlider);
 
-        // Only add if there are folders present
-        if (hasFolders) {
-            folderSelector = new AlcSubComboBox("Folder");
-            folderSelector.setToolTipText("Select which folder of shapes to use");
-            setupFolderSelector();
-            subToolBarSection.add(folderSelector);
-        }
+        // Scale button
+        AlcSubToggleButton scaleButton = new AlcSubToggleButton("Scale", AlcUtil.getUrlPath("scale.png", getClassLoader()));
+        scaleButton.setSelected(scale);
+        scaleButton.setToolTipText("Toggle random scaling");
+        scaleButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        scale = !scale;
+                    }
+                });
+        subToolBarSection.add(scaleButton);
+
+        // Rotate button
+        AlcSubToggleButton rotateButton = new AlcSubToggleButton("Rotate", AlcUtil.getUrlPath("rotate.png", getClassLoader()));
+        rotateButton.setSelected(rotate);
+        rotateButton.setToolTipText("Toggle random rotation");
+        rotateButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        rotate = !rotate;
+                    }
+                });
+        subToolBarSection.add(rotateButton);
     }
 
     private void setupFolderSelector() {
@@ -194,7 +224,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
                 count++;
                 //System.out.println(folders[i].getName());
                 // Store the folder name
-                folderNames[folderNameCount] = folders[i].getName();
+                folderNames[folderNameCount] = folders[i].getName() + " Folder";
                 folderNameCount++;
                 hasShapes = true;
             }
@@ -218,27 +248,50 @@ public class PullShapes extends AlcModule implements AlcConstants {
         int rand = (int) math.random(shapeLists[folder].size());
         if (shapeLists[folder].size() > 0) {
             AlcShape shape = (AlcShape) shapeLists[folder].get(rand);
-            AlcShape movedShape = (AlcShape) shape.clone();
-            Rectangle bounds = movedShape.getBounds();
+            // Clone the shape
+            AlcShape cloneShape = (AlcShape) shape.clone();
+            if (scale) {
+                // Scale it
+                float scaleFactor = math.random(0.1F, 3F);
+                cloneShape.scale(scaleFactor, scaleFactor);
+            }
+            if (rotate) {
+                // Rotate it
+                float rotation = math.random(0.1F, 57.2958F);
+                cloneShape.rotate(rotation);
+            }
+            // Move it into place
+            Rectangle bounds = cloneShape.getBounds();
             int x = e.getX() - (bounds.width >> 1);
             int y = e.getY() - (bounds.height >> 1);
-            movedShape.move(x, y);
-            movedShape.setupDefaultAttributes();
-            canvas.createShapes.add(movedShape);
+            cloneShape.move(x, y);
+
+            cloneShape.setupDefaultAttributes();
+            canvas.createShapes.add(cloneShape);
             canvas.redraw();
         }
     }
-
+    //expandedPath = (GeneralPath) currentPath.createTransformedShape(getScaleTransform(adjustedLevel, rect));
+//    private GeneralPath scaleShape(GeneralPath gp){
+//        
+//    }
+    /* Gets a scale transform based on the sound level */
+//    private AffineTransform getScaleTransform(double level, Rectangle rect) {
+//        AffineTransform scaleTransform = new AffineTransform();
+//
+//        double offsetX = rect.x + (rect.width / 2);
+//        double offsetY = rect.y + (rect.height / 2);
+//
+//        scaleTransform.translate(offsetX, offsetY);
+//        scaleTransform.scale(level, level);
+//        scaleTransform.translate(-offsetX, -offsetY);
+//
+//        return scaleTransform;
+//    }
     private int getFolder() {
         int folder = 0;
         if (hasFolders) {
-//            if (hasRootShapes) {
             folder = folderSelector.getSelectedIndex();
-//            } else {
-//                if (folderSelector.getSelectedIndex() > 0) {
-//                    folder = folderSelector.getSelectedIndex() - 1;
-//                }
-//            }
         }
         return folder;
     }
