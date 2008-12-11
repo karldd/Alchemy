@@ -400,12 +400,13 @@ public class AlcUtil implements AlcConstants {
             }
 
             int totalCommands = pdfPage.getCommandCount();
-
+            
             try {
                 for (int c = 0; c < totalCommands; c++) {
                     PDFCmd command = pdfPage.getCommand(c);
                     if (command instanceof PDFShapeCmd) {
                         PDFShapeCmd shapeCommand = (PDFShapeCmd) command;
+                        
                         // Hack into the command to get the path
                         Class shapeClass = shapeCommand.getClass();
                         Field pathField = shapeClass.getDeclaredField("gp");
