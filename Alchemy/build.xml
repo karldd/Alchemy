@@ -261,10 +261,12 @@
          
          <!-- LINUX Shell Script to Launch Alchemy -->
         <copy file="${basedir}/res/Alchemy" todir="${dist.dir}"/>
-        <chmod file="${dist.dir}/res/Alchemy" perm="+x"/>
+        <chmod file="${dist.dir}/Alchemy" perm="+x"/>
         
         <!-- JPen -->
         <copy file="${basedir}/lib/jpen/libjpen-2.so" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jpen/libjpen-2-ia64.so" todir="${dist.dir}/lib"/>
+        <copy file="${basedir}/lib/jpen/libjpen-2-x86_64.so" todir="${dist.dir}/lib"/>
     </target>
     
     
