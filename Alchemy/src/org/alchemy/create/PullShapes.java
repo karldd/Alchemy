@@ -168,7 +168,10 @@ public class PullShapes extends AlcModule implements AlcConstants {
         FilenameFilter pdfFilter = new FilenameFilter() {
 
             public boolean accept(File dir, String name) {
-
+                // MIME types not working on Linux?
+                if (Alchemy.PLATFORM == LINUX) {
+                    return name.endsWith(".pdf") || name.endsWith(".PDF");
+                }
                 File file = new File(dir, name);
                 String mime = MimeUtil.getMimeType(file.getAbsoluteFile());
                 return (mime.equals("application/pdf")) ? true : false;
@@ -222,7 +225,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
                 // Store this folder of shapes in the main array
                 shapeLists[count] = folderShapes;
                 count++;
-                //System.out.println(folders[i].getName());
+                //System.out.println(folders[i].getName() + " " + folderShapes.size());
                 // Store the folder name
                 folderNames[folderNameCount] = folders[i].getName() + " Folder";
                 folderNameCount++;
