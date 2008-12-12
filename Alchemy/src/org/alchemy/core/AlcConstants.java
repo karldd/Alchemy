@@ -54,7 +54,7 @@ public interface AlcConstants {
     /** Version of Java that's in use, whether 1.1 or 1.3 or whatever stored as a float */
     static final float JAVA_VERSION = new Float(JAVA_VERSION_NAME.substring(0, 3)).floatValue();
     /** The sub version of java in use i.e. 13 */
-    static final int JAVA_SUBVERSION = new Integer(JAVA_VERSION_NAME.substring(6, 8));
+    //static final int JAVA_SUBVERSION = new Integer(JAVA_VERSION_NAME.substring(6, 8));
     /** Current platform in use. Equivalent to System.getProperty("os.name"), just used internally */
     static final String PLATFORM_NAME = System.getProperty("os.name");
     /** The users name */
