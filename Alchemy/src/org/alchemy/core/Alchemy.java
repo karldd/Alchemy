@@ -111,8 +111,7 @@ public class Alchemy implements AlcConstants {
             ex.printStackTrace();
             bundle = bundleEn;
         }
-
-
+        
         // LOAD PREFERENCES
         preferences = new AlcPreferences();
 
