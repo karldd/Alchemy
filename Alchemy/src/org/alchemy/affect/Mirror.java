@@ -285,7 +285,7 @@ public class Mirror extends AlcModule implements AlcConstants {
             horizontalAxis = e.getX();
             verticalAxis = e.getY();
             selectAxis = false;
-            canvas.setEvents(true);
+            canvas.setCreateEvents(true);
             canvas.redraw();
         }
 
