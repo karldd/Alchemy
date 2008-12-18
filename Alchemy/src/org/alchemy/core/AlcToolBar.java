@@ -213,7 +213,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         Dimension underOverButtonSize = underOverButton.getPreferredSize();
         underOverButton.setText(getS("underTitle"));
         Dimension underOverButtonNewSize = underOverButton.getPreferredSize();
-        if (!underOverButtonSize.equals(underOverButtonNewSize)) {
+        if (underOverButtonSize.width > underOverButtonNewSize.width) {
+            underOverButton.setPreferredSize(underOverButtonSize);
+        } else {
             underOverButton.setPreferredSize(underOverButtonNewSize);
         }
         underOverButton.setText(underOverTitle);
@@ -324,7 +326,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         Dimension fgbgButtonSize = fgbgButton.getPreferredSize();
         fgbgButton.setText(getS("bgTitle"));
         Dimension fgbgButtonNewSize = fgbgButton.getPreferredSize();
-        if (!fgbgButtonSize.equals(fgbgButtonNewSize)) {
+        if (fgbgButtonSize.width > fgbgButtonNewSize.width) {
+            fgbgButton.setPreferredSize(fgbgButtonSize);
+        }  else {
             fgbgButton.setPreferredSize(fgbgButtonNewSize);
         }
         fgbgButton.setText(fgTitle);
