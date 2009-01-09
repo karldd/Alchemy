@@ -68,7 +68,7 @@ class AlcFileChooser extends JFileChooser implements AlcConstants {
 
                 String title, message;
                 Object[] options = new Object[2];
-                if (Alchemy.PLATFORM == MACOSX) {
+                if (Alchemy.OS == OS_MAC) {
                     title = "";
                     message =
                             "<html>" + UIManager.get("OptionPane.css") +

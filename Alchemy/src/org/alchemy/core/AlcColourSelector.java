@@ -407,7 +407,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         buttonPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
 //        buttonPane.add(resetButton);
         buttonPane.add(Box.createHorizontalGlue());
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             buttonPane.add(cancelButton);
             buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
             buttonPane.add(okButton);

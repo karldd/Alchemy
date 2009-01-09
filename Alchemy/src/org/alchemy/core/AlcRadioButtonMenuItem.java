@@ -37,7 +37,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
     private String toolTip;
 
     static {
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             checkX = 7;
         } else {
             checkX = 6;
@@ -60,7 +60,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
     AlcRadioButtonMenuItem(int index, String title, int accelerator) {
         setup(index, title);
         if (accelerator > 0) {
-            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));
+            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, KEY_MODIFIER));
         }
     }
 
@@ -97,7 +97,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (Alchemy.PLATFORM != LINUX) {
+        if (Alchemy.OS != OS_LINUX) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             // SELECTED
@@ -114,7 +114,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
             // NOT SELECTED
             } else {
                 if (moduleType != -1) {
-                    if (Alchemy.PLATFORM != MACOSX) {
+                    if (Alchemy.OS != OS_MAC) {
                         g2.setColor(this.getBackground());
                         g2.fill(toolCircle);
                         g2.setColor(Color.BLACK);

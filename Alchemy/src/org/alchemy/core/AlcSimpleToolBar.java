@@ -82,7 +82,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
             public void actionPerformed(ActionEvent e) {
                 Alchemy.canvas.toggleStyle();
-                if (Alchemy.canvas.getStyle() == STROKE) {
+                if (Alchemy.canvas.getStyle() == STYLE_STROKE) {
                     lineWeightBox.setVisible(true);
                 } else {
                     lineWeightBox.setVisible(false);
@@ -223,7 +223,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         this.add(clearButton);
 
         // Shortcuts - Modifier Delete/Backspace
-        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
+        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, KEY_MODIFIER);
         //Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
 
         this.setVisible(true);
@@ -246,7 +246,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
     private void addModuleButton(final AlcModule currentModule, final ButtonGroup buttonGroup, int count) {
 
-        final boolean createModule = (currentModule.getModuleType() == CREATE) ? true : false;
+        final boolean createModule = (currentModule.getModuleType() == MODULE_CREATE) ? true : false;
         final AlcSimpleModuleToggleButton moduleButton = new AlcSimpleModuleToggleButton();
 
         AbstractAction moduleAction = new AbstractAction() {
@@ -288,7 +288,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
             if (createModule) {
                 Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0 + count + 1, currentModule.getName(), moduleAction);
             } else {
-                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0 + count + 1, currentModule.getName(), moduleAction, MODIFIER_KEY);
+                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0 + count + 1, currentModule.getName(), moduleAction, KEY_MODIFIER);
             }
 
         // Last key is mapped to 0
@@ -296,7 +296,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
             if (createModule) {
                 Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0, currentModule.getName(), moduleAction);
             } else {
-                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0, currentModule.getName(), moduleAction, MODIFIER_KEY);
+                Alchemy.shortcuts.setShortcut(moduleButton, KeyEvent.VK_0, currentModule.getName(), moduleAction, KEY_MODIFIER);
             }
         }
 

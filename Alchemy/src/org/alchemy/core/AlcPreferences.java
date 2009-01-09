@@ -159,7 +159,7 @@ class AlcPreferences implements AlcConstants {
 
         sessionRecordingState = prefs.getBoolean("Recording State", false);
         sessionRecordingWarning = prefs.getBoolean("Recording Warning", true);
-        sessionPath = prefs.get("Session Path", DESKTOP_DIR);
+        sessionPath = prefs.get("Session Path", DIR_DESKTOP);
         sessionRecordingInterval = prefs.getInt("Recording Interval", 30000);
         sessionAutoClear = prefs.getBoolean("Auto Clear Canvas", false);
         sessionLink = prefs.getBoolean("Link to Current Session", true);
@@ -341,13 +341,13 @@ class AlcPreferences implements AlcConstants {
         bgPanel = new JPanel();
         bgPanel.setOpaque(true);
         int bgPanelHeightOffset = 32;
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             bgPanelHeightOffset = 22;
-        } else if (Alchemy.PLATFORM == LINUX) {
+        } else if (Alchemy.OS == OS_LINUX) {
             bgPanelHeightOffset = 0;
         }
         int bgPanelWidthOffset = 0;
-        if (Alchemy.PLATFORM == WINDOWS) {
+        if (Alchemy.OS == OS_WINDOWS) {
             bgPanelWidthOffset = 4;
         }
         bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width + bgPanelWidthOffset, prefsWindowSize.height - tabPanelHeight - bgPanelHeightOffset);
@@ -411,7 +411,7 @@ class AlcPreferences implements AlcConstants {
         JDialog w = new JDialog(Alchemy.window, true);
         // Brush Metal Look does not work with JDialog
         // Works with JFrame, but an owner can not be specified causing the menubar to disappear!
-//        if (Alchemy.PLATFORM == MACOSX) {
+//        if (Alchemy.OS == MACOSX) {
 //            // Try and detect if this is OSX 10.5 
 //            if (JAVA_SUBVERSION >= 13) {
 //                w.getRootPane().putClientProperty("apple.awt.brushMetalLook", Boolean.TRUE);
@@ -449,7 +449,7 @@ class AlcPreferences implements AlcConstants {
                     int heightMinusOne = tabPanelHeight - 1;
 
 //                    // OSX 10.5 Unified toolbar
-//                    if (Alchemy.PLATFORM == MACOSX && JAVA_SUBVERSION >= 13) {
+//                    if (Alchemy.OS == MACOSX && JAVA_SUBVERSION >= 13) {
 //                        g2.setPaint(unifiedLineColour);
 //                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    } else {
@@ -611,7 +611,7 @@ class AlcPreferences implements AlcConstants {
         leftPanel.setOpaque(false);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.PAGE_AXIS));
         leftPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             leftPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         }
         // Session Recording
@@ -749,7 +749,7 @@ class AlcPreferences implements AlcConstants {
                 sessionFileDateFormat = defaultSessionFileDateFormat;
                 sessionFileRenamePre.setText(sessionFilePreName);
                 sessionFileRenameDate.setText(sessionFileDateFormat);
-                sessionPath = DESKTOP_DIR;
+                sessionPath = DIR_DESKTOP;
                 sessionDirectoryTextField.setText(sessionPath);
                 sessionRecordingState = false;
                 recordOnStartUp.setSelected(sessionRecordingState);
@@ -823,7 +823,7 @@ class AlcPreferences implements AlcConstants {
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
         buttonPane.add(Box.createHorizontalGlue());
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             buttonPane.add(cancelButton);
             buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
             buttonPane.add(okButton);

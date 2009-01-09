@@ -109,7 +109,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     /** Called once the interface is ready to be loaded into the window */
     void setupWindow() {
 
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             // Add normally if on MacOSX as the menu is listed above
             this.setJMenuBar(Alchemy.menuBar);
 
@@ -238,7 +238,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                 //setAlwaysOnTop(false);
 
                 // Turn on the menubar
-                if (Alchemy.PLATFORM == MACOSX) {
+                if (Alchemy.OS == OS_MAC) {
                     AlcNative.setMenubarVisible(true);
                 }
 
@@ -280,7 +280,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                     // If on a mac and this is the primary monitor
                     // Make room for the mac menubar
-//                    if (Alchemy.PLATFORM == MACOSX) {
+//                    if (Alchemy.OS == MACOSX) {
 //                        if (bounds.x == 0) {
 //                            bounds.setLocation(bounds.x, 22);
 //                        }
@@ -324,7 +324,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
 
                     // Turn off the menubar
-                    if (Alchemy.PLATFORM == MACOSX) {
+                    if (Alchemy.OS == OS_MAC) {
                         AlcNative.setMenubarVisible(false);
                     }
 
@@ -435,7 +435,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
             Alchemy.preferences.paletteAttached = true;
 
-            if (Alchemy.PLATFORM != MACOSX) {
+            if (Alchemy.OS != OS_MAC) {
                 this.setJMenuBar(Alchemy.menuBar);
                 Alchemy.toolBar.calculateTotalHeight();
             }
@@ -533,7 +533,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      * See OSXAdapter.java to see how this is done without directly referencing any Apple APIs
      */
     private void registerForMacOSXEvents() {
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             try {
                 // Generate and register the OSXAdapter, passing it a hash of all the methods we wish to
                 // use as delegates for various com.apple.eawt.ApplicationListener methods

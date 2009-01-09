@@ -80,7 +80,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Pen down or up */
     private boolean penDown = false;
     /** The type of pen - STYLUS / ERASER / CURSOR */
-    private int penType = CURSOR;
+    private int penType = PEN_CURSOR;
     /** Pen Pressure if available */
     private float penPressure = 0F;
     /** Pen Tilt X if available */
@@ -95,7 +95,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Alpha of this shape */
     private int alpha = 255;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    private int style = STROKE;
+    private int style = STYLE_STROKE;
     /** Line Weight if the style is line */
     private float lineWidth = 1F;
     //////////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 for (int i = 0; i < activeShapeList[j].size(); i++) {
                     AlcShape currentShape = (AlcShape) activeShapeList[j].get(i);
                     // LINE
-                    if (currentShape.style == STROKE) {
+                    if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setColor(currentShape.colour);
@@ -259,7 +259,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             for (int i = 0; i < guideShapes.size(); i++) {
                 AlcShape currentShape = guideShapes.get(i);
                 // LINE
-                if (currentShape.style == STROKE) {
+                if (currentShape.style == STYLE_STROKE) {
                     //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                     g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                     g2.setColor(currentShape.colour);
@@ -831,10 +831,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
     /** Toggle the style between line and solid */
     public void toggleStyle() {
-        if (style == STROKE) {
-            style = FILL;
+        if (style == STYLE_STROKE) {
+            style = STYLE_FILL;
         } else {
-            style = STROKE;
+            style = STYLE_STROKE;
         }
     }
 
@@ -1174,7 +1174,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     boolean addPageToPdf(File mainPdf, File tempPdf) {
         try {
             // Destination file created in the temp dir then we will move it
-            File dest = new File(TEMP_DIR, "Alchemy.pdf");
+            File dest = new File(DIR_TEMP, "Alchemy.pdf");
             OutputStream output = new FileOutputStream(dest);
 
             PdfReader reader = new PdfReader(mainPdf.getPath());
@@ -1500,15 +1500,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 setBackgroundColourActive(false);
                 Alchemy.toolBar.toggleColourButton();
             }
-            penType = STYLUS;
+            penType = PEN_STYLUS;
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
             if (!backgroundActive) {
                 setBackgroundColourActive(true);
                 Alchemy.toolBar.toggleColourButton();
             }
-            penType = ERASER;
+            penType = PEN_ERASER;
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
-            penType = CURSOR;
+            penType = PEN_CURSOR;
         } else {
             penType = 0;
         }
@@ -1516,7 +1516,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
     public void penLevelEvent(PLevelEvent ev) {
         // Register the pen pressure and tilt
-        if (penDown && penType != CURSOR) {
+        if (penDown && penType != PEN_CURSOR) {
             penPressure = ev.pen.getLevelValue(PLevel.Type.PRESSURE);
             penTiltX = ev.pen.getLevelValue(PLevel.Type.TILT_X);
             penTiltY = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
@@ -1593,7 +1593,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 for (int i = 0; i < Alchemy.canvas.fullShapeList[j].size(); i++) {
                     AlcShape currentShape = (AlcShape) Alchemy.canvas.fullShapeList[j].get(i);
                     // LINE
-                    if (currentShape.style == STROKE) {
+                    if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setColor(currentShape.colour);
@@ -1609,7 +1609,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 for (int i = 0; i < Alchemy.canvas.guideShapes.size(); i++) {
                     AlcShape currentShape = Alchemy.canvas.guideShapes.get(i);
                     // LINE
-                    if (currentShape.style == STROKE) {
+                    if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
                         g2.setColor(currentShape.colour);

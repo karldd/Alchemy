@@ -419,7 +419,7 @@ public class AlcUtil implements AlcConstants {
                         int style = (Integer) styleField.get(shapeCommand);
 
                         // If the style is not a clipping path
-                        if (style != CLIP) {
+                        if (style != STYLE_CLIP) {
                             // Save the shape if it is within the page size
                             if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
                                 // For some reason the shapes come in flipped, o re-flip them here
@@ -436,8 +436,8 @@ public class AlcUtil implements AlcConstants {
                                 GeneralPath reflectedPath = (GeneralPath) gp.createTransformedShape(verticalReflection);
                                 AlcShape shape = new AlcShape(reflectedPath);
                                 shape.recalculateTotalPoints();
-                                if (style == BOTH) {
-                                    shape.setStyle(FILL);
+                                if (style == STYLE_BOTH) {
+                                    shape.setStyle(STYLE_FILL);
                                 } else {
                                     shape.setStyle(style);
                                 }
@@ -556,16 +556,16 @@ public class AlcUtil implements AlcConstants {
         final String errMsg = "Error attempting to launch web browser";
         //String osName = System.getProperty("os.name");
         try {
-            if (Alchemy.PLATFORM == MACOSX) {
+            if (Alchemy.OS == OS_MAC) {
                 Class fileMgr = Class.forName("com.apple.eio.FileManager");
                 Method openURL = fileMgr.getDeclaredMethod("openURL",
                         new Class[]{String.class});
                 openURL.invoke(null, new Object[]{url});
 
-            } else if (Alchemy.PLATFORM == WINDOWS) {
+            } else if (Alchemy.OS == OS_WINDOWS) {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
 
-            } else if (Alchemy.PLATFORM == LINUX) {
+            } else if (Alchemy.OS == OS_LINUX) {
                 String[] browsers = {
                     "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape"
                 };
@@ -595,11 +595,11 @@ public class AlcUtil implements AlcConstants {
     public static void openPDF(File pdf) {
         final String errMsg = "Error attempting to launch pdf";
         try {
-            if (Alchemy.PLATFORM == MACOSX) {
+            if (Alchemy.OS == OS_MAC) {
                 Runtime.getRuntime().exec("open " + pdf.getAbsolutePath());
-            } else if (Alchemy.PLATFORM == WINDOWS) {
+            } else if (Alchemy.OS == OS_WINDOWS) {
                 Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + pdf.getAbsolutePath());
-            } else if (Alchemy.PLATFORM == LINUX) {
+            } else if (Alchemy.OS == OS_LINUX) {
 
                 if (openLauncher == null) {
                     // Attempt to use gnome-open
@@ -663,7 +663,7 @@ public class AlcUtil implements AlcConstants {
      */
     public static boolean showConfirmDialog(String title, String message) {
 
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             message =
                     "<html>" + UIManager.get("OptionPane.css") +
                     "<b>" + title + "</b>" +
@@ -712,7 +712,7 @@ public class AlcUtil implements AlcConstants {
      * @return              True if OK, else false if Cancel
      */
     public static boolean showConfirmDialog(String winTitle, String winMessage, String macTitle, String macMessage) {
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             return showConfirmDialog(macTitle, macMessage);
         } else {
             return showConfirmDialog(winTitle, winMessage);
@@ -729,7 +729,7 @@ public class AlcUtil implements AlcConstants {
      * @return              True if OK, else false if Cancel
      */
     public static boolean showConfirmDialogFromBundle(String winTitle, String winMessage, String macTitle, String macMessage) {
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             return showConfirmDialogFromBundle(macTitle, macMessage);
         } else {
             return showConfirmDialogFromBundle(winTitle, winMessage);
@@ -848,7 +848,7 @@ public class AlcUtil implements AlcConstants {
         // Shortcut to close with escape
         root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Close Window");
         // Shortcut to close with a modifier - w
-        root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, MODIFIER_KEY), "Close Window");
+        root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_W, KEY_MODIFIER), "Close Window");
         // Assign the action for the two keys
         root.getActionMap().put("Close Window", closeAction);
     }

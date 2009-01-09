@@ -169,7 +169,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
 
             public boolean accept(File dir, String name) {
                 // MIME types not working on Linux?
-                if (Alchemy.PLATFORM == LINUX) {
+                if (Alchemy.OS == OS_LINUX) {
                     return name.endsWith(".pdf") || name.endsWith(".PDF");
                 }
                 File file = new File(dir, name);

@@ -100,7 +100,7 @@ class AlcPopupButton extends AlcButton implements AlcConstants {
             Alchemy.canvas.setTempCursor(CURSOR_ARROW);
         }
         // Get rid of the window shadow on Mac
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             popup.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
         }
     }
