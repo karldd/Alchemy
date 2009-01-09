@@ -47,15 +47,15 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     AlcMenuBar() {
 
         // Default applications directory depending on the platform
-        switch (Alchemy.PLATFORM) {
-            case MACOSX:
+        switch (Alchemy.OS) {
+            case OS_MAC:
                 platformAppDir = new File(File.separator + "Applications");
                 this.setBorderPainted(false);
                 break;
-            case WINDOWS:
+            case OS_WINDOWS:
                 platformAppDir = new File(File.separator + "Program Files");
                 break;
-            case LINUX:
+            case OS_LINUX:
                 platformAppDir = new File(File.separator + "usr" + File.separator + "bin");
                 this.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 break;
@@ -86,7 +86,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem newItem = new AlcMenuItem(newAction);
         // Shortcut - Modifier n
-        int newKey = Alchemy.shortcuts.setShortcut(newItem, KeyEvent.VK_N, "newTitle", newAction, MODIFIER_KEY);
+        int newKey = Alchemy.shortcuts.setShortcut(newItem, KeyEvent.VK_N, "newTitle", newAction, KEY_MODIFIER);
         newItem.setup(newTitle, newKey);
         fileMenu.add(newItem);
 
@@ -102,7 +102,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem exportItem = new AlcMenuItem(exportAction);
         // Shortcut - Modifier e
-        int exportKey = Alchemy.shortcuts.setShortcut(exportItem, KeyEvent.VK_E, "exportTitle", exportAction, MODIFIER_KEY);
+        int exportKey = Alchemy.shortcuts.setShortcut(exportItem, KeyEvent.VK_E, "exportTitle", exportAction, KEY_MODIFIER);
         exportItem.setup(exportTitle, exportKey);
 
         fileMenu.add(exportItem);
@@ -130,13 +130,13 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem printItem = new AlcMenuItem(printAction);
         // Shortcut - Modifier p
-        int printKey = Alchemy.shortcuts.setShortcut(printItem, KeyEvent.VK_P, "printTitle", printAction, MODIFIER_KEY);
+        int printKey = Alchemy.shortcuts.setShortcut(printItem, KeyEvent.VK_P, "printTitle", printAction, KEY_MODIFIER);
         printItem.setup(printTitle, printKey);
         fileMenu.add(printItem);
 
 
         // Exit - not included on a MAC
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             fileMenu.add(new JSeparator());
 
             AbstractAction exitAction = new AbstractAction() {
@@ -169,7 +169,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem copyItem = new AlcMenuItem(copyAction);
         // Shortcut - Modifier c
-        int copyKey = Alchemy.shortcuts.setShortcut(copyItem, KeyEvent.VK_C, "copyTitle", copyAction, MODIFIER_KEY);
+        int copyKey = Alchemy.shortcuts.setShortcut(copyItem, KeyEvent.VK_C, "copyTitle", copyAction, KEY_MODIFIER);
         copyItem.setup(copyTitle, copyKey);
         editMenu.add(copyItem);
 
@@ -197,7 +197,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         fullScreenItem.setAction(fullScreenAction);
         // Shortcut - Modifier f
-        int fullScreenKey = Alchemy.shortcuts.setShortcut(fullScreenItem, KeyEvent.VK_F, "fullScreenTitle", fullScreenAction, MODIFIER_KEY);
+        int fullScreenKey = Alchemy.shortcuts.setShortcut(fullScreenItem, KeyEvent.VK_F, "fullScreenTitle", fullScreenAction, KEY_MODIFIER);
         fullScreenItem.setup(fullScreenTitle, fullScreenKey);
         viewMenu.add(fullScreenItem);
         
@@ -221,7 +221,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         transparentItem.setAction(transparentAction);
         // Shortcut - Modifier t
-        int transparentKey = Alchemy.shortcuts.setShortcut(transparentItem, KeyEvent.VK_T, "transparentTitle", transparentAction, MODIFIER_KEY);
+        int transparentKey = Alchemy.shortcuts.setShortcut(transparentItem, KeyEvent.VK_T, "transparentTitle", transparentAction, KEY_MODIFIER);
         transparentItem.setup(transparentTitle, transparentKey);
         viewMenu.add(transparentItem);
 
@@ -242,7 +242,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem savePageItem = new AlcMenuItem(savePageAction);
         // Shortcut - Modifier s
-        int savePageKey = Alchemy.shortcuts.setShortcut(savePageItem, KeyEvent.VK_S, "savePageTitle", savePageAction, MODIFIER_KEY);
+        int savePageKey = Alchemy.shortcuts.setShortcut(savePageItem, KeyEvent.VK_S, "savePageTitle", savePageAction, KEY_MODIFIER);
         savePageItem.setup(savePageTitle, savePageKey);
 
 
@@ -257,7 +257,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         AlcMenuItem saveClearPageItem = new AlcMenuItem(saveClearPageAction);
-        int saveClearKey = Alchemy.shortcuts.setShortcut(saveClearPageItem, KeyEvent.VK_D, "saveClearTitle", saveClearPageAction, MODIFIER_KEY);
+        int saveClearKey = Alchemy.shortcuts.setShortcut(saveClearPageItem, KeyEvent.VK_D, "saveClearTitle", saveClearPageAction, KEY_MODIFIER);
         saveClearPageItem.setup(saveClearTitle, saveClearKey);
         sessionMenu.add(saveClearPageItem);
 
@@ -282,7 +282,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         recordingItem.setAction(recordingAction);
         // Shortcut - Modifier r
-        int recordingKey = Alchemy.shortcuts.setShortcut(recordingItem, KeyEvent.VK_R, "recordingTitle", recordingAction, MODIFIER_KEY);
+        int recordingKey = Alchemy.shortcuts.setShortcut(recordingItem, KeyEvent.VK_R, "recordingTitle", recordingAction, KEY_MODIFIER);
         recordingItem.setup(recordingTitle, recordingKey);
 
         recordingItem.setState(Alchemy.preferences.sessionRecordingState);
@@ -340,7 +340,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction loadSessionAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                File file = AlcUtil.showFileChooser(new File(DESKTOP_DIR), false);
+                File file = AlcUtil.showFileChooser(new File(DIR_DESKTOP), false);
                 if (file != null && file.exists()) {
                     boolean loaded = Alchemy.session.loadSessionFile(file);
                     nextPageItem.setEnabled(loaded);
@@ -363,7 +363,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         nextPageItem = new AlcMenuItem(nextPageAction);
-        int nextPageKey = Alchemy.shortcuts.setShortcut(nextPageItem, KeyEvent.VK_RIGHT, "nextPageTitle", nextPageAction, MODIFIER_KEY);
+        int nextPageKey = Alchemy.shortcuts.setShortcut(nextPageItem, KeyEvent.VK_RIGHT, "nextPageTitle", nextPageAction, KEY_MODIFIER);
         nextPageItem.setup(nextPageTitle, nextPageKey);
         sessionMenu.add(nextPageItem);
         nextPageItem.setEnabled(false);
@@ -377,7 +377,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             }
         };
         previousPageItem = new AlcMenuItem(previousPageAction);
-        int previousPageKey = Alchemy.shortcuts.setShortcut(previousPageItem, KeyEvent.VK_LEFT, "previousPageTitle", previousPageAction, MODIFIER_KEY);
+        int previousPageKey = Alchemy.shortcuts.setShortcut(previousPageItem, KeyEvent.VK_LEFT, "previousPageTitle", previousPageAction, KEY_MODIFIER);
         previousPageItem.setup(previousPageTitle, previousPageKey);
         sessionMenu.add(previousPageItem);
         previousPageItem.setEnabled(false);
@@ -449,7 +449,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem switchVectorItem = new AlcMenuItem(switchVectorAction);
         // Shortcut - Modifier v
-        int vectorKey = Alchemy.shortcuts.setShortcut(switchVectorItem, KeyEvent.VK_V, "switchVectorTitle", switchVectorAction, MODIFIER_KEY);
+        int vectorKey = Alchemy.shortcuts.setShortcut(switchVectorItem, KeyEvent.VK_V, "switchVectorTitle", switchVectorAction, KEY_MODIFIER);
         switchVectorItem.setup(switchVectorTitle, vectorKey);
         switchMenu.add(switchVectorItem);
 
@@ -463,7 +463,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         };
         AlcMenuItem switchBitmapItem = new AlcMenuItem(switchBitmapAction);
         // Shortcut - Modifier v
-        int bitmapKey = Alchemy.shortcuts.setShortcut(switchBitmapItem, KeyEvent.VK_B, "switchBitmapTitle", switchBitmapAction, MODIFIER_KEY);
+        int bitmapKey = Alchemy.shortcuts.setShortcut(switchBitmapItem, KeyEvent.VK_B, "switchBitmapTitle", switchBitmapAction, KEY_MODIFIER);
         switchBitmapItem.setup(switchBitmapTitle, bitmapKey);
         switchMenu.add(switchBitmapItem);
 
@@ -550,7 +550,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         keyboardShortcutsItem.setup(getS("keyboardShortcutsTitle"));
         settingsMenu.add(keyboardShortcutsItem);
 
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             // Options
             AbstractAction optionsAction = new AbstractAction() {
 
@@ -628,7 +628,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         helpMenu.add(forumItem);
 
         // About menuitem not included on a MAC
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             helpMenu.add(new JSeparator());
 
             AbstractAction aboutAction = new AbstractAction() {
@@ -701,7 +701,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         //String fileString = fileDialog.getFile();
 
 
-        final AlcFileChooser fc = new AlcFileChooser(DESKTOP_DIR);
+        final AlcFileChooser fc = new AlcFileChooser(DIR_DESKTOP);
         fc.setDialogTitle(Alchemy.bundle.getString("exportFileTitle"));
         fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new ExportFileFilter("PNG - Transparent"));
@@ -778,15 +778,15 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         File path = new File(app);
         try {
             String[] commands = null;
-            switch (Alchemy.PLATFORM) {
-                case MACOSX:
+            switch (Alchemy.OS) {
+                case OS_MAC:
                     commands = new String[]{"open", "-a", path.getName(), file};
                     break;
-                case WINDOWS:
+                case OS_WINDOWS:
                     //commands = new String[]{"cmd", "/c", "start",  "\""+path.getName()+"\"", file};
                     commands = new String[]{path.getAbsolutePath(), file};
                     break;
-                case LINUX:
+                case OS_LINUX:
                     commands = new String[]{path.getName(), file};
                     break;
             }
@@ -801,7 +801,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
     @Override
     protected void paintComponent(Graphics g) {
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             // Make sure this is not painted on Mac
             // The mac menubar is used instead
             super.paintComponent(g);

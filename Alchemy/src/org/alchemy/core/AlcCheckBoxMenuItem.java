@@ -20,7 +20,6 @@
 package org.alchemy.core;
 
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
@@ -35,7 +34,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     
 
     static {
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             checkX = 6;
         } else {
             checkX = 4;
@@ -87,7 +86,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
         this.setFont(FONT_MEDIUM);
 
         if (accelerator > 0) {
-            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, MODIFIER_KEY));
+            this.setAccelerator(KeyStroke.getKeyStroke(accelerator, KEY_MODIFIER));
         }
     }
 
@@ -102,7 +101,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (Alchemy.PLATFORM != LINUX) {
+        if (Alchemy.OS != OS_LINUX) {
             if (!this.getState()) {
                 g.setColor(AlcToolBar.toolBarBoxColour);
                 // This is the toolbar menu popup

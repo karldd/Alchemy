@@ -121,7 +121,7 @@ public class Shapes extends AlcModule implements AlcConstants {
         if (straightShapes && !firstClick && lastPt != null) {
 
             GeneralPath line = new GeneralPath(new Line2D.Float(lastPt.x, lastPt.y, e.getX(), e.getY()));
-            AlcShape guide = new AlcShape(line, guideColour, 100, STROKE, 1);
+            AlcShape guide = new AlcShape(line, guideColour, 100, STYLE_STROKE, 1);
 
             if (guideSize == canvas.guideShapes.size()) {
                 if (secondPath != null) {
@@ -169,7 +169,7 @@ public class Shapes extends AlcModule implements AlcConstants {
                     canvas.createShapes.add(new AlcShape(p));
                     firstClick = false;
                     // If the style is solid we need to initially keep two guides
-                    if (canvas.getStyle() == FILL) {
+                    if (canvas.getStyle() == STYLE_FILL) {
                         secondClick = true;
                     }
                 } else if (secondClick) {

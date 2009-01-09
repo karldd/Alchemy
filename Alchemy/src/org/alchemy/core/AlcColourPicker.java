@@ -99,7 +99,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         //eyeDropperWindow.setAlwaysOnTop(true);
 
         // Get rid of the window shadow on Mac
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             eyeDropperWindow.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
         }
         eyeDropperWindow.addMouseListener(new MouseAdapter() {
@@ -136,7 +136,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         };
 
         eyeDropperWindow.setContentPane(imagePanel);
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             eyeDropperWindow.setFocusableWindowState(false);
         }
         //eyeDropperWindow.toFront();
@@ -195,7 +195,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                 devices = null;
 
 
-                //if (Alchemy.PLATFORM == MACOSX) {
+                //if (Alchemy.OS == MACOSX) {
                 Alchemy.canvas.restoreCursor();
                 //setCursor(CURSOR_ARROW);
                 //}
@@ -271,7 +271,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
             Alchemy.canvas.setColour(this.getColor(e.getX(), e.getY()));
             parent.hidePopup();
-            if (Alchemy.PLATFORM == MACOSX) {
+            if (Alchemy.OS == OS_MAC) {
                 Alchemy.canvas.restoreCursor();
                 //Alchemy.canvas.setCursor(CURSOR_CROSS);
                 setCursor(CURSOR_ARROW);
@@ -282,14 +282,14 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
     public void mouseEntered(MouseEvent e) {
         // OSX does not seem to obey the set cursor so set the other cursors
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             Alchemy.canvas.setTempCursor(CURSOR_CIRCLE);
             Alchemy.toolBar.setCursor(CURSOR_CIRCLE);
         }
     }
 
     public void mouseExited(MouseEvent e) {
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             Alchemy.canvas.restoreCursor();
             //Alchemy.canvas.setCursor(CURSOR_CROSS);
             Alchemy.toolBar.setCursor(CURSOR_ARROW);

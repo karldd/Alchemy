@@ -159,8 +159,8 @@ public class AlcMath implements AlcConstants {
         sinLUT = new float[SINCOS_LENGTH];
         cosLUT = new float[SINCOS_LENGTH];
         for (int i = 0; i < SINCOS_LENGTH; i++) {
-            sinLUT[i] = (float) Math.sin(i * DEG_TO_RAD * SINCOS_PRECISION);
-            cosLUT[i] = (float) Math.cos(i * DEG_TO_RAD * SINCOS_PRECISION);
+            sinLUT[i] = (float) Math.sin(i * MATH_DEG_TO_RAD * SINCOS_PRECISION);
+            cosLUT[i] = (float) Math.cos(i * MATH_DEG_TO_RAD * SINCOS_PRECISION);
 
         }
 

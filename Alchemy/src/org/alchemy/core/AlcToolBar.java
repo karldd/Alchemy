@@ -489,10 +489,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
                     // Range from 0 - 8 mapped to keys 1 - 9
                     if (affectCount < 9) {
-                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero + affectCount + 1, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero + affectCount + 1, currentModule.getName(), affectMenuItemAction, KEY_MODIFIER);
                     // The 10th module is mapped to the 0 key
                     } else if (affectCount == 9) {
-                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero, currentModule.getName(), affectMenuItemAction, MODIFIER_KEY);
+                        Alchemy.shortcuts.setShortcut(affectMenuItem, zero, currentModule.getName(), affectMenuItemAction, KEY_MODIFIER);
                     // The next 9 modules are mapped to keys 1 - 9 with the SHIFT key
                     } else if (affectCount > 9) {
                         Alchemy.shortcuts.setShortcut(affectMenuItem, zero + (affectCount - 9), currentModule.getName(), affectMenuItemAction, KeyEvent.SHIFT_MASK);
@@ -522,7 +522,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         AlcButton clearButton = new AlcButton(clearAction);
         clearButton.setup(clearTitle, getS("clearDescription"), AlcUtil.getUrlPath("clear.png"));
         // Shortcuts - Modifier Delete/Backspace
-        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, MODIFIER_KEY);
+        Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, KEY_MODIFIER);
         Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
         toolBar.add(clearButton);
 
@@ -546,7 +546,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 "Detach the toolbar to a seperate palette");
 
         // Compensate for the windows border
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             detachButton.setMargin(new Insets(2, 0, 0, 2));
         } else {
             detachButton.setMargin(new Insets(2, 0, 0, 7));
@@ -687,7 +687,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             newTotalHeight += subToolBar.getHeight();
         }
 
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             // Add the height of the menubar if this is not a mac
             newTotalHeight += Alchemy.menuBar.getHeight();
         }
@@ -726,7 +726,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         subToolBarSection.revalidate();
 
-        if (subToolBarSection.getModuleType() == CREATE) {
+        if (subToolBarSection.getModuleType() == MODULE_CREATE) {
             createSubToolBarSection = subToolBarSection;
 
         // AFFECT
@@ -894,7 +894,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Called when attaching the toolbar from the palette */
     @Override
     void attachToolBar() {
-        if (Alchemy.PLATFORM != MACOSX) {
+        if (Alchemy.OS != OS_MAC) {
             Alchemy.window.setJMenuBar(null);
             this.add("North", Alchemy.menuBar);
         }

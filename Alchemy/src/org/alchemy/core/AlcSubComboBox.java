@@ -40,7 +40,7 @@ public class AlcSubComboBox extends JPanel implements AlcConstants {
 
         comboBox = new JComboBox();
         comboBox.setFont(FONT_SMALL);
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             comboBox.setPreferredSize(new Dimension(85, 23));
         } else {
             comboBox.setPreferredSize(new Dimension(80, 16));

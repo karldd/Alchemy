@@ -74,7 +74,7 @@ class AlcPlugins implements AlcConstants {
 
         try {
             // Create temp file.
-            tempCore = new File(TEMP_DIR, "org.alchemy.core-1.0.0.zip");
+            tempCore = new File(DIR_TEMP, "org.alchemy.core-1.0.0.zip");
 
             if (tempCore.exists()) {
                 System.out.println("Temp Core Exits: " + tempCore.getAbsolutePath());
@@ -92,7 +92,7 @@ class AlcPlugins implements AlcConstants {
 
             //
             if (!tempCore.exists()) {
-                System.err.println("ERROR - Core plugin could not be copied to the temp dir: " + TEMP_DIR);
+                System.err.println("ERROR - Core plugin could not be copied to the temp dir: " + DIR_TEMP);
             }
 
         } catch (Exception ex) {
@@ -165,13 +165,13 @@ class AlcPlugins implements AlcConstants {
             currentAffects = new boolean[getNumberOfAffectModules()];
             String[] affectsOrder = {"Displace", "Mirror", "Blindness", "Random"};
             // Extension Point Name, Array Size, Module Type
-            affects = addPlugins("Affect", getNumberOfAffectModules(), AFFECT, affectsOrder);
+            affects = addPlugins("Affect", getNumberOfAffectModules(), MODULE_AFFECT, affectsOrder);
         }
         // Load create - zero creates = exit!
         if (getNumberOfCreateModules() > 0) {
             String[] createsOrder = {"Shapes", "Mic Shapes", "Speed Shapes"};
             // Extension Point Name, Array Size, Module Type
-            creates = addPlugins("Create", getNumberOfCreateModules(), CREATE, createsOrder);
+            creates = addPlugins("Create", getNumberOfCreateModules(), MODULE_CREATE, createsOrder);
         } else {
             // Tell the user that there must be at least one create module loaded
             AlcUtil.showConfirmDialogFromBundle("noCreateModulesDialogTitle", "noCreateModulesDialogMessage");

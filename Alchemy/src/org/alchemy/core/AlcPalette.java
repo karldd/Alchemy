@@ -63,7 +63,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         //this.setAlwaysOnTop(true);
         
         // Get rid of the window shadow on Mac
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             this.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
         }
     }

@@ -28,77 +28,73 @@ import java.awt.image.MemoryImageSource;
 import java.util.Locale;
 
 /**
- * Constant values used in Alchemy <br>
- * Some of this is taken from Processings' PConstants <br>
- * http://dev.processing.org/source/index.cgi/trunk/processing/core/src/processing/core/PConstants.java?view=markup
+ * Constant values used in Alchemy
  */
 public interface AlcConstants {
 
     //////////////////////////////////////////////////////////////
     // PLATFORM INFO
     //////////////////////////////////////////////////////////////
-    /** Platform: Windows (1) */
-    static final int WINDOWS = 1;
-    /** Platform: MacOSX (3) */
-    static final int MACOSX = 3;
-    /** Platform: Linux (4) */
-    static final int LINUX = 4;
-    /** Platform: Other (0) */
-    static final int OTHER = 0;
-    /** Toolkit */
+    /** OS: Windows (1) */
+    static final int OS_WINDOWS = 1;
+    /** OS: Mac (2) */
+    static final int OS_MAC = 2;
+    /** OS: Linux (3) */
+    static final int OS_LINUX = 3;
+    /** OS: Other (0) */
+    static final int OS_OTHER = 0;
+    /** Convenience access to the {@link Toolkit} */
     static final Toolkit TOOLKIT = Toolkit.getDefaultToolkit();
     /** Modifier flags for the shortcut key used to trigger menus. (Cmd on Mac OS X, Ctrl on Linux and Windows) */
-    static final int MODIFIER_KEY = TOOLKIT.getMenuShortcutKeyMask();
-    /** Full name of the Java version (i.e. 1.5.0_11). */
+    static final int KEY_MODIFIER = TOOLKIT.getMenuShortcutKeyMask();
+    /** Full name of the Java version eg 1.5.0_11 */
     static final String JAVA_VERSION_NAME = System.getProperty("java.version");
     /** Version of Java that's in use, whether 1.1 or 1.3 or whatever stored as a float */
     static final float JAVA_VERSION = new Float(JAVA_VERSION_NAME.substring(0, 3)).floatValue();
-    /** The sub version of java in use i.e. 13 */
-    //static final int JAVA_SUBVERSION = new Integer(JAVA_VERSION_NAME.substring(6, 8));
-    /** Current platform in use. Equivalent to System.getProperty("os.name"), just used internally */
-    static final String PLATFORM_NAME = System.getProperty("os.name");
+    /** Name of the OS */
+    static final String OS_NAME = System.getProperty("os.name");
     /** The users name */
     static final String USER_NAME = System.getProperty("user.name");
-    /** File Separator */
-    static final String FILE_SEPARATOR = System.getProperty("file.separator");
+    /** The file separator used on this OS */
+    static final String DIR_SEPARATOR = System.getProperty("file.separator");
     /** The users home directory */
-    static final String HOME_DIR = System.getProperty("user.home");
+    static final String DIR_HOME = System.getProperty("user.home");
     /** The users destop directory */
-    static final String DESKTOP_DIR = System.getProperty("user.home") + FILE_SEPARATOR + "Desktop";
+    static final String DIR_DESKTOP = System.getProperty("user.home") + DIR_SEPARATOR + "Desktop";
     /** The default temp directory */
-    static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
+    static final String DIR_TEMP = System.getProperty("java.io.tmpdir");
     /** Default Locale */
     static final Locale LOCALE = Locale.getDefault();
     //
     //////////////////////////////////////////////////////////////
     // MATH CONSTANTS
     //////////////////////////////////////////////////////////////
-    static final float PI = (float) Math.PI;
-    static final float HALF_PI = PI / 2.0f;
-    static final float THIRD_PI = PI / 3.0f;
-    static final float QUARTER_PI = PI / 4.0f;
-    static final float TWO_PI = PI * 2.0f;
-    static final float DEG_TO_RAD = PI / 180.0f;
-    static final float RAD_TO_DEG = 180.0f / PI;
+    static final float MATH_PI = (float) Math.PI;
+    static final float MATH_HALF_PI = MATH_PI / 2.0f;
+    static final float MATH_THIRD_PI = MATH_PI / 3.0f;
+    static final float MATH_QUARTER_PI = MATH_PI / 4.0f;
+    static final float MATH_TWO_PI = MATH_PI * 2.0f;
+    static final float MATH_DEG_TO_RAD = MATH_PI / 180.0f;
+    static final float MATH_RAD_TO_DEG = 180.0f / MATH_PI;
     //
     //////////////////////////////////////////////////////////////
     // SHAPE STYLE
     //////////////////////////////////////////////////////////////
     /** Shape Style: Stroke (1)  */
-    static final int STROKE = 1;
+    static final int STYLE_STROKE = 1;
     /** Shape Style: Fill (2)  */
-    static final int FILL = 2;
+    static final int STYLE_FILL = 2;
     /** Shape Style: Both (3) - Only used with the PDF Renderer */
-    static final int BOTH = 3;
+    static final int STYLE_BOTH = 3;
     /** Shape Style: Clip (4) - Only used with the PDF Renderer */
-    static final int CLIP = 4;    //
+    static final int STYLE_CLIP = 4;    //
     //////////////////////////////////////////////////////////////
     // MODULE TYPES
     //////////////////////////////////////////////////////////////
     /** Module Type: CREATE (1)  */
-    static final int CREATE = 1;
+    static final int MODULE_CREATE = 1;
     /** Module Type: AFFECT (2)  */
-    static final int AFFECT = 2;
+    static final int MODULE_AFFECT = 2;
     //
     //////////////////////////////////////////////////////////////
     // CURSORS 
@@ -120,30 +116,39 @@ public interface AlcConstants {
             Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, new int[16 * 16], 0, 16)),
             new Point(0, 0),
             "Blank");
+    /** Cursor - Circle Cursor used with the colour picker */
     static final Cursor CURSOR_CIRCLE = AlcUtil.getCursor("cursor-circle.png");
+    /** Cursor - Eyedropper Cursor */
     static final Cursor CURSOR_EYEDROPPER = AlcUtil.getCursor("cursor-eyedropper.png");
     //////////////////////////////////////////////////////////////
     // ICONS
     //////////////////////////////////////////////////////////////
+    /** Icon that appears in the windows titlebar */
     static final Image ICON_TITLEBAR = AlcUtil.getImage("titlebar.png");
     //////////////////////////////////////////////////////////////
     // PEN TYPES
     //////////////////////////////////////////////////////////////
     /** Pen Type: STYLUS (1)  */
-    static final int STYLUS = 1;
+    static final int PEN_STYLUS = 1;
     /** Pen Type: ERASER (2)  */
-    static final int ERASER = 2;
+    static final int PEN_ERASER = 2;
     /** Pen Type: CURSOR (3)  */
-    static final int CURSOR = 3;
+    static final int PEN_CURSOR = 3;
     //
     //////////////////////////////////////////////////////////////
     // FONTS 
     //////////////////////////////////////////////////////////////
+    /** Font - Sanserif plain 10pt */
     static final Font FONT_SMALL = new Font("sansserif", Font.PLAIN, 10);
+    /** Font - Sanserif plain 11pt */    
     static final Font FONT_MEDIUM = new Font("sansserif", Font.PLAIN, 11);
+    /** Font - Sanserif plain 12pt */    
     static final Font FONT_LARGE = new Font("sansserif", Font.PLAIN, 12);
+    /** Font - Sanserif bold 10pt */
     static final Font FONT_SMALL_BOLD = new Font("sansserif", Font.BOLD, 10);
+    /** Font - Sanserif bold 11pt */    
     static final Font FONT_MEDIUM_BOLD = new Font("sansserif", Font.BOLD, 11);
+    /** Font - Sanserif bold 12pt */    
     static final Font FONT_LARGE_BOLD = new Font("sansserif", Font.BOLD, 12);
 
 }

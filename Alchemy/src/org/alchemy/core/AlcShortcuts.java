@@ -132,7 +132,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         buttonPane.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         buttonPane.add(defaultButton);
         buttonPane.add(Box.createHorizontalGlue());
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             buttonPane.add(cancelButton);
             buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
             buttonPane.add(okButton);
@@ -415,16 +415,16 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         String keyText = KeyEvent.getKeyText(key).toUpperCase();
         String keyModifier = KeyEvent.getKeyModifiersText(modifier);
 
-        if (Alchemy.PLATFORM == MACOSX) {
+        if (Alchemy.OS == OS_MAC) {
             switch (modifier) {
                 case KeyEvent.META_MASK:
-                    keyModifier = Alchemy.MODIFIER_KEY_STRING;
+                    keyModifier = Alchemy.KEY_MODIFIER_STRING;
                     break;
                 case KeyEvent.SHIFT_MASK:
-                    keyModifier = Alchemy.SHIFT_KEY_STRING;
+                    keyModifier = Alchemy.KEY_SHIFT_STRING;
                     break;
                 case KeyEvent.ALT_MASK:
-                    keyModifier = Alchemy.ALT_KEY_STRING;
+                    keyModifier = Alchemy.KEY_ALT_STRING;
                     break;
             }
 

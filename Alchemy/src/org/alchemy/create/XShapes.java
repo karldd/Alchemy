@@ -162,7 +162,7 @@ public class XShapes extends AlcModule implements AlcConstants {
         // Calculate the angle between the last point and the new point
         //double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - Math.sin(counter * 0.01);
         //double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - counter * 0.001;
-        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - HALF_PI;
+        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - MATH_HALF_PI;
         //System.out.println(angle);
 
         //double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x);

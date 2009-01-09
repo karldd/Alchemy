@@ -29,31 +29,33 @@ import java.util.ResourceBundle;
  */
 public class Alchemy implements AlcConstants {
 
-    /** Current PLATFORM in use, one of WINDOWS, MACOSX, LINUX or OTHER. */
-    public static int PLATFORM;
-    /** Modifier Key to show for tool tips - This looks like '\u2318' for Apple or 'Ctrl' otherwise */
-    public static String MODIFIER_KEY_STRING = "Ctrl";
-    public static String SHIFT_KEY_STRING = "Shift";
-    public static String ALT_KEY_STRING = "Alt";
+    /** Current OS in use, one of OS_WINDOWS, OS_MAC, OS_LINUX or OS_OTHER. */
+    public static int OS;
+    /** Modifier Key String - This looks like <en>\u2318</em> for Mac or <em>Ctrl</em> otherwise */
+    public static String KEY_MODIFIER_STRING = "Ctrl";
+    /** Shift Key String - This looks like <en>\u21E7</em> for Mac or <em>Shift</em> otherwise */
+    public static String KEY_SHIFT_STRING = "Shift";
+    /** Alt Key String - This looks like <en>\u2325</em> for Mac or <em>Alt</em> otherwise */
+    public static String KEY_ALT_STRING = "Alt";
     
 
     static {
-        if (PLATFORM_NAME.indexOf("Mac") != -1) {
-            PLATFORM = MACOSX;
+        if (OS_NAME.indexOf("Mac") != -1) {
+            OS = OS_MAC;
             // Unicode sequences to display the correct mac symbols for
             // Command/Apple, Shift, Alt/Option keys
-            MODIFIER_KEY_STRING = "\u2318";
-            SHIFT_KEY_STRING = "\u21E7";
-            ALT_KEY_STRING = "\u2325";
+            KEY_MODIFIER_STRING = "\u2318";
+            KEY_SHIFT_STRING = "\u21E7";
+            KEY_ALT_STRING = "\u2325";
 
-        } else if (PLATFORM_NAME.indexOf("Windows") != -1) {
-            PLATFORM = WINDOWS;
+        } else if (OS_NAME.indexOf("Windows") != -1) {
+            OS = OS_WINDOWS;
 
-        } else if (PLATFORM_NAME.equals("Linux")) {
-            PLATFORM = LINUX;
+        } else if (OS_NAME.equals("Linux")) {
+            OS = OS_LINUX;
 
         } else {
-            PLATFORM = OTHER;
+            OS = OS_OTHER;
         }
     }
     //////////////////////////////////////////////////////////////
@@ -89,7 +91,7 @@ public class Alchemy implements AlcConstants {
 
     Alchemy() {
 
-        if (PLATFORM == MACOSX) {
+        if (OS == OS_MAC) {
             Object appIcon = LookAndFeel.makeIcon(getClass(), "/org/alchemy/data/alchemy-logo64.png");
             UIManager.put("OptionPane.errorIcon", appIcon);
             UIManager.put("OptionPane.informationIcon", appIcon);
@@ -171,6 +173,10 @@ public class Alchemy implements AlcConstants {
 
         window.setVisible(true);
 
+        System.out.println("Java Version: " + JAVA_VERSION_NAME);
+        System.out.println("Platform: " + OS_NAME);
+        System.out.println("Version: " + System.getProperty("os.version"));
+        System.out.println("Architecture: " + System.getProperty("os.arch"));
 
     }
 
@@ -180,7 +186,7 @@ public class Alchemy implements AlcConstants {
 
             //System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + "lib");
 
-            if (PLATFORM == MACOSX) {
+            if (OS == OS_MAC) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true");
                 //System.setProperty("apple.awt.draggableWindowBackground", "true");
                 //System.setProperty("com.apple.mrj.application.growbox.intrudes","false");
