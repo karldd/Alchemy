@@ -290,6 +290,9 @@
         <copy file="${basedir}/lib/jpen/libjpen-2-ia64.so" todir="${alchemy.dir}/lib"/>
         <copy file="${basedir}/lib/jpen/libjpen-2-x86_64.so" todir="${alchemy.dir}/lib"/>
         
+        <!-- Move the Jar file -->
+        <move file="${dist.dir}/Alchemy.jar" tofile="${alchemy.dir}/Alchemy.jar"/>
+
         <!-- Create a .tar.gz for distribution -->
         <tar destfile="${dist.dir}/Alchemy-${version.number}.tar" basedir="${dist.dir}"/>
         <gzip destfile="${dist.dir}/Alchemy-${version.number}.tar.gz" src="${dist.dir}/Alchemy-${version.number}.tar"/>
