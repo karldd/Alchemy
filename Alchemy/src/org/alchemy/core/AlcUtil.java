@@ -259,11 +259,13 @@ public class AlcUtil implements AlcConstants {
         Dimension smallCursorSize = new Dimension(smallCursor.getWidth(null), smallCursor.getHeight(null));
         Dimension cursorSize = TOOLKIT.getBestCursorSize(smallCursorSize.width, smallCursorSize.height);
 
-        if (cursorSize.equals(smallCursorSize)) {
+        // If this cursor is the right size or custom cursors are not supported...    
+        if (cursorSize.equals(smallCursorSize) || cursorSize.width <= 0 || cursorSize.height <= 0) {
             customCursor = TOOLKIT.createCustomCursor(
                     smallCursor,
                     new Point(smallCursorSize.width / 2, smallCursorSize.height / 2),
                     "CustomCursor");
+            
         } else {
             int leftGap = (cursorSize.width - smallCursorSize.width) / 2;
             int topGap = (cursorSize.height - smallCursorSize.height) / 2;
