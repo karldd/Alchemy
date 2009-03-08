@@ -107,9 +107,6 @@ public class Alchemy implements AlcConstants {
             bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle");
         }
         try { // Try and get the default bundle
-
-            System.out.println("Language: " + LOCALE.getLanguage());
-            System.out.println("Country: " + LOCALE.getCountry());
             
             // For Hong Kong lets keep it traditional and use the traditional chinese from the taiwan bundle
             if (LOCALE.getLanguage().equals("zh") && LOCALE.getCountry().equals("HK")) {
@@ -184,8 +181,10 @@ public class Alchemy implements AlcConstants {
 
         System.out.println("Java Version: " + JAVA_VERSION_NAME);
         System.out.println("Platform: " + OS_NAME);
-        System.out.println("Version: " + System.getProperty("os.version"));
+        System.out.println("OS Version: " + System.getProperty("os.version"));
         System.out.println("Architecture: " + System.getProperty("os.arch"));
+        System.out.println("Language: " + LOCALE.getLanguage());
+        System.out.println("Country: " + LOCALE.getCountry());
 
     }
 
