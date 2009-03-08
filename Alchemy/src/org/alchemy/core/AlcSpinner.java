@@ -20,6 +20,7 @@
 package org.alchemy.core;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 
@@ -43,22 +44,34 @@ class AlcSpinner extends JPanel implements AlcShortcutInterface, AlcConstants {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         spinner = new AlcSpinnerCustom(value, min, max, step);
-//        spinner.setOpaque(false);
-//        spinner.setBackground(AlcToolBar.toolBarBgColour);
-//        // Top Left Bottom Right
-        //spinner.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         spinner.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //spinner.setPreferredSize(new Dimension(25, 25));
-        this.add(spinner);
+
 
         label = new JLabel(name);
-        label.setFont(FONT_MEDIUM);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        label.setFont(FONT_MEDIUM);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+
+//        System.out.println("Spinner: " + spinner.getPreferredSize());
+//        System.out.println("Label: " + label.getPreferredSize());
+
+        // Box layout CENTER_ALIGHNMENT is not working as expected when the bottom label is bigger than the top
+        // To work around this add padding outselves based on the size of each component
+        if (label.getPreferredSize().width > spinner.getPreferredSize().width) {
+            int padLeft = (label.getPreferredSize().width - spinner.getPreferredSize().width) / 2;
+            JPanel padPanel = new JPanel();
+            padPanel.setOpaque(false);
+            padPanel.setLayout(new BoxLayout(padPanel, BoxLayout.LINE_AXIS));
+            // Top Left Bottom Right
+            padPanel.setBorder(BorderFactory.createEmptyBorder(0, padLeft, 0, 0));
+            padPanel.add(spinner);
+
+            this.add(padPanel);
+        } else {
+            this.add(spinner);
+        }
         this.add(label);
-
         setToolTipText(toolTip);
-
     }
 
     @Override
