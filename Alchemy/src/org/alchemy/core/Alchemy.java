@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007-2008 Karl D.D. Willis
+ *  Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -107,13 +107,22 @@ public class Alchemy implements AlcConstants {
             bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle");
         }
         try { // Try and get the default bundle
-            bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
+
+            System.out.println("Language: " + LOCALE.getLanguage());
+            System.out.println("Country: " + LOCALE.getCountry());
+            
+            // For Hong Kong lets keep it traditional and use the traditional chinese from the taiwan bundle
+            if (LOCALE.getLanguage().equals("zh") && LOCALE.getCountry().equals("HK")) {
+                bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("zh", "TW"));
+            } else {
+                bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
+            }
         } catch (Exception ex) {
             // If that fails lets practice our English!
             ex.printStackTrace();
             bundle = bundleEn;
         }
-        
+
         // LOAD PREFERENCES
         preferences = new AlcPreferences();
 

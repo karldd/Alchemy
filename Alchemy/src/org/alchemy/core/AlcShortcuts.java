@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2007-2008 Karl D.D. Willis
+ * Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                 setVisible(false);
             }
         });
-        
+
         this.getContentPane().add(masterPanel);
         this.pack();
     //this.setResizable(false);
@@ -328,16 +328,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
      */
     int setShortcut(JComponent component, int key, String title, Action action, int modifier) {
 
-        String bundleTitle,
-                bundleTitleEn;
-
-
-
-
-
-
-
-
+        String bundleTitle, bundleTitleEn;
         try {
             // Get the localised string to display
             bundleTitle = Alchemy.bundle.getString(title);

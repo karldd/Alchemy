@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2007-2008 Karl D.D. Willis
+ * Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@ import javax.swing.event.ChangeListener;
  */
 class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
 
-    private int width,  widthMinusOne,  height,  heightMinusOne;
+    int width, widthMinusOne, height, heightMinusOne;
     /** Minimum / Maximum / Display Position of the slider */
-    private int min,  max,  displayValue;
+    int min, max, displayValue;
     /** Actual Value */
     int trueValue;
     boolean mouseDown;
@@ -45,8 +45,6 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     /** Size of one step */
     private float step;
     private float scale;
-    private final Color outline = new Color(140, 140, 140);
-    private Color bg = new Color(228, 228, 228);
     private Color line = Color.GRAY;
     /** The ChangeEvent that is passed to all listeners of this slider. */
     protected transient ChangeEvent changeEvent;
@@ -67,7 +65,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         // To be sure to reach both the min and max use widthMinusOne
         scale = (max - min);
         step = scale / (float) widthMinusOne;
-        setSlider(initialSliderValue);
+        setValue(initialSliderValue);
     }
 
     @Override
@@ -76,7 +74,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         if (bgImage != null) {
             g2.drawImage(bgImage, 0, 0, null);
         } else {
-            g2.setColor(bg);
+            g2.setColor(AlcAbstractToolBar.toolBarBgColour);
             g2.fillRect(0, 0, width, height);
         }
         g2.setColor(Color.LIGHT_GRAY);
@@ -84,7 +82,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
             if (fillPainting) {
                 g2.fillRect(0, 0, displayValue, heightMinusOne);
             }
-            g2.setColor(outline);
+            g2.setColor(AlcAbstractToolBar.toolBarLineColour);
             g2.drawRect(0, 0, widthMinusOne, heightMinusOne);
         } else {
             if (fillPainting) {
@@ -122,14 +120,6 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         }
     }
 
-    void setSlider(int value) {
-        if (value >= min && value < max) {
-            trueValue = value;
-            displayValue = Math.round((width / scale) * value);
-            this.repaint();
-        }
-    }
-
     /** Turn border painting on or off */
     void setBorderPainted(boolean b) {
         borderPainting = b;
@@ -145,49 +135,35 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         this.bgImage = bgImage;
     }
 
-    /**
-     * This method returns this slider's isAdjusting trueValue which is true if the
-     * thumb is being dragged.
-     *
-     * @return The slider's isAdjusting trueValue.
-     */
-    public boolean getValueIsAdjusting() {
+    boolean getValueIsAdjusting() {
         return mouseDown;
     }
 
-    /**
-     * This method returns the current trueValue of the slider.
-     *
-     * @return The trueValue of the slider stored in the model.
-     */
-    public int getValue() {
+    int getValue() {
         return trueValue;
     }
 
-    /**
-     * This method registers a listener to this slider. The listener will be
-     * informed of new ChangeEvents.
-     *
-     * @param listener The listener to register.
-     */
+    void setValue(int value) {
+        if (value >= min && value < max) {
+            trueValue = value;
+            displayValue = Math.round((width / scale) * value);
+            this.repaint();
+        }
+    }
+
     void addChangeListener(ChangeListener listener) {
         listenerList.add(ChangeListener.class, listener);
     }
 
-    /**
-     * This method removes a listener from this slider.
-     *
-     * @param listener The listener to remove.
-     */
     void removeChangeListener(ChangeListener listener) {
         listenerList.remove(ChangeListener.class, listener);
     }
 
     /**
-     * This method is called whenever the model fires a ChangeEvent. It should
-     * propagate the ChangeEvent to its listeners with a new ChangeEvent that
-     * identifies the slider as the source.
-     */
+    * This method is called whenever the model fires a ChangeEvent. It should
+    * propagate the ChangeEvent to its listeners with a new ChangeEvent that
+    * identifies the slider as the source.
+    */
     void fireStateChanged() {
         Object[] changeListeners = listenerList.getListenerList();
         if (changeEvent == null) {

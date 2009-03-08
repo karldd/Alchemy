@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2007-2008 Karl D.D. Willis
+ * Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -324,7 +324,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
     @Override
     void refreshTransparencySlider() {
-        transparencySlider.setSlider(Alchemy.canvas.getAlpha());
+        transparencySlider.setValue(Alchemy.canvas.getAlpha());
     }
 
     private void changeLineWeight(Point p, Rectangle lineWeightRect, JLabel lineWeightBox) {

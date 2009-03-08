@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007-2008 Karl D.D. Willis
+ *  Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ class AlcSlider extends JPanel implements AlcShortcutInterface, AlcConstants{
      * @param value The new value
      */
     public void setValue(int value) {
-        slider.setSlider(value);
+        slider.setValue(value);
     }
 
     /**
