@@ -369,7 +369,7 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int scrollAmount = e.getWheelRotation() * -1;
+        int scrollAmount = e.getUnitsToScroll() * -1;
         if (scrollAmount != 1) {
             if (scrollAmount != -1) {
                 scrollAmount = scrollAmount / 2;

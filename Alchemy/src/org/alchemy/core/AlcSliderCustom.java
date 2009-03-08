@@ -234,6 +234,5 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     public void mouseWheelMoved(MouseWheelEvent e) {
         int scrollAmount = Math.round(e.getUnitsToScroll() * step) * -1;
         this.setValue(trueValue + scrollAmount);
-        System.out.println(scrollAmount);
     }
 }
