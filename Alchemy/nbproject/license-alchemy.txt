@@ -3,7 +3,7 @@ ${licenseFirst}
 </#if>
 ${licensePrefix}This file is part of the Alchemy project - http://al.chemy.org
 ${licensePrefix}
-${licensePrefix}Copyright (c) 2007-2008 Karl D.D. Willis
+${licensePrefix}Copyright (c) 2007-2009 Karl D.D. Willis
 ${licensePrefix}
 ${licensePrefix}Alchemy is free software: you can redistribute it and/or modify
 ${licensePrefix}it under the terms of the GNU General Public License as published by

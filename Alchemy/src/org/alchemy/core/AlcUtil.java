@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007-2008 Karl D.D. Willis
+ *  Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ import com.sun.pdfview.*;
 import eu.medsea.util.MimeUtil;
 import java.awt.*;
 import java.awt.datatransfer.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;

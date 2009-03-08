@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007-2008 Karl D.D. Willis
+ *  Copyright (c) 2007-2009 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -233,42 +233,35 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         final int lineWidthSpinnerMin = 1;
         final int lineWidthSpinnerMax = 75;
 
-        SpinnerNumberModel lineWidthNumberModel = new SpinnerNumberModel((int) Alchemy.canvas.getLineWidth(), lineWidthSpinnerMin, lineWidthSpinnerMax, 1);
-        AlcSpinner lineWidthSpinner = new AlcSpinner(getS("lineWeightTitle"), lineWidthNumberModel, getS("lineWeightDescription"));
-        final SpinnerModel lineWidthSpinnerModel = lineWidthSpinner.spinner.getModel();
-        lineWidthSpinner.spinner.addChangeListener(
+        final AlcSpinner lineWidthSpinner = new AlcSpinner(
+                getS("lineWeightTitle"),
+                getS("lineWeightDescription"),
+                (int) Alchemy.canvas.getLineWidth(),
+                lineWidthSpinnerMin,
+                lineWidthSpinnerMax,
+                1);
+
+        lineWidthSpinner.addChangeListener(
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
-
-                        Number number = (Number) lineWidthSpinnerModel.getValue();
-                        int value = number.intValue();
-                        Alchemy.canvas.setLineWidth(value);
+                        Alchemy.canvas.setLineWidth(lineWidthSpinner.getValue());
                     }
                 });
 
         AbstractAction lineWidthDownAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                Number number = (Number) lineWidthSpinnerModel.getPreviousValue();
-                if (number != null) {
-                    int value = number.intValue();
-
-                    lineWidthSpinnerModel.setValue(number);
-                    Alchemy.canvas.setLineWidth(value);
-                }
+                lineWidthSpinner.setPreviousValue();
+                Alchemy.canvas.setLineWidth(lineWidthSpinner.getValue());
             }
         };
 
         AbstractAction lineWidthUpAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                Number number = (Number) lineWidthSpinnerModel.getNextValue();
-                if (number != null) {
-                    int value = number.intValue();
-                    lineWidthSpinnerModel.setValue(number);
-                    Alchemy.canvas.setLineWidth(value);
-                }
+                lineWidthSpinner.setNextValue();
+                Alchemy.canvas.setLineWidth(lineWidthSpinner.getValue());
             }
         };
 
@@ -328,7 +321,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         Dimension fgbgButtonNewSize = fgbgButton.getPreferredSize();
         if (fgbgButtonSize.width > fgbgButtonNewSize.width) {
             fgbgButton.setPreferredSize(fgbgButtonSize);
-        }  else {
+        } else {
             fgbgButton.setPreferredSize(fgbgButtonNewSize);
         }
         fgbgButton.setText(fgTitle);
