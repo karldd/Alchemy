@@ -38,9 +38,6 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     //
     private final int width = 43;
     private final int height = 24;
-//    private final int widthMinusOne = width - 1;
-//    private final int heightMinusOne = height - 1;
-//    private final int halfWidth = width >> 1;
     private final int halfHeight = height >> 1;
     private final int textAreaWidth = 27;
     private final FontMetrics metrics = getFontMetrics(FONT_MEDIUM);
@@ -361,8 +358,6 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
                 } catch (NumberFormatException ex) {
                     // ignore
                 }
-//                // Convert the char to an int
-//                int i = Character.digit(c, 10);
             }
         }
     }
@@ -374,13 +369,13 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int scrollAmount = (step * e.getWheelRotation()) * -1;
+        int scrollAmount = e.getWheelRotation() * -1;
         if (scrollAmount != 1) {
             if (scrollAmount != -1) {
                 scrollAmount = scrollAmount / 2;
             }
         }
-        this.setValue(value + scrollAmount);
+        this.setValue(value + scrollAmount * step);
         this.repaintNumber();
     }
 }

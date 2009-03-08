@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
  * AlcSliderCustom
  * @author Karl D.D. Willis
  */
-class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
+class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
 
     int width, widthMinusOne, height, heightMinusOne;
     /** Minimum / Maximum / Display Position of the slider */
@@ -58,6 +58,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         this.max = max;
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
         addKeyListener(this);
         //addFocusListener(this);
         this.setOpaque(false);
@@ -160,10 +161,10 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     }
 
     /**
-    * This method is called whenever the model fires a ChangeEvent. It should
-    * propagate the ChangeEvent to its listeners with a new ChangeEvent that
-    * identifies the slider as the source.
-    */
+     * This method is called whenever the model fires a ChangeEvent. It should
+     * propagate the ChangeEvent to its listeners with a new ChangeEvent that
+     * identifies the slider as the source.
+     */
     void fireStateChanged() {
         Object[] changeListeners = listenerList.getListenerList();
         if (changeEvent == null) {
@@ -227,5 +228,11 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     }
 
     public void keyReleased(KeyEvent e) {
+    }
+
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        int scrollAmount = e.getWheelRotation() * -1;
+        this.setValue(trueValue + scrollAmount);
+
     }
 }
