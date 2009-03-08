@@ -27,7 +27,7 @@ import javax.swing.event.*;
  *
  * AlcSpinnerCustom.java
  */
-public class AlcSpinnerCustom extends JComponent implements MouseListener, MouseMotionListener, KeyListener, AlcConstants {
+public class AlcSpinnerCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcConstants {
 
     int value, dragY, dragValue;
     final int min,  max,  step;
@@ -75,6 +75,7 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
 
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
         addKeyListener(this);
         setFocusable(true);
 
@@ -83,7 +84,7 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
         Action doNothing = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Do Nothing Called");
+                //System.out.println("Do Nothing Called");
             }
         };
 
@@ -370,5 +371,16 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     }
 
     public void keyReleased(KeyEvent e) {
+    }
+
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        int scrollAmount = (step * e.getWheelRotation()) * -1;
+        if (scrollAmount != 1) {
+            if (scrollAmount != -1) {
+                scrollAmount = scrollAmount / 2;
+            }
+        }
+        this.setValue(value + scrollAmount);
+        this.repaintNumber();
     }
 }
