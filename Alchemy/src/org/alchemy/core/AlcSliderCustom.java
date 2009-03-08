@@ -66,6 +66,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         // To be sure to reach both the min and max use widthMinusOne
         scale = (max - min);
         step = scale / (float) widthMinusOne;
+        System.out.println("STEP: " + step);
         setValue(initialSliderValue);
     }
 
@@ -231,8 +232,8 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int scrollAmount = e.getWheelRotation() * -1;
+        int scrollAmount = Math.round(e.getUnitsToScroll() * step) * -1;
         this.setValue(trueValue + scrollAmount);
-
+        System.out.println(scrollAmount);
     }
 }
