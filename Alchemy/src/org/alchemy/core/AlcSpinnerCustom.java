@@ -107,18 +107,8 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     @Override
     public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
-        //g2.setColor(AlcAbstractToolBar.toolBarBgColour);
-//        g2.setColor(Color.LIGHT_GRAY);
-//        g2.fillRect(0, 0, width, height);
-//        g2.setColor(AlcAbstractToolBar.toolBarLineColour);
-//        g2.drawRect(0, 0, widthMinusOne, heightMinusOne);
-
-//        g2.drawImage(arrowTop, 8, 0, null);
-//        g2.drawImage(bg, 0, 4, null);
-//        g2.drawImage(arrowBottom, 8, 20, null);
 
         if (upPressed) {
             g2.drawImage(spinnerUp, 0, 0, null);
