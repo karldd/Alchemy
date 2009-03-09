@@ -117,7 +117,7 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
         }
 
         if (textInput || drag) {
-            g2.setColor(AlcToolBar.toolBarBgColour);
+            g2.setColor(AlcToolBar.COLOUR_UI_BG);
             g2.fillRect(1, 1, textAreaWidth - 2, height - 2);
         }
 

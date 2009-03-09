@@ -40,9 +40,9 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         this.toolBarWidth = 150;
         // Left align layout
         this.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
-        this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, toolBarLineColour));
+        this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, COLOUR_UI_LINE));
         this.setOpaque(true);
-        this.setBackground(toolBarBgColour);
+        this.setBackground(COLOUR_UI_BG);
         this.setName("Toolbar");
 
 
@@ -108,7 +108,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         // COLOUR BOX
         //////////////////////////////////////////////////////////////
         colourBox = new ColourBox(toolBarWidth, 25, Alchemy.canvas.getColour());
-        colourBox.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, toolBarLineColour));
+        colourBox.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOUR_UI_LINE));
 
         //////////////////////////////////////////////////////////////
         // COLOUR PICKER
@@ -126,7 +126,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         g2 = null;
 
         JLabel colourPicker = new JLabel(colourPickerIcon);
-        colourPicker.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, toolBarLineColour));
+        colourPicker.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOUR_UI_LINE));
         colourPicker.setToolTipText(getS("colourDescription"));
         final Cursor pickerCursor = AlcUtil.getCursor("cursor-circle.png");
         colourPicker.setCursor(pickerCursor);
@@ -165,7 +165,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         transparencySlider = new AlcSliderCustom(toolBarWidth, 25, 0, 255, 254);
         transparencySlider.setBorderPainted(false);
         transparencySlider.setFillPainted(false);
-        transparencySlider.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, toolBarLineColour));
+        transparencySlider.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, COLOUR_UI_LINE));
         transparencySlider.setToolTipText(getS("transparencyDescription"));
 
         GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(0, 0, 0, 0), toolBarWidth, 0, new Color(0, 0, 0, 255), true);
@@ -195,8 +195,8 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
 
 
-        ColourBox separator = new ColourBox(toolBarWidth, 10, toolBarBgColour);
-        separator.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, toolBarLineColour));
+        ColourBox separator = new ColourBox(toolBarWidth, 10, COLOUR_UI_BG);
+        separator.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOUR_UI_LINE));
 
         //////////////////////////////////////////////////////////////
         // MODULES

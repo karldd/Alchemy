@@ -22,7 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import javax.swing.JPanel;
 
-class AlcToolBarMain extends JPanel {
+class AlcToolBarMain extends JPanel implements AlcConstants{
 
     private int height = 60;
 
@@ -50,7 +50,7 @@ class AlcToolBarMain extends JPanel {
         super.paintComponent(g);
 
         //int panelWidth = getWidth();
-        GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarBgStartColour, 0, this.height, AlcToolBar.toolBarBgEndColour, true);
+        GradientPaint gradientPaint = new GradientPaint(0, 0, COLOUR_UI_START, 0, this.height, COLOUR_UI_END, true);
         if (g instanceof Graphics2D) {
             Graphics2D g2 = (Graphics2D) g;
             // Turn on text antialias - windows does not use it by default
@@ -58,7 +58,7 @@ class AlcToolBarMain extends JPanel {
             int targetWidth = getRootPane().getSize().width;
             g2.setPaint(gradientPaint);
             g2.fillRect(0, 0, targetWidth, this.height);
-            g2.setPaint(AlcToolBar.toolBarLineColour);
+            g2.setPaint(COLOUR_UI_LINE);
             int heightMinusOne = this.height - 1;
             g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
         }

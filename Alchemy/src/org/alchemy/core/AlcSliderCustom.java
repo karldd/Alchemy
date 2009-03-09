@@ -20,6 +20,7 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -28,9 +29,9 @@ import javax.swing.event.ChangeListener;
  * AlcSliderCustom
  * @author Karl D.D. Willis
  */
-class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener {
+class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcConstants {
 
-    int width, widthMinusOne, height, heightMinusOne;
+    int width, height;
     /** Minimum / Maximum / Display Position of the slider */
     int min, max, displayValue;
     /** Actual Value */
@@ -51,9 +52,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
 
     AlcSliderCustom(int width, int height, int min, int max, int initialSliderValue) {
         this.width = width;
-        this.widthMinusOne = width - 1;
         this.height = height;
-        this.heightMinusOne = height - 1;
         this.min = min;
         this.max = max;
         addMouseListener(this);
@@ -63,10 +62,9 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         //addFocusListener(this);
         this.setOpaque(false);
         this.setPreferredSize(new Dimension(width, height));
-        // To be sure to reach both the min and max use widthMinusOne
+        // To be sure to reach both the min and max use width - 1
         scale = (max - min);
-        step = scale / (float) widthMinusOne;
-        System.out.println("STEP: " + step);
+        step = scale / (float) width - 1;
         setValue(initialSliderValue);
     }
 
@@ -76,16 +74,18 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         if (bgImage != null) {
             g2.drawImage(bgImage, 0, 0, null);
         } else {
-            g2.setColor(AlcAbstractToolBar.toolBarBgColour);
-            g2.fillRect(0, 0, width, height);
+            // BACKGROUND FILL
+            g2.setColor(COLOUR_UI_START);
+            g2.fillRect(1, 1, width - 2, height - 2);
         }
         g2.setColor(Color.LIGHT_GRAY);
         if (borderPainting) {
             if (fillPainting) {
-                g2.fillRect(0, 0, displayValue, heightMinusOne);
+                g2.fillRect(1, 1, displayValue, height - 2);
             }
-            g2.setColor(AlcAbstractToolBar.toolBarLineColour);
-            g2.drawRect(0, 0, widthMinusOne, heightMinusOne);
+            
+            AlcUtil.drawSoftRect(g2, 0, 0, width, height);
+
         } else {
             if (fillPainting) {
                 g2.fillRect(0, 0, displayValue, height);
@@ -105,13 +105,6 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         //g2.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
         g2.drawLine(displayValue, 0, displayValue, height);
 
-//        if (bgImage != null) {
-//            g2.setColor(Color.WHITE);
-//            int displayValuePlus = displayValue + 1;
-//            if (displayValuePlus <= width) {
-//                g2.drawLine(displayValuePlus, 0, displayValuePlus, height);
-//            }
-//        }
     }
 
     private void moveSlider(int x) {

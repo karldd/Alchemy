@@ -60,7 +60,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 this.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
                 break;
         }
-        this.setBackground(AlcToolBar.toolBarHighlightColour);
+        this.setBackground(AlcToolBar.COLOUR_UI_HIGHLIGHT);
 
         // Recording interval array in milliseconds
         int[] recordingInterval = {5000, 15000, 30000, 60000, 120000, 300000, 600000};
@@ -295,7 +295,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AlcMenu intervalMenu = new AlcMenu(getS("recordIntervalTitle"));
         // Set the opacity and colour of this to overide the defaults used for the top menus
         intervalMenu.setOpaque(true);
-        intervalMenu.setBackground(AlcToolBar.toolBarHighlightColour);
+        intervalMenu.setBackground(AlcToolBar.COLOUR_UI_HIGHLIGHT);
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < recordingIntervalString.length; i++) {
             AlcRadioButtonMenuItem intervalItem = new AlcRadioButtonMenuItem(recordingInterval[i], recordingIntervalString[i]);

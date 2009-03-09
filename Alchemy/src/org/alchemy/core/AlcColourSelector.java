@@ -50,7 +50,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         super(Alchemy.window, title);
 
         this.getContentPane().setLayout(new BorderLayout());
-        this.getContentPane().setBackground(AlcToolBar.toolBarHighlightColour);
+        this.getContentPane().setBackground(COLOUR_UI_HIGHLIGHT);
         
         Box box = Box.createHorizontalBox();
         box.setBorder(new EmptyBorder(12, 12, 12, 12));

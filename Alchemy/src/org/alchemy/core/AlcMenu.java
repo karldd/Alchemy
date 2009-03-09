@@ -34,7 +34,7 @@ import javax.swing.JMenu;
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
-        this.setBackground(AlcToolBar.toolBarHighlightColour);
+        this.setBackground(COLOUR_UI_HIGHLIGHT);
 
         // Hacky work around - because the JMenu is layered on top of the JMenuBar - doubling the opacity  
         //this.setBackground(new Color(0, 0, 0, 0));

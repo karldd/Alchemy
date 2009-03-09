@@ -78,10 +78,10 @@ class AlcToolBarSub extends JPanel implements AlcConstants {
             int heightMinusOne = height - 1;
             g2.setPaint(gradientPaint);
             g2.fillRect(0, 0, targetWidth, height);
-            g2.setPaint(AlcToolBar.toolBarHighlightColour);
+            g2.setPaint(COLOUR_UI_HIGHLIGHT);
             g2.drawLine(0, 0, targetWidth, 0);
             if (!Alchemy.preferences.paletteAttached) {
-                g2.setPaint(AlcToolBar.toolBarLineColour);
+                g2.setPaint(COLOUR_UI_LINE);
                 g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
             }
         }

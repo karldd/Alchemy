@@ -19,6 +19,7 @@
  */
 package org.alchemy.core;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Image;
@@ -140,15 +141,33 @@ public interface AlcConstants {
     //////////////////////////////////////////////////////////////
     /** Font - Sanserif plain 10pt */
     static final Font FONT_SMALL = new Font("sansserif", Font.PLAIN, 10);
-    /** Font - Sanserif plain 11pt */    
+    /** Font - Sanserif plain 11pt */
     static final Font FONT_MEDIUM = new Font("sansserif", Font.PLAIN, 11);
-    /** Font - Sanserif plain 12pt */    
+    /** Font - Sanserif plain 12pt */
     static final Font FONT_LARGE = new Font("sansserif", Font.PLAIN, 12);
     /** Font - Sanserif bold 10pt */
     static final Font FONT_SMALL_BOLD = new Font("sansserif", Font.BOLD, 10);
-    /** Font - Sanserif bold 11pt */    
+    /** Font - Sanserif bold 11pt */
     static final Font FONT_MEDIUM_BOLD = new Font("sansserif", Font.BOLD, 11);
-    /** Font - Sanserif bold 12pt */    
+    /** Font - Sanserif bold 12pt */
     static final Font FONT_LARGE_BOLD = new Font("sansserif", Font.BOLD, 12);
+    //
 
+    //////////////////////////////////////////////////////////////
+    // INTERFACE COLOURS
+    //////////////////////////////////////////////////////////////
+    /** UI background colour */
+    static final Color COLOUR_UI_BG = new Color(225, 225, 225);
+    /** UI gradient background start colour */
+    static final Color COLOUR_UI_START = new Color(235, 235, 235, 240);
+    /** UI gradient background end colour */
+    static final Color COLOUR_UI_END = new Color(215, 215, 215, 240);
+    /** UI line colour */
+    static final Color COLOUR_UI_LINE = new Color(140, 140, 140);
+    /** UI line alpha colour - 50% Alpha for soft corners */
+    static final Color COLOUR_UI_LINE_ALPHA = new Color(140, 140, 140, 128);
+    /** UI highlight colour */
+    static final Color COLOUR_UI_HIGHLIGHT = new Color(231, 231, 231);
+    /** UI box colour - used for the CheckBox Boxes */
+    static final Color COLOUR_UI_BOX = new Color(190, 190, 190);
 }

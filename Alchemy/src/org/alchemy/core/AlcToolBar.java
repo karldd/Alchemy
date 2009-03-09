@@ -938,14 +938,16 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         Graphics g = swap.createGraphics();
 
         g.setColor(bgColour);
-        g.fillRect(6, 6, 18, 18);
-        g.setColor(AlcToolBar.toolBarLineColour);
-        g.drawRect(6, 6, 17, 17);
+        g.fillRect(7, 7, 16, 16);
+        AlcUtil.drawSoftRect(g, 6, 6, 18, 18);
+//        g.setColor(COLOUR_UI_LINE);
+//        g.drawRect(6, 6, 17, 17);
 
         g.setColor(colour);
-        g.fillRect(0, 0, 18, 18);
-        g.setColor(AlcToolBar.toolBarLineColour);
-        g.drawRect(0, 0, 18, 18);
+        g.fillRect(1, 1, 16, 16);
+        AlcUtil.drawSoftRect(g, 0, 0, 18, 18);
+//        g.setColor(COLOUR_UI_LINE);
+//        g.drawRect(0, 0, 18, 18);
 
         fgbgButton.setIcon(new ImageIcon(swap));
 
@@ -953,14 +955,16 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         g = swapOn.createGraphics();
 
         g.setColor(colour);
-        g.fillRect(0, 0, 18, 18);
-        g.setColor(AlcToolBar.toolBarLineColour);
-        g.drawRect(0, 0, 18, 18);
+        g.fillRect(1, 1, 16, 16);
+        AlcUtil.drawSoftRect(g, 0, 0, 18, 18);
+//        g.setColor(COLOUR_UI_LINE);
+//        g.drawRect(0, 0, 18, 18);
 
         g.setColor(bgColour);
-        g.fillRect(6, 6, 18, 18);
-        g.setColor(AlcToolBar.toolBarLineColour);
-        g.drawRect(6, 6, 17, 17);
+        g.fillRect(7, 7, 16, 16);
+        AlcUtil.drawSoftRect(g, 6, 6, 18, 18);
+//        g.setColor(COLOUR_UI_LINE);
+//        g.drawRect(6, 6, 17, 17);
 
         fgbgButton.setSelectedIcon(new ImageIcon(swapOn));
     }

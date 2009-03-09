@@ -48,8 +48,8 @@ class AlcSimpleModuleToggleButton extends JToggleButton {
     void setup(URL iconUrl, String toolTip) {
         if (iconUrl != null) {
             ImageIcon icon = AlcUtil.getImageIcon(iconUrl);
-            this.setIcon(createIcon(icon, AlcToolBar.toolBarBgColour));
-            this.setRolloverIcon(createIcon(icon, AlcToolBar.toolBarBgEndColour));
+            this.setIcon(createIcon(icon, AlcToolBar.COLOUR_UI_BG));
+            this.setRolloverIcon(createIcon(icon, AlcToolBar.COLOUR_UI_END));
             this.setSelectedIcon(createIcon(icon, Color.GRAY));
         }
 
@@ -73,7 +73,7 @@ class AlcSimpleModuleToggleButton extends JToggleButton {
         g2.setColor(bgColour);
         g2.fillRect(0, 0, width, height);
         // Outline
-        g2.setColor(AlcToolBar.toolBarLineColour);
+        g2.setColor(AlcToolBar.COLOUR_UI_LINE);
         g2.drawRect(0, 0, width - 1, height - 1);
         // Icon
         g2.drawImage(icon.getImage(), halfPad, halfPad, null);
