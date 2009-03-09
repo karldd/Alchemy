@@ -28,7 +28,7 @@ import javax.swing.border.*;
  *
  * AlcSimpleModuleButton.java
  */
-class AlcSimpleModuleButton extends JButton {
+class AlcSimpleModuleButton extends JButton implements AlcConstants{
 
     AlcSimpleModuleButton() {
     }
@@ -59,7 +59,7 @@ class AlcSimpleModuleButton extends JButton {
         //this.setFocusPainted(false);       // Draw the highlight when focused
 
         CompoundBorder doubleBorder = new CompoundBorder(
-                new MatteBorder(1, 1, 1, 1, AlcToolBar.toolBarLineColour),
+                new MatteBorder(1, 1, 1, 1, COLOUR_UI_LINE),
                 new EmptyBorder(5, 5, 5, 5));
 
         CompoundBorder tripleBorder = new CompoundBorder(

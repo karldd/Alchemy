@@ -20,7 +20,6 @@
 package org.alchemy.core;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 

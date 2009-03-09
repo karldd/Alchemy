@@ -19,7 +19,6 @@
 
 package org.alchemy.core;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 
@@ -35,17 +34,6 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     Dimension windowSize;
     /** Width of the toolbar */
     int toolBarWidth;
-    //////////////////////////////////////////////////////////////
-    // INTERFACE COLOURS
-    //////////////////////////////////////////////////////////////
-    static final Color toolBarBgColour = new Color(225, 225, 225);
-    static final Color toolBarBgStartColour = new Color(235, 235, 235, 240);
-    static final Color toolBarBgEndColour = new Color(215, 215, 215, 240);
-    static final Color toolBarLineColour = new Color(140, 140, 140);
-    static final Color toolBarSubLineColour = new Color(160, 160, 160);
-    static final Color toolBarHighlightColour = new Color(231, 231, 231);
-    static final Color toolBarAlphaHighlightColour = new Color(231, 231, 231, 240);
-    static final Color toolBarBoxColour = new Color(190, 190, 190);
 
     boolean isToolBarVisible() {
         return this.isVisible();

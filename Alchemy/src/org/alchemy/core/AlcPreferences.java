@@ -352,7 +352,7 @@ class AlcPreferences implements AlcConstants {
         }
         bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width + bgPanelWidthOffset, prefsWindowSize.height - tabPanelHeight - bgPanelHeightOffset);
         bgPanel.setLayout(new BorderLayout());
-        bgPanel.setBackground(AlcToolBar.toolBarHighlightColour);
+        bgPanel.setBackground(COLOUR_UI_HIGHLIGHT);
         bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         masterPanel.add(bgPanel);
 
@@ -453,10 +453,10 @@ class AlcPreferences implements AlcConstants {
 //                        g2.setPaint(unifiedLineColour);
 //                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    } else {
-                    GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarBgStartColour, 0, tabPanelHeight, AlcToolBar.toolBarBgEndColour, true);
+                    GradientPaint gradientPaint = new GradientPaint(0, 0, COLOUR_UI_START, 0, tabPanelHeight, COLOUR_UI_END, true);
                     g2.setPaint(gradientPaint);
                     g2.fillRect(0, 0, targetWidth, tabPanelHeight);
-                    g2.setPaint(AlcAbstractToolBar.toolBarLineColour);
+                    g2.setPaint(COLOUR_UI_LINE);
                     g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    }
                 }
@@ -579,7 +579,7 @@ class AlcPreferences implements AlcConstants {
         JPanel mp = new JPanel();
         //mp.setOpaque(true);
         mp.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        mp.setBackground(AlcToolBar.toolBarBgStartColour);
+        mp.setBackground(COLOUR_UI_START);
         int plugins = Alchemy.plugins.creates.length + Alchemy.plugins.affects.length;
         mp.setLayout(new GridLayout(plugins, 1, 5, 5));
         //JCheckBox[] checkBoxes = new JCheckBox[plugins];
@@ -879,7 +879,7 @@ class AlcPreferences implements AlcConstants {
             String moduleName = currentModule.getName();
             final String moduleNodeName = modulePrefix + moduleName;
             final JCheckBox checkBox = new JCheckBox(moduleName);
-            checkBox.setBackground(AlcToolBar.toolBarBgStartColour);
+            checkBox.setBackground(COLOUR_UI_START);
             checkBox.setFont(FONT_MEDIUM);
 
             // Set the state of the checkbox

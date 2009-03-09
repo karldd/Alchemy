@@ -60,7 +60,7 @@ class AlcMenuItem extends JMenuItem implements AlcShortcutInterface, AlcConstant
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setOpaque(true);
-        this.setBackground(AlcToolBar.toolBarHighlightColour);
+        this.setBackground(COLOUR_UI_HIGHLIGHT);
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
         this.setFont(FONT_MEDIUM);
 

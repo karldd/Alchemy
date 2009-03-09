@@ -36,12 +36,11 @@ import javax.swing.JPanel;
  * AlcPaletteTitleBar
  * @author Karl D.D. Willis
  */
- class AlcPaletteTitleBar extends JPanel {
-
+class AlcPaletteTitleBar extends JPanel implements AlcConstants {
     //private final AlcPalette parent;
     private int originalX,  originalY;
 
-     AlcPaletteTitleBar(final AlcPalette parent) {
+    AlcPaletteTitleBar(final AlcPalette parent) {
         //this.parent = parent;
         this.setBackground(Color.LIGHT_GRAY);
         this.setPreferredSize(new Dimension(12, 88));
@@ -92,14 +91,14 @@ import javax.swing.JPanel;
         super.paintComponent(g);
 
         //int panelWidth = getWidth();
-        GradientPaint gradientPaint = new GradientPaint(0, 0, AlcToolBar.toolBarHighlightColour, this.getWidth(), 0, new Color(208, 208, 208), true);
+        GradientPaint gradientPaint = new GradientPaint(0, 0, COLOUR_UI_HIGHLIGHT, this.getWidth(), 0, new Color(208, 208, 208), true);
         if (g instanceof Graphics2D) {
             Graphics2D g2 = (Graphics2D) g;
             // Turn on text antialias - windows does not use it by default
             //g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2.setPaint(gradientPaint);
             g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-            g2.setPaint(AlcToolBar.toolBarLineColour);
+            g2.setPaint(COLOUR_UI_LINE);
             int widthMinusOne = this.getWidth() - 1;
             //System.out.println(heightMinusOne);
             g2.drawLine(widthMinusOne, 0, widthMinusOne, this.getHeight());

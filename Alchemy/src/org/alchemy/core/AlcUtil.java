@@ -264,7 +264,7 @@ public class AlcUtil implements AlcConstants {
                     smallCursor,
                     new Point(smallCursorSize.width / 2, smallCursorSize.height / 2),
                     "CustomCursor");
-            
+
         } else {
             int leftGap = (cursorSize.width - smallCursorSize.width) / 2;
             int topGap = (cursorSize.height - smallCursorSize.height) / 2;
@@ -401,13 +401,13 @@ public class AlcUtil implements AlcConstants {
             }
 
             int totalCommands = pdfPage.getCommandCount();
-            
+
             try {
                 for (int c = 0; c < totalCommands; c++) {
                     PDFCmd command = pdfPage.getCommand(c);
                     if (command instanceof PDFShapeCmd) {
                         PDFShapeCmd shapeCommand = (PDFShapeCmd) command;
-                        
+
                         // Hack into the command to get the path
                         Class shapeClass = shapeCommand.getClass();
                         Field pathField = shapeClass.getDeclaredField("gp");
@@ -853,7 +853,33 @@ public class AlcUtil implements AlcConstants {
         // Assign the action for the two keys
         root.getActionMap().put("Close Window", closeAction);
     }
+    //////////////////////////////////////////////////////////////
+    // DRAWING
+    //////////////////////////////////////////////////////////////
+    public static void drawSoftRect(Graphics g, int x, int y, int width, int height) {
+        // CORNERS
+        g.setColor(COLOUR_UI_LINE_ALPHA);
+        // Top Left
+        g.drawLine(x, y, x, y);
+        // Top Right
+        g.drawLine(x + width - 1, y, x + width - 1, y);
+        // Bottom Left
+        g.drawLine(x, y + height - 1, x, y + height - 1);
+        // Bottom Right
+        g.drawLine(x + width - 1, y + height - 1, x + width - 1, y + height - 1);
 
+        // LINES
+        g.setColor(COLOUR_UI_LINE);
+        // Top 
+        g.drawLine(x + 1, y, x + width - 2, y);
+        // Right
+        g.drawLine(x + width - 1, y + 1, x + width - 1, y + height - 2);
+        // Bottom
+        g.drawLine(x + width - 2, y + height - 1, x + 1, y + height - 1);
+        // Left
+        g.drawLine(x, y + height - 2, x, y + 1);
+    }
+    
     //////////////////////////////////////////////////////////////
     // COLOUR
     //////////////////////////////////////////////////////////////
