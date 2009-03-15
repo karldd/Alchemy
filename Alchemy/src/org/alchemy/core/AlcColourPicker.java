@@ -32,15 +32,25 @@ import javax.swing.JPanel;
 class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
     private BufferedImage colourArray;
-    private AlcPopupButton parent;
+    private AlcPopupInterface parent;
+    /** Used to set the background colour or not */
+    private boolean background = false;
     private BufferedImage[] screenShots;
     private GraphicsDevice[] devices;
     private int currentDevice = 0;
     private JDialog eyeDropperWindow;
     private javax.swing.Timer eyeDropperTimer;
 
-    AlcColourPicker(AlcPopupButton parent) {
+    AlcColourPicker(AlcPopupInterface parent) {
+        setup(parent);
+    }
 
+    AlcColourPicker(AlcPopupInterface parent, boolean background) {
+        setup(parent);
+        this.background = background;
+    }
+
+    private void setup(AlcPopupInterface parent) {
         this.parent = parent;
         this.setPreferredSize(new Dimension(100, 115));
 
@@ -183,7 +193,11 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
                     c = new Color(screenShots[currentDevice].getRGB(mouseLoc.x - origin.x - 6, mouseLoc.y - origin.y + 6));
                 }
 
-                Alchemy.canvas.setColour(c);
+                if (background) {
+                    Alchemy.canvas.setBackgroundColour(c);
+                } else {
+                    Alchemy.canvas.setForegroundColour(c);
+                }
                 Alchemy.toolBar.refreshColourButton();
 
                 if (eyeDropperTimer.isRunning()) {
@@ -215,12 +229,17 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         ActionListener colorAction = new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                Alchemy.canvas.setColour(Alchemy.colourSelector.getColour());
+                if (background) {
+                    Alchemy.canvas.setBackgroundColour(Alchemy.colourSelector.getColour());
+                } else {
+                    Alchemy.canvas.setForegroundColour(Alchemy.colourSelector.getColour());
+                }
                 Alchemy.toolBar.refreshColourButton();
             }
         };
 
-        Alchemy.colourSelector.show(colorAction, null, Alchemy.canvas.getColour());
+        Color colour = (background) ? Alchemy.canvas.getBackgroundColour() : Alchemy.canvas.getColour();
+        Alchemy.colourSelector.show(colorAction, null, colour);
     }
 
     @Override
@@ -269,12 +288,17 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
 
         } else {
 
-            Alchemy.canvas.setColour(this.getColor(e.getX(), e.getY()));
-            parent.hidePopup();
+            if (background) {
+                Alchemy.canvas.setBackgroundColour(this.getColor(e.getX(), e.getY()));
+            } else {
+                Alchemy.canvas.setForegroundColour(this.getColor(e.getX(), e.getY()));
+            }
+
+            //parent.hidePopup();
             if (Alchemy.OS == OS_MAC) {
                 Alchemy.canvas.restoreCursor();
-                //Alchemy.canvas.setCursor(CURSOR_CROSS);
-                setCursor(CURSOR_ARROW);
+                Alchemy.toolBar.setCursor(CURSOR_ARROW);
+                this.setCursor(CURSOR_ARROW);
             }
             Alchemy.toolBar.refreshColourButton();
         }
@@ -291,7 +315,6 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     public void mouseExited(MouseEvent e) {
         if (Alchemy.OS == OS_MAC) {
             Alchemy.canvas.restoreCursor();
-            //Alchemy.canvas.setCursor(CURSOR_CROSS);
             Alchemy.toolBar.setCursor(CURSOR_ARROW);
         }
     }

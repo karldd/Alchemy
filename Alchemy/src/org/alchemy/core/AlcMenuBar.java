@@ -81,7 +81,14 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         AbstractAction newAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                Alchemy.canvas.clear();
+
+                if (Alchemy.canvas.shapes.size() > 0) {
+
+                    boolean result = AlcUtil.showConfirmDialogFromBundle("newWinDialogTitle", "newWinDialogMessage", "newMacDialogTitle", "newMacDialogMessage");
+                    if (result) {
+                        Alchemy.canvas.clear();
+                    }
+                }
             }
         };
         AlcMenuItem newItem = new AlcMenuItem(newAction);
@@ -200,12 +207,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         int fullScreenKey = Alchemy.shortcuts.setShortcut(fullScreenItem, KeyEvent.VK_F, "fullScreenTitle", fullScreenAction, KEY_MODIFIER);
         fullScreenItem.setup(fullScreenTitle, fullScreenKey);
         viewMenu.add(fullScreenItem);
-        
-        
+
+
         // Transparent Fullscreen
         String transparentTitle = getS("transparentTitle");
         transparentItem = new AlcCheckBoxMenuItem();
-        if(Alchemy.window.isTransparent()){
+        if (Alchemy.window.isTransparent()) {
             transparentItem.setSelected(true);
         }
         AbstractAction transparentAction = new AbstractAction() {

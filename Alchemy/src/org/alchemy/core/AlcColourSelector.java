@@ -44,6 +44,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
     private JButton okButton,  cancelButton;
     private boolean updating;
     private int labelH;
+    private ActionListener okListener,  cancelListener;
 
     AlcColourSelector(String title) {
 
@@ -51,7 +52,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
 
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().setBackground(COLOUR_UI_HIGHLIGHT);
-        
+
         Box box = Box.createHorizontalBox();
         box.setBorder(new EmptyBorder(12, 12, 12, 12));
 
@@ -119,6 +120,16 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
      * @param initialColour     The initial colour to display
      */
     public void show(ActionListener okListener, ActionListener cancelListener, Color initialColour) {
+        // Remove the old Actions
+        if (this.okListener != null) {
+            okButton.removeActionListener(this.okListener);
+        }
+        if (this.cancelListener != null) {
+            cancelButton.removeActionListener(this.cancelListener);
+        }
+        // New Actions
+        this.okListener = okListener;
+        this.cancelListener = cancelListener;
         okButton.addActionListener(okListener);
         cancelButton.addActionListener(cancelListener);
         if (initialColour != null) {
@@ -443,7 +454,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
 
         static final int WIDE = 256;
         static final int HIGH = 256;
-        int lastX, lastY;
+        int lastX,  lastY;
         private int pixels[] = new int[WIDE * HIGH];
         private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
         boolean init = true;

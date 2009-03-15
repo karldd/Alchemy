@@ -1,23 +1,23 @@
 <?xml version="1.0" ?>
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
 
-<plugin id="org.alchemy.create.blank" version="1.0.0">
+<plugin id="org.alchemy.create.pressureShapes" version="1.0.0">
     
     <requires> 
         <import plugin-id="org.alchemy.core"/> 
     </requires> 
     
     <runtime>
-        <library id="blank" path="/" type="code">
+        <library id="pressureShapes" path="/" type="code">
             <export prefix="*" /> 
         </library>
         <library type="resources" path="data/" id="data" />
     </runtime>
     
-    <extension plugin-id="org.alchemy.core" point-id="Create" id="blankCreate"> 
-        <parameter id="class" value="org.alchemy.create.Blank"/> 
-        <parameter id="name" value="Blank"/> 
-        <parameter id="description" value="Blank Description" />
+    <extension plugin-id="org.alchemy.core" point-id="Create" id="pressureShapesCreate"> 
+        <parameter id="class" value="org.alchemy.create.PressureShapes"/> 
+        <parameter id="name" value="Pressure Shapes"/> 
+        <parameter id="description" value="Create shapes using pen pressure from a tablet" />
         <parameter id="icon" value="icon.gif" />
     </extension>
     

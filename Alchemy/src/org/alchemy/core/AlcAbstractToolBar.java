@@ -55,9 +55,6 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     void refreshColourButton() {
     }
 
-    void queueColourButtonRefresh() {
-    }
-
     void toggleColourButton() {
     }
 
