@@ -105,7 +105,7 @@
                
                
         <!-- CREATES -->
-        <for list="shapes,typeShapes,inverseShapes,micShapes,medianShapes,speedShapes,xShapes,traceShapes,detachShapes,scrawlShapes,pullShapes,blank" param="create">
+        <for list="shapes,typeShapes,inverseShapes,micShapes,medianShapes,speedShapes,xShapes,traceShapes,detachShapes,scrawlShapes,pullShapes,pressureShapes" param="create">
             <sequential>
                 <copy todir="${build.dir}/modules/@{create}/org/alchemy/create">
                     <!-- Include all files that begin with the module name -->

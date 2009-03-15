@@ -21,7 +21,6 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 import javax.swing.event.ChangeEvent;
@@ -39,7 +38,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     //////////////////////////////////////////////////////////////
     /** Popup buttons for the colour, create, amd affect buttons in the toolbar
      *  These are declared global so we can hide the popup when hiding the toolbar */
-    private AlcPopupButton createButton,  affectButton,  colourButton;
+    private AlcPopupButton createButton,  affectButton;
+    private AlcColourButton colourButton;
     /** The main tool bar inside the toolbar */
     private AlcToolBarMain mainToolBar;
     /** The sub toolbar below the main toolbar */
@@ -59,7 +59,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** The number of rows in the sub toolbar */
 //    private int subToolBarRows;
     /** Colour picker */
-    private AlcColourPicker picker;
+    private AlcColourPicker fgPicker,  bgPicker;
     /** Foreground Background Button - gets updated when the colours are swapped */
     AlcToggleButton fgbgButton;
     //////////////////////////////////////////////////////////////
@@ -77,9 +77,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     private javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
-    /** Schedule update for the Foreground/Background button */
-    private boolean updateSwapButton = false;
 
+    /** Schedule update for the Foreground/Background button */
+    //private boolean updateSwapButton = false;
     /**
      * Creates a new instance of AlcToolBar
      */
@@ -280,55 +280,22 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         // COLOUR  BUTTON
         //////////////////////////////////////////////////////////////
         String colourTitle = getS("colourTitle");
-        colourButton = new AlcPopupButton(colourTitle, getS("colourDescription"), AlcUtil.getUrlPath("colour.png"));
-        picker = new AlcColourPicker(colourButton);
-        colourButton.addItem(picker);
+        colourButton = new AlcColourButton(colourTitle, getS("colourDescription"));
+        fgPicker = new AlcColourPicker(colourButton);
+        bgPicker = new AlcColourPicker(colourButton, true);
+        colourButton.addFgItem(fgPicker);
+        colourButton.addBgItem(bgPicker);
         toolBar.add(colourButton);
-
-        //////////////////////////////////////////////////////////////
-        // FOREGROUND BACKGROUND BUTTON
-        //////////////////////////////////////////////////////////////
-
-        String fgTitle = getS("fgTitle");
 
         AbstractAction fgbgAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                // If this is the button calling
-                if (!e.getSource().getClass().getName().endsWith("AlcToggleButton")) {
-                    // Only toogle the button manually if it is triggered by a key
-                    fgbgButton.setSelected(!fgbgButton.isSelected());
-                }
-
-                if (fgbgButton.isSelected()) {
-                    fgbgButton.setText(getS("bgTitle"));
-                } else {
-                    fgbgButton.setText(getS("fgTitle"));
-                }
-                Alchemy.canvas.setBackgroundColourActive(!Alchemy.canvas.isBackgroundColourActive());
+                colourButton.switchColours();
             }
         };
 
-        fgbgButton = new AlcToggleButton(fgbgAction);
-        fgbgButton.setup(fgTitle, getS("fgbgDescription"), null);
-        // Set the swap buttons dynamic images to the current colour
-        refreshColourButton();
-
-        // Hack here to make sure the text does not resize the button
-        // Make sure it is set to the maximum size
-        Dimension fgbgButtonSize = fgbgButton.getPreferredSize();
-        fgbgButton.setText(getS("bgTitle"));
-        Dimension fgbgButtonNewSize = fgbgButton.getPreferredSize();
-        if (fgbgButtonSize.width > fgbgButtonNewSize.width) {
-            fgbgButton.setPreferredSize(fgbgButtonSize);
-        } else {
-            fgbgButton.setPreferredSize(fgbgButtonNewSize);
-        }
-        fgbgButton.setText(fgTitle);
-
         // Shortcut - X
-        Alchemy.shortcuts.setShortcut(fgbgButton, KeyEvent.VK_X, "fgbgTitle", fgbgAction);
-        toolBar.add(fgbgButton);
+        Alchemy.shortcuts.setShortcut(colourButton, KeyEvent.VK_X, "fgbgTitle", fgbgAction);
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -342,6 +309,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                         //JSlider source = (JSlider) e.getSource();
                         if (!transparencySlider.getValueIsAdjusting()) {
                             Alchemy.canvas.setAlpha(transparencySlider.getValue());
+                            System.out.println("Value: " + transparencySlider.getValue());
                             refreshColourButton();
                         }
                     }
@@ -649,13 +617,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 if (affectButton != null) {
                     affectButton.hidePopup();
                 }
-
-            } else {
-                // Update the colours of the fg/bg button if they have changed
-                if (updateSwapButton) {
-                    refreshColourButton();
-                    updateSwapButton = false;
-                }
             }
         }
     }
@@ -918,60 +879,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     void addPaletteContent() {
         Alchemy.palette.addContent(toolBars);
     }
-//////////////////////////////////////////////////////////////
-// UTLITY
-//////////////////////////////////////////////////////////////
-    @Override
-    void queueColourButtonRefresh() {
-        updateSwapButton = true;
-    }
-
+    
+    //////////////////////////////////////////////////////////////
+    // UTLITY
+    //////////////////////////////////////////////////////////////
     /** Refreshes the colours of the Foreground/Background button */
     @Override
     void refreshColourButton() {
-        Color colour = Alchemy.canvas.getForegroundColour();
-        // Make sure there is no transparency
-        //Color fullColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 255);
-        Color bgColour = Alchemy.canvas.getBgColour();
-
-        BufferedImage swap = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = swap.createGraphics();
-
-        g.setColor(bgColour);
-        g.fillRect(7, 7, 16, 16);
-        AlcUtil.drawSoftRect(g, 6, 6, 18, 18);
-//        g.setColor(COLOUR_UI_LINE);
-//        g.drawRect(6, 6, 17, 17);
-
-        g.setColor(colour);
-        g.fillRect(1, 1, 16, 16);
-        AlcUtil.drawSoftRect(g, 0, 0, 18, 18);
-//        g.setColor(COLOUR_UI_LINE);
-//        g.drawRect(0, 0, 18, 18);
-
-        fgbgButton.setIcon(new ImageIcon(swap));
-
-        BufferedImage swapOn = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);
-        g = swapOn.createGraphics();
-
-        g.setColor(colour);
-        g.fillRect(1, 1, 16, 16);
-        AlcUtil.drawSoftRect(g, 0, 0, 18, 18);
-//        g.setColor(COLOUR_UI_LINE);
-//        g.drawRect(0, 0, 18, 18);
-
-        g.setColor(bgColour);
-        g.fillRect(7, 7, 16, 16);
-        AlcUtil.drawSoftRect(g, 6, 6, 18, 18);
-//        g.setColor(COLOUR_UI_LINE);
-//        g.drawRect(6, 6, 17, 17);
-
-        fgbgButton.setSelectedIcon(new ImageIcon(swapOn));
-    }
-
-    @Override
-    void toggleColourButton() {
-        fgbgButton.setSelected(!fgbgButton.isSelected());
+        colourButton.refresh();
     }
 
     @Override

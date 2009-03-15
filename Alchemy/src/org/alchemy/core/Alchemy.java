@@ -215,9 +215,6 @@ public class Alchemy implements AlcConstants {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
 
-        // TODO - Test Quartz Renderer on Leopard
-        // apple.awt.graphics.UseQuartz=false?
-
         // Custom repaint class to manage transparency and redraw better
         // RepaintManager.setCurrentManager(new AlcRepaintManager());
         // RepaintManager.setCurrentManager(new CheckThreadViolationRepaintManager());

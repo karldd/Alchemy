@@ -52,7 +52,17 @@ import jpen.event.PenListener;
  * Think saving pdfs, printing, and of course displaying! 
  */
 public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, PenListener, Printable {
-
+    //////////////////////////////////////////////////////////////
+    // GLOBAL SHAPE SETTINGS
+    //////////////////////////////////////////////////////////////
+    /** Colour of this shape */
+    private Color colour;
+    /** Alpha of this shape */
+    private int alpha = 255;
+    /** Style of this shape - (1) LINE or (2) SOLID FILL */
+    private int style = STYLE_STROKE;
+    /** Line Weight if the style is line */
+    private float lineWidth = 1F;
     //////////////////////////////////////////////////////////////
     // GLOBAL SETTINGS
     ////////////////////////////////////////////////////////////// 
@@ -86,19 +96,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Pen Tilt X if available */
     private float penTiltX = 0F;
     /** Pen Tilt Y if available */
-    private float penTiltY = 0F;
-    //////////////////////////////////////////////////////////////
-    // GLOBAL SHAPE SETTINGS
-    //////////////////////////////////////////////////////////////
-    /** Colour of this shape */
-    private Color colour;
-    /** Alpha of this shape */
-    private int alpha = 255;
-    /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    private int style = STYLE_STROKE;
-    /** Line Weight if the style is line */
-    private float lineWidth = 1F;
-    //////////////////////////////////////////////////////////////
+    private float penTiltY = 0F;    //////////////////////////////////////////////////////////////
     // SHAPES
     //////////////////////////////////////////////////////////////
     /** Array list containing shapes that have been archived */
@@ -713,8 +711,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
         if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
             Alchemy.toolBar.refreshColourButton();
-        } else {
-            Alchemy.toolBar.queueColourButtonRefresh();
+//        } else {
+//            Alchemy.toolBar.queueColourButtonRefresh();
         }
     }
 
@@ -754,31 +752,24 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Get the Background Colour
      * @return 
      */
-    public Color getBgColour() {
-        return bgColour;
+    public Color getBackgroundColour() {
+        if (backgroundActive) {
+            return colour;
+        } else {
+            return bgColour;
+        }
     }
 
     /** Set the Background Colour
      * @param bgColour 
      */
-    public void setBgColour(Color bgColour) {
-        this.bgColour = bgColour;
+    public void setBackgroundColour(Color bgColour) {
+        // Ignore the alpha value
+        this.bgColour = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue());
         if (backgroundActive) {
-            colour = new Color(bgColour.getRGB());
+            colour = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue());
         }
-    }
-
-    /** Set the foreground colour
-     *  This method sets the foreground colour 
-     *  even if it is not currently active.
-     *  E.g. The active colour is the background colour
-     */
-    public void setForegroundColour() {
-        if (backgroundActive) {
-            this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
-        } else {
-            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
-        }
+        redraw(true);
     }
 
     /** Get the current forground colour
@@ -792,6 +783,17 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             return oldColour;
         } else {
             return colour;
+        }
+    }
+
+    /** Set the Foreground Colour
+     * @param colour 
+     */
+    public void setForegroundColour(Color colour) {
+        if (backgroundActive) {
+            this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+        } else {
+            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
         }
     }
 
@@ -1498,13 +1500,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (ev.pen.getKind() == PKind.valueOf(PKind.Type.STYLUS)) {
             if (backgroundActive) {
                 setBackgroundColourActive(false);
-                Alchemy.toolBar.toggleColourButton();
+                Alchemy.toolBar.refreshColourButton();
             }
             penType = PEN_STYLUS;
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
             if (!backgroundActive) {
                 setBackgroundColourActive(true);
-                Alchemy.toolBar.toggleColourButton();
+                Alchemy.toolBar.refreshColourButton();
             }
             penType = PEN_ERASER;
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
@@ -1556,7 +1558,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             // Do not draw the background when creating a transparent image
             if (!transparent) {
                 // Paint background.
-                g2.setColor(Alchemy.canvas.getBgColour());
+                g2.setColor(Alchemy.canvas.getBackgroundColour());
                 g2.fillRect(0, 0, w, h);
             }
 
@@ -1568,7 +1570,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
                 int pageWidth = (int) Alchemy.session.pdfReadPage.getWidth();
                 int pageHeight = (int) Alchemy.session.pdfReadPage.getHeight();
-                PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBgColour());
+                PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBackgroundColour());
                 try {
                     Alchemy.session.pdfReadPage.waitForFinish();
                     renderer.run();

@@ -19,34 +19,93 @@
  */
 package org.alchemy.core;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPopupMenu;
+import java.awt.Component;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.border.Border;
-//import javax.swing.plaf.basic.BasicPopupMenuUI;
+import java.awt.event.*;
+
 class AlcPopupMenu extends JPopupMenu implements AlcConstants {
+
+    final static int uiPopupMenuY = 47;
+    boolean inside = false;
+    boolean clickOk = true;
 
     /** Creates a new instance of AlcPopupMenu */
     AlcPopupMenu() {
-
 
         // Set the colour for the bg
         this.setBackground(COLOUR_UI_HIGHLIGHT);
         // Make sure the popup is opaque
         this.setOpaque(true);
-
-
         Border outline = BorderFactory.createLineBorder(COLOUR_UI_LINE, 1);
         Border empty = BorderFactory.createEmptyBorder(2, 2, 2, 2);
         // Compound border combining the above two
         Border compound = BorderFactory.createCompoundBorder(outline, empty);
         this.setBorder(compound);
-    }  
-    
-    //    @Override
-//    protected void paintComponent(Graphics g) {
-//        Rectangle size = this.getBounds();
-//        g.setColor(AlcToolBar.toolBarHighlightColour);
-//        g.fillRect(0, 0, size.width, size.height);
-//        super.paintComponent(g);
-//    }
+
+        this.addMouseListener(createMouseListener(this));
+        this.addPopupMenuListener(createPopupMenuListener());
+
+    }
+
+    @Override
+    public void show(Component invoker, int x, int y) {
+        super.show(invoker, x, y);
+        // Get rid of the window shadow on Mac
+        if (Alchemy.OS == OS_MAC) {
+            this.getRootPane().putClientProperty("Window.shadow", Boolean.FALSE);
+        }
+    }
+
+    PopupMenuListener createPopupMenuListener() {
+        return new PopupMenuListener() {
+
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+            }
+
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                // Buggy hack here but 
+                // When the popup is clicked on then clicked off again
+                // It is first set to invisible then mousePressed() is called
+                // Use a timer to delay the reseting of the clickOk variable
+                javax.swing.Timer initialDelay = new javax.swing.Timer(50, new ActionListener() {
+
+                    public void actionPerformed(ActionEvent evt) {
+
+                        clickOk = true;
+                        //System.out.println("clickOK = True");
+                    }
+                });
+
+                initialDelay.setRepeats(false);
+                initialDelay.start();
+            }
+
+            public void popupMenuCanceled(PopupMenuEvent e) {
+            }
+        };
+    }
+
+    MouseListener createMouseListener(final AlcPopupMenu popup) {
+        return new MouseListener() {
+
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            public void mousePressed(MouseEvent e) {
+            }
+
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            public void mouseEntered(MouseEvent e) {
+                inside = popup.contains(e.getPoint());
+            }
+
+            public void mouseExited(MouseEvent e) {
+                inside = popup.contains(e.getPoint());
+            }
+        };
+    }
 }

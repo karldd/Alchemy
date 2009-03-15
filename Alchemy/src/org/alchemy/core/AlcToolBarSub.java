@@ -61,6 +61,12 @@ class AlcToolBarSub extends JPanel implements AlcConstants {
     public int getHeight() {
         return height;
     }
+    
+    @Override
+    public void revalidate() {
+        super.revalidate();
+        //System.out.println("Revalidate called");
+    }
 
     // Override the paint component to draw the gradient bg
     @Override

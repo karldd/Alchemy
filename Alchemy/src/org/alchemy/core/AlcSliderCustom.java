@@ -20,7 +20,6 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.RoundRectangle2D;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -64,7 +63,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         this.setPreferredSize(new Dimension(width, height));
         // To be sure to reach both the min and max use width - 1
         scale = (max - min);
-        step = scale / (float) width - 1;
+        step = scale / ((float) width - 1);
         setValue(initialSliderValue);
     }
 
@@ -110,6 +109,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     private void moveSlider(int x) {
         if (x >= 0 && x < width) {
             displayValue = x;
+            System.out.println(trueValue);
             trueValue = Math.round(step * x);
             this.repaint();
         }

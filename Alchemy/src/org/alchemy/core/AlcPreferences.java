@@ -206,7 +206,7 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Simple ToolBar", simpleToolBar);
         prefs.putBoolean("Transparent Fullscreen", transparentFullscreen);
 
-        prefs.putInt("Background Colour", Alchemy.canvas.getBgColour().getRGB());
+        prefs.putInt("Background Colour", Alchemy.canvas.getBackgroundColour().getRGB());
         prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());
 
         if (switchVectorApp != null) {
