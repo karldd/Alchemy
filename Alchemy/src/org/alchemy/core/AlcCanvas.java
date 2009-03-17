@@ -31,16 +31,15 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.*;
 import com.lowagie.text.xml.xmp.*;
 
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.awt.print.Printable;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+import java.io.*;
 
 // PDF READER
 import com.sun.pdfview.*;
-import java.awt.geom.AffineTransform;
-import java.io.*;
 
 // JPEN
 import jpen.*;
@@ -93,10 +92,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private int penType = PEN_CURSOR;
     /** Pen Pressure if available */
     private float penPressure = 0F;
-    /** Pen Tilt X if available */
-    private float penTiltX = 0F;
-    /** Pen Tilt Y if available */
-    private float penTiltY = 0F;    //////////////////////////////////////////////////////////////
+    /** Pen Tilt if available */
+    private Point2D.Float penTilt = new Point2D.Float();
+    /** Pen Location - if a pen is available this will be a float otherwise int */
+    private Point2D.Float penLocation = new Point2D.Float();
+    //////////////////////////////////////////////////////////////
     // SHAPES
     //////////////////////////////////////////////////////////////
     /** Array list containing shapes that have been archived */
@@ -375,7 +375,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     void resetCanvasChanged() {
         this.canvasChanged = false;
     }
-
+    //////////////////////////////////////////////////////////////
+    // PEN EVENTS
+    //////////////////////////////////////////////////////////////
     /** Turn on/off Events being sent to modules
      * @param events 
      */
@@ -411,18 +413,18 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         return penPressure;
     }
 
-    /** Pen Tilt X if available 
-     * @return
+    /** Pen Tilt  if available 
+     * @return  Point2D.Float with tilt information
      */
-    public float getPenTiltX() {
-        return penTiltX;
+    public Point2D.Float getPenTilt() {
+        return penTilt;
     }
 
-    /** Pen Tilt Y if available 
-     * @return
+    /** Pen Tilt  if available 
+     * @return  Point2D.Float with tilt information
      */
-    public float getPenTiltY() {
-        return penTiltY;
+    public Point2D.Float getPenLocation() {
+        return penLocation;
     }
 
     /** The type of pen being used
@@ -1348,6 +1350,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
+        registerPenLocation(event);
         if (isAutoToggleToolBar()) {
             Alchemy.toolBar.toggleToolBar(event.getY());
         }
@@ -1473,6 +1476,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     public void mouseDragged(MouseEvent event) {
+        registerPenLocation(event);
         if (events) {
             // Pass to the current create module
             if (createEvents) {
@@ -1491,6 +1495,19 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         }
     }
 
+    private void registerPenLocation(MouseEvent event) {
+        if (penType == PEN_CURSOR) {
+            penLocation.x = event.getX();
+            penLocation.y = event.getY();
+        }
+    }
+    private void registerPenLocation(float x, float y) {
+            penLocation.x = x;
+            penLocation.y = y;
+    }
+    //////////////////////////////////////////////////////////////
+    // PEN EVENTS
+    //////////////////////////////////////////////////////////////
     public void penButtonEvent(PButtonEvent ev) {
     }
 
@@ -1517,11 +1534,18 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     public void penLevelEvent(PLevelEvent ev) {
-        // Register the pen pressure and tilt
-        if (penDown && penType != PEN_CURSOR) {
-            penPressure = ev.pen.getLevelValue(PLevel.Type.PRESSURE);
-            penTiltX = ev.pen.getLevelValue(PLevel.Type.TILT_X);
-            penTiltY = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
+        // Register the pen pressure, tilt and location 
+        // Do this only if this is an actual pen
+        // Otherwise register pen location using the mouse
+        if (penType != PEN_CURSOR) {
+            // Pressure and tilt is only good when the pen is down
+            if (penDown) {
+                penPressure = ev.pen.getLevelValue(PLevel.Type.PRESSURE);
+                penTilt.x = ev.pen.getLevelValue(PLevel.Type.TILT_X);
+                penTilt.y = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
+            }
+            // Register the pen location even when the mouse is up
+            registerPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
         }
     }
 
