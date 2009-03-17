@@ -18,8 +18,8 @@
  */
 package org.alchemy.create;
 
-import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import org.alchemy.core.*;
 
@@ -29,10 +29,10 @@ import org.alchemy.core.*;
  */
 public class PressureShapes extends AlcModule {
 
-    private Point lastPt;
+    private Point2D.Float lastPt;
     private float pressure;
     private AlcToolBarSubSection subToolBarSection;
-    private ArrayList<Point> points = new ArrayList<Point>(1000);
+    private ArrayList<Point2D.Float> points = new ArrayList<Point2D.Float>(1000);
     private ArrayList<Float> levels = new ArrayList<Float>(1000);
 
     public PressureShapes() {
@@ -85,58 +85,60 @@ public class PressureShapes extends AlcModule {
 
     private void makeBlob(AlcShape shape) {
 
-        Point p0 = points.get(0);
+        Point2D.Float p0 = points.get(0);
         shape.setPoint(p0);
 
         // Draw the outer points
         for (int i = 1; i < points.size(); i++) {
-            Point p2 = points.get(i - 1);
-            Point p1 = points.get(i);
+            Point2D.Float  p2 = points.get(i - 1);
+            Point2D.Float  p1 = points.get(i);
             float level = (levels.get(i)).floatValue();
-            Point pOut = rightAngle(p1, p2, level);
+            Point2D.Float  pOut = rightAngle(p1, p2, level);
             shape.addCurvePoint(pOut);
+            //shape.addLinePoint(pOut);
         }
-        
+
         // Draw the inner points
         for (int j = 1; j < points.size(); j++) {
             int index = (points.size() - j);
             //System.out.print(index + " ");
-            Point p2 = points.get(index);
-            Point p1 = points.get(index - 1);
+            Point2D.Float p2 = points.get(index);
+            Point2D.Float p1 = points.get(index - 1);
             float level = (levels.get(index)).floatValue();
-            Point pIn = rightAngle(p1, p2, level);
+            Point2D.Float pIn = rightAngle(p1, p2, level);
             shape.addCurvePoint(pIn);
+            //shape.addLinePoint(pIn);
         }
     //System.out.println(" ");
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Point p = e.getPoint();
+        Point2D.Float p = canvas.getPenLocation();
         canvas.createShapes.add(new AlcShape(p));
-        lastPt = p;
+        lastPt = new Point2D.Float(p.x, p.y);
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        pressure = canvas.getPenPressure() * 50;
-        Point p = e.getPoint();
+        pressure = canvas.getPenPressure() * 25F;
+        Point2D.Float p = canvas.getPenLocation();
         AlcShape currentShape = canvas.getCurrentCreateShape();
         // Need to test if it is null incase the shape has been auto-cleared
         if (currentShape != null) {
             if (!p.equals(lastPt)) {
-                    levels.add(new Float(pressure));
-                    points.add(p);
-                    makeBlob(currentShape);
-                }
-                canvas.redraw();
-                lastPt = p;
+                levels.add(new Float(pressure));
+                points.add(new Point2D.Float(p.x, p.y));
+                makeBlob(currentShape);
+                lastPt = new Point2D.Float(p.x, p.y);
+            //System.out.println(Math.atan2(lastPt.y - p.y, lastPt.x - p.x) - MATH_HALF_PI);
+            }
+            canvas.redraw();
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        Point p = e.getPoint();
         AlcShape currentShape = canvas.getCurrentCreateShape();
         // Need to test if it is null incase the shape has been auto-cleared
         if (currentShape != null) {
@@ -147,8 +149,8 @@ public class PressureShapes extends AlcModule {
         }
     }
 
-    private Point rightAngle(Point p1, Point p2, double distance) {
-       //double adjustedDistance = distance;
+    private Point2D.Float rightAngle(Point2D.Float p1, Point2D.Float p2, double distance) {
+        //double adjustedDistance = distance;
         // Calculate the angle between the last point and the new point
         double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - MATH_HALF_PI;
         //System.out.println(angle);
@@ -156,6 +158,6 @@ public class PressureShapes extends AlcModule {
         double x = p1.x + (distance * Math.cos(angle));
         double y = p1.y + (distance * Math.sin(angle));
 
-        return new Point((int) x, (int) y);
+        return new Point2D.Float((float) x, (float) y);
     }
 }

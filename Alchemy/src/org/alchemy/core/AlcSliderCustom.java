@@ -109,7 +109,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     private void moveSlider(int x) {
         if (x >= 0 && x < width) {
             displayValue = x;
-            System.out.println(trueValue);
+            //System.out.println(trueValue);
             trueValue = Math.round(step * x);
             this.repaint();
         }
