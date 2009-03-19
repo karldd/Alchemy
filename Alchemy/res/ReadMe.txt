@@ -1,5 +1,5 @@
 Alchemy 
-ALPHA 006
+ALPHA 007 PRE
 
 
 
@@ -21,7 +21,7 @@ however be sure to not mix older modules with newer versions or vice versa.
 CREDITS/LICENSE ----------------------
 Alchemy was initiated by Karl D.D. Willis & Jacob Hina. 
 The source code is released under the GNU General Public License and 
-Copyright © 2007-2008 Karl D.D. Willis. 
+Copyright © 2007-2009 Karl D.D. Willis. 
 Please see the 'COPYING' file for the full license.
 
 WEB ----------------------------------
@@ -30,6 +30,22 @@ Download Alchemy: http://al.chemy.org/download/
 Alchemy Forum: http://al.chemy.org/forum/
 
 Version History
+--------------------------------------
+ALPHA 007
+
+FEATURES
++ Pressure Shapes module
+
+CHANGES
++ Interface improvements
++ Warning added when using File > New with shapes on the canvas
++ Localisations added for Simplified Chinese/Traditional Chinese/Spanish/Dutch
+  Thanks to Chen Luo/Zafio/Dean for those!
+
+BUG FIXES
++ Fixed several issues caused by custom cursors stopping Alchemy from launching
+
+
 --------------------------------------
 ALPHA 006
 
