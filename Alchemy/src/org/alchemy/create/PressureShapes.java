@@ -90,26 +90,21 @@ public class PressureShapes extends AlcModule {
 
         // Draw the outer points
         for (int i = 1; i < points.size(); i++) {
-            Point2D.Float  p2 = points.get(i - 1);
-            Point2D.Float  p1 = points.get(i);
+            Point2D.Float p2 = points.get(i - 1);
+            Point2D.Float p1 = points.get(i);
             float level = (levels.get(i)).floatValue();
-            Point2D.Float  pOut = rightAngle(p1, p2, level);
+            Point2D.Float pOut = rightAngle(p1, p2, level);
             shape.addCurvePoint(pOut);
-            //shape.addLinePoint(pOut);
         }
-
         // Draw the inner points
         for (int j = 1; j < points.size(); j++) {
             int index = (points.size() - j);
-            //System.out.print(index + " ");
             Point2D.Float p2 = points.get(index);
             Point2D.Float p1 = points.get(index - 1);
             float level = (levels.get(index)).floatValue();
             Point2D.Float pIn = rightAngle(p1, p2, level);
             shape.addCurvePoint(pIn);
-            //shape.addLinePoint(pIn);
         }
-    //System.out.println(" ");
     }
 
     @Override
