@@ -427,6 +427,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         return penLocation;
     }
 
+    /** Set the pen location - set internally by mouse events */
+    private void setPenLocation(MouseEvent event) {
+        if (penType == PEN_CURSOR) {
+            penLocation.x = event.getX();
+            penLocation.y = event.getY();
+        }
+    }
+
+    /** Set the pen location - set internally by pen events */
+    private void setPenLocation(float x, float y) {
+        penLocation.x = x;
+        penLocation.y = y;
+    }
+
     /** The type of pen being used
      * @return  STYLUS (1) /  ERASER (2) / CURSOR (3) or zero for unknown
      */
@@ -1350,7 +1364,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     // MOUSE EVENTS
     //////////////////////////////////////////////////////////////
     public void mouseMoved(MouseEvent event) {
-        registerPenLocation(event);
+        setPenLocation(event);
         if (isAutoToggleToolBar()) {
             Alchemy.toolBar.toggleToolBar(event.getY());
         }
@@ -1476,7 +1490,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     public void mouseDragged(MouseEvent event) {
-        registerPenLocation(event);
+        setPenLocation(event);
         if (events) {
             // Pass to the current create module
             if (createEvents) {
@@ -1495,16 +1509,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         }
     }
 
-    private void registerPenLocation(MouseEvent event) {
-        if (penType == PEN_CURSOR) {
-            penLocation.x = event.getX();
-            penLocation.y = event.getY();
-        }
-    }
-    private void registerPenLocation(float x, float y) {
-            penLocation.x = x;
-            penLocation.y = y;
-    }
     //////////////////////////////////////////////////////////////
     // PEN EVENTS
     //////////////////////////////////////////////////////////////
@@ -1545,7 +1549,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 penTilt.y = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
             }
             // Register the pen location even when the mouse is up
-            registerPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
+            setPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
         }
     }
 
