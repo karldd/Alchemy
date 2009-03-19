@@ -247,7 +247,7 @@ public class AlcUtil implements AlcConstants {
     /** Create a custom cursor from a given image file
      * 
      * @param name  The image file to use as the cursor
-     * @return      A Custom cursor
+     * @return      A Custom cursor or the default cursor if the image can not be found
      */
     public static Cursor getCursor(String name) {
 
@@ -255,6 +255,13 @@ public class AlcUtil implements AlcConstants {
         // Add padding based on the best cursor size
         final Cursor customCursor;
         Image smallCursor = AlcUtil.getImage(name);
+        
+        // Check that the image returns correctly
+        if(smallCursor == null){
+            // If the image is null return the default cursor
+            return Cursor.getDefaultCursor();
+        }
+        
         Dimension smallCursorSize = new Dimension(smallCursor.getWidth(null), smallCursor.getHeight(null));
         Dimension cursorSize = TOOLKIT.getBestCursorSize(smallCursorSize.width, smallCursorSize.height);
 
