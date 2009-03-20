@@ -69,7 +69,7 @@ class AlcPlugins implements AlcConstants {
          * acesses it from there. That temp file is deleted on exit.
          * 
          * This is very hacky and not ideal! 
-         */
+         
         File tempCore = null;
 
         try {
@@ -99,7 +99,9 @@ class AlcPlugins implements AlcConstants {
             System.err.println("ERROR - Problem adding the core plugin to the temp dir");
             ex.printStackTrace();
         }
-
+        */
+        
+        
         // Folder of the plugins
         File pluginsDir = new File("modules");
 
@@ -108,9 +110,10 @@ class AlcPlugins implements AlcConstants {
             AlcUtil.showConfirmDialogFromBundle("noModulesDialogTitle", "noModulesDialogMessage");
             System.exit(0);
         }
+        
 
         // Get all plugins that end with .zip
-        File[] externalPlugins = pluginsDir.listFiles(new FilenameFilter() {
+        File[] plugins = pluginsDir.listFiles(new FilenameFilter() {
 
             public boolean accept(File dir, String name) {
                 return name.toLowerCase().endsWith(".zip");
@@ -118,20 +121,37 @@ class AlcPlugins implements AlcConstants {
         });
 
         // Check that there are modules installed
-        if (externalPlugins.length == 0) {
+        if (plugins.length <= 0) {
             // Tell the user that there must be at least one module loaded
             AlcUtil.showConfirmDialogFromBundle("noModulesDialogTitle", "noModulesDialogMessage");
             System.exit(0);
         }
-
-        // Reorder the plugins array
-        File[] plugins = new File[externalPlugins.length + 1];
-        //System.out.println(plugins.length);
-        plugins[0] = tempCore;
-        for (int i = 1; i < plugins.length; i++) {
-            //System.out.println(i);
-            plugins[i] = externalPlugins[i - 1];
+        
+        boolean coreExists = false;
+        // Check the core plugin exists
+        for (int i = 0; i < plugins.length; i++) {
+            // If the core plugin exits
+            if(plugins[i].getName().indexOf("org.alchemy.core") != -1){
+                coreExists = true;
+                //System.out.println("Core Exists: " + i);
+                break;
+            }
         }
+        if(!coreExists){
+            // Tell the user that they need the core module
+            AlcUtil.showConfirmDialogFromBundle("noCoreModuleDialogTitle", "noCoreModuleDialogMessage");
+            System.exit(0);
+        }
+
+//        // Reorder the plugins array
+//        File[] plugins = new File[externalPlugins.length + 1];
+//        //System.out.println(plugins.length);
+//        //plugins[0] = tempCore;
+//        for (int i = 1; i < plugins.length; i++) {
+//            //System.out.println(i);
+//            //plugins[i] = externalPlugins[i - 1];
+//            plugins[i] = externalPlugins[i];
+//        }
 
 
         try {
@@ -155,8 +175,10 @@ class AlcPlugins implements AlcConstants {
             // Registers plug-ins and their locations with this plug-in manager.
             pluginManager.publishPlugins(locations);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception ex) {
+            System.err.println("ERROR - Problem publishing plugins to the pluginManager");
+            ex.printStackTrace();
+            //throw new RuntimeException(e);
         }
 
         // Load affects first - zero number of affects is not a problem
@@ -262,8 +284,9 @@ class AlcPlugins implements AlcConstants {
                 index++;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            System.err.println("ERROR - Problem activating and initialising plugins");
+            ex.printStackTrace();
         }
 
         //Arrays.sort(plugins, (Comparator<AlcModule>)new PluginComparator());
