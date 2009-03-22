@@ -43,14 +43,14 @@ import com.sun.pdfview.*;
 
 // JPEN
 import jpen.*;
-import jpen.event.PenAdapter;
+import jpen.event.PenListener;
 
 /** 
  * The Alchemy canvas <br>
  * Stores all shapes created and handles all graphics related stuff<br>
  * Think saving pdfs, printing, and of course displaying! 
  */
-public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, Printable {
+public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, PenListener, Printable {
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
@@ -176,42 +176,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         vectorCanvas = new VectorCanvas();
 
         pm = new PenManager(this);
-        pm.pen.addListener(new PenAdapter() {
-
-            //////////////////////////////////////////////////////////////
-            // PEN EVENTS
-            //////////////////////////////////////////////////////////////
-            @Override
-            public void penKindEvent(PKindEvent ev) {
-                setPenType();
-            //System.out.println(ev);
-            }
-
-            @Override
-            public void penLevelEvent(PLevelEvent ev) {
-                setPenType();
-                // Register the pen pressure, tilt and location 
-                // Do this only if this is an actual pen
-                // Otherwise register pen location using the mouse
-                if (penType != PEN_CURSOR) {
-                    // Pressure and tilt is only good when the pen is down
-                    if (penDown) {
-                        penPressure = pm.pen.getLevelValue(PLevel.Type.PRESSURE);
-                        // parabolic sensitivity
-                        penPressure *= penPressure;
-                        penTilt.x = pm.pen.getLevelValue(PLevel.Type.TILT_X);
-                        penTilt.y = pm.pen.getLevelValue(PLevel.Type.TILT_Y);
-                    }
-                    // If this event is a movement
-                    if (ev.isMovement()) {
-                        // Register the pen location even when the mouse is up
-                        setPenLocation(ev);
-                        penLocationChanged = true;
-                    }
-                }
-            }
-        });
-
+        pm.pen.addListener(this);
 
         this.setCursor(CURSOR_CROSS);
     }
@@ -1598,6 +1563,45 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (penType != PEN_CURSOR) {
             penLocationChanged = false;
         }
+    }
+    //////////////////////////////////////////////////////////////
+    // PEN EVENTS
+    //////////////////////////////////////////////////////////////
+    public void penKindEvent(PKindEvent ev) {
+        setPenType();
+        //System.out.println(ev);
+    }
+
+    public void penLevelEvent(PLevelEvent ev) {
+        //setPenType();
+        // Register the pen pressure, tilt and location 
+        // Do this only if this is an actual pen
+        // Otherwise register pen location using the mouse
+        if (penType != PEN_CURSOR) {
+            // Pressure and tilt is only good when the pen is down
+            if (penDown) {
+                penPressure = pm.pen.getLevelValue(PLevel.Type.PRESSURE);
+                // parabolic sensitivity
+                penPressure *= penPressure;
+                penTilt.x = pm.pen.getLevelValue(PLevel.Type.TILT_X);
+                penTilt.y = pm.pen.getLevelValue(PLevel.Type.TILT_Y);
+            }
+            // If this event is a movement
+            if (ev.isMovement()) {
+                // Register the pen location even when the mouse is up
+                setPenLocation(ev);
+                penLocationChanged = true;
+            }
+        }
+    }
+
+    public void penButtonEvent(PButtonEvent arg0) {
+    }
+
+    public void penScrollEvent(PScrollEvent arg0) {
+    }
+
+    public void penTock(long arg0) {
     }
 
     /** Vector Canvas
