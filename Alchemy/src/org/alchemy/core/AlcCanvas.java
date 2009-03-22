@@ -434,7 +434,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (penType == PEN_CURSOR) {
             penLocation.x = event.getX();
             penLocation.y = event.getY();
-            System.out.println("Mouse: " + penLocation + " " + penLocationChanged);
+            //System.out.println("Mouse: " + penLocation + " " + penLocationChanged);
         }
     }
 
@@ -443,7 +443,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         penLocation.x = x;
         penLocation.y = y;
         if (penDown) {
-            System.out.println("Pen: " + penLocation + " " + penLocationChanged);
+            //System.out.println("Pen: " + penLocation + " " + penLocationChanged);
         }
     }
 
@@ -1535,6 +1535,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     public void penKindEvent(PKindEvent ev) {
+        System.out.println(ev);
         // Set the current pen type
         // Changing the background/foreground setting as required
         if (ev.pen.getKind() == PKind.valueOf(PKind.Type.STYLUS)) {
@@ -1557,6 +1558,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     public void penLevelEvent(PLevelEvent ev) {
+        //System.out.println(ev);
         // Register the pen pressure, tilt and location 
         // Do this only if this is an actual pen
         // Otherwise register pen location using the mouse
