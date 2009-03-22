@@ -34,17 +34,17 @@ import java.io.Serializable;
 public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
     /** The main path stored as a GeneralPath */
-    protected GeneralPath path;
+    GeneralPath path;
     /** Colour of this shape */
-    protected Color colour;
+    Color colour;
     /** Alpha of this shape */
-    private int alpha;
+    int alpha;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
-    protected int style;
+    int style;
     /** Line Weight if the style is line */
-    protected float lineWidth;
+    float lineWidth;
     /** Line smoothing global setting */
-    static boolean lineSmoothing = true;
+    private static boolean lineSmoothing = true;
     /** Store the last point */
     private Point2D.Float lastPt;
     /** For drawing smaller marks - draw lines until x points have been made */
@@ -514,6 +514,22 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
+    }
+
+    /** Check if line smoothing is on or off 
+     * 
+     * @return boolean for line smoothing
+     */
+    public static boolean isLineSmoothing() {
+        return lineSmoothing;
+    }
+
+    /** Set the line smoothing variable for AlcShape
+     * 
+     * @param lineSmoothing boolean to set line smoothing on or off
+     */
+    public static void setLineSmoothing(boolean lineSmoothing) {
+        AlcShape.lineSmoothing = lineSmoothing;
     }
 
     /** Get the bounds of this shape 

@@ -37,7 +37,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     // TOOLBAR ELEMENTS
     //////////////////////////////////////////////////////////////
     /** Popup buttons for the colour, create, amd affect buttons in the toolbar
-     *  These are declared global so we can hide the popup when hiding the toolbar */
+     *  These are declared global so we can hide the popup menus when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
     private AlcColourButton colourButton;
     /** The main tool bar inside the toolbar */
@@ -545,6 +545,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         this.windowSize = windowSize;
         this.revalidate();
         this.repaint();
+        checkSubSections();
     }
 
     /** Refresh the toolbar */
@@ -672,28 +673,32 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
     /** 
      * Add a Create Module sub-toolbar
-     * @param subToolBarSection     The subtoolbar section to be added
+     * @param subSection     The subtoolbar section to be added
      */
     @Override
-    public void addSubToolBarSection(AlcToolBarSubSection subToolBarSection) {
+    public void addSubToolBarSection(AlcToolBarSubSection subSection) {
 
-        subToolBarSection.revalidate();
+        //subSection.revalidate();
+        subSection.setContentVisible(false);
 
-        if (subToolBarSection.getModuleType() == MODULE_CREATE) {
-            createSubToolBarSection = subToolBarSection;
+        if (subSection.getModuleType() == MODULE_CREATE) {
+            createSubToolBarSection = subSection;
 
         // AFFECT
         } else {
-            affectSubToolBarSections[subToolBarSection.getIndex()] = subToolBarSection;
+            affectSubToolBarSections[subSection.getIndex()] = subSection;
         }
 
         currentSubToolBarSections++;
+
+        toggleSubSection(subSection);
+
         // Refresh the sub toolbar with the new contents
         refreshSubToolBar();
     }
 
+    /** Remove a subtoolbar section at the specified index */
     void removeSubToolBarSection(int index) {
-
         // If the index is 0 then it is a create section
         if (index == 0) {
             // If not null then remove it and increment the count down
@@ -712,8 +717,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 currentSubToolBarSections--;
 
             }
-
-
         }
         // Refresh the sub toolbar
         refreshSubToolBar();
@@ -726,11 +729,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         // If there is a create section add that first
         if (createSubToolBarSection != null) {
 
-            subToolBar.add(createSubToolBarSection);
+            subToolBar.add(createSubToolBarSection.panel);
         }
         // Add the affect sections
-        for (int i = 0; i <
-                affectSubToolBarSections.length; i++) {
+        for (int i = 0; i < affectSubToolBarSections.length; i++) {
 
             if (affectSubToolBarSections[i] != null) {
 
@@ -739,42 +741,109 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                     subToolBar.add(new AlcSubSeparator());
                 }
                 // Then add the section
-                subToolBar.add(affectSubToolBarSections[i]);
+                subToolBar.add(affectSubToolBarSections[i].panel);
             }
         }
 
         if (currentSubToolBarSections > 0) {
-
-            // TODO - Check there is enough room for the subtoolbar
-            // If there is overflow show a little >> arrow to indicate more content
-            // When the user clicks, the toolbar is displayed in a popup?
-
-//            int layoutWidth = subToolBar.getLayoutWidth();
-//            System.out.println("SubToolbar layout width:" + layoutWidth);
-//            if (layoutWidth > windowSize.width) {
-//                subToolBarRows = layoutWidth / windowSize.width + 1;
-//                System.out.println(layoutWidth + " / " + windowSize.width + " + 1 = " + subToolBarRows);
-//                subToolBar.setRows(subToolBarRows);
-//                calculateTotalHeight();
-//
-//            } else {
-//                if (subToolBarRows != 1) {
-//                    subToolBarRows = 1;
-//                    subToolBar.setRows(subToolBarRows);
-//                    calculateTotalHeight();
-//                }
-//            }
-
             subToolBar.setVisible(true);
         } else {
             if (!Alchemy.preferences.paletteAttached) {
                 subToolBar.setVisible(false);
             }
-
         }
         subToolBar.revalidate();
         subToolBar.repaint();
         refreshToolBar();
+    }
+
+    /** Check if the sub sections are overflowing and trim them as required*/
+    private void checkSubSections() {
+        if (isSubSectionOverflow()) {
+            trimSubSection();
+        }
+    }
+
+    /** Test if the sub sections are overflowing */
+    private boolean isSubSectionOverflow() {
+        int layoutWidth = subToolBar.getContentWidth();
+        //System.out.println("SubToolbar layout width:" + layoutWidth + "/" + windowSize.width);
+        if (layoutWidth > windowSize.width) {
+            //System.out.println("Bigger");
+            return true;
+        } else {
+            //System.out.println("Smaller");
+            return false;
+        }
+    }
+
+    /** Toggle the visibility of a subsection */
+    @Override
+    void toggleSubSection( AlcToolBarSubSection subSection) {
+
+        // Hide the section
+        if (subSection.isContentVisible()) {
+            subSection.setContentVisible(false);
+        //System.out.println("Hide - Content Visible");
+
+        // Show the section
+        } else {
+            // Check it fits
+            // Yes it will fit so make it visible
+            if (subToolBar.getContentWidth() + subSection.getContentWidth() < windowSize.width) {
+                subSection.setContentVisible(true);
+            //System.out.println("Show - No Overflow");
+
+            // No it won't fit so hide some other sections
+            } else {
+                if (currentSubToolBarSections > 1) {
+                    // Loop backwards and try and collapse the affect modules first
+                    for (int i = affectSubToolBarSections.length - 1; i >= 0; i--) {
+                        // If the section exists and is visible, hide it
+                        if (affectSubToolBarSections[i] != null) {
+                            if (affectSubToolBarSections[i].isContentVisible()) {
+                                affectSubToolBarSections[i].setContentVisible(false);
+                                //System.out.println("Hide " + Alchemy.plugins.affects[i].getName());
+                                // Check if everything will fit in
+                                if (subToolBar.getContentWidth() + subSection.getContentWidth() < windowSize.width) {
+                                    //System.out.println("Show " + Alchemy.plugins.affects[subSection.getIndex()].getName() + " - Others hidden so its ok");
+                                    subSection.setContentVisible(true);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    if (createSubToolBarSection.isContentVisible()) {
+                        createSubToolBarSection.setContentVisible(false);
+                        if (subToolBar.getContentWidth() + subSection.getContentWidth() < windowSize.width) {
+                            subSection.setContentVisible(true);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /** Loop over the sub sections and hide their content until it all fits in */
+    private void trimSubSection() {
+        if (currentSubToolBarSections > 1) {
+            // Loop backwards and try and collapse the affect modules first
+            for (int i = affectSubToolBarSections.length - 1; i >= 0; i--) {
+                // If the section exists and is visible, hide it
+                if (affectSubToolBarSections[i] != null) {
+                    if (affectSubToolBarSections[i].isContentVisible()) {
+                        affectSubToolBarSections[i].setContentVisible(false);
+                        if (!isSubSectionOverflow()) {
+                            return;
+                        }
+                    }
+                }
+            }
+            if (createSubToolBarSection.isContentVisible()) {
+                createSubToolBarSection.setContentVisible(false);
+            }
+        }
     }
 
 //////////////////////////////////////////////////////////////
@@ -854,7 +923,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         if (currentSubToolBarSections < 1) {
             subToolBar.setVisible(false);
-            System.out.println("SET FALSE");
         }
 
         this.add("South", toolBars);
@@ -878,7 +946,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     void addPaletteContent() {
         Alchemy.palette.addContent(toolBars);
     }
-    
     //////////////////////////////////////////////////////////////
     // UTLITY
     //////////////////////////////////////////////////////////////

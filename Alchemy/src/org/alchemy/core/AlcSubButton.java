@@ -26,6 +26,10 @@ import javax.swing.*;
 /** Custom button to fit the subtoolbar */
 public class AlcSubButton extends JButton implements AlcConstants {
 
+    public AlcSubButton(String text) {
+        setup(text);
+    }
+
     public AlcSubButton(String text, URL iconUrl) {
 
         if (iconUrl != null) {
@@ -38,7 +42,10 @@ public class AlcSubButton extends JButton implements AlcConstants {
             URL pressedIconUrl = AlcUtil.appendStringToUrl(iconUrl, "-down");
             this.setPressedIcon(AlcUtil.getImageIcon(pressedIconUrl));
         }
+        setup(text);
+    }
 
+    private void setup(String text) {
         this.setFont(FONT_SMALL);
         this.setText(text);
         // Insets(int top, int left, int bottom, int right)
@@ -46,7 +53,7 @@ public class AlcSubButton extends JButton implements AlcConstants {
         this.setIconTextGap(2);
         this.setBorderPainted(false);    // Draw the button shape
         this.setContentAreaFilled(false);  // Draw the background behind the button
-        //this.setPreferredSize(new Dimension(this.getPreferredSize().width, 26));
-        //this.setFocusPainted(false);       // Draw the highlight when focused
+    //this.setPreferredSize(new Dimension(this.getPreferredSize().width, 26));
+    //this.setFocusPainted(false);       // Draw the highlight when focused
     }
 }

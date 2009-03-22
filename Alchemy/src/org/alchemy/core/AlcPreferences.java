@@ -201,8 +201,8 @@ class AlcPreferences implements AlcConstants {
         prefs.put("Shapes Path", shapesPath);
 
         prefs.putBoolean("Palette Attached", paletteAttached);
-        prefs.putBoolean("Smoothing", Alchemy.canvas.getSmoothing());
-        prefs.putBoolean("Line Smoothing", AlcShape.lineSmoothing);
+        prefs.putBoolean("Smoothing", Alchemy.canvas.isSmoothing());
+        prefs.putBoolean("Line Smoothing", AlcShape.isLineSmoothing());
         prefs.putBoolean("Simple ToolBar", simpleToolBar);
         prefs.putBoolean("Transparent Fullscreen", transparentFullscreen);
 

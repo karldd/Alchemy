@@ -452,11 +452,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
                 Alchemy.preferences.paletteLocation = Alchemy.palette.getLocation();
                 Alchemy.palette.setVisible(false);
-                //palette.dispose();
-                //palette = null;
-                Alchemy.toolBar.attachToolBar();
                 Alchemy.preferences.paletteAttached = false;
-
+                Alchemy.canvas.setAutoToggleToolBar(true);
+                Alchemy.toolBar.attachToolBar();
             }
         }
     }
@@ -626,7 +624,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     public void componentShown(ComponentEvent e) {
     }
 
-    public void componentResized(ComponentEvent e) {
+        public void componentResized(ComponentEvent e) {
         resizeWindow();
     }
 
