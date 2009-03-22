@@ -88,7 +88,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private boolean affectEvents = true;
     /** Pen down or up */
     private boolean penDown = false;
-    /** The type of pen - STYLUS / ERASER / CURSOR */
+    /** The type of pen - PEN_STYLUS / PEN_ERASER / PEN_CURSOR */
     private int penType = PEN_CURSOR;
     /** Pen Pressure if available */
     private float penPressure = 0F;
@@ -96,6 +96,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private Point2D.Float penTilt = new Point2D.Float();
     /** Pen Location - if a pen is available this will be a float otherwise int */
     private Point2D.Float penLocation = new Point2D.Float();
+    /** Pen location has changed or not */
+    private boolean penLocationChanged = true;
     //////////////////////////////////////////////////////////////
     // SHAPES
     //////////////////////////////////////////////////////////////
@@ -420,11 +422,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         return penTilt;
     }
 
-    /** Pen Tilt  if available 
-     * @return  Point2D.Float with tilt information
+    /** Pen Location as a new Point2D.Float object
+     * @return  Point2D.Float with pen location information
      */
     public Point2D.Float getPenLocation() {
-        return penLocation;
+        return new Point2D.Float(penLocation.x, penLocation.y);
     }
 
     /** Set the pen location - set internally by mouse events */
@@ -432,6 +434,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (penType == PEN_CURSOR) {
             penLocation.x = event.getX();
             penLocation.y = event.getY();
+            System.out.println("Mouse: " + penLocation + " " + penLocationChanged);
         }
     }
 
@@ -439,6 +442,16 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private void setPenLocation(float x, float y) {
         penLocation.x = x;
         penLocation.y = y;
+        if (penDown) {
+            System.out.println("Pen: " + penLocation + " " + penLocationChanged);
+        }
+    }
+
+    /** Has the pen location changed - useful for filtering out repeats
+     * @return Boolean indicating if the pen location has changed or not
+     */
+    public boolean isPenLocationChanged() {
+        return penLocationChanged;
     }
 
     /** The type of pen being used
@@ -1384,6 +1397,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 }
             }
         }
+        if (penType != PEN_CURSOR) {
+            penLocationChanged = false;
+        }
     }
 
     public void mousePressed(MouseEvent event) {
@@ -1507,6 +1523,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 }
             }
         }
+        if (penType != PEN_CURSOR) {
+            penLocationChanged = false;
+        }
     }
 
     //////////////////////////////////////////////////////////////
@@ -1548,8 +1567,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 penTilt.x = ev.pen.getLevelValue(PLevel.Type.TILT_X);
                 penTilt.y = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
             }
-            // Register the pen location even when the mouse is up
-            setPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
+            // If this event is a movement
+            if (ev.isMovement()) {
+                // Register the pen location even when the mouse is up
+                setPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
+                penLocationChanged = true;
+            } else {
+                System.out.println("No Movement");
+            }
         }
     }
 

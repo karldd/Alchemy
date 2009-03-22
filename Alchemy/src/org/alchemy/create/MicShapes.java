@@ -73,6 +73,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
     protected void cleared() {
         points.clear();
         levels.clear();
+        lastPt = null;
     }
 
     private void createSubToolBarSection() {
@@ -114,6 +115,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
 
     private void makeBlob(AlcShape shape) {
 
+        // Reset the shape and create the first point
         Point2D.Float p0 = points.get(0);
         shape.setPoint(p0);
 
@@ -134,6 +136,8 @@ public class MicShapes extends AlcModule implements AlcConstants {
             Point2D.Float pIn = rightAngle(p1, p2, level);
             shape.addCurvePoint(pIn);
         }
+        // Close the shape going back to the first point
+        shape.addLastPoint(p0);
     }
 
     @Override
@@ -149,8 +153,10 @@ public class MicShapes extends AlcModule implements AlcConstants {
         AlcShape currentShape = canvas.getCurrentCreateShape();
         // Need to test if it is null incase the shape has been auto-cleared
         if (currentShape != null) {
-            if (!p.equals(lastPt)) {
+            if (canvas.isPenLocationChanged()) {
                 float micLevel = (float) micIn.getMicLevel() * 2;
+
+                // SHAKE MODE
                 if (shake) {
                     byte[] buffer = micIn.getBuffer();
                     //int[] samples = micIn.getSamples();
@@ -161,13 +167,27 @@ public class MicShapes extends AlcModule implements AlcConstants {
                     } else {
                         thisLevel = buffer[0] * micLevel;
                     }
-                    
+
                     Point2D.Float pt = rightAngle(p, lastPt, thisLevel);
                     currentShape.addCurvePoint(pt);
+
+                // FATTEN MODE
                 } else {
-                    levels.add(new Float(micLevel));
-                    points.add(new Point2D.Float(p.x, p.y));
-                    makeBlob(currentShape);
+                    // Set the min level to 1
+                    if (micLevel < 0) {
+                        micLevel = 1;
+                    }
+                    if (points.size() > 0) {
+                        if (p.distance(lastPt) > 3) {
+                            levels.add(new Float(micLevel));
+                            points.add(p);
+                            makeBlob(currentShape);
+                        }
+                    } else {
+                        levels.add(new Float(micLevel));
+                        points.add(p);
+                        makeBlob(currentShape);
+                    }
                 }
                 canvas.redraw();
                 lastPt = new Point2D.Float(p.x, p.y);

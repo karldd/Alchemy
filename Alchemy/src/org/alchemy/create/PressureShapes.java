@@ -21,6 +21,8 @@ package org.alchemy.create;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 /**
@@ -29,37 +31,54 @@ import org.alchemy.core.*;
  */
 public class PressureShapes extends AlcModule {
 
-    private Point2D.Float lastPt;
-    private float pressure;
     private AlcToolBarSubSection subToolBarSection;
     private ArrayList<Point2D.Float> points = new ArrayList<Point2D.Float>(1000);
     private ArrayList<Float> levels = new ArrayList<Float>(1000);
-
-    public PressureShapes() {
-        // This should be left blank, use setup() instead
-    }
+    private int pressureAmount;
+    private int startPressure = 25;
 
     @Override
     public void setup() {
         points.ensureCapacity(1000);
-//        createSubToolBarSection();
-//        toolBar.addSubToolBarSection(subToolBarSection);
+        pressureAmount = startPressure;
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    public void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    protected void cleared() {
+        points.clear();
+        levels.clear();
     }
 
     private void createSubToolBarSection() {
-//        subToolBarSection = new AlcToolBarSubSection(this);
-//
-//        // Draw mode button
-//        AlcSubToggleButton drawModeButton = new AlcSubToggleButton("Draw Mode", AlcUtil.getUrlPath("drawmode.png", getClassLoader()));
-//        drawModeButton.setToolTipText("Change the draw mode between fatten and shake style");
-//
-//        drawModeButton.addActionListener(
-//                new ActionListener() {
-//
-//                    public void actionPerformed(ActionEvent e) {
-//                        shake = !shake;
-//                    }
-//                });
+        subToolBarSection = new AlcToolBarSubSection(this);
+
+
+        final int pressureMin = 1;
+        final int pressureMax = 200;
+
+        final AlcSubSpinner pressureSpinner = new AlcSubSpinner(
+                "Pressure",
+                "Control the amount of pressure",
+                startPressure,
+                pressureMin,
+                pressureMax,
+                1);
+
+        pressureSpinner.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        pressureAmount = pressureSpinner.getValue();
+                    }
+                });
+
 //        subToolBarSection.add(drawModeButton);
 //
 //
@@ -80,11 +99,12 @@ public class PressureShapes extends AlcModule {
 //                        }
 //                    }
 //                });
-//        subToolBarSection.add(volumeSlider);
+        subToolBarSection.add(pressureSpinner);
     }
 
     private void makeBlob(AlcShape shape) {
 
+        // Reset the shape and create the first point
         Point2D.Float p0 = points.get(0);
         shape.setPoint(p0);
 
@@ -105,43 +125,55 @@ public class PressureShapes extends AlcModule {
             Point2D.Float pIn = rightAngle(p1, p2, level);
             shape.addCurvePoint(pIn);
         }
+        // Close the shape going back to the first point
+        shape.addLastPoint(p0);
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         Point2D.Float p = canvas.getPenLocation();
+        addData(p);
         canvas.createShapes.add(new AlcShape(p));
-        lastPt = new Point2D.Float(p.x, p.y);
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        pressure = canvas.getPenPressure() * 25F;
-        Point2D.Float p = canvas.getPenLocation();
         AlcShape currentShape = canvas.getCurrentCreateShape();
         // Need to test if it is null incase the shape has been auto-cleared
         if (currentShape != null) {
-            if (!p.equals(lastPt)) {
-                levels.add(new Float(pressure));
-                points.add(new Point2D.Float(p.x, p.y));
-                makeBlob(currentShape);
-                lastPt = new Point2D.Float(p.x, p.y);
-            //System.out.println(Math.atan2(lastPt.y - p.y, lastPt.x - p.x) - MATH_HALF_PI);
+            if (canvas.isPenLocationChanged()) {
+                Point2D.Float p = canvas.getPenLocation();
+                //System.out.println(p);
+                if (points.size() > 0) {
+                    Point2D.Float lastPt = points.get(points.size() - 1);
+                    double distance = p.distance(lastPt);
+                    if (distance > 3) {
+                        addData(p);
+                        makeBlob(currentShape);
+                        canvas.redraw();
+                    }
+                }
+            } else {
+                //System.out.println("No Change: " + canvas.getPenLocation());
             }
-            canvas.redraw();
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        AlcShape currentShape = canvas.getCurrentCreateShape();
-        // Need to test if it is null incase the shape has been auto-cleared
-        if (currentShape != null) {
-            points.clear();
-            levels.clear();
-            canvas.redraw();
-            canvas.commitShapes();
+        points.clear();
+        levels.clear();
+        canvas.redraw();
+        canvas.commitShapes();
+    }
+
+    private void addData(Point2D.Float p) {
+        float pressure = 1;
+        if (canvas.getPenType() != PEN_CURSOR) {
+            pressure = canvas.getPenPressure() * (float) pressureAmount;
         }
+        levels.add(new Float(pressure));
+        points.add(p);
     }
 
     private Point2D.Float rightAngle(Point2D.Float p1, Point2D.Float p2, double distance) {

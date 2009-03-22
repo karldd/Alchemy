@@ -50,7 +50,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /** For drawing smaller marks - draw lines until x points have been made */
     private final int startPoints = 5;
     /** Minimum distance until points are added */
-    private final int minMovement = 5;
+    private final int minimumMovement = 5;
     /** Keep track of the number of points added */
     private int totalPoints = 0;
 
@@ -204,11 +204,11 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                 } else {
 
                     // Movement since the last point was drawn
-                    float movement = Math.abs(p.x - lastPt.x) + Math.abs(p.y - lastPt.y);
+                    double movement = p.distance(lastPt);
                     //System.out.println(p.x + " " + lastPt.x);
 
                     // Test to see if this point has moved far enough
-                    if (movement > minMovement) {
+                    if (movement > minimumMovement) {
 
                         // New control point value
                         Point2D.Float pt = new Point2D.Float();
@@ -253,10 +253,10 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
             } else {
 
                 // Movement since the last point was drawn
-                float movement = Math.abs(p.x - lastPt.x) + Math.abs(p.y - lastPt.y);
+                double movement = p.distance(lastPt);
 
                 // Test to see if this point has moved far enough
-                if (movement > minMovement) {
+                if (movement > minimumMovement) {
                     path.lineTo(p.x, p.y);
                     savePoints(p);
                 }

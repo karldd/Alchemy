@@ -229,7 +229,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // LINE WIDTH SPINNER
         //////////////////////////////////////////////////////////////
-        // currentValue, min, max, stepsize
         final int lineWidthSpinnerMin = 1;
         final int lineWidthSpinnerMax = 75;
 
