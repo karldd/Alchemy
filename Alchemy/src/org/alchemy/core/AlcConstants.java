@@ -139,6 +139,8 @@ public interface AlcConstants {
     //////////////////////////////////////////////////////////////
     // FONTS 
     //////////////////////////////////////////////////////////////
+    /** Font - Sanserif plain 9pt */
+    static final Font FONT_SMALLER = new Font("sansserif", Font.PLAIN, 9);
     /** Font - Sanserif plain 10pt */
     static final Font FONT_SMALL = new Font("sansserif", Font.PLAIN, 10);
     /** Font - Sanserif plain 11pt */

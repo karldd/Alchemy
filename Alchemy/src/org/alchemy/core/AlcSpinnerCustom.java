@@ -36,14 +36,10 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     private boolean downPressed = false;
     private boolean drag = false;
     //
-    private final int width = 43;
-    private final int height = 24;
-    private final int halfHeight = height >> 1;
-    private final int textAreaWidth = 27;
-    private final FontMetrics metrics = getFontMetrics(FONT_MEDIUM);
-    private final Image spinner = AlcUtil.getImage("spinner.png");
-    private final Image spinnerUp = AlcUtil.getImage("spinner-up.png");
-    private final Image spinnerDown = AlcUtil.getImage("spinner-down.png");
+    private final int width,  height,  halfHeight,  textAreaWidth, stringY;
+    private final FontMetrics metrics;
+    private final Font font;
+    private final Image spinner,  spinnerUp,  spinnerDown;
     //
     private javax.swing.Timer repeatTimer;
     private final int repeatInterval = 65;
@@ -57,25 +53,54 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     /** The ChangeEvent that is passed to all listeners of this slider. */
     protected transient ChangeEvent changeEvent;
 
-    /** 
+    /** Alchemy Custon Spinner
      * 
+     * @param sub   If this is a sub-spinner (smaller size) or not
      * @param value The initial value of the spinner
      * @param min   The minimum value of the spinner
      * @param max   The maximum value of the spinner
      * @param step  The difference between elements of the sequence
      */
-    AlcSpinnerCustom(int value, int min, int max, int step) {
+    AlcSpinnerCustom(boolean sub, int value, int min, int max, int step) {
         this.value = value;
         this.min = min;
         this.max = max;
         this.step = step;
 
+        // SUB SPINNER - smaller spinner
+        if (sub) {
+            width = 38;
+            height = 15;
+            textAreaWidth = 24;
+            stringY = 11;
+            metrics = getFontMetrics(FONT_SMALLER);
+            font = FONT_SMALLER;
+            spinner = AlcUtil.getImage("sub-spinner.png");
+            spinnerUp = AlcUtil.getImage("sub-spinner-up.png");
+            spinnerDown = AlcUtil.getImage("sub-spinner-down.png");
+
+        // NORMAL SPINNER
+        } else {
+            width = 43;
+            height = 24;
+            textAreaWidth = 27;
+            stringY = 16;
+            metrics = getFontMetrics(FONT_MEDIUM);
+            font = FONT_MEDIUM;
+            spinner = AlcUtil.getImage("spinner.png");
+            spinnerUp = AlcUtil.getImage("spinner-up.png");
+            spinnerDown = AlcUtil.getImage("spinner-down.png");
+        }
+        halfHeight = height / 2;
+        setup();
+    }
+
+    private void setup() {
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         addKeyListener(this);
         setFocusable(true);
-
 
         // Override the number keys to do nothing when the slider is in focus
         Action doNothing = new AbstractAction() {
@@ -96,7 +121,6 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_9, 0), "doNothing");
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_0, 0), "doNothing");
         this.getActionMap().put("doNothing", doNothing);
-
 
         this.setOpaque(false);
         this.setPreferredSize(new Dimension(width, height));
@@ -129,10 +153,8 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
         // Centre the text in the middle of the text area
         int stringX = (textAreaWidth - stringWidth) >> 1;
 
-
-
-        g2.setFont(FONT_MEDIUM);
-        g2.drawString(valueString, stringX, 16);
+        g2.setFont(font);
+        g2.drawString(valueString, stringX, stringY);
 
     }
 

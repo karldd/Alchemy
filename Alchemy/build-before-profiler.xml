@@ -5,8 +5,7 @@
 <project name="Alchemy" default="default" basedir=".">
     <description>Builds, tests, and runs the project Alchemy.</description>
     <import file="nbproject/build-impl.xml"/>
-
-    <import file="nbproject/profiler-build-impl.xml"/>    <import file="nbproject/profiler-build-impl.xml"/>
+    <import file="nbproject/profiler-build-impl.xml"/>
     
     <!-- Import the resource bundle where the version info is stored -->
     <property file="${basedir}/src/org/alchemy/core/AlcResourceBundle.properties"/>
