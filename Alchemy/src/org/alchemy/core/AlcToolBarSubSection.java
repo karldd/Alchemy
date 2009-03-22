@@ -19,33 +19,123 @@
  */
 package org.alchemy.core;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import javax.swing.JPanel;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 /**
  * A 'section' added to the subtoolbar by a module<br>
  * Contaning subbuttons, subsliders, sublabels etc...
  * 
  */
-public class AlcToolBarSubSection extends JPanel {
+public class AlcToolBarSubSection {
 
     private final AlcModule module;
+    /** The top panel added to the subtoolbar */
+    final JPanel panel;
+    /** The content panel that can be shown/hidden */
+    private final JPanel contentPanel;
+    /** Reference to this */
+    private final AlcToolBarSubSection me;
+    /** Full width of the content even when it is hidden */
+    private int contentWidth;
+    /** Arrow to show when the section is hidden */
+    private ImageIcon arrow = AlcUtil.getImageIcon("sub-section-arrow.png");
+    /** The clickable title button to hide/show the content */
+    private AlcSubButton titleButton;
+    private final int titleButtonWidth;
 
-    public AlcToolBarSubSection(AlcModule module) {
+    public AlcToolBarSubSection(final AlcModule module) {
 
         this.module = module;
-        this.setOpaque(false);
-        this.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 0));
-        AlcSubLabel label = new AlcSubLabel(module.getName());
-        label.setFont(AlcConstants.FONT_SMALL_BOLD);
-        // Set the height to the maximum 26 so all other components are correctly centred
-        label.setPreferredSize(new Dimension(label.getPreferredSize().width + 2, 26));
-        this.add(label);
+        this.me = this;
+
+        panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panel.setOpaque(false);
+        contentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
+        contentPanel.setOpaque(false);
+
+        // TITLE BUTTON
+        titleButton = new AlcSubButton(module.getName());
+        titleButton.setFont(AlcConstants.FONT_SMALL_BOLD);
+        titleButton.setVerticalTextPosition(AbstractButton.CENTER);
+        titleButton.setHorizontalTextPosition(AbstractButton.LEADING);
+        titleButtonWidth = titleButton.getPreferredSize().width;
+        // Set the height to the maximum 25 so all other components are correctly centred1
+        titleButton.setPreferredSize(new Dimension(titleButtonWidth, 25));
+        
+        titleButton.setIconTextGap(4);
+
+        titleButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                // Toggle the sub section on/off
+                Alchemy.toolBar.toggleSubSection(me);
+            }
+        });
+
+        panel.add(titleButton);
+
+        // CONTENT PANEL
+        contentPanel.setOpaque(false);
+        panel.add(contentPanel);
+
     }
 
-    int getLayoutWidth() {
-        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
+    /** Show/Hide the content panel
+     * @param visible   Boolean to show/hide the content panel
+     */
+    void setContentVisible(boolean visible) {
+        contentPanel.setVisible(visible);
+        if (visible) {
+            titleButton.setIcon(null);
+            titleButton.setPreferredSize(new Dimension(titleButtonWidth, 25));
+            
+        } else {
+            titleButton.setIcon(arrow);
+            titleButton.setPreferredSize(new Dimension(titleButtonWidth + 7, 25)); // Textgap + arrow width
+            
+        }
+    }
+
+    /** Check if the content panel is visible
+     * @return  Visibility state of the content panel
+     */
+    boolean isContentVisible() {
+        return contentPanel.isVisible();
+    }
+
+    /** Get the width of the content panel 
+     * @return int of the content panel width
+     */
+    int getContentWidth() {
+        return contentWidth;
+    }
+
+    /** Add content
+     * @param comp  The component to add
+     */
+    public void add(Component comp) {
+        contentPanel.add(comp);
+        contentWidth = contentPanel.getLayout().preferredLayoutSize(panel).width;
+    }
+
+    /** Remove content
+     * @param comp  The component to remove
+     */
+    public void remove(Component comp) {
+        contentPanel.remove(comp);
+        contentWidth = contentPanel.getLayout().preferredLayoutSize(panel).width;
+    }
+
+    /** Revalidate the content */
+    public void revalidate() {
+        contentPanel.revalidate();
+    }
+
+    int getWidth() {
+        Dimension layoutSize = panel.getLayout().preferredLayoutSize(panel);
         // Plus extra to account for padding on the sides
         return layoutSize.width;
     }

@@ -36,7 +36,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
     private AlcPaletteTitleBar titleBar;
     private int maxSize = 1280;
     private int minSize = 600;
-    private int paletteHeight = 88;
+    private int paletteHeight = 87;
 
     AlcPalette(AlcWindow owner) {
         super(owner);

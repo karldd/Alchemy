@@ -534,13 +534,13 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             public void actionPerformed(ActionEvent e) {
                 AlcCheckBoxMenuItem source = (AlcCheckBoxMenuItem) e.getSource();
-                AlcShape.lineSmoothing = source.getState();
+                AlcShape.setLineSmoothing(source.getState());
 
             }
         };
         AlcCheckBoxMenuItem lineSmoothingItem = new AlcCheckBoxMenuItem(lineSmoothingAction);
         lineSmoothingItem.setSelected(Alchemy.preferences.lineSmoothing);
-        AlcShape.lineSmoothing = Alchemy.preferences.lineSmoothing;
+        AlcShape.setLineSmoothing(Alchemy.preferences.lineSmoothing);
         lineSmoothingItem.setup(getS("lineSmoothingTitle"));
         settingsMenu.add(lineSmoothingItem);
 

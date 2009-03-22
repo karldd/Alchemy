@@ -55,9 +55,6 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     void refreshColourButton() {
     }
 
-    void toggleColourButton() {
-    }
-
     void refreshTransparencySlider() {
     }
 
@@ -65,6 +62,9 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     }
 
     void resizeToolBar(Dimension windowSize) {
+    }
+    
+    void toggleSubSection(AlcToolBarSubSection subSection){
     }
 
     void calculateTotalHeight() {
@@ -82,7 +82,7 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     void addPaletteContent() {
     }
 
-    public void addSubToolBarSection(AlcToolBarSubSection subToolBarSection) {
+    public void addSubToolBarSection(AlcToolBarSubSection subSection) {
     }
 
     /** Get a string from the resource bundle */

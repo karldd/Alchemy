@@ -365,7 +365,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Get Antialiasing
      * @return 
      */
-    boolean getSmoothing() {
+    boolean isSmoothing() {
         return this.smoothing;
     }
 
@@ -1569,7 +1569,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     public void penKindEvent(PKindEvent ev) {
         setPenType();
-        //System.out.println(ev);
     }
 
     public void penLevelEvent(PLevelEvent ev) {

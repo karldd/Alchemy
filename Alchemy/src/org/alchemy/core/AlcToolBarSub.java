@@ -24,10 +24,9 @@ import javax.swing.*;
 
 class AlcToolBarSub extends JPanel implements AlcConstants {
 
-    private static final int rowHeight = 26;
-    private int height = rowHeight;
-    private int numberOfRows = 1;
-
+    //private static final int rowHeight = 26;
+    private int height = 25;
+    //private int numberOfRows = 1;
     /** Creates a new instance of AlcSubToolBar */
     AlcToolBarSub() {
 
@@ -39,33 +38,29 @@ class AlcToolBarSub extends JPanel implements AlcConstants {
         this.setPreferredSize(new Dimension(Alchemy.window.getWindowSize().width, height));
     }
 
-    void setRows(int numberOfRows) {
-        this.numberOfRows = numberOfRows;
-        height = numberOfRows * rowHeight;
-        this.setPreferredSize(new Dimension(Alchemy.window.getWindowSize().width, height));
-    }
+//    void setRows(int numberOfRows) {
+//        this.numberOfRows = numberOfRows;
+//        height = numberOfRows * rowHeight;
+//        this.setPreferredSize(new Dimension(Alchemy.window.getWindowSize().width, height));
+//    }
+//    int getLayoutHeight() {
+//        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
+//        return layoutSize.height;
+//    }
 
-    int getLayoutHeight() {
-        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
-
-        return layoutSize.height;
-    }
-
-    int getLayoutWidth() {
-        Dimension layoutSize = this.getLayout().preferredLayoutSize(this);
-        // Plus extra to account for padding on the sides
-        return layoutSize.width + 20;
+    int getContentWidth() {
+        return this.getLayout().preferredLayoutSize(this).width;
     }
 
     @Override
     public int getHeight() {
         return height;
     }
-    
+
     @Override
     public void revalidate() {
         super.revalidate();
-        //System.out.println("Revalidate called");
+    //System.out.println("Revalidate called");
     }
 
     // Override the paint component to draw the gradient bg

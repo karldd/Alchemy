@@ -44,6 +44,7 @@ CHANGES
 
 BUG FIXES
 + Fixed several issues caused by custom cursors stopping Alchemy from launching
++ Fixed a bug causing the tool bar to disappear completely when being reattached
 
 
 --------------------------------------
