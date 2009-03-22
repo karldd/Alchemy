@@ -43,14 +43,14 @@ import com.sun.pdfview.*;
 
 // JPEN
 import jpen.*;
-import jpen.event.PenListener;
+import jpen.event.PenAdapter;
 
 /** 
  * The Alchemy canvas <br>
  * Stores all shapes created and handles all graphics related stuff<br>
  * Think saving pdfs, printing, and of course displaying! 
  */
-public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, PenListener, Printable {
+public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, MouseMotionListener, Printable {
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
@@ -174,7 +174,39 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         vectorCanvas = new VectorCanvas();
 
         PenManager pm = new PenManager(this);
-        pm.pen.addListener(this);
+        pm.pen.addListener(new PenAdapter() {
+
+            //////////////////////////////////////////////////////////////
+            // PEN EVENTS
+            //////////////////////////////////////////////////////////////
+            @Override
+            public void penKindEvent(PKindEvent ev) {
+                setPenType(ev);
+                //System.out.println(ev);
+            }
+
+            @Override
+            public void penLevelEvent(PLevelEvent ev) {
+                setPenType(ev);
+                // Register the pen pressure, tilt and location 
+                // Do this only if this is an actual pen
+                // Otherwise register pen location using the mouse
+                if (penType != PEN_CURSOR) {
+                    // Pressure and tilt is only good when the pen is down
+                    if (penDown) {
+                        penPressure = ev.pen.getLevelValue(PLevel.Type.PRESSURE);
+                        penTilt.x = ev.pen.getLevelValue(PLevel.Type.TILT_X);
+                        penTilt.y = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
+                    }
+                    // If this event is a movement
+                    if (ev.isMovement()) {
+                        // Register the pen location even when the mouse is up
+                        setPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
+                        penLocationChanged = true;
+                    }
+                }
+            }
+        });
 
 
         this.setCursor(CURSOR_CROSS);
@@ -473,14 +505,17 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 Alchemy.toolBar.refreshColourButton();
             }
             penType = PEN_STYLUS;
+            //System.out.println("PEN");
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
             if (!backgroundActive) {
                 setBackgroundColourActive(true);
                 Alchemy.toolBar.refreshColourButton();
             }
             penType = PEN_ERASER;
+            //System.out.println("ERASER");
         } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
             penType = PEN_CURSOR;
+            //System.out.println("CURSOR");
         } else {
             penType = 0;
         }
@@ -1551,43 +1586,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (penType != PEN_CURSOR) {
             penLocationChanged = false;
         }
-    }
-
-    //////////////////////////////////////////////////////////////
-    // PEN EVENTS
-    //////////////////////////////////////////////////////////////
-    public void penButtonEvent(PButtonEvent ev) {
-    }
-
-    public void penKindEvent(PKindEvent ev) {
-        setPenType(ev);
-    }
-
-    public void penLevelEvent(PLevelEvent ev) {
-        setPenType(ev);
-        // Register the pen pressure, tilt and location 
-        // Do this only if this is an actual pen
-        // Otherwise register pen location using the mouse
-        if (penType != PEN_CURSOR) {
-            // Pressure and tilt is only good when the pen is down
-            if (penDown) {
-                penPressure = ev.pen.getLevelValue(PLevel.Type.PRESSURE);
-                penTilt.x = ev.pen.getLevelValue(PLevel.Type.TILT_X);
-                penTilt.y = ev.pen.getLevelValue(PLevel.Type.TILT_Y);
-            }
-            // If this event is a movement
-            if (ev.isMovement()) {
-                // Register the pen location even when the mouse is up
-                setPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
-                penLocationChanged = true;
-            }
-        }
-    }
-
-    public void penScrollEvent(PScrollEvent ev) {
-    }
-
-    public void penTock(long availableMillis) {
     }
 
     /** Vector Canvas
