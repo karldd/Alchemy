@@ -434,7 +434,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (penType == PEN_CURSOR) {
             penLocation.x = event.getX();
             penLocation.y = event.getY();
-            //System.out.println("Mouse: " + penLocation + " " + penLocationChanged);
+        //System.out.println("Mouse: " + penLocation + " " + penLocationChanged);
         }
     }
 
@@ -459,6 +459,31 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      */
     public int getPenType() {
         return penType;
+    }
+
+    /** Set the pen type - Default is PEN_CURSOR 
+     * @param ev PenEvent from JPen pen tablet library
+     */
+    private void setPenType(PenEvent ev) {
+        // Set the current pen type
+        // Changing the background/foreground setting as required
+        if (ev.pen.getKind() == PKind.valueOf(PKind.Type.STYLUS)) {
+            if (backgroundActive) {
+                setBackgroundColourActive(false);
+                Alchemy.toolBar.refreshColourButton();
+            }
+            penType = PEN_STYLUS;
+        } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
+            if (!backgroundActive) {
+                setBackgroundColourActive(true);
+                Alchemy.toolBar.refreshColourButton();
+            }
+            penType = PEN_ERASER;
+        } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
+            penType = PEN_CURSOR;
+        } else {
+            penType = 0;
+        }
     }
 
     /** Resize the canvas - called when the window is resized
@@ -1535,30 +1560,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     public void penKindEvent(PKindEvent ev) {
-        System.out.println(ev);
-        // Set the current pen type
-        // Changing the background/foreground setting as required
-        if (ev.pen.getKind() == PKind.valueOf(PKind.Type.STYLUS)) {
-            if (backgroundActive) {
-                setBackgroundColourActive(false);
-                Alchemy.toolBar.refreshColourButton();
-            }
-            penType = PEN_STYLUS;
-        } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.ERASER)) {
-            if (!backgroundActive) {
-                setBackgroundColourActive(true);
-                Alchemy.toolBar.refreshColourButton();
-            }
-            penType = PEN_ERASER;
-        } else if (ev.pen.getKind() == PKind.valueOf(PKind.Type.CURSOR)) {
-            penType = PEN_CURSOR;
-        } else {
-            penType = 0;
-        }
+        setPenType(ev);
     }
 
     public void penLevelEvent(PLevelEvent ev) {
-        //System.out.println(ev);
+        setPenType(ev);
         // Register the pen pressure, tilt and location 
         // Do this only if this is an actual pen
         // Otherwise register pen location using the mouse
@@ -1574,8 +1580,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 // Register the pen location even when the mouse is up
                 setPenLocation(ev.pen.getLevelValue(PLevel.Type.X), ev.pen.getLevelValue(PLevel.Type.Y));
                 penLocationChanged = true;
-            } else {
-                System.out.println("No Movement");
             }
         }
     }
