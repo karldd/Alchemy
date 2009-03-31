@@ -212,7 +212,7 @@ public class AlcUtil implements AlcConstants {
         return null;
     }
 
-    /** Returns an Imagen from a String, or null if the name was invalid.
+    /** Returns an Image from a String, or null if the name was invalid.
      * 
      * @param name  The name to the image
      * @return      Image or null if invalid
@@ -244,6 +244,48 @@ public class AlcUtil implements AlcConstants {
         return null;
     }
 
+    /** Returns a BufferedImage from a URL, or null if the name was invalid.
+     * 
+     * @param imgUrl  The URL to the image
+     * @return      BufferedImage or null if invalid
+     */
+    public static BufferedImage getBufferedImage(URL imgUrl) {
+        Image image = getImage(imgUrl);
+        if (image != null) {
+            return getBufferedImage(image);
+        }
+        return null;
+    }
+
+    /** Returns a BufferedImage from a String, or null if the name was invalid.
+     * 
+     * @param name  The name to the image
+     * @return      BufferedImage or null if invalid
+     */
+    public static BufferedImage getBufferedImage(String name) {
+        Image image = getImage(name);
+        if (image != null) {
+            return getBufferedImage(image);
+        }
+        return null;
+    }
+
+    /** Convert an Image into a BufferedImage
+     * 
+     * @param image     The Image to be converted
+     * @return          The Buffered Image or null if invalid
+     */
+    public static BufferedImage getBufferedImage(Image image) {
+        if (image != null) {
+            BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = bufferedImage.createGraphics();
+            g2.drawImage(image, 0, 0, image.getWidth(null), image.getHeight(null), null);
+            g2.dispose();
+            return bufferedImage;
+        }
+        return null;
+    }
+
     /** Create a custom cursor from a given image file
      * 
      * @param name  The image file to use as the cursor
@@ -255,13 +297,13 @@ public class AlcUtil implements AlcConstants {
         // Add padding based on the best cursor size
         final Cursor customCursor;
         Image smallCursor = AlcUtil.getImage(name);
-        
+
         // Check that the image returns correctly
-        if(smallCursor == null){
+        if (smallCursor == null) {
             // If the image is null return the default cursor
             return Cursor.getDefaultCursor();
         }
-        
+
         Dimension smallCursorSize = new Dimension(smallCursor.getWidth(null), smallCursor.getHeight(null));
         Dimension cursorSize = TOOLKIT.getBestCursorSize(smallCursorSize.width, smallCursorSize.height);
 
@@ -886,7 +928,6 @@ public class AlcUtil implements AlcConstants {
         // Left
         g.drawLine(x, y + height - 2, x, y + 1);
     }
-    
     //////////////////////////////////////////////////////////////
     // COLOUR
     //////////////////////////////////////////////////////////////

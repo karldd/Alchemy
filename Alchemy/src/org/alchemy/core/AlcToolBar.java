@@ -786,15 +786,18 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             subSection.setContentVisible(false);
         //System.out.println("Hide - Content Visible");
 
-        // Show the section
+        // Show the section?
         } else {
-            // Check it fits
-            // Yes it will fit so make it visible
+            
+            //System.out.println(subToolBar.getContentWidth() + subSection.getContentWidth() + " vs " +  windowSize.width);
+            
+            // YES IT WILL FIT so make it visible
             if (subToolBar.getContentWidth() + subSection.getContentWidth() < windowSize.width) {
                 subSection.setContentVisible(true);
+                
             //System.out.println("Show - No Overflow");
 
-            // No it won't fit so hide some other sections
+            // NO IT WON"T FIT so hide some other sections
             } else {
                 if (currentSubToolBarSections > 1) {
                     // Loop backwards and try and collapse the affect modules first

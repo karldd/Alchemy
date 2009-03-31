@@ -57,13 +57,15 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         this.setOpaque(true);
         this.setBackground(Color.WHITE);
 
-        Image colourPicker = AlcUtil.getImage("colour-picker.png");
+        colourArray = AlcUtil.getBufferedImage("colour-picker.png");
 
-        // Draw the colourPicker png into a buffered image so we can access the pixels
-        colourArray = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = colourArray.createGraphics();
-        g2.drawImage(colourPicker, 0, 0, 100, 120, null);
-        g2.dispose();
+//        Image colourPicker = AlcUtil.getImage("colour-picker.png");
+//
+//        // Draw the colourPicker png into a buffered image so we can access the pixels
+//        colourArray = new BufferedImage(100, 120, BufferedImage.TYPE_INT_ARGB);
+//        Graphics2D g2 = colourArray.createGraphics();
+//        g2.drawImage(colourPicker, 0, 0, 100, 120, null);
+//        g2.dispose();
 
         this.setCursor(CURSOR_CIRCLE);
         this.addMouseListener(this);
@@ -126,24 +128,25 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
             }
         });
 
-        JPanel imagePanel = new JPanel() {
+        JPanel imagePanel =
+                new JPanel() {
 
-            @Override
-            public void paintComponent(Graphics g) {
+                    @Override
+                    public void paintComponent(Graphics g) {
 
-                Point pos = this.getLocationOnScreen();
-                Point offset = new Point(-pos.x, -pos.y);
-                Rectangle bounds = devices[currentDevice].getDefaultConfiguration().getBounds();
-                Point origin = bounds.getLocation();
-                // Primary monitor
-                if (origin.x == 0 && origin.y == 0) {
-                    g.drawImage(screenShots[currentDevice], offset.x, offset.y, null);
-                // Non-primary monitor
-                } else {
-                    g.drawImage(screenShots[currentDevice], offset.x + origin.x, offset.y + origin.y, null);
-                }
-            }
-        };
+                        Point pos = this.getLocationOnScreen();
+                        Point offset = new Point(-pos.x, -pos.y);
+                        Rectangle bounds = devices[currentDevice].getDefaultConfiguration().getBounds();
+                        Point origin = bounds.getLocation();
+                        // Primary monitor
+                        if (origin.x == 0 && origin.y == 0) {
+                            g.drawImage(screenShots[currentDevice], offset.x, offset.y, null);
+                        // Non-primary monitor
+                        } else {
+                            g.drawImage(screenShots[currentDevice], offset.x + origin.x, offset.y + origin.y, null);
+                        }
+                    }
+                };
 
         eyeDropperWindow.setContentPane(imagePanel);
         if (Alchemy.OS != OS_MAC) {

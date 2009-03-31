@@ -118,7 +118,7 @@ public class AlcToolBarSubSection {
      */
     public void add(Component comp) {
         contentPanel.add(comp);
-        contentWidth = contentPanel.getLayout().preferredLayoutSize(panel).width;
+        contentWidth = contentPanel.getLayout().preferredLayoutSize(contentPanel).width;
     }
 
     /** Remove content
