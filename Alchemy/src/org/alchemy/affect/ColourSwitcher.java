@@ -98,8 +98,8 @@ public class ColourSwitcher extends AlcModule {
 
             public void actionPerformed(ActionEvent event) {
                 baseColour = colourSelector.getColour();
-                subToolBarSection.add(rangeSlider);
-                subToolBarSection.revalidate();
+                //subToolBarSection.add(rangeSlider);
+                //subToolBarSection.revalidate();
                 switchColour = true;
 
                 Color.RGBtoHSB(baseColour.getRed(), baseColour.getGreen(), baseColour.getBlue(), baseHSB);
@@ -128,8 +128,8 @@ public class ColourSwitcher extends AlcModule {
                         if (!switchColour) {
                             colourSelector.show(okAction, cancelAction);
                         } else {
-                            subToolBarSection.remove(rangeSlider);
-                            subToolBarSection.revalidate();
+                            //subToolBarSection.remove(rangeSlider);
+                            //subToolBarSection.revalidate();
                             switchColour = false;
                         }
                     }

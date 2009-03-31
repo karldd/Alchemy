@@ -183,6 +183,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
     /** Bitmap Canvas
      *  Draws all current shapes on top of the buffered image
+     * @param g Graphics Object to draw on
      */
     @Override
     public void paintComponent(Graphics g) {
@@ -519,6 +520,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         guideShapes.clear();
 
         this.canvasImage = null;
+        if (imageDisplay && image != null) {
+            canvasImage = renderCanvas(true);
+        }
 
         if (redraw) {
             // If a session is loaded then make sure to redraw it below
@@ -969,6 +973,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public void setImage(BufferedImage image) {
         this.image = image;
         canvasImage = renderCanvas(true);
+        if (image != null) {
+            Alchemy.menuBar.unloadBackgroundImageItem.setEnabled(true);
+        } else {
+            Alchemy.menuBar.unloadBackgroundImageItem.setEnabled(false);
+        }
     }
 
     /** Get the current image
@@ -1348,11 +1357,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * is not pdfReadPage 0, it returns a code saying that printing is complete.  The
      * method must be prepared to be called multiple times per printing request
      * 
-     * This code is from the book Java Examples in a Nutshell, 2nd Edition. Copyright (c) 2000 David Flanagan. 
-     * 
+     * This code is based on code from the book Java Examples in a Nutshell, 2nd Edition. Copyright (c) 2000 David Flanagan. 
      *
      * @param g
-     * @param format 
+     * @param format
+     * @param pageIndex
+     * @return
+     * @throws PrinterException 
      */
     public int print(Graphics g, PageFormat format, int pageIndex) throws PrinterException {
         // We are only one pdfReadPage long; reject any other pdfReadPage numbers

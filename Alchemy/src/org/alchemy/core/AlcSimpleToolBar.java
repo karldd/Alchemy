@@ -118,12 +118,8 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         // Create a rectangle for easy reference 
         final Rectangle colourPickerRect = new Rectangle(0, 0, colourPickerIcon.getIconWidth(), colourPickerIcon.getIconHeight());
 
-        // Create a blank image then draw into it rather than casting the image
-        final BufferedImage colourPickerBuffImage = new BufferedImage(colourPickerRect.width, colourPickerRect.height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = colourPickerBuffImage.createGraphics();
-        g2.drawImage(colourPickerIcon.getImage(), colourPickerRect.x, colourPickerRect.y, colourPickerRect.width, colourPickerRect.height, null);
-        g2.dispose();
-        g2 = null;
+        // Create buffered image to get the colour using .getRGB()
+        final BufferedImage colourPickerBuffImage = AlcUtil.getBufferedImage(colourPickerIcon.getImage());
 
         JLabel colourPicker = new JLabel(colourPickerIcon);
         colourPicker.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOUR_UI_LINE));
@@ -170,7 +166,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
         GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(0, 0, 0, 0), toolBarWidth, 0, new Color(0, 0, 0, 255), true);
         BufferedImage gradientImage = new BufferedImage(toolBarWidth, 25, BufferedImage.TYPE_INT_ARGB);
-        g2 = gradientImage.createGraphics();
+        Graphics2D g2 = gradientImage.createGraphics();
         g2.setPaint(gradientPaint);
         g2.fillRect(0, 0, toolBarWidth, 25);
         g2.dispose();

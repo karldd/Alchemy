@@ -18,15 +18,14 @@
  */
 package org.alchemy.create;
 
-
 import org.alchemy.core.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import foxtrot.*;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -47,12 +46,13 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     private int tolerance = 100;
     private Rectangle imageSize;
     private AlcToolBarSubSection subToolBarSection;
-    private int[] pixels;
-    private boolean pixelsLoaded = false;
+    private BufferedImage image;
+//    private int[] pixels;
+//    private boolean pixelsLoaded = false;
     private boolean moduleActive = false;
+    private boolean imageDisplay = false;
 
     public TraceShapes() {
-
     }
 
     @Override
@@ -61,7 +61,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         canvas.setImageDisplay(false);
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
-        loadImage();
+        downloadImage();
     }
 
     @Override
@@ -69,25 +69,26 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         moduleActive = true;
         // Add this modules toolbar to the main ui
         toolBar.addSubToolBarSection(subToolBarSection);
-        loadImage();
+        downloadImage();
     }
 
     @Override
     protected void deselect() {
         moduleActive = false;
-        pixelsLoaded = false;
-        pixels = null;
+//        pixelsLoaded = false;
+//        pixels = null;
+        image = null;
         canvas.setImage(null);
         //canvas.setImageDisplay(false);
         canvas.redraw();
     }
 
-    private void loadImage() {
+    private void downloadImage() {
 
         final String random = AlcUtil.zeroPad((int) math.random(10000), 5);
         //System.out.println(random);
         BufferedImage flickrImage = null;
-        pixelsLoaded = false;
+//        pixelsLoaded = false;
 
         try {
             flickrImage = (BufferedImage) Worker.post(new Task() {
@@ -101,28 +102,12 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
 
         if (flickrImage != null) {
+
             // Make sure the module has not been deselected while loading
             if (moduleActive) {
-                // Scale the image to the screen size
-                imageSize = canvas.getBounds();
-                BufferedImage scaledImage = new BufferedImage(imageSize.width, imageSize.height, BufferedImage.TYPE_INT_RGB);
-                Graphics2D g2 = scaledImage.createGraphics();
-                g2.drawImage(flickrImage, 0, 0, imageSize.width, imageSize.height, null);
-                g2.dispose();
-                flickrImage = null;
-
-                // Load the pixels into an array
-                pixels = new int[imageSize.width * imageSize.height];
-                scaledImage.getRGB(0, 0, imageSize.width, imageSize.height, pixels, 0, imageSize.width);
-                // Then convert them all to grey for easy access
-                for (int i = 0; i < pixels.length; i++) {
-                    pixels[i] = AlcUtil.getColourBrightness(pixels[i]);
-                }
-                pixelsLoaded = true;
-
-                canvas.setImage(scaledImage);
-                canvas.redraw();
+                setImage(flickrImage);
             }
+
         } else {
             // Tell the user that there was a problem loading the image
             AlcUtil.showConfirmDialog("Error Connecting", "Please check your internet connection.");
@@ -130,25 +115,74 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
     }
 
-    private Point checkSnap(Point p) {
-        if (pixelsLoaded && imageSize.contains(p)) {
-            // The pixel value under the cursor
-            int xy = getPixel(p.x, p.y);
+    private void loadImage() {
+        File file = AlcUtil.showFileChooser(new File(DIR_DESKTOP), false);
+        if (file != null && file.exists()) {
+            Image newImage = null;
+            try {
+                newImage = AlcUtil.getImage(file.toURL());
+            } catch (Exception ex) {
+                // Ignore
+            }
+            if (newImage != null) {
+                setImage(AlcUtil.getBufferedImage(newImage));
+            } else {
+                AlcUtil.showConfirmDialogFromBundle("imageErrorDialogTitle", "imageErrorDialogMessage");
+            }
+        }
+    }
 
-            // Where to look in the array
-            int startX = p.x - halfArea;
+    private void setImage(BufferedImage newImage) {
+        // Scale the image to the screen size
+        imageSize = canvas.getVisibleRect();
+
+        double scale;
+        double widthScale = (float) imageSize.width / (float) newImage.getWidth();
+        double heightScale = (float) imageSize.height / (float) newImage.getHeight();
+
+        // Use the smaller scale
+        if (widthScale < heightScale) {
+            scale = widthScale;
+        } else {
+            scale = heightScale;
+        }
+        // Calculate the new size               
+        int newWidth = (int) Math.round(newImage.getWidth() * scale);
+        int newHeight = (int) Math.round(newImage.getHeight() * scale);
+        imageSize.x = (imageSize.width - newWidth) / 2;
+        imageSize.y = (imageSize.height - newHeight) / 2;
+        imageSize.width = newWidth;
+        imageSize.height = newHeight;
+
+        Image scaledImage = newImage.getScaledInstance(imageSize.width, imageSize.height, Image.SCALE_FAST);
+        image = AlcUtil.getBufferedImage(scaledImage);
+
+        canvas.setImageLocation(imageSize.x, imageSize.y);
+        canvas.setImageDisplay(imageDisplay);
+        canvas.setImage(image);
+        canvas.redraw();
+    }
+
+    private Point checkSnap(Point p) {
+        if (image != null && imageSize.contains(p)) {
+            Point aP = new Point(p.x - imageSize.x, p.y - imageSize.y);
+            // The pixel value under the cursor
+            int xy = AlcUtil.getColourBrightness(image.getRGB(aP.x, aP.y));
+
+            // Where to look
+            int startX = aP.x - halfArea;
             if (startX < 0) {
                 startX = 0;
             }
-            int startY = p.y - halfArea;
+            int startY = aP.y - halfArea;
             if (startY < 0) {
                 startY = 0;
             }
-            int endX = p.x + halfArea;
+            int endX = aP.x + halfArea;
             if (endX > imageSize.width) {
                 endX = imageSize.width;
             }
-            int endY = p.y + halfArea;
+            int endY = aP.y + halfArea;
             if (endY > imageSize.height) {
                 endY = imageSize.height;
             }
@@ -158,12 +192,12 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
             for (int x = startX; x < endX; x++) {
                 for (int y = startY; y < endY; y++) {
-                    int thisPixel = getPixel(x, y);
+                    int thisPixel = AlcUtil.getColourBrightness(image.getRGB(x, y));
                     int difference = Math.abs(thisPixel - xy);
                     if (difference > tolerance) {
                         if (difference > contrast) {
                             contrast = difference;
-                            bestContrastPoint = new Point(x, y);
+                            bestContrastPoint = new Point(x + imageSize.x, y + imageSize.y);
                         }
                     }
                 }
@@ -176,11 +210,10 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
         return p;
     }
-
-    private int getPixel(int x, int y) {
-        return pixels[y * imageSize.width + x];
-    }
-
+//
+//    private int getPixel(int x, int y) {
+//        return pixels[y * imageSize.width + x];
+//    }
     public void createSubToolBarSection() {
         subToolBarSection = new AlcToolBarSubSection(this);
 
@@ -191,23 +224,37 @@ public class TraceShapes extends AlcModule implements AlcConstants {
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
-                        canvas.setImageDisplay(imageDisplayButton.isSelected());
+                        imageDisplay = imageDisplayButton.isSelected();
+                        canvas.setImageDisplay(imageDisplay);
                         canvas.redraw();
                     }
                 });
         subToolBarSection.add(imageDisplayButton);
 
-        // Run Button
-        AlcSubButton runButton = new AlcSubButton("Load Image", AlcUtil.getUrlPath("load.png", getClassLoader()));
-        runButton.setToolTipText("Load a new image");
-        runButton.addActionListener(
+        // Download Image Button
+        AlcSubButton downloadImage = new AlcSubButton("Download Image", AlcUtil.getUrlPath("download.png", getClassLoader()));
+        downloadImage.setToolTipText("Download a new image from the internet");
+        downloadImage.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        downloadImage();
+                    }
+                });
+        subToolBarSection.add(downloadImage);
+
+
+        // Load Image Button
+        AlcSubButton loadImage = new AlcSubButton("Load Image", AlcUtil.getUrlPath("load.png", getClassLoader()));
+        loadImage.setToolTipText("Load an image from your computer");
+        loadImage.addActionListener(
                 new ActionListener() {
 
                     public void actionPerformed(ActionEvent e) {
                         loadImage();
                     }
                 });
-        subToolBarSection.add(runButton);
+        subToolBarSection.add(loadImage);
 
         // Snap Distance Slider
         final AlcSubSlider snapSlider = new AlcSubSlider("Snap Distance", 1, 100, halfArea);
@@ -231,6 +278,18 @@ public class TraceShapes extends AlcModule implements AlcConstants {
                 new ChangeListener() {
 
                     public void stateChanged(ChangeEvent e) {
+
+
+
+
+
+
+
+
+
+
+
+
                         if (!toleranceSlider.getValueIsAdjusting()) {
                             tolerance = toleranceSlider.getValue();
 
@@ -265,7 +324,6 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     }
 }
 
-
 /**
  * Return an Icon for the first Flickr photo that matches a query string.
  * Typical usage:
@@ -275,7 +333,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
  * </pre>
  *
  */
- class TraceShapesFlickr {
+class TraceShapesFlickr {
 
     private static TraceShapesFlickr theInstance = null;
     private final Logger logger;
@@ -308,7 +366,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         this.xmlParser = dcb.newDocumentBuilder();
     }
 
-     static TraceShapesFlickr getInstance() {
+    static TraceShapesFlickr getInstance() {
         if (theInstance == null) {
             try {
                 theInstance = new TraceShapesFlickr();
@@ -345,7 +403,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         if ((nodes != null) && (nodes.getLength() > 0)) {
             ArrayList<Element> elements = new ArrayList<Element>(nodes.getLength());
             for (int i = 0; i < nodes.getLength(); i++) {
-                elements.add((Element)nodes.item(i));
+                elements.add((Element) nodes.item(i));
             }
             return elements;
         } else {
@@ -359,7 +417,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         return (s.length() == 0) ? null : s;
     }
 
-     Image search(String keyword) {
+    Image search(String keyword) {
         URL searchURL = newURL(searchMethodFormat + keyword);
         if (searchURL == null) {
             return null;

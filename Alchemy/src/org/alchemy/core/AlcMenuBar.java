@@ -39,6 +39,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     private PageFormat defaultPage = null;
     /** Session stuff global so it can be enabled/disabled */
     private AlcMenuItem nextPageItem,  previousPageItem,  unloadSessionItem;
+    /** Unload Background Image - Disabled from Canvas */
+    AlcMenuItem unloadBackgroundImageItem;
     private AlcCheckBoxMenuItem linkSessionItem;
     /** Fullscreen toggle global so it can be set on startup */
     AlcCheckBoxMenuItem fullScreenItem, transparentItem;
@@ -231,6 +233,64 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         int transparentKey = Alchemy.shortcuts.setShortcut(transparentItem, KeyEvent.VK_T, "transparentTitle", transparentAction, KEY_MODIFIER);
         transparentItem.setup(transparentTitle, transparentKey);
         viewMenu.add(transparentItem);
+
+        viewMenu.add(new JSeparator());
+
+        // Load Background Image
+        String loadBackgroundImageTitle = getS("loadBackgroundImageTitle");
+        AlcMenuItem loadBackgroundImageItem = new AlcMenuItem(loadBackgroundImageTitle);
+        AbstractAction loadBackgroundImageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                File file = AlcUtil.showFileChooser(new File(DIR_DESKTOP), false);
+                if (file != null && file.exists()) {
+                    Image image = null;
+                    try {
+                        image = AlcUtil.getImage(file.toURL());
+                    } catch (Exception ex) {
+                        // Ignore
+                        }
+                    if (image != null) {
+                        Rectangle visibleRect = Alchemy.canvas.getVisibleRect();
+                        int x = (visibleRect.width - image.getWidth(null)) / 2;
+                        int y = (visibleRect.height - image.getHeight(null)) / 2;
+                        Alchemy.canvas.setImageLocation(x, y);
+                        Alchemy.canvas.setImageDisplay(true);
+                        Alchemy.canvas.setImage(AlcUtil.getBufferedImage(image));
+                        Alchemy.canvas.redraw();
+
+                    } else {
+                        AlcUtil.showConfirmDialogFromBundle("imageErrorDialogTitle", "imageErrorDialogMessage");
+                    }
+                } else {
+                    System.out.println("Error reading the file...");
+                }
+
+            }
+        };
+        loadBackgroundImageItem.setAction(loadBackgroundImageAction);
+        // Shortcut - Modifier l
+        int loadBackgroundImageKey = Alchemy.shortcuts.setShortcut(loadBackgroundImageItem, KeyEvent.VK_L, "loadBackgroundImageTitle", loadBackgroundImageAction, KEY_MODIFIER);
+        loadBackgroundImageItem.setup(loadBackgroundImageTitle, loadBackgroundImageKey);
+        viewMenu.add(loadBackgroundImageItem);
+
+        // Unload Background Image
+        AbstractAction unloadBackgroundImageAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+
+                Alchemy.canvas.setImageLocation(0, 0);
+                Alchemy.canvas.setImageDisplay(false);
+                Alchemy.canvas.setImage(null);
+                Alchemy.canvas.redraw();
+            }
+        };
+        unloadBackgroundImageItem = new AlcMenuItem(unloadBackgroundImageAction);
+        unloadBackgroundImageItem.setup(getS("unloadBackgroundImageTitle"));
+        unloadBackgroundImageItem.setEnabled(false);
+
+        viewMenu.add(unloadBackgroundImageItem);
 
         this.add(viewMenu);
 
