@@ -28,18 +28,25 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
 
     private AlcSliderCustom slider;
 
-    public AlcSubSlider(String name, int minValue, int maxValue, int startValue) {
+    /** Sub tool bar slider
+     * 
+     * @param title    The title of the slider
+     * @param min      The minimum value of the slider
+     * @param max      The maximum value of the slider
+     * @param value    The start value of the slider
+     */
+    public AlcSubSlider(String title, int min, int max, int value) {
 
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        slider = new AlcSliderCustom(name, 75, 15, minValue, maxValue, startValue);
+        slider = new AlcSliderCustom(title, 75, 15, min, max, value);
         //.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(slider);
                
 
-        JLabel label = new JLabel(name);
+        JLabel label = new JLabel(title);
         label.setFont(FONT_SMALL);
         label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
         //label.setPreferredSize(new Dimension(label.getPreferredSize().width, 26));

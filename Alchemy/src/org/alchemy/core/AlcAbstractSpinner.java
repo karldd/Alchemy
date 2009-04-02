@@ -41,9 +41,18 @@ public abstract class AlcAbstractSpinner extends JPanel implements AlcShortcutIn
         } else {
             String doubleKey = "(" + AlcShortcuts.getShortcutString(key1, modifier) +
                     " " + AlcShortcuts.getShortcutString(key, modifier) + ")";
-            this.setToolTipText(toolTip + " " + doubleKey);
+            String fullTip = toolTip + " " + doubleKey;
+            spinner.setToolTipText(fullTip);
+            label.setToolTipText(fullTip);
             key1 = -1;
         }
+    }
+
+    /** Set the tooltip of the spinner
+     * @param toolTip   The tooltip string
+     */
+    public void setToolTip(String toolTip) {
+        this.toolTip = toolTip;
     }
 
     /**

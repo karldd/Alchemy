@@ -27,21 +27,29 @@ import javax.swing.*;
  */
 public class AlcSubSpinner extends AlcAbstractSpinner {
 
-    public AlcSubSpinner(String name, String toolTip, int value, int min, int max, int step) {
+    /** Sub tool bar 'spinner'
+     * 
+     * @param title     The title of the spinner
+     * @param value     The start value
+     * @param min       The minimum value
+     * @param max       The maximum value
+     * @param step      The step size to increment with
+     */
+    public AlcSubSpinner(String title, int min, int max, int value, int step) {
 
-        this.toolTip = toolTip;
         this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-        spinner = new AlcSpinnerCustom(true, value, min, max, step);
+        spinner = new AlcSpinnerCustom(title, true, value, min, max, step);
         this.add(spinner);
 
 
-        label = new JLabel(name);
+        label = new JLabel(title);
         label.setFont(FONT_SMALL);
         label.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
         this.add(label);
 
     }
+    
 }

@@ -29,17 +29,16 @@ import javax.swing.*;
 class AlcSpinner extends AlcAbstractSpinner {
 
 
-    AlcSpinner(String name, String toolTip, int value, int min, int max, int step) {
+    AlcSpinner(String title, int min, int max, int value, int step) {
 
-        this.toolTip = toolTip;
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        spinner = new AlcSpinnerCustom(false, value, min, max, step);
+        spinner = new AlcSpinnerCustom(title, false, value, min, max, step);
         spinner.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 
-        label = new JLabel(name);
+        label = new JLabel(title);
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         label.setFont(FONT_MEDIUM);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));

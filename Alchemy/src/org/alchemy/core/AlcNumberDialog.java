@@ -28,17 +28,17 @@ import javax.swing.*;
 
 /**
  *
- * AlcSliderDialog.java
+ * AlcNumberDialog.java
  */
-class AlcSliderDialog extends JDialog implements AlcConstants {
+class AlcNumberDialog extends JDialog implements AlcConstants {
 
     private JSpinner minField,  maxField;
     private SpinnerNumberModel minModel,  maxModel;
-    private AlcSliderCustom parent;
+    private AlcNumberDialogInterface parent;
     private JButton okButton,  cancelButton;
 
-    AlcSliderDialog(AlcSliderCustom parent) {
-        super(Alchemy.window, parent.name + " " + Alchemy.bundle.getString("sliderDialogTitle"));
+    AlcNumberDialog(AlcNumberDialogInterface parent) {
+        super(Alchemy.window, parent.getTitle() + " " + Alchemy.bundle.getString("sliderDialogTitle"));
 
         this.parent = parent;
         this.getContentPane().setLayout(new BorderLayout());

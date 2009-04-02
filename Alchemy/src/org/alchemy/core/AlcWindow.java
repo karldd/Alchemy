@@ -90,13 +90,17 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         if (Alchemy.preferences.canvasSize != null) {
             Dimension savedWindowSize = Alchemy.preferences.canvasSize;
 
-            // Make sure the window is not too big
-            if (savedWindowSize.width <= currentWindowSize.width && savedWindowSize.height <= currentWindowSize.height) {
+            // Make sure the window is not too big or too small
+            if (savedWindowSize.width <= currentWindowSize.width 
+                    && savedWindowSize.height <= currentWindowSize.height 
+                    && savedWindowSize.width >= minWindowSize.width
+                    && savedWindowSize.height >= minWindowSize.width) {
                 windowSize = savedWindowSize;
                 windowSet = true;
             }
         }
 
+        // If the window has still not been set then give it a standard size
         if (!windowSet) {
             if (currentWindowSize.width < 1000) {
                 windowSize = new Dimension(800, 500);

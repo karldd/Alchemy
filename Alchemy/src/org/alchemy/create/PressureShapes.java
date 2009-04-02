@@ -65,12 +65,12 @@ public class PressureShapes extends AlcModule {
 
         final AlcSubSpinner pressureSpinner = new AlcSubSpinner(
                 "Pressure",
-                "Control the amount of pressure",
-                startPressure,
                 pressureMin,
                 pressureMax,
+                startPressure,
                 1);
 
+        pressureSpinner.setToolTip("Change the amount of pressure");
         pressureSpinner.addChangeListener(
                 new ChangeListener() {
 

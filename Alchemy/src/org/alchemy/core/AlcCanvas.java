@@ -232,11 +232,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                        g2.setColor(currentShape.colour);
+                        g2.setPaint(currentShape.getPaint());
                         g2.draw(currentShape.path);
                     // SOLID
                     } else {
-                        g2.setColor(currentShape.colour);
+                        g2.setPaint(currentShape.getPaint());
                         g2.fill(currentShape.path);
                     }
                 }
@@ -1685,11 +1685,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                        g2.setColor(currentShape.colour);
+                        g2.setPaint(currentShape.getPaint());
                         g2.draw(currentShape.path);
                     // SOLID
                     } else {
-                        g2.setColor(currentShape.colour);
+                        g2.setPaint(currentShape.getPaint());
                         g2.fill(currentShape.path);
                     }
                 }
