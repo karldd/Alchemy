@@ -19,10 +19,7 @@
  */
 package org.alchemy.core;
 
-import java.awt.Point;
-import java.awt.Color;
-
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.*;
 import java.io.Serializable;
 
@@ -41,12 +38,14 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     int alpha;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
     int style;
+    /** The Gradient of this shape (if available) */
+    GradientPaint gradientPaint;
     /** Line Weight if the style is line */
     float lineWidth;
     /** Line smoothing global setting */
     private static boolean lineSmoothing = true;
-    /** Store the last point */
-    private Point2D.Float lastPt;
+    /** The last point */
+    private Point2D.Float lastPoint;
     /** For drawing smaller marks - draw lines until x points have been made */
     private final int startPoints = 5;
     /** Minimum distance until points are added */
@@ -162,6 +161,9 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         this.alpha = alpha;
         setColour(colour);
         this.style = style;
+        if (lineWidth < 0) {
+            lineWidth = 0;
+        }
         this.lineWidth = lineWidth;
     }
 
@@ -172,7 +174,11 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         this.alpha = Alchemy.canvas.getAlpha();
         this.colour = Alchemy.canvas.getColour();
         this.style = Alchemy.canvas.getStyle();
-        this.lineWidth = Alchemy.canvas.getLineWidth();
+        if (Alchemy.canvas.getLineWidth() < 0) {
+            this.lineWidth = 0;
+        } else {
+            this.lineWidth = Alchemy.canvas.getLineWidth();
+        }
     }
 
     /** 
@@ -193,7 +199,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         if (lineSmoothing) {
 
             // Filter out repeats
-            if (!p.equals(lastPt)) {
+            if (!p.equals(lastPoint)) {
 
                 // At the start just draw lines so smaller marks can be made
                 if (totalPoints < startPoints) {
@@ -204,7 +210,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                 } else {
 
                     // Movement since the last point was drawn
-                    double movement = p.distance(lastPt);
+                    double movement = p.distance(lastPoint);
                     //System.out.println(p.x + " " + lastPt.x);
 
                     // Test to see if this point has moved far enough
@@ -214,11 +220,11 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                         Point2D.Float pt = new Point2D.Float();
 
                         // Average the points
-                        pt.x = (lastPt.x + p.x) / 2F;
-                        pt.y = (lastPt.y + p.y) / 2F;
+                        pt.x = (lastPoint.x + p.x) / 2F;
+                        pt.y = (lastPoint.y + p.y) / 2F;
 
                         // Add the Quadratic curve - control point x1, y1 and actual point x2, y2
-                        path.quadTo(lastPt.x, lastPt.y, pt.x, pt.y);
+                        path.quadTo(lastPoint.x, lastPoint.y, pt.x, pt.y);
                         savePoints(p);
 
                     }
@@ -243,7 +249,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void addLinePoint(Point2D.Float p) {
         // Filter out repeats
-        if (!p.equals(lastPt)) {
+        if (!p.equals(lastPoint)) {
             // At the start just draw lines so smaller marks can be made
             if (totalPoints < startPoints) {
 
@@ -253,7 +259,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
             } else {
 
                 // Movement since the last point was drawn
-                double movement = p.distance(lastPt);
+                double movement = p.distance(lastPoint);
 
                 // Test to see if this point has moved far enough
                 if (movement > minimumMovement) {
@@ -282,7 +288,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         // Increment the total number of points
         totalPoints++;
         // Set the current point to the (original) last point value - not the altered pt value
-        lastPt = new Point2D.Float(p.x, p.y);
+        lastPoint = new Point2D.Float(p.x, p.y);
     }
 
     /** Add the first point
@@ -431,7 +437,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @return The last point
      */
     public Point2D.Float getLastPoint() {
-        return lastPt;
+        return lastPoint;
     }
 
     /** 
@@ -440,7 +446,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param lastPt   The last point
      */
     public void setLastPoint(Point2D.Float lastPt) {
-        this.lastPt = lastPt;
+        this.lastPoint = lastPt;
     }
 
     /**
@@ -457,6 +463,18 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void setColour(Color colour) {
         this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+    }
+
+    /**
+     * Get the Paint to draw this shape
+     * @return  GradientPaint if available else Color
+     */
+    Paint getPaint() {
+        if (this.gradientPaint != null) {
+            return this.gradientPaint;
+        } else {
+            return this.colour;
+        }
     }
 
     /**
@@ -498,6 +516,22 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void setStyle(int style) {
         this.style = style;
+    }
+
+    /** 
+     * Get this shapes Gradient 
+     * @return  The gradient
+     */
+    public GradientPaint getGradientPaint() {
+        return gradientPaint;
+    }
+
+    /** 
+     * Set this shapes gradient
+     * @param gradientPaint The gradient
+     */
+    public void setGradientPaint(GradientPaint gradientPaint) {
+        this.gradientPaint = gradientPaint;
     }
 
     /**
@@ -549,7 +583,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         //Deep copy
         AlcShape tempShape = new AlcShape(this.path, this.colour, this.alpha, this.style, this.lineWidth);
         tempShape.setTotalPoints(this.totalPoints);
-        tempShape.setLastPoint(this.lastPt);
+        tempShape.setLastPoint(this.lastPoint);
         return tempShape;
     }
 
@@ -564,7 +598,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         //Deep copy
         AlcShape tempShape = new AlcShape(tempPath, this.colour, this.alpha, this.style, this.lineWidth);
         tempShape.setTotalPoints(this.totalPoints);
-        tempShape.setLastPoint(this.lastPt);
+        tempShape.setLastPoint(this.lastPoint);
         return tempShape;
     }
 }

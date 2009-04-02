@@ -27,16 +27,16 @@ import javax.swing.event.*;
  *
  * AlcSpinnerCustom.java
  */
-public class AlcSpinnerCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcConstants {
+public class AlcSpinnerCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcNumberDialogInterface, AlcConstants {
 
     int value, dragY, dragValue;
-    final int min,  max,  step;
+    int min, max, step;
     boolean mouseDown;
     private boolean upPressed = false;
     private boolean downPressed = false;
     private boolean drag = false;
     //
-    private final int width,  height,  halfHeight,  textAreaWidth, stringY;
+    private final int width,  height,  halfHeight,  textAreaWidth,  stringY;
     private final FontMetrics metrics;
     private final Font font;
     private final Image spinner,  spinnerUp,  spinnerDown;
@@ -52,6 +52,8 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     //
     /** The ChangeEvent that is passed to all listeners of this slider. */
     protected transient ChangeEvent changeEvent;
+    private AlcNumberDialog dialog;
+    private String title;
 
     /** Alchemy Custon Spinner
      * 
@@ -61,11 +63,10 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
      * @param max   The maximum value of the spinner
      * @param step  The difference between elements of the sequence
      */
-    AlcSpinnerCustom(boolean sub, int value, int min, int max, int step) {
+    AlcSpinnerCustom(String title, boolean sub, int value, int min, int max, int step) {
         this.value = value;
-        this.min = min;
-        this.max = max;
         this.step = step;
+        this.title = title;
 
         // SUB SPINNER - smaller spinner
         if (sub) {
@@ -92,15 +93,15 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
             spinnerDown = AlcUtil.getImage("spinner-down.png");
         }
         halfHeight = height / 2;
-        setup();
-    }
 
-    private void setup() {
-        addMouseListener(this);
-        addMouseMotionListener(this);
-        addMouseWheelListener(this);
-        addKeyListener(this);
-        setFocusable(true);
+        this.addMouseListener(this);
+        this.addMouseMotionListener(this);
+        this.addMouseWheelListener(this);
+        this.addKeyListener(this);
+        this.setFocusable(true);
+        this.setOpaque(false);
+        this.setPreferredSize(new Dimension(width, height));
+        dialog = new AlcNumberDialog(this);
 
         // Override the number keys to do nothing when the slider is in focus
         Action doNothing = new AbstractAction() {
@@ -109,7 +110,6 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
                 //System.out.println("Do Nothing Called");
             }
         };
-
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_1, 0), "doNothing");
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_2, 0), "doNothing");
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_3, 0), "doNothing");
@@ -122,8 +122,23 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
         this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_0, 0), "doNothing");
         this.getActionMap().put("doNothing", doNothing);
 
-        this.setOpaque(false);
-        this.setPreferredSize(new Dimension(width, height));
+        setup(min, max);
+    }
+
+    public void setup(int min, int max) {
+        // Calculate the new value
+//        int oldSplit = this.max - this.max;
+//        int newSplit = max - min;
+//        int divider = (int) ((float) oldSplit / (float) newSplit);
+//        int newValue = (int) ((float) value / (float) divider);
+        // Set the Values
+        this.min = min;
+        this.max = max;
+        setValue(value);
+    }
+
+    public String getTitle() {
+        return this.title;
     }
 
     @Override
@@ -275,8 +290,27 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
     }
 
     public void mouseClicked(MouseEvent e) {
-        // TEXT INPUT
-        if (e.getX() < textAreaWidth) {
+
+        // Check for a CTRL click
+        boolean showDialog = false;
+        if (Alchemy.OS == OS_MAC) {
+            if (e.isMetaDown()) {
+                showDialog = true;
+            }
+        } else {
+            if (e.isControlDown()) {
+                showDialog = true;
+            }
+        }
+
+        // SHOW THE NUMBER DIALOG
+        if (showDialog) {
+            if (!Alchemy.preferences.simpleToolBar) {
+                dialog.show(this.min, this.max);
+            }
+
+        // TEXT INPUT            
+        } else if (e.getX() < textAreaWidth) {
 
             this.requestFocusInWindow(true);
             //System.out.println(KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getClass().getName());
@@ -295,6 +329,7 @@ public class AlcSpinnerCustom extends JComponent implements MouseListener, Mouse
             });
             keyOffTimer.setRepeats(false);
             keyOffTimer.start();
+
         }
     }
 

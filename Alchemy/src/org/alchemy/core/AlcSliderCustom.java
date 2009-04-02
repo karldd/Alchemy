@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
  * AlcSliderCustom
  * @author Karl D.D. Willis
  */
-class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcConstants {
+class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcNumberDialogInterface, AlcConstants {
 
     int width, height;
     /** Minimum / Maximum / Display Position of the slider */
@@ -48,13 +48,13 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     private Color line = Color.GRAY;
     /** The ChangeEvent that is passed to all listeners of this slider. */
     protected transient ChangeEvent changeEvent;
-    private AlcSliderDialog dialog;
-    String name;
+    private AlcNumberDialog dialog;
+    private String title;
 
-    AlcSliderCustom(String name, int width, int height, int min, int max, int initialSliderValue) {
+    AlcSliderCustom(String title, int width, int height, int min, int max, int initialSliderValue) {
         this.width = width;
         this.height = height;
-        this.name = name;
+        this.title = title;
         addMouseListener(this);
         addMouseMotionListener(this);
         addMouseWheelListener(this);
@@ -64,10 +64,10 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         this.setPreferredSize(new Dimension(width, height));
         setup(min, max);
         setValue(initialSliderValue);
-        dialog = new AlcSliderDialog(this);
+        dialog = new AlcNumberDialog(this);
     }
 
-    void setup(int min, int max) {
+    public void setup(int min, int max) {
         this.min = min;
         this.max = max;
         // To be sure to reach both the min and max use width - 1
@@ -76,6 +76,10 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
         // Recalculate the true slider value
         moveSlider(displayValue);
         fireStateChanged();
+    }
+
+    public String getTitle() {
+        return this.title;
     }
 
     @Override
@@ -186,12 +190,23 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
     }
 
     public void mouseClicked(MouseEvent e) {
-        // Detect a doubleclick
-        if (!e.isConsumed() && e.getButton() == 1 && e.getClickCount() > 1) {
+        // Check for a CTRL click
+        boolean showDialog = false;
+        if (Alchemy.OS == OS_MAC) {
+            if (e.isMetaDown()) {
+                showDialog = true;
+            }
+        } else {
+            if (e.isControlDown()) {
+                showDialog = true;
+            }
+        }
+
+        // SHOW THE NUMBER DIALOG
+        if (showDialog) {
             if (!Alchemy.preferences.simpleToolBar) {
                 dialog.show(this.min, this.max);
             }
-            e.consume();
         }
     }
 

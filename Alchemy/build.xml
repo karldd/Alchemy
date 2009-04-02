@@ -117,7 +117,7 @@
         
         
         <!-- AFFECTS -->
-        <for list="mirror,blindness,random,micExpand,repeat,displace,colourSwitcher,shapeSwap" param="affect">
+        <for list="mirror,blindness,random,micExpand,repeat,displace,colourSwitcher,shapeSwap,gradient" param="affect">
             <sequential>
                 <copy todir="${build.dir}/modules/@{affect}/org/alchemy/affect">
                     <!-- Include all files that begin with the module name -->

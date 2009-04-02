@@ -234,11 +234,12 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         final AlcSpinner lineWidthSpinner = new AlcSpinner(
                 getS("lineWeightTitle"),
-                getS("lineWeightDescription"),
-                (int) Alchemy.canvas.getLineWidth(),
                 lineWidthSpinnerMin,
                 lineWidthSpinnerMax,
+                (int) Alchemy.canvas.getLineWidth(),
                 1);
+
+        lineWidthSpinner.setToolTip(getS("lineWeightDescription"));
 
         lineWidthSpinner.addChangeListener(
                 new ChangeListener() {
@@ -873,14 +874,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Sets and manages a timer used to delay hiding of the toolbar */
     private void setTimer() {
         if (toolBarTimer == null) {
-            toolBarTimer = new javax.swing.Timer(1000, new  
+            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
 
-                  ActionListener( ) {
-
-                     public 
-                          
-                             void  actionPerformed(ActionEvent  e){ 
-                                if (!insideToolBar) {
+                public void actionPerformed(ActionEvent e) {
+                    if (!insideToolBar) {
                         if (isPopupMenusVisible()) {
                             if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");
