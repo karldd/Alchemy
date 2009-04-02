@@ -36,14 +36,12 @@ class AlcSlider extends JPanel implements AlcShortcutInterface, AlcConstants{
 
     AlcSlider(String name, String toolTip, int minValue, int maxValue, int startValue) {
 
-
-
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        slider = new AlcSliderCustom(80, 25, minValue, maxValue, startValue);
+        slider = new AlcSliderCustom(name, 80, 25, minValue, maxValue, startValue);
         this.add(slider);
 
         if (name != null) {

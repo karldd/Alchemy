@@ -770,19 +770,23 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param colour 
      */
     public void setColour(Color colour) {
-        // Control how the Foreground/Background button is updated
-        if (backgroundActive) {
-            bgColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
-            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
-            redraw(true);
-        } else {
-            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
-        }
+        try {
+            // Control how the Foreground/Background button is updated
+            if (backgroundActive) {
+                bgColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
+                this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
+                redraw(true);
+            } else {
+                this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+            }
 
-        if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
-            Alchemy.toolBar.refreshColourButton();
+            if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
+                Alchemy.toolBar.refreshColourButton();
 //        } else {
 //            Alchemy.toolBar.queueColourButtonRefresh();
+            }
+        } catch (IllegalArgumentException ex) {
+            // Ignore the colour out of range exception caused by out of bounds slider settings
         }
     }
 

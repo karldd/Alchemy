@@ -82,7 +82,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
 
         this.pack();
         this.setResizable(false);
-        this.setLocationRelativeTo(null);
+        //this.setLocationRelativeTo(null);
 
         this.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 
@@ -136,6 +136,8 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
             setColour(initialColour);
         }
         range.init = true;
+        Point p = AlcUtil.calculateCenter(this);
+        this.setLocation(p);
         this.setVisible(true);
     }
 
@@ -380,16 +382,6 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
 
     private JPanel createButtonPanel() {
 
-        // Reset Button
-//        JButton resetButton = new JButton(Alchemy.bundle.getString("reset"));
-//        resetButton.addActionListener(
-//                new ActionListener() {
-//
-//                    public void actionPerformed(ActionEvent e) {
-//                        //
-//                    }
-//                });
-
         // Cancel Button
         cancelButton = new JButton(Alchemy.bundle.getString("cancel"));
         cancelButton.setMnemonic(KeyEvent.VK_ESCAPE);
@@ -428,7 +420,6 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
             buttonPane.add(cancelButton);
         }
 
-
         return buttonPane;
     }
 
@@ -454,7 +445,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
 
         static final int WIDE = 256;
         static final int HIGH = 256;
-        int lastX,  lastY;
+        int lastX,   lastY;
         private int pixels[] = new int[WIDE * HIGH];
         private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
         boolean init = true;

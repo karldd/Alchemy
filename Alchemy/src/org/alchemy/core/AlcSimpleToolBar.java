@@ -158,7 +158,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
-        transparencySlider = new AlcSliderCustom(toolBarWidth, 25, 0, 255, 254);
+        transparencySlider = new AlcSliderCustom(null, toolBarWidth, 25, 0, 255, 254);
         transparencySlider.setBorderPainted(false);
         transparencySlider.setFillPainted(false);
         transparencySlider.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, COLOUR_UI_LINE));
