@@ -308,7 +308,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                         //JSlider source = (JSlider) e.getSource();
                         if (!transparencySlider.getValueIsAdjusting()) {
                             Alchemy.canvas.setAlpha(transparencySlider.getValue());
-                            System.out.println("Value: " + transparencySlider.getValue());
                             refreshColourButton();
                         }
                     }
@@ -788,13 +787,13 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         // Show the section?
         } else {
-            
+
             //System.out.println(subToolBar.getContentWidth() + subSection.getContentWidth() + " vs " +  windowSize.width);
-            
+
             // YES IT WILL FIT so make it visible
             if (subToolBar.getContentWidth() + subSection.getContentWidth() < windowSize.width) {
                 subSection.setContentVisible(true);
-                
+
             //System.out.println("Show - No Overflow");
 
             // NO IT WON"T FIT so hide some other sections
@@ -874,10 +873,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Sets and manages a timer used to delay hiding of the toolbar */
     private void setTimer() {
         if (toolBarTimer == null) {
-            toolBarTimer = new javax.swing.Timer(1000, new ActionListener() {
+            toolBarTimer = new javax.swing.Timer(1000, new  
 
-                public void actionPerformed(ActionEvent e) {
-                    if (!insideToolBar) {
+                  ActionListener( ) {
+
+                     public 
+                          
+                             void  actionPerformed(ActionEvent  e){ 
+                                if (!insideToolBar) {
                         if (isPopupMenusVisible()) {
                             if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");

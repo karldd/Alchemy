@@ -34,7 +34,7 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
         this.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         this.setOpaque(false);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        slider = new AlcSliderCustom(75, 15, minValue, maxValue, startValue);
+        slider = new AlcSliderCustom(name, 75, 15, minValue, maxValue, startValue);
         //.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         this.add(slider);
                
