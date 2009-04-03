@@ -31,41 +31,80 @@ import org.alchemy.core.*;
  */
 public class Gradient extends AlcModule {
 
-    
+    private Color transparent;
 
     @Override
     protected void affect() {
-        int numOfCreateShapes = canvas.createShapes.size();
+
+        //System.out.println(canvas.createShapes.size() + " " + canvas.affectShapes.size());
+
         // int shapeTally = shapeCount * numOfCreateShapes;
         Color bgColour = canvas.getBackgroundColour();
-        Color transparent = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue(), 0);
+        transparent = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue(), 0);
 
-        for (int i = 0; i < numOfCreateShapes; i++) {
-            AlcShape shape = canvas.createShapes.get(i);
-            GeneralPath path = shape.getPath();
-            PathIterator iterator = path.getPathIterator(null);
-
-            float x1 = 0;
-            float y1 = 0;
-            Point2D p2 = path.getCurrentPoint();
-            float x2 = (float) p2.getX();
-            float y2 = (float) p2.getY();
-
-            int numberOfPoints = 0;
-            float[] currentPoints = new float[6];
-
-            while (numberOfPoints < 1) {
-                switch (iterator.currentSegment(currentPoints)) {
-                    case PathIterator.SEG_MOVETO:
-                        x1 = currentPoints[0];
-                        y1 = currentPoints[1];
-                }
-                numberOfPoints++;
-                break;
-            }
-
-            GradientPaint gradient = new GradientPaint(x1, y1, shape.getColour(), x2, y2, transparent);
-            shape.setGradientPaint(gradient);
+        for (int i = 0; i < canvas.createShapes.size(); i++) {
+            setGradient(canvas.createShapes.get(i));
         }
+        for (int i = 0; i < canvas.affectShapes.size(); i++) {
+            setGradient(canvas.affectShapes.get(i));
+        }
+    }
+
+    private void setGradient(AlcShape shape) {
+
+        GeneralPath path = shape.getPath();
+        PathIterator iterator = path.getPathIterator(null);
+
+        Point2D p1 = new Point2D.Float(0, 0);
+        Point2D p2 = new Point2D.Float(0, 0);
+        int halfPoints = shape.getTotalPoints() / 2;
+        //System.out.println(halfPoints);
+        boolean closed = shape.isPathClosed();
+        int numberOfPoints = 0;
+        float[] currentPoints = new float[6];
+        int currentPointType;
+
+        search:
+        while (!iterator.isDone()) {
+            currentPointType = iterator.currentSegment(currentPoints);
+            
+            switch (currentPointType) {
+                case PathIterator.SEG_MOVETO:
+                    p1 = new Point2D.Float(currentPoints[0], currentPoints[1]);
+                    // If this is not closed then break here and set the last point
+                    if (!closed) {
+                        break search;
+                    }
+                    break;
+                case PathIterator.SEG_LINETO:
+                    if (closed) {
+                        // Find the mid point if it is closed
+                        if (numberOfPoints >= halfPoints) {
+                            p2 = new Point2D.Float(currentPoints[0], currentPoints[1]);
+                            break search;
+                        }
+                    }
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    if (closed) {
+                        // Find the mid point if it is closed
+                        if (numberOfPoints >= halfPoints) {
+                            p2 = new Point2D.Float(currentPoints[0], currentPoints[1]);
+                            break search;
+                        }
+                    }
+                    break;
+            }
+            iterator.next();
+            numberOfPoints++;
+        }
+
+        // If this path is not closed then use the last point
+        if (!closed) {
+            p2 = path.getCurrentPoint();
+        }
+
+        GradientPaint gradient = new GradientPaint(p1, shape.getColour(), p2, transparent);
+        shape.setGradientPaint(gradient);
     }
 }

@@ -105,8 +105,8 @@ public class PressureShapes extends AlcModule {
     private void makeBlob(AlcShape shape) {
 
         // Reset the shape and create the first point
-        Point2D.Float p0 = points.get(0);
-        shape.setPoint(p0);
+        //Point2D.Float p0 = points.get(0);
+        shape.setPoint(points.get(0));
 
         // Draw the outer points
         for (int i = 1; i < points.size(); i++) {
@@ -126,7 +126,8 @@ public class PressureShapes extends AlcModule {
             shape.addCurvePoint(pIn);
         }
         // Close the shape going back to the first point
-        shape.addLastPoint(p0);
+        //shape.addLastPoint(p0);
+        shape.closePath();
     }
 
     @Override

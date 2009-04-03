@@ -19,10 +19,10 @@
  */
 package org.alchemy.core;
 
+import com.lowagie.text.pdf.*;
 import java.awt.event.*;
 import java.io.*;
 import com.sun.pdfview.*;
-import com.lowagie.text.pdf.PdfReader;
 import eu.medsea.util.MimeUtil;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -155,7 +155,7 @@ class AlcSession implements ActionListener, AlcConstants {
                 //temp.deleteOnExit();
                 // Make the temp pdf
                 Alchemy.canvas.saveSinglePdf(temp);
-                boolean jointUp = Alchemy.canvas.addPageToPdf(pdfWriteFile, temp);
+                boolean jointUp = addPageToPdf(pdfWriteFile, temp);
                 if (jointUp) {
                     //System.out.println("Pdf files joint");
                     temp.delete();
@@ -175,6 +175,112 @@ class AlcSession implements ActionListener, AlcConstants {
         savePage();
         Alchemy.canvas.clear();
         progressPage();
+    }
+
+    /** Adds a pdfReadPage to an existing pdf file
+     * 
+     * @param mainPdf   The main pdf with multiple pages.
+     *                  Also used as the destination file.
+     * @param tempPdf   The 'new' pdf with one pdfReadPage to be added to the main pdf
+     * @return
+     */
+    boolean addPageToPdf(File mainPdf, File tempPdf) {
+        try {
+            // Destination file created in the temp dir then we will move it
+            File dest = new File(DIR_TEMP, "Alchemy.pdf");
+            OutputStream output = new FileOutputStream(dest);
+
+            PdfReader reader = new PdfReader(mainPdf.getPath());
+            PdfReader newPdf = new PdfReader(tempPdf.getPath());
+
+            // See if the size of the canvas has increased
+            // Size of the most recent temp PDF
+            com.lowagie.text.Rectangle currentSize = newPdf.getPageSizeWithRotation(1);
+            // Size of the session pdf at present
+            com.lowagie.text.Rectangle oldSize = reader.getPageSizeWithRotation(1);
+            // Sizes to be used from now on
+            float pdfWidth = oldSize.getWidth();
+            float pdfHeight = oldSize.getHeight();
+            float shrinkOffset = 0;
+            if (currentSize.getWidth() > pdfWidth) {
+                pdfWidth = currentSize.getWidth();
+            }
+            if (currentSize.getHeight() > pdfHeight) {
+                pdfHeight = currentSize.getHeight();
+            }
+            // Create an offset if the canvas has shrunk down
+            if (currentSize.getHeight() < pdfHeight) {
+                shrinkOffset = 0 - (currentSize.getHeight() - pdfHeight);
+            }
+            // Use the new bigger canvas size if required
+            com.lowagie.text.Document mainDocument = new com.lowagie.text.Document(new com.lowagie.text.Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
+            PdfWriter mainWriter = PdfWriter.getInstance(mainDocument, output);
+
+            // Copy the meta data
+            mainDocument.addTitle("Alchemy Session");
+            mainDocument.addAuthor(USER_NAME);
+            mainDocument.addCreator("Alchemy <http://al.chemy.org>");
+            mainWriter.setXmpMetadata(reader.getMetadata());
+            mainDocument.open();
+
+            // Holds the PDF
+            PdfContentByte mainContent = mainWriter.getDirectContent();
+            // Set the colour space to RGB
+            // & hopefully avoid the pdf reader switching to CMYK
+            mainContent.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
+
+            // Add each page from the main PDF
+            for (int i = 0; i < reader.getNumberOfPages();) {
+                ++i;
+                mainDocument.newPage();
+                PdfImportedPage page = mainWriter.getImportedPage(reader, i);
+
+                float yOffset = 0;
+                float pageHeight = page.getHeight();
+                // Because the origin is bottom left
+                // Create an offset to align fromt he top left
+                // This will only happen when a newer bigger page is added
+                if (pageHeight < pdfHeight) {
+                    yOffset = pdfHeight - pageHeight;
+                }
+                mainContent.addTemplate(page, 0, yOffset);
+            }
+            // Add the last (new) page
+            mainDocument.newPage();
+            PdfImportedPage lastPage = mainWriter.getImportedPage(newPdf, 1);
+            // If the page has been shrunk down again
+            // move the new page back up into the top left
+            mainContent.addTemplate(lastPage, 0, shrinkOffset);
+            output.flush();
+            mainDocument.close();
+            output.close();
+
+            if (dest.exists()) {
+                // Save the location of the main pdf
+                String mainPdfPath = mainPdf.getPath();
+                // Delete the old file
+                if (mainPdf.exists()) {
+                    mainPdf.delete();
+                }
+                // The final joined up pdf file
+                File joinPdf = new File(mainPdfPath);
+                // Rename the file
+                boolean success = dest.renameTo(joinPdf);
+                if (!success) {
+                    System.err.println("Error moving Pdf");
+                    return false;
+                }
+
+            } else {
+                System.err.println("File does not exist?!: " + dest.getAbsolutePath());
+                return false;
+            }
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void restartTimer() {
@@ -316,11 +422,9 @@ class AlcSession implements ActionListener, AlcConstants {
                 Alchemy.canvas.setRecordIndicator(true);
 
                 if (indicatorTimer == null) {
-                    indicatorTimer = new javax.swing.Timer(500, new  
+                    indicatorTimer = new javax.swing.Timer(500, new ActionListener() {
 
-                          ActionListener( ) {
-
-                            public void actionPerformed(ActionEvent e) {
+                        public void actionPerformed(ActionEvent e) {
                             //System.out.println("indicatorTimer action called");
                             Alchemy.canvas.setRecordIndicator(false);
                             Alchemy.canvas.redraw();
