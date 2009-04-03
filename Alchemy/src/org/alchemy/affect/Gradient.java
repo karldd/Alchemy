@@ -31,12 +31,14 @@ import org.alchemy.core.*;
  */
 public class Gradient extends AlcModule {
 
-    private final Color transparent = new Color(255, 255, 255, 0);
+    
 
     @Override
     protected void affect() {
         int numOfCreateShapes = canvas.createShapes.size();
         // int shapeTally = shapeCount * numOfCreateShapes;
+        Color bgColour = canvas.getBackgroundColour();
+        Color transparent = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue(), 0);
 
         for (int i = 0; i < numOfCreateShapes; i++) {
             AlcShape shape = canvas.createShapes.get(i);
@@ -59,9 +61,10 @@ public class Gradient extends AlcModule {
                         y1 = currentPoints[1];
                 }
                 numberOfPoints++;
+                break;
             }
 
-            GradientPaint gradient = new GradientPaint(x1, y1, canvas.getColour(), x2, y2, transparent);
+            GradientPaint gradient = new GradientPaint(x1, y1, shape.getColour(), x2, y2, transparent);
             shape.setGradientPaint(gradient);
         }
     }
