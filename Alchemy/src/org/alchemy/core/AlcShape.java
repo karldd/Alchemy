@@ -46,6 +46,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     private static boolean lineSmoothing = true;
     /** The last point */
     private Point2D.Float lastPoint;
+    /** If the path has been closed or not */
+    private boolean pathClosed = false;
     /** For drawing smaller marks - draw lines until x points have been made */
     private final int startPoints = 5;
     /** Minimum distance until points are added */
@@ -318,7 +320,24 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public void addLastPoint(Point2D.Float p) {
         path.lineTo(p.x, p.y);
     }
+    
+    /**
+     *  Closes the current subpath by drawing a straight line back to the coordinates of the last moveTo
+     */
+    public void closePath(){
+        path.closePath();
+        pathClosed = true;
+    }
 
+    /**
+     * Return if the path has been closed or not
+     * @return  True if the path has been closed else false
+     */
+    public boolean isPathClosed() {
+        return pathClosed;
+    }
+    
+    
     /** Move the shape by the specified distance.
      *  Consecutive calls will accumulate the overall distance
      * @param x     x distance
