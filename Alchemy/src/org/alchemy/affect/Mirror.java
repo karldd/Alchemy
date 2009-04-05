@@ -22,10 +22,13 @@ package org.alchemy.affect;
 import org.alchemy.core.*;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 /**
  * Mirror Module
@@ -141,41 +144,90 @@ public class Mirror extends AlcModule implements AlcConstants {
                 AlcShape shape = canvas.createShapes.get(i);
                 // Original Path with which we reflect
                 GeneralPath originalPath = shape.getPath();
+                ArrayList<Point2D.Float> spine = shape.getSpine();
 
                 if (horizontal) {
                     GeneralPath hPath = makeHorizontalReflectedShape(originalPath);
                     int index = i * shapeCount;
+
+                    // ADD
                     if (canvas.affectShapes.size() == index) {
-                        AlcShape cloneShape = shape.customClone(hPath);
+                        AlcShape cloneShape = null;
+                        if (shape.hasSpine()) {
+                            // Create a flipped spine and use a shallow copy the spine width
+                            cloneShape = shape.customClone(makeHorizontalReflectedSpine(spine), shape.getSpineWidth());
+                        } else {
+                            cloneShape = shape.customClone(hPath);
+                        }
+
                         // Make sure there is no transparency when the background is on
                         if (canvas.isBackgroundColourActive()) {
                             cloneShape.setAlpha(255);
                         }
                         canvas.affectShapes.add(cloneShape);
+
+                        // Also flip the gradient
+                        GradientPaint gp = cloneShape.getGradientPaint();
+                        if (gp != null) {
+                            cloneShape.setGradientPaint(makeHorizontalReflectedGradientPaint(gp));
+                        }
+
+                    // REPLACE
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hPath);
+                        if (thisShape.hasSpine()) {
+                            thisShape.setSpine(makeHorizontalReflectedSpine(spine));
+                        }
                         // Make sure the points tally is up to date
                         thisShape.setTotalPoints(shape.getTotalPoints());
                     }
                 }
 
+                // Keep these handy incase we need to do another flip
                 GeneralPath vPath = null;
+                ArrayList<Point2D.Float> vSpine = null;
+                GradientPaint vPaint = null;
                 if (vertical) {
                     vPath = makeVerticalReflectedShape(originalPath);
                     int index = i * shapeCount;
                     // Add 1 on if horizontal is also on
                     index += horizontal ? 1 : 0;
+
+                    // ADD
                     if (canvas.affectShapes.size() == index) {
-                        AlcShape cloneShape = shape.customClone(vPath);
+
+                        AlcShape cloneShape = null;
+                        if (shape.hasSpine()) {
+                            vSpine = makeVerticalReflectedSpine(spine);
+                            // Create a flipped spine and use a shallow copy the spine width
+                            cloneShape = shape.customClone(vSpine, shape.getSpineWidth());
+                        } else {
+                            cloneShape = shape.customClone(vPath);
+                        }
+
                         // Make sure there is no transparency when the background is on
                         if (canvas.isBackgroundColourActive()) {
                             cloneShape.setAlpha(255);
                         }
+
+                        // Also flip the gradient
+                        GradientPaint gp = cloneShape.getGradientPaint();
+                        if (gp != null) {
+                            vPaint = makeVerticalReflectedGradientPaint(gp);
+                            cloneShape.setGradientPaint(vPaint);
+                        }
+
                         canvas.affectShapes.add(cloneShape);
+
+                    // REPLACE    
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(vPath);
+                        if (thisShape.hasSpine()) {
+                            vSpine = makeVerticalReflectedSpine(spine);
+                            thisShape.setSpine(vSpine);
+                        }
                         // Make sure the points tally is up to date
                         thisShape.setTotalPoints(shape.getTotalPoints());
                     }
@@ -183,16 +235,37 @@ public class Mirror extends AlcModule implements AlcConstants {
                 if (horizontal && vertical) {
                     GeneralPath hvPath = makeHorizontalReflectedShape(vPath);
                     int index = i * shapeCount + 2;
+
+                    // ADD
                     if (canvas.affectShapes.size() == index) {
-                        AlcShape cloneShape = shape.customClone(hvPath);
+                        AlcShape cloneShape = null;
+                        if (shape.hasSpine() && vSpine != null) {
+                            // Create a flipped spine and use a shallow copy the spine width
+                            cloneShape = shape.customClone(makeHorizontalReflectedSpine(vSpine), shape.getSpineWidth());
+                        } else {
+                            cloneShape = shape.customClone(hvPath);
+                        }
+
                         // Make sure there is no transparency when the background is on
                         if (canvas.isBackgroundColourActive()) {
                             cloneShape.setAlpha(255);
                         }
+
+                        // Also flip the gradient
+                        GradientPaint gp = cloneShape.getGradientPaint();
+                        if (gp != null && vPaint != null) {
+                            cloneShape.setGradientPaint(makeHorizontalReflectedGradientPaint(vPaint));
+                        }
                         canvas.affectShapes.add(cloneShape);
+
+                    // REPLACE    
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hvPath);
+                        if (thisShape.hasSpine() && vSpine != null) {
+                            thisShape.setSpine(makeHorizontalReflectedSpine(vSpine));
+                        }
+
                         // Make sure the points tally is up to date
                         thisShape.setTotalPoints(shape.getTotalPoints());
                     }
@@ -206,6 +279,34 @@ public class Mirror extends AlcModule implements AlcConstants {
         AffineTransform horizontalReflection = getHorizontalReflection(horizontalAxis);
         GeneralPath reflectedPath = (GeneralPath) original.createTransformedShape(horizontalReflection);
         return reflectedPath;
+    }
+
+    /** Make a spine reflected through the horizontal axis */
+    private ArrayList<Point2D.Float> makeHorizontalReflectedSpine(ArrayList<Point2D.Float> spine) {
+        // Create a new array of flipped points
+        ArrayList<Point2D.Float> hSpine = new ArrayList<Point2D.Float>(1000);
+        for (int j = 0; j < spine.size(); j++) {
+            Point2D.Float p = spine.get(j);
+            // Flip it over
+            float x = horizontalAxis - (p.x - horizontalAxis);
+            Point2D.Float newP = new Point2D.Float(x, p.y);
+            hSpine.add(newP);
+        }
+        return hSpine;
+    }
+
+    /** Make a GradientPaint reflected through the horizontal axis */
+    private GradientPaint makeHorizontalReflectedGradientPaint(GradientPaint gp) {
+        float x1 = horizontalAxis - ((float) gp.getPoint1().getX() - horizontalAxis);
+        float x2 = horizontalAxis - ((float) gp.getPoint2().getX() - horizontalAxis);
+        GradientPaint newGp = new GradientPaint(
+                x1,
+                (float) gp.getPoint1().getY(),
+                gp.getColor1(),
+                x2,
+                (float) gp.getPoint2().getY(),
+                gp.getColor2());
+        return newGp;
     }
 
     /** Updates the horizontal reflection transform based on the current window width */
@@ -224,6 +325,34 @@ public class Mirror extends AlcModule implements AlcConstants {
         AffineTransform verticalReflection = getVerticalReflection(verticalAxis);
         GeneralPath reflectedPath = (GeneralPath) original.createTransformedShape(verticalReflection);
         return reflectedPath;
+    }
+
+    /** Make a spine reflected through the vertical axis */
+    private ArrayList<Point2D.Float> makeVerticalReflectedSpine(ArrayList<Point2D.Float> spine) {
+        // Create a new array of flipped points
+        ArrayList<Point2D.Float> vSpine = new ArrayList<Point2D.Float>(1000);
+        for (int j = 0; j < spine.size(); j++) {
+            Point2D.Float p = spine.get(j);
+            // Flip it over
+            float y = verticalAxis - (p.y - verticalAxis);
+            Point2D.Float newP = new Point2D.Float(p.x, y);
+            vSpine.add(newP);
+        }
+        return vSpine;
+    }
+
+    /** Make a GradientPaint reflected through the vertical axis */
+    private GradientPaint makeVerticalReflectedGradientPaint(GradientPaint gp) {
+        float y1 = verticalAxis - ((float) gp.getPoint1().getY() - verticalAxis);
+        float y2 = verticalAxis - ((float) gp.getPoint2().getY() - verticalAxis);
+        GradientPaint newGp = new GradientPaint(
+                (float) gp.getPoint1().getX(),
+                y1,
+                gp.getColor1(),
+                (float) gp.getPoint2().getX(),
+                y2,
+                gp.getColor2());
+        return newGp;
     }
 
     /** Updates the vertical reflection transform based on the current window width */

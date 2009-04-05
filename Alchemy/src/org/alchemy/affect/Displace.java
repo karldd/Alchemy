@@ -22,6 +22,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.awt.geom.Point2D.Float;
+import java.util.ArrayList;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
@@ -37,10 +38,6 @@ public class Displace extends AlcModule implements AlcConstants {
     private int speed;
     private int displacement = 7;
     private boolean mouseDown = false;
-
-    public Displace() {
-
-    }
 
     @Override
     protected void setup() {
@@ -83,41 +80,56 @@ public class Displace extends AlcModule implements AlcConstants {
                 GeneralPath originalPath = shape.getPath();
                 Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
 
-                GeneralPath newPath = new GeneralPath();
-                PathIterator iterator = originalPath.getPathIterator(null);
-                float[] currentPoints = new float[6];
-                int currentPointType;
 
-                while (!iterator.isDone()) {
-                    currentPointType = iterator.currentSegment(currentPoints);
-
-                    switch (currentPointType) {
-                        case PathIterator.SEG_MOVETO:
-                            float[] displacedMove = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
-                            //System.out.println("MOVE");
-                            newPath.moveTo(displacedMove[0], displacedMove[1]);
-                            break;
-                        case PathIterator.SEG_LINETO:
-                            //System.out.println("LINE");
-                            float[] displacedLine = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
-                            newPath.lineTo(displacedLine[0], displacedLine[1]);
-                            break;
-                        case PathIterator.SEG_QUADTO:
-                            //System.out.println("QUAD");
-                            float[] displacedQuad1 = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
-                            float[] displacedQuad2 = getAngle(new Point2D.Float(currentPoints[2], currentPoints[3]), lastPt, speed);
-                            newPath.quadTo(displacedQuad1[0], displacedQuad1[1], displacedQuad2[0], displacedQuad2[1]);
-                            break;
-                        case PathIterator.SEG_CUBICTO:
-                            newPath.curveTo(currentPoints[0], currentPoints[1], currentPoints[2], currentPoints[3], currentPoints[4], currentPoints[5]);
-                            break;
-                        case PathIterator.SEG_CLOSE:
-                            newPath.closePath();
-                            break;
+                if (shape.hasSpine()) {
+                    ArrayList<Point2D.Float> spine = shape.getSpine();
+                    if (spine.size() > 1) {
+                        for (int j = 0; j < spine.size(); j++) {
+                            Point2D.Float p = spine.get(j);
+                            float[] displacedMove = getAngle(p, lastPt, speed);
+                            p.x = displacedMove[0];
+                            p.y = displacedMove[1];
+                        }
+                        shape.createSpine();
                     }
-                    iterator.next();
+                } else {
+
+                    GeneralPath newPath = new GeneralPath();
+                    PathIterator iterator = originalPath.getPathIterator(null);
+                    float[] currentPoints = new float[6];
+                    int currentPointType;
+
+                    while (!iterator.isDone()) {
+                        currentPointType = iterator.currentSegment(currentPoints);
+
+                        switch (currentPointType) {
+                            case PathIterator.SEG_MOVETO:
+                                float[] displacedMove = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                                //System.out.println("MOVE");
+                                newPath.moveTo(displacedMove[0], displacedMove[1]);
+                                break;
+                            case PathIterator.SEG_LINETO:
+                                //System.out.println("LINE");
+                                float[] displacedLine = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                                newPath.lineTo(displacedLine[0], displacedLine[1]);
+                                break;
+                            case PathIterator.SEG_QUADTO:
+                                //System.out.println("QUAD");
+                                float[] displacedQuad1 = getAngle(new Point2D.Float(currentPoints[0], currentPoints[1]), lastPt, speed);
+                                float[] displacedQuad2 = getAngle(new Point2D.Float(currentPoints[2], currentPoints[3]), lastPt, speed);
+                                newPath.quadTo(displacedQuad1[0], displacedQuad1[1], displacedQuad2[0], displacedQuad2[1]);
+                                break;
+                            case PathIterator.SEG_CUBICTO:
+                                newPath.curveTo(currentPoints[0], currentPoints[1], currentPoints[2], currentPoints[3], currentPoints[4], currentPoints[5]);
+                                break;
+                            case PathIterator.SEG_CLOSE:
+                                newPath.closePath();
+                                break;
+                        }
+                        iterator.next();
+                    }
+                    shape.setPath(newPath);
                 }
-                shape.setPath(newPath);
             }
         }
     }
