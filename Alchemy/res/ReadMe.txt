@@ -1,5 +1,5 @@
 Alchemy 
-ALPHA 007 PRE
+ALPHA 007
 
 
 
@@ -34,17 +34,26 @@ Version History
 ALPHA 007
 
 FEATURES
-+ Pressure Shapes module
++ Pressure Shapes module for drawing shapes using pressure from a tablet
++ Gradient module for adding colour gradients to shapes
++ Load a background image from the view menu to draw on top of
 
 CHANGES
-+ Interface improvements
++ Colour button has been streamlined and combined with the background/foreground button
++ Line Weight spinner has been redesigned
++ Sliders and number spinners can now be controlled with the mouse scroll wheel
++ The max/min values of sliders and number spinners can be set by CTRL/COMMAND clicking them and inputing the values in the popup
 + Warning added when using File > New with shapes on the canvas
-+ Localisations added for Simplified Chinese/Traditional Chinese/Spanish/Dutch
-  Thanks to Chen Luo/Zafio/Dean for those!
++ Localisations added for Simplified Chinese/Traditional Chinese/Spanish/Dutch/French/German
+  Thanks to Chen Luo/Zafio/Dean/Ika/Seppel Schorsch for those!
++ Pullshapes Size slider added to better control shape size
++ Displace module now behaves better with spine-based (variable line width) shapes
++ Trace Shapes images are now scaled correctly and local images can also be loaded
 
 BUG FIXES
 + Fixed several issues caused by custom cursors stopping Alchemy from launching
 + Fixed a bug causing the tool bar to disappear completely when being reattached
++ Colour selector will now appear in the correct window on dual monitor systems
 
 
 --------------------------------------
@@ -67,6 +76,7 @@ CHANGES
 + Colour Picker popup and secondary window redesigned and standard across all platforms now
 + Shapes folder added to store PDF shapes used by PullShapes
 + iText PDF library update
++ Eye dropper can now be started with the I shortcut key
 
 BUG FIXES
 + Mirror module transparency bug fix
