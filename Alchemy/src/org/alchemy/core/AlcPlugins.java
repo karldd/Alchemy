@@ -185,7 +185,7 @@ class AlcPlugins implements AlcConstants {
         if (getNumberOfAffectModules() > 0) {
             // Initialise the on/off array for current affects
             currentAffects = new boolean[getNumberOfAffectModules()];
-            String[] affectsOrder = {"Displace", "Mirror", "Blindness", "Random"};
+            String[] affectsOrder = {"Displace", "Gradient", "Mirror", "Blindness", "Random"};
             // Extension Point Name, Array Size, Module Type
             affects = addPlugins("Affect", getNumberOfAffectModules(), MODULE_AFFECT, affectsOrder);
         }

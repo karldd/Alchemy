@@ -22,6 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import java.awt.geom.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * A shape class used by Alchemy<br>
@@ -30,6 +31,9 @@ import java.io.Serializable;
  */
 public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
+    //////////////////////////////////////////////////////////////
+    // SHAPE ATTRIBUTES
+    //////////////////////////////////////////////////////////////
     /** The main path stored as a GeneralPath */
     GeneralPath path;
     /** Colour of this shape */
@@ -39,7 +43,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
     int style;
     /** The Gradient of this shape (if available) */
-    GradientPaint gradientPaint;
+    private GradientPaint gradientPaint;
     /** Line Weight if the style is line */
     float lineWidth;
     /** Line smoothing global setting */
@@ -48,13 +52,27 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     private Point2D.Float lastPoint;
     /** If the path has been closed or not */
     private boolean pathClosed = false;
+    /** If this shape has been created with pen strokes or not */
+    private boolean penShape = false;
+    /** Keep track of the number of points added */
+    private int totalPoints = 0;
+    /** For shapes drawn as a line with a variable width, this is the spine of the shape */
+    private ArrayList<Point2D.Float> spine;
+    /** For shapes drawn as a line with a variable width, this is the width of the shape */
+    private ArrayList<Float> spineWidth;
+    //////////////////////////////////////////////////////////////
+    // SHAPE PREFERENCES
+    //////////////////////////////////////////////////////////////
     /** For drawing smaller marks - draw lines until x points have been made */
     private final int startPoints = 5;
     /** Minimum distance until points are added */
-    private final int minimumMovement = 5;
-    /** Keep track of the number of points added */
-    private int totalPoints = 0;
+    private final int minDistance = 5;
+    /** Minimum distance until spine points are added */
+    private final int minDistanceSpine = 3;
 
+    //////////////////////////////////////////////////////////////
+    // CONSTRUCTORS
+    //////////////////////////////////////////////////////////////
     /**
      * Creates a new instance of AlcShape with the default values
      * @param p Initial point to set the GeneralPath moveto
@@ -118,7 +136,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
     /**
      * Creates a new instance of AlcShape with defined values
-     * @param path        GeneralPath path
+     * @param path      GeneralPath path
      * @param colour    Colour of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
@@ -129,6 +147,9 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         setupAttributes(colour, alpha, style, lineWidth);
     }
 
+    //////////////////////////////////////////////////////////////
+    // SHAPE INITILISATION
+    //////////////////////////////////////////////////////////////
     private void setupBlank() {
         // Create an empty shape
         path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
@@ -216,7 +237,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                     //System.out.println(p.x + " " + lastPt.x);
 
                     // Test to see if this point has moved far enough
-                    if (movement > minimumMovement) {
+                    if (movement > minDistance) {
 
                         // New control point value
                         Point2D.Float pt = new Point2D.Float();
@@ -264,11 +285,72 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                 double movement = p.distance(lastPoint);
 
                 // Test to see if this point has moved far enough
-                if (movement > minimumMovement) {
+                if (movement > minDistance) {
                     path.lineTo(p.x, p.y);
                     savePoints(p);
                 }
             }
+        }
+    }
+
+    /** 
+     * Add a spine point for variable width lines
+     * @param p     The point to add
+     * @param width The width of the line
+     */
+    public void addSpinePoint(Point2D.Float p, float width) {
+        this.penShape = true;
+        if (spine == null) {
+            spine = new ArrayList<Point2D.Float>(1000);
+        }
+        if (spineWidth == null) {
+            spineWidth = new ArrayList<Float>(1000);
+        }
+        // Check that the pen location has changed
+        if (Alchemy.canvas.isPenLocationChanged()) {
+            // If this is the first point then add it
+            if (spine.size() == 0) {
+                spine.add(p);
+                spineWidth.add(width);
+
+            // If this is the second point onwards
+            // Then check there has been enough movement    
+            } else {
+                Point2D.Float lastPt = spine.get(spine.size() - 1);
+                double distance = p.distance(lastPt);
+                if (distance > minDistanceSpine) {
+                    spine.add(p);
+                    spineWidth.add(width);
+                    createSpine();
+                }
+            }
+        }
+    }
+
+    /** Create the spine - redraws the variable width line based on the spine points */
+    public void createSpine() {
+        if (spine.size() > 0) {
+            // Reset the shape and create the first point
+            setPoint(spine.get(0));
+            // Draw the outer points
+            for (int i = 1; i < spine.size(); i++) {
+                Point2D.Float p2 = spine.get(i - 1);
+                Point2D.Float p1 = spine.get(i);
+                float level = (spineWidth.get(i)).floatValue();
+                Point2D.Float pOut = rightAngle(p1, p2, level);
+                addCurvePoint(pOut);
+            }
+            // Draw the inner points
+            for (int j = 1; j < spine.size(); j++) {
+                int index = (spine.size() - j);
+                Point2D.Float p2 = spine.get(index);
+                Point2D.Float p1 = spine.get(index - 1);
+                float level = (spineWidth.get(index)).floatValue();
+                Point2D.Float pIn = rightAngle(p1, p2, level);
+                addCurvePoint(pIn);
+            }
+            // Close the shape
+            closePath();
         }
     }
 
@@ -291,6 +373,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         totalPoints++;
         // Set the current point to the (original) last point value - not the altered pt value
         lastPoint = new Point2D.Float(p.x, p.y);
+        penShape = true;
     }
 
     /** Add the first point
@@ -320,24 +403,18 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public void addLastPoint(Point2D.Float p) {
         path.lineTo(p.x, p.y);
     }
-    
+
     /**
      *  Closes the current subpath by drawing a straight line back to the coordinates of the last moveTo
      */
-    public void closePath(){
+    public void closePath() {
         path.closePath();
         pathClosed = true;
     }
 
-    /**
-     * Return if the path has been closed or not
-     * @return  True if the path has been closed else false
-     */
-    public boolean isPathClosed() {
-        return pathClosed;
-    }
-    
-    
+    //////////////////////////////////////////////////////////////
+    // TRANSFORM FUNCTIONS
+    //////////////////////////////////////////////////////////////
     /** Move the shape by the specified distance.
      *  Consecutive calls will accumulate the overall distance
      * @param x     x distance
@@ -561,38 +638,122 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         return lineWidth;
     }
 
-    /** Set the line width of this shape
-     * 
+    /** 
+     * Set the line width of this shape
      * @param lineWidth The line width
      */
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
 
-    /** Check if line smoothing is on or off 
-     * 
+    /** 
+     * Check if line smoothing is on or off 
      * @return boolean for line smoothing
      */
     public static boolean isLineSmoothing() {
         return lineSmoothing;
     }
 
-    /** Set the line smoothing variable for AlcShape
-     * 
+    /** 
+     * Set the line smoothing variable for AlcShape
      * @param lineSmoothing boolean to set line smoothing on or off
      */
     public static void setLineSmoothing(boolean lineSmoothing) {
         AlcShape.lineSmoothing = lineSmoothing;
     }
 
-    /** Get the bounds of this shape 
-     * 
+    /** 
+     * Get the bounds of this shape 
      * @return Rectangle representing the shapes bounds
      */
     public Rectangle getBounds() {
         return this.path.getBounds();
     }
 
+    /**
+     * Return if the path has been closed or not
+     * @return  True if the path has been closed else false
+     */
+    public boolean isPathClosed() {
+        return pathClosed;
+    }
+
+    void setPathClosed(boolean pathClosed) {
+        this.pathClosed = pathClosed;
+    }
+
+    /** 
+     * Return if this shape has been created with pen strokes or not
+     * @return True if this shape has been created with pen strokes or else false
+     */
+    public boolean isPenShape() {
+        return penShape;
+    }
+
+    void setPenShape(boolean penShape) {
+        this.penShape = penShape;
+    }
+
+    /** 
+     * Return if this shape uses a spine or not
+     * @return True if the path uses a spine else false
+     */
+    public boolean hasSpine() {
+        return spine != null && spineWidth != null;
+    }
+
+    /** 
+     * Get the spine (used for variable width lines) of this shape
+     * @return  An arraylist containing the spine
+     */
+    public ArrayList<Point2D.Float> getSpine() {
+        return spine;
+    }
+
+    /** 
+     * Set the spine (used for variable width lines) of this shape
+     * @param spine  An arraylist containing the new spine
+     */
+    public void setSpine(ArrayList<Point2D.Float> spine) {
+        this.spine = spine;
+    }
+
+    /** 
+     * Get the spine width (used for variable width lines) of this shape
+     * @return  An arraylist containing the spine width
+     */
+    public ArrayList<Float> getSpineWidth() {
+        return spineWidth;
+    }
+
+    /** 
+     * Set the spine width (used for variable width lines) of this shape
+     * @param spineWidth  An arraylist containing the new spine width
+     */
+    public void setSpineWidth(ArrayList<Float> spineWidth) {
+        this.spineWidth = spineWidth;
+    }
+    //////////////////////////////////////////////////////////////
+    // UTILITY
+    //////////////////////////////////////////////////////////////
+    /** Calculate a right angle perpendicular to the two given points at the given distance
+     * 
+     * @param p1        The first point
+     * @param p2        The second point
+     * @param distance  The distance away from the two points
+     * @return          The point at a perpendicular right angle
+     */
+    public static Point2D.Float rightAngle(Point2D.Float p1, Point2D.Float p2, double distance) {
+        // Calculate the angle between the last point and the new point
+        double angle = Math.atan2(p1.y - p2.y, p1.x - p2.x) - MATH_HALF_PI;
+        // Convert the polar coordinates to cartesian
+        double x = p1.x + (distance * Math.cos(angle));
+        double y = p1.y + (distance * Math.sin(angle));
+        return new Point2D.Float((float) x, (float) y);
+    }
+    //////////////////////////////////////////////////////////////
+    // CLONE STUFF
+    //////////////////////////////////////////////////////////////
     /**
      * 'Deep' Clone this object using the existing style/colour etc.. values
      * @return An new cloned object of this shape
@@ -601,23 +762,55 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public Object clone() {
         //Deep copy
         AlcShape tempShape = new AlcShape(this.path, this.colour, this.alpha, this.style, this.lineWidth);
-        tempShape.setTotalPoints(this.totalPoints);
-        tempShape.setLastPoint(this.lastPoint);
+        cloneAttributes(tempShape);
         return tempShape;
     }
 
     /** 
      * A custom clone that adds a new GeneralPath to the shape
-     * while keeping all of the style infomation
+     * while keeping all of the style infomation.
+     * Note that this function does not clone the spine.
      * 
      * @param tempPath  A GeneralPath to be added to the AlcShape
      * @return          The cloned shape
      */
     public AlcShape customClone(GeneralPath tempPath) {
         //Deep copy
-        AlcShape tempShape = new AlcShape(tempPath, this.colour, this.alpha, this.style, this.lineWidth);
+        AlcShape tempShape = new AlcShape(tempPath);
+        cloneAttributes(tempShape);
+        return tempShape;
+    }
+
+    /** 
+     * A custom clone that adds a new spine (variable width line) to the shape the creates the path 
+     * while keeping all of the style infomation.
+     * 
+     * @param spine         The spine of the shape
+     * @param spineWidth    The width of the spine
+     * @return              The cloned shape
+     */
+    public AlcShape customClone(ArrayList<Point2D.Float> spine, ArrayList<Float> spineWidth) {
+        //Deep copy
+        AlcShape tempShape = new AlcShape();
+        tempShape.setSpine(spine);
+        tempShape.setSpineWidth(spineWidth);
+        tempShape.createSpine();
+        cloneAttributes(tempShape);
+        return tempShape;
+    }
+
+    /** Clone other attributes of this shape */
+    private void cloneAttributes(AlcShape tempShape) {
+        tempShape.setAlpha(this.alpha);
+        tempShape.setStyle(this.style);
+        tempShape.setLineWidth(this.lineWidth);
         tempShape.setTotalPoints(this.totalPoints);
         tempShape.setLastPoint(this.lastPoint);
-        return tempShape;
+        tempShape.setPathClosed(this.pathClosed);
+        tempShape.setPenShape(this.penShape);
+        if (this.gradientPaint != null) {
+            GradientPaint gp = new GradientPaint(this.gradientPaint.getPoint1(), this.gradientPaint.getColor1(), this.gradientPaint.getPoint2(), this.gradientPaint.getColor2());
+            tempShape.setGradientPaint(gp);
+        }
     }
 }

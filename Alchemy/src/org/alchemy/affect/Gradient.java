@@ -20,9 +20,11 @@ package org.alchemy.affect;
 
 import java.awt.Color;
 import java.awt.GradientPaint;
+import java.awt.Rectangle;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import org.alchemy.core.*;
 
 /**
@@ -48,63 +50,64 @@ public class Gradient extends AlcModule {
         for (int i = 0; i < canvas.affectShapes.size(); i++) {
             setGradient(canvas.affectShapes.get(i));
         }
+        
+     
     }
 
     private void setGradient(AlcShape shape) {
 
         GeneralPath path = shape.getPath();
-        PathIterator iterator = path.getPathIterator(null);
 
-        Point2D p1 = new Point2D.Float(0, 0);
-        Point2D p2 = new Point2D.Float(0, 0);
-        int halfPoints = shape.getTotalPoints() / 2;
-        //System.out.println(halfPoints);
-        boolean closed = shape.isPathClosed();
-        int numberOfPoints = 0;
-        float[] currentPoints = new float[6];
-        int currentPointType;
+        Point2D p1 = null;
+        Point2D p2 = null;
 
-        search:
-        while (!iterator.isDone()) {
-            currentPointType = iterator.currentSegment(currentPoints);
-            
-            switch (currentPointType) {
-                case PathIterator.SEG_MOVETO:
-                    p1 = new Point2D.Float(currentPoints[0], currentPoints[1]);
-                    // If this is not closed then break here and set the last point
-                    if (!closed) {
-                        break search;
-                    }
-                    break;
-                case PathIterator.SEG_LINETO:
-                    if (closed) {
-                        // Find the mid point if it is closed
-                        if (numberOfPoints >= halfPoints) {
-                            p2 = new Point2D.Float(currentPoints[0], currentPoints[1]);
+        // If the shape has been created with pen strokes
+        if (shape.isPenShape()) {
+            if (shape.hasSpine()) {
+                ArrayList<Point2D.Float> spine = shape.getSpine();
+                if (spine.size() > 0) {
+                    p1 = spine.get(0);
+                    p2 = spine.get(spine.size() / 2);
+                }
+
+            } else {
+                PathIterator iterator = path.getPathIterator(null);
+                float[] currentPoints = new float[6];
+                search:
+                while (!iterator.isDone()) {
+                    switch (iterator.currentSegment(currentPoints)) {
+                        case PathIterator.SEG_MOVETO:
+                            // Use the start point for the first point
+                            p1 = new Point2D.Float(currentPoints[0], currentPoints[1]);
                             break search;
-                        }
+
                     }
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    if (closed) {
-                        // Find the mid point if it is closed
-                        if (numberOfPoints >= halfPoints) {
-                            p2 = new Point2D.Float(currentPoints[0], currentPoints[1]);
-                            break search;
-                        }
-                    }
-                    break;
+                    iterator.next();
+                }
+                // Use the last point for the second point
+                p2 = path.getCurrentPoint();
             }
-            iterator.next();
-            numberOfPoints++;
+
+
+        // Else if the shape has been not been created with pen strokes
+        // Then lets make a random gradient
+        } else {
+            if (shape.getGradientPaint() == null) {
+                Rectangle bounds = path.getBounds();
+                p1 = getRandomPoint(bounds);
+                p2 = getRandomPoint(bounds);
+            }
         }
 
-        // If this path is not closed then use the last point
-        if (!closed) {
-            p2 = path.getCurrentPoint();
+        if (p1 != null && p2 != null) {
+            GradientPaint gradient = new GradientPaint(p1, shape.getColour(), p2, transparent);
+            shape.setGradientPaint(gradient);
         }
+    }
 
-        GradientPaint gradient = new GradientPaint(p1, shape.getColour(), p2, transparent);
-        shape.setGradientPaint(gradient);
+    private Point2D.Float getRandomPoint(Rectangle bounds) {
+        float x = math.random(bounds.x, bounds.x + bounds.width);
+        float y = math.random(bounds.y, bounds.y + bounds.height);
+        return new Point2D.Float(x, y);
     }
 }

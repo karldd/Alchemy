@@ -49,6 +49,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
     //
     private boolean scale = true;
     private boolean rotate = true;
+    private float size = 2F;
 
     public PullShapes() {
     }
@@ -112,17 +113,32 @@ public class PullShapes extends AlcModule implements AlcConstants {
         subToolBarSection.add(spacingSlider);
 
         // Scale button
-        AlcSubToggleButton scaleButton = new AlcSubToggleButton("Scale", AlcUtil.getUrlPath("scale.png", getClassLoader()));
-        scaleButton.setSelected(scale);
-        scaleButton.setToolTipText("Toggle random scaling");
-        scaleButton.addActionListener(
-                new ActionListener() {
+//        AlcSubToggleButton scaleButton = new AlcSubToggleButton("Scale", AlcUtil.getUrlPath("scale.png", getClassLoader()));
+//        scaleButton.setSelected(scale);
+//        scaleButton.setToolTipText("Toggle random scaling");
+//        scaleButton.addActionListener(
+//                new ActionListener() {
+//
+//                    public void actionPerformed(ActionEvent e) {
+//                        scale = !scale;
+//                    }
+//                });
+//        subToolBarSection.add(scaleButton);
 
-                    public void actionPerformed(ActionEvent e) {
-                        scale = !scale;
+
+        // Size Slider
+        final AlcSubSlider sizeSlider = new AlcSubSlider("Size", 1, 50, (int) size * 10);
+        sizeSlider.setToolTipText("Adjust the size of shapes created");
+        sizeSlider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!sizeSlider.getValueIsAdjusting()) {
+                            size = 0.1F + sizeSlider.getValue() / 10F;
+                        }
                     }
                 });
-        subToolBarSection.add(scaleButton);
+        subToolBarSection.add(sizeSlider);
 
         // Rotate button
         AlcSubToggleButton rotateButton = new AlcSubToggleButton("Rotate", AlcUtil.getUrlPath("rotate.png", getClassLoader()));
@@ -157,17 +173,22 @@ public class PullShapes extends AlcModule implements AlcConstants {
         File shapesDir = new File("shapes");
 
         // Filter for the folders not starting with '.'
-        FileFilter folderFilter = new FileFilter() {
+        FileFilter folderFilter = new  
 
-            public boolean accept(File pathname) {
+              FileFilter( ) {
+
+                   public boolean accept(File pathname) {
                 return (pathname.isDirectory() && !pathname.getName().startsWith(".")) ? true : false;
             }
         };
 
         // Filter to check for PDFs
-        FilenameFilter pdfFilter = new FilenameFilter() {
+        FilenameFilter pdfFilter = new  
 
-            public boolean accept(File dir, String name) {
+              FilenameFilter(   ) {
+
+                    
+                     public boolean accept(File dir, String name) {
                 // MIME types not working on Linux?
                 if (Alchemy.OS == OS_LINUX) {
                     return name.endsWith(".pdf") || name.endsWith(".PDF");
@@ -255,7 +276,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
             AlcShape cloneShape = (AlcShape) shape.clone();
             if (scale) {
                 // Scale it
-                float scaleFactor = math.random(0.1F, 3F);
+                float scaleFactor = math.random(0.1F, size);
                 cloneShape.scale(scaleFactor, scaleFactor);
             }
             if (rotate) {

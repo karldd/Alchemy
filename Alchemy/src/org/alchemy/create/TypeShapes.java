@@ -69,7 +69,13 @@ public class TypeShapes extends AlcModule implements AlcConstants {
         loadFonts();
 
         // Call the canvas to preview the returned random shape
-        generate();
+        //generate();
+
+        Font f = randomFont();
+        System.out.println(f.toString());
+        AffineTransform affineTransform = f.getTransform();
+        fontRenderContext = new FontRenderContext(affineTransform, false, false);
+
 
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
@@ -84,7 +90,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
 
     @Override
     protected void deselect() {
-    //canvas.commitTempShape();
+        //canvas.commitTempShape();
     }
 
     @Override
