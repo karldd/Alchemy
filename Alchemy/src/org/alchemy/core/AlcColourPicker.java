@@ -40,6 +40,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     private int currentDevice = 0;
     private JDialog eyeDropperWindow;
     private javax.swing.Timer eyeDropperTimer;
+    private boolean eyeDropperActive = false;
 
     AlcColourPicker(AlcPopupInterface parent) {
         setup(parent);
@@ -75,10 +76,18 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
         return new Color(colourArray.getRGB(x, y));
     }
 
+    /** 
+     * Return if the eye dropper is active or not
+     * @return True if the eye dropper is active else false
+     */
+    public boolean isEyeDropperActive() {
+        return eyeDropperActive;
+    }
+
     /** Captures the screen and displays that image fullscreen
      *  When the user clicks on the image, the colour from that point  is loaded
      */
-    private void startEyeDropper() {
+    void startEyeDropper() {
 
         Alchemy.canvas.setAutoToggleToolBar(false);
 
@@ -119,6 +128,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
             @Override
             public void mouseReleased(MouseEvent e) {
                 stopEyeDropper();
+                eyeDropperActive = false;
             }
         });
         eyeDropperTimer = new javax.swing.Timer(5, new ActionListener() {
@@ -128,25 +138,24 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
             }
         });
 
-        JPanel imagePanel =
-                new JPanel() {
+        JPanel imagePanel = new JPanel() {
 
-                    @Override
-                    public void paintComponent(Graphics g) {
+            @Override
+            public void paintComponent(Graphics g) {
 
-                        Point pos = this.getLocationOnScreen();
-                        Point offset = new Point(-pos.x, -pos.y);
-                        Rectangle bounds = devices[currentDevice].getDefaultConfiguration().getBounds();
-                        Point origin = bounds.getLocation();
-                        // Primary monitor
-                        if (origin.x == 0 && origin.y == 0) {
-                            g.drawImage(screenShots[currentDevice], offset.x, offset.y, null);
-                        // Non-primary monitor
-                        } else {
-                            g.drawImage(screenShots[currentDevice], offset.x + origin.x, offset.y + origin.y, null);
-                        }
-                    }
-                };
+                Point pos = this.getLocationOnScreen();
+                Point offset = new Point(-pos.x, -pos.y);
+                Rectangle bounds = devices[currentDevice].getDefaultConfiguration().getBounds();
+                Point origin = bounds.getLocation();
+                // Primary monitor
+                if (origin.x == 0 && origin.y == 0) {
+                    g.drawImage(screenShots[currentDevice], offset.x, offset.y, null);
+                // Non-primary monitor
+                } else {
+                    g.drawImage(screenShots[currentDevice], offset.x + origin.x, offset.y + origin.y, null);
+                }
+            }
+        };
 
         eyeDropperWindow.setContentPane(imagePanel);
         if (Alchemy.OS != OS_MAC) {
@@ -177,7 +186,7 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
     }
 
     /** Dispose of the screens created for the eye dropper */
-    private void stopEyeDropper() {
+    void stopEyeDropper() {
         if (eyeDropperWindow != null) {
             try {
 
@@ -276,7 +285,10 @@ class AlcColourPicker extends JMenuItem implements MouseListener, AlcConstants {
             javax.swing.Timer initialDelay = new javax.swing.Timer(50, new ActionListener() {
 
                 public void actionPerformed(ActionEvent evt) {
-                    startEyeDropper();
+                    if (!eyeDropperActive) {
+                        eyeDropperActive = true;
+                        startEyeDropper();
+                    }
                 }
             });
 

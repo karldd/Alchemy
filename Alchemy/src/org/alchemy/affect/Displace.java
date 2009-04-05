@@ -79,6 +79,7 @@ public class Displace extends AlcModule implements AlcConstants {
                 AlcShape shape = canvas.createShapes.get(i);
                 GeneralPath originalPath = shape.getPath();
                 Point2D.Float lastPt = (Float) originalPath.getCurrentPoint();
+                //Point2D.Float lastPt = new Point2D.Float(oldP.x, oldP.y);
 
 
                 if (shape.hasSpine()) {
@@ -87,8 +88,8 @@ public class Displace extends AlcModule implements AlcConstants {
                         for (int j = 0; j < spine.size(); j++) {
                             Point2D.Float p = spine.get(j);
                             float[] displacedMove = getAngle(p, lastPt, speed);
-                            p.x = displacedMove[0];
-                            p.y = displacedMove[1];
+                            spine.set(j, new Point2D.Float(displacedMove[0], displacedMove[1]));
+
                         }
                         shape.createSpine();
                     }

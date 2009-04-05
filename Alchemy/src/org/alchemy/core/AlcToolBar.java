@@ -56,8 +56,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     private AlcToolBarSubSection createSubToolBarSection;
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
-    /** The number of rows in the sub toolbar */
-//    private int subToolBarRows;
     /** Colour picker */
     private AlcColourPicker fgPicker,  bgPicker;
     /** Foreground Background Button - gets updated when the colours are swapped */
@@ -140,6 +138,25 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         };
 
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_H, "toggleCursor", hideCursorAction);
+
+        // Start the eyedropper with the I key
+        AbstractAction eyedropperAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                if (Alchemy.canvas.isBackgroundColourActive()) {
+                    if (!bgPicker.isEyeDropperActive()) {
+                        bgPicker.startEyeDropper();
+                    }
+                } else {
+                    if (!fgPicker.isEyeDropperActive()) {
+                        fgPicker.startEyeDropper();
+                    }
+                }
+            }
+        };
+
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_I, "startEyeDropper", eyedropperAction);
+
 
         this.windowSize = new Dimension(Alchemy.window.getWindowSize().width, mainToolBar.getHeight());
 
