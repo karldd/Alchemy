@@ -18,7 +18,7 @@
         <parameter id="class" value="org.alchemy.create.PressureShapes"/> 
         <parameter id="name" value="Pressure Shapes"/> 
         <parameter id="description" value="Create shapes using pen pressure from a drawing tablet" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>
