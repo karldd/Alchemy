@@ -22,9 +22,9 @@ package org.alchemy.core;
 import javax.swing.BorderFactory;
 import javax.swing.JMenu;
 
- class AlcMenu extends JMenu implements AlcConstants {
+class AlcMenu extends JMenu implements AlcConstants {
 
-     AlcMenu(String title) {
+    AlcMenu(String title) {
 
         this.setText(title);
         //this.setContentAreaFilled(false);
@@ -34,8 +34,9 @@ import javax.swing.JMenu;
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
-        this.setBackground(COLOUR_UI_HIGHLIGHT);
-
+        if (Alchemy.OS != OS_LINUX) {
+            this.setBackground(COLOUR_UI_HIGHLIGHT);
+        }
         // Hacky work around - because the JMenu is layered on top of the JMenuBar - doubling the opacity  
         //this.setBackground(new Color(0, 0, 0, 0));
         //this.setBackground(new Color(231, 231, 231, 150));
