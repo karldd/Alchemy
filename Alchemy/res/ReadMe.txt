@@ -14,6 +14,10 @@ and possibilities in a serendipitous way.
 
 INSTALLATION -------------------------
 Simply copy the Alchemy folder to wherever you keep your applications.
+Windows users please make sure the path to Alchemy does not contain any non-standard
+characters such as the exclamation mark (!), this has been known to cause problems
+launching the application. If your user name has non-standard characters, 
+try putting Alchemy directly into the root directory.
 The 'modules' (and the 'lib' folder on Windows) folder must remain together 
 with the application. Individual modules can be removed if not required, 
 however be sure to not mix older modules with newer versions or vice versa.
