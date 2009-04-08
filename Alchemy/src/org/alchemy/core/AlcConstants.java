@@ -122,11 +122,6 @@ public interface AlcConstants {
     /** Cursor - Eyedropper Cursor */
     static final Cursor CURSOR_EYEDROPPER = AlcUtil.getCursor("cursor-eyedropper.png");
     //////////////////////////////////////////////////////////////
-    // ICONS
-    //////////////////////////////////////////////////////////////
-    /** Icon that appears in the windows titlebar */
-    static final Image ICON_TITLEBAR = AlcUtil.getImage("titlebar.png");
-    //////////////////////////////////////////////////////////////
     // PEN TYPES
     //////////////////////////////////////////////////////////////
     /** Pen Type: STYLUS (1)  */
