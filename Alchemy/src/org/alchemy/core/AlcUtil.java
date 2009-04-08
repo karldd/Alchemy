@@ -50,7 +50,7 @@ public class AlcUtil implements AlcConstants {
     /** Checks a name for a file extension and adds one if not present 
      * 
      * @param file  The file to add the extenstion to
-     * @param ext   The extension to add
+     * @param ext   The extension to add (without the leading dot)
      * @return      The new file with extension
      */
     public static File addFileExtension(File file, String ext) {
@@ -180,7 +180,7 @@ public class AlcUtil implements AlcConstants {
         }
     }
 
-    /** Returns an ImageIcon from a String, or null if the name was invalid.
+    /** Returns an ImageIcon from the Alchemy data folder, or null if the name was invalid.
      * 
      * @param name  The name to the image
      * @return      ImageIcon or null if invalid
@@ -212,7 +212,7 @@ public class AlcUtil implements AlcConstants {
         return null;
     }
 
-    /** Returns an Image from a String, or null if the name was invalid.
+    /** Returns an Image from the Alchemy data folder, or null if the name was invalid.
      * 
      * @param name  The name to the image
      * @return      Image or null if invalid
