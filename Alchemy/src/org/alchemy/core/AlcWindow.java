@@ -76,11 +76,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Let the exitAlchemy function take care of closing
         //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        if (ICON_TITLEBAR != null) {
-            this.setIconImage(ICON_TITLEBAR);
-        }
-
-
         // Find out how big the parent screen is
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Dimension currentWindowSize = grapConfig.getBounds().getSize();
@@ -91,10 +86,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             Dimension savedWindowSize = Alchemy.preferences.canvasSize;
 
             // Make sure the window is not too big or too small
-            if (savedWindowSize.width <= currentWindowSize.width 
-                    && savedWindowSize.height <= currentWindowSize.height 
-                    && savedWindowSize.width >= minWindowSize.width
-                    && savedWindowSize.height >= minWindowSize.width) {
+            if (savedWindowSize.width <= currentWindowSize.width && savedWindowSize.height <= currentWindowSize.height && savedWindowSize.width >= minWindowSize.width && savedWindowSize.height >= minWindowSize.width) {
                 windowSize = savedWindowSize;
                 windowSet = true;
             }
@@ -144,6 +136,9 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         // Finalize window layout
         this.pack();
+        if (Alchemy.OS != OS_MAC) {
+            setFrameIconImage();
+        }
 
         // Load the old location if available
         // First check it is not off screen
@@ -395,6 +390,30 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
         return onscreen;
     }
 
+    /** This method sets the icon image of the frame according to the best imageIcon size requirements for the system's appearance settings. 
+     *  This method should only be called after pack() or show() has been called for the Frame. 
+     */
+    private void setFrameIconImage() {
+        java.awt.Insets insets = this.getInsets();
+        int titleBarHeight = insets.top;
+        if (titleBarHeight == 32) {
+            //It's 'Windows Classic Style with Large Fonts', so use a 26 x 26 image  
+            Image titleIcon26 = AlcUtil.getImage("alchemy-logo26.png");
+            if (titleIcon26 != null) {
+                this.setIconImage(titleIcon26);
+            }
+        } else {
+            // Use the default 20 x 20 image - Looks fine on all other Windows Styles & Font Sizes 
+            // (except 'Windows Classic Style with Extra Large Fonts' where image is slightly distorted. 
+            // Have to live with that as cannot differentiate between 'Windows XP Style with Normal Fonts' appearance 
+            // and 'Windows Classic Style with Extra Large Fonts' appearance as they both have the same insets values)  
+            Image titleIcon20 = AlcUtil.getImage("alchemy-logo20.png");
+            if (titleIcon20 != null) {
+                this.setIconImage(titleIcon20);
+            }
+        }
+    }
+
 //
 //    /** Reflection to call a Java 6_10 class that sets the window transparency */
 //    private void setAlpha(float alpha) {
@@ -628,7 +647,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     public void componentShown(ComponentEvent e) {
     }
 
-        public void componentResized(ComponentEvent e) {
+    public void componentResized(ComponentEvent e) {
         resizeWindow();
     }
 
