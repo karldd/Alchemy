@@ -158,7 +158,7 @@
         <copy todir="${alchemy.dir}/modules">
             <fileset dir="${build.dir}/modules">
                 <include name="**/*.zip"/>
-                <!--<exclude name="**/*core*"/>-->
+                <exclude name="**/*shapeSwap*"/>
             </fileset>
         </copy>  
         
