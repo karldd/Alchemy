@@ -317,6 +317,8 @@ class AlcPlugins implements AlcConstants {
 
         // if sorting fails then use them unsorted
         } catch (Exception ex) {
+            System.err.println("ERROR - Problem sorting plugins, defaulting to unsorted ordering");
+            ex.printStackTrace();
             return plugins;
         }
     }
