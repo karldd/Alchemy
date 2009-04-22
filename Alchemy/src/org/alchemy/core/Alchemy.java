@@ -31,6 +31,8 @@ public class Alchemy implements AlcConstants {
 
     /** Current OS in use, one of OS_WINDOWS, OS_MAC, OS_LINUX or OS_OTHER. */
     public static int OS;
+    /** Are you tolerant enough to user the dreaded Windows Vista? */
+    public static boolean OS_IS_VISTA = false;
     /** Modifier Key String - This looks like <en>\u2318</em> for Mac or <em>Ctrl</em> otherwise */
     public static String KEY_MODIFIER_STRING = "Ctrl";
     /** Shift Key String - This looks like <en>\u21E7</em> for Mac or <em>Shift</em> otherwise */
@@ -50,7 +52,10 @@ public class Alchemy implements AlcConstants {
 
         } else if (OS_NAME.indexOf("Windows") != -1) {
             OS = OS_WINDOWS;
-
+            if (OS_NAME.indexOf("Vista") != -1){
+                OS_IS_VISTA = true;
+            }
+           
         } else if (OS_NAME.equals("Linux")) {
             OS = OS_LINUX;
 

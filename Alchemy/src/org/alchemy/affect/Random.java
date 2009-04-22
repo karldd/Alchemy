@@ -92,7 +92,7 @@ public class Random extends AlcModule {
     }
 
     private void randomiseShape(Point currentLoc, int shapeNumber) {
-        AlcShape shape = (AlcShape) canvas.shapes.get(shapeNumber);
+        AlcShape shape = canvas.shapes.get(shapeNumber);
         GeneralPath randomisedShape = randomise(shape.getPath(), currentLoc);
         shape.setPath(randomisedShape);
         canvas.redraw(true);
@@ -183,7 +183,7 @@ public class Random extends AlcModule {
             Point pt = e.getPoint();
             // Loop through from the newest shape and find the first one the mouse is over
             for (int i = canvas.shapes.size()-1; i >= 0; i--) {
-                AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
+                AlcShape thisShape = canvas.shapes.get(i);
                 if (thisShape.getPath().contains(pt)) {
                     firstShape = i;
                      break;
