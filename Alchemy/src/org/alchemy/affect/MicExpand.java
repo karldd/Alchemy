@@ -122,7 +122,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
     }
 
     private void captureSound() {
-        currentShape = (AlcShape) canvas.shapes.get(activeShape);
+        currentShape = canvas.shapes.get(activeShape);
         if (currentShape != null) {
             // Calculate the centre of the shape
 //            Rectangle size = currentShape.getShape().getBounds();
@@ -307,7 +307,7 @@ public class MicExpand extends AlcModule implements AlcMicInterface {
             int firstShape = -1;
             // Loop through from the newest shape and find the first one the mouse is over
             for (int i = canvas.shapes.size() - 1; i >= 0; i--) {
-                AlcShape thisShape = (AlcShape) canvas.shapes.get(i);
+                AlcShape thisShape = canvas.shapes.get(i);
                 if (thisShape.getPath().contains(e.getPoint())) {
                     firstShape = i;
                     currentPt = e.getPoint();

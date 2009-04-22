@@ -103,7 +103,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (Alchemy.OS != OS_LINUX) {
+        if (Alchemy.OS != OS_LINUX && !Alchemy.OS_IS_VISTA) {
             if (!this.getState()) {
                 g.setColor(AlcToolBar.COLOUR_UI_BOX);
                 // This is the toolbar menu popup

@@ -99,7 +99,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (Alchemy.OS != OS_LINUX) {
+        if (Alchemy.OS != OS_LINUX && !Alchemy.OS_IS_VISTA) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             // SELECTED
