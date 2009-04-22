@@ -26,10 +26,7 @@ import java.awt.event.*;
 import java.awt.Graphics2D;
 
 // ITEXT
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.*;
-import com.lowagie.text.xml.xmp.*;
 
 import java.awt.geom.*;
 import java.awt.image.BufferedImage;
@@ -140,7 +137,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Graphics Configuration - updated everytime the volatile buffImage is refreshed */
     private GraphicsConfiguration gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
     /** A Vector based canvas for full redrawing */
-    private static VectorCanvas vectorCanvas;
+    VectorCanvas vectorCanvas;
     /** Previous cursor */
     Cursor oldCursor;
     /** Automatic toggling of the toolbar */
@@ -1187,65 +1184,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             return false;
         }
     }
-
-    //////////////////////////////////////////////////////////////
-    // PDF STUFF
-    //////////////////////////////////////////////////////////////
-    /** Save the canvas to a single paged PDF file
-     * 
-     * @param file  The file object to save the pdf to
-     * @return      True if save worked, otherwise false
-     */
-    boolean saveSinglePdf(File file) {
-        // Get the current 'real' size of the canvas without margins/borders
-        java.awt.Rectangle visibleRect = this.getVisibleRect();
-        //int singlePdfWidth = Alchemy.window.getWindowSize().width;
-        //int singlePdfHeight = Alchemy.window.getWindowSize().height;
-        Document singleDocument = new Document(new com.lowagie.text.Rectangle(visibleRect.width, visibleRect.height), 0, 0, 0, 0);
-        System.out.println("Save Single Pdf Called: " + file.toString());
-
-        try {
-
-            PdfWriter singleWriter = PdfWriter.getInstance(singleDocument, new FileOutputStream(file));
-            singleDocument.addTitle("Alchemy Session");
-            singleDocument.addAuthor(USER_NAME);
-            singleDocument.addCreator("Alchemy <http://al.chemy.org>");
-
-            // Add metadata and open the document
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            XmpWriter xmp = new XmpWriter(os);
-            PdfSchema pdf = new PdfSchema();
-            pdf.setProperty(PdfSchema.KEYWORDS, "Alchemy <http://al.chemy.org>");
-            pdf.setProperty(PdfSchema.VERSION, "1.4");
-            xmp.addRdfDescription(pdf);
-            xmp.close();
-            singleWriter.setXmpMetadata(os.toByteArray());
-
-            singleDocument.open();
-            PdfContentByte singleContent = singleWriter.getDirectContent();
-            singleContent.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
-
-            Graphics2D g2pdf = singleContent.createGraphics(visibleRect.width, visibleRect.height);
-
-            setGuide(false);
-            vectorCanvas.paintComponent(g2pdf);
-            setGuide(true);
-
-            g2pdf.dispose();
-
-            singleDocument.close();
-            return true;
-
-        } catch (DocumentException ex) {
-            System.err.println(ex);
-            return false;
-        } catch (IOException ex) {
-            System.err.println(ex);
-            return false;
-        }
-    }
-
- 
     //////////////////////////////////////////////////////////////
     // PRINT STUFF
     //////////////////////////////////////////////////////////////
@@ -1514,22 +1452,31 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     /** Vector Canvas
-     *  Draws the canvas is full, including all shapes,
+     *  Draws the canvas in full, including all shapes,
      *  the background and buffImage if any.
      */
     class VectorCanvas extends JPanel implements AlcConstants {
 
         boolean transparent = false;
+        private int width,  height;
 
         @Override
         public void paintComponent(Graphics g) {
 
             super.paintComponent(g);
 
-            int w = Alchemy.canvas.getWidth();
-            int h = Alchemy.canvas.getHeight();
+            width = Alchemy.canvas.getWidth();
+            height = Alchemy.canvas.getHeight();
 
             Graphics2D g2 = (Graphics2D) g;
+
+            // Get the PDF Content Byte
+            PdfContentByte cb = null;
+
+            if (g2 instanceof PdfGraphics2D) {
+                PdfGraphics2D g2pdf = (PdfGraphics2D) g2;
+                cb = g2pdf.getContent();
+            }
 
             if (Alchemy.canvas.smoothing) {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1541,7 +1488,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             if (!transparent) {
                 // Paint background.
                 g2.setColor(Alchemy.canvas.getBackgroundColour());
-                g2.fillRect(0, 0, w, h);
+                g2.fillRect(0, 0, width, height);
             }
 
             // PDF READER
@@ -1576,16 +1523,33 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             for (int j = 0; j < Alchemy.canvas.fullShapeList.length; j++) {
                 for (int i = 0; i < Alchemy.canvas.fullShapeList[j].size(); i++) {
                     AlcShape currentShape = (AlcShape) Alchemy.canvas.fullShapeList[j].get(i);
+                    Paint paint = currentShape.getPaint();
+                    
                     // LINE
                     if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                        g2.setPaint(currentShape.getPaint());
-                        g2.draw(currentShape.path);
+
+                        // If this shape is a gradient and we are making a PDF
+                        if (paint instanceof GradientPaint && cb != null) {
+                            drawTransparentGradient(cb, g2, (GradientPaint) paint, currentShape.path, false);
+                        } else {
+                            g2.setPaint(paint);
+                            g2.draw(currentShape.path);
+                        }
+
                     // SOLID
                     } else {
-                        g2.setPaint(currentShape.getPaint());
-                        g2.fill(currentShape.path);
+
+                        // If this shape is a gradient and we are making a PDF
+                        if (paint instanceof GradientPaint && cb != null) {
+                            drawTransparentGradient(cb, g2, (GradientPaint) paint, currentShape.path, true);
+                        } else {
+                            g2.setPaint(paint);
+                            g2.fill(currentShape.path);
+                        }
+
+
                     }
                 }
             }
@@ -1607,6 +1571,54 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             }
 
             g2.dispose();
+        }
+
+        /** Draw a transparent gradient to the PDF */
+        private void drawTransparentGradient(PdfContentByte cb, Graphics2D g2, GradientPaint gp, GeneralPath path, boolean fill) {
+
+            //Create template
+            PdfTemplate template = cb.createTemplate(width, height);
+
+            //Prepare transparent group
+            PdfTransparencyGroup transGroup = new PdfTransparencyGroup();
+            transGroup.put(PdfName.CS, PdfName.DEVICERGB);
+            transGroup.setIsolated(true);
+            transGroup.setKnockout(false);
+            template.setGroup(transGroup);
+
+            //Prepare graphic state
+            PdfGState gState = new PdfGState();
+            PdfDictionary maskDict = new PdfDictionary();
+            maskDict.put(PdfName.TYPE, PdfName.MASK);
+            maskDict.put(PdfName.S, new PdfName("Luminosity"));
+            maskDict.put(new PdfName("G"), template.getIndirectReference());
+            gState.put(PdfName.SMASK, maskDict);
+            cb.setGState(gState);
+
+            // Create a gradient to use as the mask
+            // Also flip the Y location
+            PdfShading shading = PdfShading.simpleAxial(
+                    cb.getPdfWriter(),
+                    (float) gp.getPoint1().getX(),
+                    (float) (height - gp.getPoint1().getY()),
+                    (float) gp.getPoint2().getX(),
+                    (float) (height - gp.getPoint2().getY()),
+                    Color.WHITE,
+                    Color.BLACK,
+                    true,
+                    true);
+            template.paintShading(shading);
+
+            // Draw the actual colour under the mask
+            g2.setColor(gp.getColor1());
+            // SOLID
+            if (fill) {
+                g2.fill(path);
+            // LINE    
+            } else {
+                g2.draw(path);
+            }
+
         }
     }
 }

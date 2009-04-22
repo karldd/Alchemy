@@ -785,7 +785,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             String format = fc.getFileFilter().getDescription();
 
             if (format.equals("PDF")) {
-                Alchemy.canvas.saveSinglePdf(file);
+                Alchemy.session.saveSinglePdf(file);
             } else if (format.equals("JPG")) {
                 Alchemy.canvas.saveBitmap(file, "jpg");
             } else if (format.equals("PNG")) {
@@ -813,7 +813,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         try {
             File tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
             tempVector.deleteOnExit();
-            if (Alchemy.canvas.saveSinglePdf(tempVector)) {
+            if (Alchemy.session.saveSinglePdf(tempVector)) {
                 openSwitch(tempVector.toString(), Alchemy.preferences.switchVectorApp);
             } else {
                 System.out.println("Didn't save???");

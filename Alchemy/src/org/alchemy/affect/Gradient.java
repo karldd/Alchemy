@@ -101,6 +101,7 @@ public class Gradient extends AlcModule {
 
         if (p1 != null && p2 != null) {
             GradientPaint gradient = new GradientPaint(p1, shape.getColour(), p2, transparent);
+            //System.out.println("1: " + shape.getColour().getTransparency() + " 2: " + transparent.getTransparency());
             shape.setGradientPaint(gradient);
         }
     }
