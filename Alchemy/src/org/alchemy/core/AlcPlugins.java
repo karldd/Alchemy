@@ -69,40 +69,37 @@ class AlcPlugins implements AlcConstants {
          * acesses it from there. That temp file is deleted on exit.
          * 
          * This is very hacky and not ideal! 
-         
+        
         File tempCore = null;
-
+        
         try {
-            // Create temp file.
-            tempCore = new File(DIR_TEMP, "org.alchemy.core-1.0.0.zip");
-
-            if (tempCore.exists()) {
-                System.out.println("Temp Core Exits: " + tempCore.getAbsolutePath());
-                tempCore.delete();
-                System.out.println("Temp Core Deleted...");
-            }
-
-            //Get the Core Plugin as as a resource from the JAR
-            InputStream coreStream = this.getClass().getResourceAsStream("/org/alchemy/data/org.alchemy.core-1.0.0.zip");
-
-            // Delete temp file when program exits.
-            tempCore.deleteOnExit();
-            // Copy to the temp directory
-            AlcUtil.copyFile(coreStream, tempCore);
-
-            //
-            if (!tempCore.exists()) {
-                System.err.println("ERROR - Core plugin could not be copied to the temp dir: " + DIR_TEMP);
-            }
-
-        } catch (Exception ex) {
-            System.err.println("ERROR - Problem adding the core plugin to the temp dir");
-            ex.printStackTrace();
+        // Create temp file.
+        tempCore = new File(DIR_TEMP, "org.alchemy.core-1.0.0.zip");
+        
+        if (tempCore.exists()) {
+        System.out.println("Temp Core Exits: " + tempCore.getAbsolutePath());
+        tempCore.delete();
+        System.out.println("Temp Core Deleted...");
         }
-        */
         
+        //Get the Core Plugin as as a resource from the JAR
+        InputStream coreStream = this.getClass().getResourceAsStream("/org/alchemy/data/org.alchemy.core-1.0.0.zip");
         
-        // Folder of the plugins
+        // Delete temp file when program exits.
+        tempCore.deleteOnExit();
+        // Copy to the temp directory
+        AlcUtil.copyFile(coreStream, tempCore);
+        
+        //
+        if (!tempCore.exists()) {
+        System.err.println("ERROR - Core plugin could not be copied to the temp dir: " + DIR_TEMP);
+        }
+        
+        } catch (Exception ex) {
+        System.err.println("ERROR - Problem adding the core plugin to the temp dir");
+        ex.printStackTrace();
+        }
+         */        // Folder of the plugins
         File pluginsDir = new File("modules");
 
         if (!pluginsDir.exists()) {
@@ -110,7 +107,7 @@ class AlcPlugins implements AlcConstants {
             AlcUtil.showConfirmDialogFromBundle("noModulesDialogTitle", "noModulesDialogMessage");
             System.exit(0);
         }
-        
+
 
         // Get all plugins that end with .zip
         File[] plugins = pluginsDir.listFiles(new FilenameFilter() {
@@ -126,18 +123,18 @@ class AlcPlugins implements AlcConstants {
             AlcUtil.showConfirmDialogFromBundle("noModulesDialogTitle", "noModulesDialogMessage");
             System.exit(0);
         }
-        
+
         boolean coreExists = false;
         // Check the core plugin exists
         for (int i = 0; i < plugins.length; i++) {
             // If the core plugin exits
-            if(plugins[i].getName().indexOf("org.alchemy.core") != -1){
+            if (plugins[i].getName().indexOf("org.alchemy.core") != -1) {
                 coreExists = true;
                 //System.out.println("Core Exists: " + i);
                 break;
             }
         }
-        if(!coreExists){
+        if (!coreExists) {
             // Tell the user that they need the core module
             AlcUtil.showConfirmDialogFromBundle("noCoreModuleDialogTitle", "noCoreModuleDialogMessage");
             System.exit(0);
@@ -178,7 +175,7 @@ class AlcPlugins implements AlcConstants {
         } catch (Exception ex) {
             System.err.println("ERROR - Problem publishing plugins to the pluginManager");
             ex.printStackTrace();
-            //throw new RuntimeException(e);
+        //throw new RuntimeException(e);
         }
 
         // Load affects first - zero number of affects is not a problem
@@ -220,6 +217,8 @@ class AlcPlugins implements AlcConstants {
     AlcModule[] addPlugins(String pointName, int numberOfModules, int moduleType, String[] order) {
 
         AlcModule[] plugins = new AlcModule[numberOfModules];
+        // Backup incase the sort fails
+        AlcModule[] pluginsSorted = new AlcModule[numberOfModules];
         int index = 0;
         int noMatchCount = 0;
 
@@ -245,6 +244,7 @@ class AlcPlugins implements AlcConstants {
                  */
 
                 AlcModule currentPlugin = (AlcModule) pluginCls.newInstance();
+                AlcModule currentPluginSorted = (AlcModule) pluginCls.newInstance();
 
                 // Set the icon name and the decription name from the XML
                 String descriptionParam = ext.getParameter("description").valueAsString();
@@ -267,20 +267,33 @@ class AlcPlugins implements AlcConstants {
                 }
 
                 plugins[index] = currentPlugin;
+                pluginsSorted[index] = currentPluginSorted;
 
                 URL iconUrl = null;
 
                 if (iconParam != null) {
                     iconUrl = classLoader.getResource(iconParam);
                     plugins[index].setIconUrl(iconUrl);
+                    pluginsSorted[index].setIconUrl(iconUrl);
                 }
 
                 plugins[index].setModuleType(moduleType);
                 plugins[index].setName(nameParam);
                 plugins[index].setIconName(iconParam);
                 plugins[index].setDescription(descriptionParam);
-                plugins[index].setSortOrderIndex(sortIndex);
+                // Set the real index
+                //plugins[index].setSortOrderIndex(sortIndex);
+                plugins[index].setIndex(index);
                 plugins[index].setClassLoader(classLoader);
+
+
+                pluginsSorted[index].setModuleType(moduleType);
+                pluginsSorted[index].setName(nameParam);
+                pluginsSorted[index].setIconName(iconParam);
+                pluginsSorted[index].setDescription(descriptionParam);
+                pluginsSorted[index].setSortOrderIndex(sortIndex);
+                pluginsSorted[index].setClassLoader(classLoader);
+
                 index++;
             }
 
@@ -289,16 +302,23 @@ class AlcPlugins implements AlcConstants {
             ex.printStackTrace();
         }
 
-        //Arrays.sort(plugins, (Comparator<AlcModule>)new PluginComparator());
-        Arrays.sort(plugins, new PluginComparator());
 
-        // Loop through once again and set the index
-        for (int i = 0; i < plugins.length; i++) {
-            plugins[i].setIndex(i);
+
+        // Attempt to sort the plugins
+        try {
+
+            //Arrays.sort(plugins, (Comparator<AlcModule>)new PluginComparator());
+            Arrays.sort(pluginsSorted, new PluginComparator());
+            // Loop through once again and set the index
+            for (int i = 0; i < pluginsSorted.length; i++) {
+                pluginsSorted[i].setIndex(i);
+            }
+            return pluginsSorted;
+
+        // if sorting fails then use them unsorted
+        } catch (Exception ex) {
+            return plugins;
         }
-
-
-        return plugins;
     }
 
     /** Get the number of plugins */
