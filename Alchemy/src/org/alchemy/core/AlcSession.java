@@ -19,13 +19,16 @@
  */
 package org.alchemy.core;
 
-import com.lowagie.text.pdf.*;
 import java.awt.event.*;
 import java.io.*;
 import com.sun.pdfview.*;
 import eu.medsea.util.MimeUtil;
+import java.awt.Graphics2D;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.*;
+import com.lowagie.text.xml.xmp.*;
 
 /**
  * Class to control Alchemy 'sessions'
@@ -53,6 +56,12 @@ class AlcSession implements ActionListener, AlcConstants {
     AlcSession() {
     }
 
+    //////////////////////////////////////////////////////////////
+    // RECORDING / TIMER
+    //////////////////////////////////////////////////////////////
+    /** Start or end recording
+     * @param record    The new recording state
+     */
     void setRecording(boolean record) {
         if (record) {
 
@@ -85,6 +94,16 @@ class AlcSession implements ActionListener, AlcConstants {
         recordState = record;
     }
 
+    /** Return if currently recording
+     * @return
+     */
+    boolean isRecording() {
+        return recordState;
+    }
+
+    /** Set the session timer interval
+     * @param interval  An interval in milliseconds
+     */
     void setTimerInterval(int interval) {
         System.out.println("Interval: " + interval);
         // Set the interval in the preferences
@@ -115,10 +134,23 @@ class AlcSession implements ActionListener, AlcConstants {
         }
     }
 
-    boolean isRecording() {
-        return recordState;
+    /** Restart the session timer */
+    private void restartTimer() {
+        if (timer != null) {
+            if (timer.isRunning()) {
+                System.out.println("Timer Restarted");
+                timer.restart();
+            }
+        }
     }
 
+    /** Restart the session */
+    void restartSession() {
+        pdfWriteFile = null;
+    }
+    //////////////////////////////////////////////////////////////
+    // SAVE PDF 
+    //////////////////////////////////////////////////////////////
     /** Return the current file being created by the pdf */
     File getCurrentPdfPath() {
         return pdfWriteFile;
@@ -144,7 +176,7 @@ class AlcSession implements ActionListener, AlcConstants {
             String fileName = Alchemy.preferences.sessionFilePreName + AlcUtil.dateStamp(Alchemy.preferences.sessionFileDateFormat) + ".pdf";
             pdfWriteFile = new File(Alchemy.preferences.sessionPath, fileName);
             System.out.println("Current PDF file: " + pdfWriteFile.getPath());
-            return Alchemy.canvas.saveSinglePdf(pdfWriteFile);
+            return saveSinglePdf(pdfWriteFile);
 
         // Else save a temp file then join the two together
         } else {
@@ -154,7 +186,7 @@ class AlcSession implements ActionListener, AlcConstants {
                 // Delete temp file when program exits.
                 //temp.deleteOnExit();
                 // Make the temp pdf
-                Alchemy.canvas.saveSinglePdf(temp);
+                saveSinglePdf(temp);
                 boolean jointUp = addPageToPdf(pdfWriteFile, temp);
                 if (jointUp) {
                     //System.out.println("Pdf files joint");
@@ -175,6 +207,69 @@ class AlcSession implements ActionListener, AlcConstants {
         savePage();
         Alchemy.canvas.clear();
         progressPage();
+    }
+
+    /** Save the canvas to a single paged PDF file
+     * 
+     * @param file  The file object to save the pdf to
+     * @return      True if save worked, otherwise false
+     */
+    boolean saveSinglePdf(File file) {
+        // Get the current 'real' size of the canvas without margins/borders
+        java.awt.Rectangle bounds = Alchemy.canvas.getVisibleRect();
+        //int singlePdfWidth = Alchemy.window.getWindowSize().width;
+        //int singlePdfHeight = Alchemy.window.getWindowSize().height;
+        Document document = new Document(new com.lowagie.text.Rectangle(bounds.width, bounds.height), 0, 0, 0, 0);
+        System.out.println("Save Single Pdf Called: " + file.toString());
+        boolean noError = true;
+
+        try {
+
+            PdfWriter singleWriter = PdfWriter.getInstance(document, new FileOutputStream(file));
+            document.addTitle("Alchemy Session");
+            document.addAuthor(USER_NAME);
+            document.addCreator("Alchemy <http://al.chemy.org>");
+
+            // Add metadata and open the document
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            XmpWriter xmp = new XmpWriter(os);
+            PdfSchema pdf = new PdfSchema();
+            pdf.setProperty(PdfSchema.KEYWORDS, "Alchemy <http://al.chemy.org>");
+            //pdf.setProperty(PdfSchema.VERSION, "1.4");
+            xmp.addRdfDescription(pdf);
+            xmp.close();
+            singleWriter.setXmpMetadata(os.toByteArray());
+
+            document.open();
+            PdfContentByte cb = singleWriter.getDirectContent();
+            cb.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
+
+            // Paint background
+            cb.setColorFill(Alchemy.canvas.getBackgroundColour());
+            cb.rectangle(0, 0, bounds.width, bounds.height);
+            cb.fill();
+
+
+            Graphics2D g2pdf = cb.createGraphics(bounds.width, bounds.height);
+
+            Alchemy.canvas.setGuide(false);
+            Alchemy.canvas.vectorCanvas.paintComponent(g2pdf);
+            Alchemy.canvas.setGuide(true);
+
+            g2pdf.dispose();
+
+
+        } catch (DocumentException ex) {
+            System.err.println(ex);
+            noError = false;
+        } catch (IOException ex) {
+            System.err.println(ex);
+            noError = false;
+        }
+
+        document.close();
+
+        return noError;
     }
 
     /** Adds a pdfReadPage to an existing pdf file
@@ -282,22 +377,8 @@ class AlcSession implements ActionListener, AlcConstants {
             return false;
         }
     }
-
-    private void restartTimer() {
-        if (timer != null) {
-            if (timer.isRunning()) {
-                System.out.println("Timer Restarted");
-                timer.restart();
-            }
-        }
-    }
-
-    void restartSession() {
-        pdfWriteFile = null;
-    }
-
     //////////////////////////////////////////////////////////////
-    // PDF READER STUFF
+    // LOAD PDF
     //////////////////////////////////////////////////////////////
     /** Load a session file to draw on top of */
     boolean loadSessionFile(File file) {

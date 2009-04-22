@@ -39,7 +39,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /** Colour of this shape */
     Color colour;
     /** Alpha of this shape */
-    int alpha;
+    int alpha = 255;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
     int style;
     /** The Gradient of this shape (if available) */
@@ -195,7 +195,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void setupDefaultAttributes() {
         this.alpha = Alchemy.canvas.getAlpha();
-        this.colour = Alchemy.canvas.getColour();
+        setColour(Alchemy.canvas.getColour());
         this.style = Alchemy.canvas.getStyle();
         if (Alchemy.canvas.getLineWidth() < 0) {
             this.lineWidth = 0;
