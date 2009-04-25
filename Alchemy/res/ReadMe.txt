@@ -37,6 +37,9 @@ Version History
 --------------------------------------
 ALPHA 007.1
 
+CHANGES
++ JPen Tablet library updated - now with support for 64bit Windows machines
+
 BUG FIXES
 + Corrupt PDF files when using the Gradient module fixed
 + Plugin Comparator error handling added to fix errors on launch
