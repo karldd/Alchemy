@@ -35,6 +35,14 @@ Alchemy Forum: http://al.chemy.org/forum/
 
 Version History
 --------------------------------------
+ALPHA 007.1
+
+BUG FIXES
++ Corrupt PDF files when using the Gradient module fixed
++ Plugin Comparator error handling added to fix errors on launch
++ Mirror Vista UI fixes
+
+--------------------------------------
 ALPHA 007
 
 FEATURES
