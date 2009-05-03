@@ -240,23 +240,29 @@ class AlcSession implements ActionListener, AlcConstants {
             xmp.close();
             singleWriter.setXmpMetadata(os.toByteArray());
 
+            // To avoid transparent colurs being converted from RGB>CMYK>RGB
+            // We have to add everything to a transparency group
+            PdfTransparencyGroup transGroup = new PdfTransparencyGroup();
+            transGroup.put(PdfName.CS, PdfName.DEVICERGB);
+            
             document.open();
-            PdfContentByte cb = singleWriter.getDirectContent();
+            
+            PdfContentByte cb = singleWriter.getDirectContent();            
+            PdfTemplate tp = cb.createTemplate(bounds.width, bounds.height);
+            
+            document.newPage();
+            
+            cb.getPdfWriter().setGroup(transGroup);
+            // Make sure the colour space is Device RGB
             cb.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
 
-            // Paint background
-            cb.setColorFill(Alchemy.canvas.getBackgroundColour());
-            cb.rectangle(0, 0, bounds.width, bounds.height);
-            cb.fill();
-
-
-            Graphics2D g2pdf = cb.createGraphics(bounds.width, bounds.height);
-
+            // Draw into the template and add it to the PDF 
+            Graphics2D g2pdf = tp.createGraphics(bounds.width, bounds.height);
             Alchemy.canvas.setGuide(false);
             Alchemy.canvas.vectorCanvas.paintComponent(g2pdf);
             Alchemy.canvas.setGuide(true);
-
             g2pdf.dispose();
+            cb.addTemplate(tp, 0, 0);
 
 
         } catch (DocumentException ex) {
@@ -296,58 +302,41 @@ class AlcSession implements ActionListener, AlcConstants {
             // Sizes to be used from now on
             float pdfWidth = oldSize.getWidth();
             float pdfHeight = oldSize.getHeight();
-            float shrinkOffset = 0;
             if (currentSize.getWidth() > pdfWidth) {
                 pdfWidth = currentSize.getWidth();
             }
             if (currentSize.getHeight() > pdfHeight) {
                 pdfHeight = currentSize.getHeight();
             }
-            // Create an offset if the canvas has shrunk down
-            if (currentSize.getHeight() < pdfHeight) {
-                shrinkOffset = 0 - (currentSize.getHeight() - pdfHeight);
-            }
+
             // Use the new bigger canvas size if required
-            com.lowagie.text.Document mainDocument = new com.lowagie.text.Document(new com.lowagie.text.Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
-            PdfWriter mainWriter = PdfWriter.getInstance(mainDocument, output);
+            com.lowagie.text.Document document = new com.lowagie.text.Document(new com.lowagie.text.Rectangle(pdfWidth, pdfHeight), 0, 0, 0, 0);
+            PdfCopy copy = new PdfCopy(document, output);
 
             // Copy the meta data
-            mainDocument.addTitle("Alchemy Session");
-            mainDocument.addAuthor(USER_NAME);
-            mainDocument.addCreator("Alchemy <http://al.chemy.org>");
-            mainWriter.setXmpMetadata(reader.getMetadata());
-            mainDocument.open();
+            document.addTitle("Alchemy Session");
+            document.addAuthor(USER_NAME);
+            document.addCreator("Alchemy <http://al.chemy.org>");
+            copy.setXmpMetadata(reader.getMetadata());
+            document.open();
 
             // Holds the PDF
-            PdfContentByte mainContent = mainWriter.getDirectContent();
-            // Set the colour space to RGB
-            // & hopefully avoid the pdf reader switching to CMYK
-            mainContent.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
+            PdfContentByte cb = copy.getDirectContent();
 
             // Add each page from the main PDF
             for (int i = 0; i < reader.getNumberOfPages();) {
                 ++i;
-                mainDocument.newPage();
-                PdfImportedPage page = mainWriter.getImportedPage(reader, i);
-
-                float yOffset = 0;
-                float pageHeight = page.getHeight();
-                // Because the origin is bottom left
-                // Create an offset to align fromt he top left
-                // This will only happen when a newer bigger page is added
-                if (pageHeight < pdfHeight) {
-                    yOffset = pdfHeight - pageHeight;
-                }
-                mainContent.addTemplate(page, 0, yOffset);
+                document.newPage();
+                cb.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
+                PdfImportedPage page = copy.getImportedPage(reader, i);
+                copy.addPage(page);
             }
             // Add the last (new) page
-            mainDocument.newPage();
-            PdfImportedPage lastPage = mainWriter.getImportedPage(newPdf, 1);
-            // If the page has been shrunk down again
-            // move the new page back up into the top left
-            mainContent.addTemplate(lastPage, 0, shrinkOffset);
+            document.newPage();
+            PdfImportedPage lastPage = copy.getImportedPage(newPdf, 1);
+            copy.addPage(lastPage);
             output.flush();
-            mainDocument.close();
+            document.close();
             output.close();
 
             if (dest.exists()) {
