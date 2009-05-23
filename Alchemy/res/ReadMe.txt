@@ -35,7 +35,23 @@ Alchemy Forum: http://al.chemy.org/forum/
 
 Version History
 --------------------------------------
+ALPHA 008
+??.??.2009
+
+CHANGES
++ Persian Localisation added - Thanks to Omid Saadat!
+
+--------------------------------------
+ALPHA 007.2
+06.05.2009
+
+BUG FIXES
++ Gradient Module Colour fixes
++ Fixed bug where PDF files containing transparency had their colours converted to CMYK and back again, resulting in incorrect colours
+
+--------------------------------------
 ALPHA 007.1
+27.04.2009
 
 CHANGES
 + JPen Tablet library updated - now with support for 64bit Windows machines
@@ -47,6 +63,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 007
+09.04.2009
 
 FEATURES
 + Pressure Shapes module for drawing shapes using pressure from a tablet
@@ -73,6 +90,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 006
+11.12.2008
 
 FEATURES
 + Jpeg export functionality added
@@ -104,6 +122,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 005
+26.06.2008
 
 FEATURES
 + Draw over/under existing shapes mode 
@@ -121,6 +140,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 004
+03.05.2008
 
 FEATURES
 + Load PDF session
@@ -141,6 +161,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 003.1
+26.03.2008
  
 FEATURES
 + Hide cursor function
@@ -152,6 +173,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 003
+24.03.2008
 
 FEATURES
 + Colour added - new colour picker in the tool bar
@@ -172,6 +194,7 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 002
+02.03.2008
 
 FEATURES
 + The toolbar is now detachable into a seperate palette window
@@ -197,5 +220,6 @@ BUG FIXES
 
 --------------------------------------
 ALPHA 001
+30.01.2008
  
 Initial Release
