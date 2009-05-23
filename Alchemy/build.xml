@@ -106,7 +106,7 @@
                
                
         <!-- CREATES -->
-        <for list="shapes,typeShapes,inverseShapes,micShapes,medianShapes,speedShapes,xShapes,traceShapes,detachShapes,scrawlShapes,pullShapes,pressureShapes,splatterShapes" param="create">
+        <for list="shapes,typeShapes,inverseShapes,micShapes,medianShapes,speedShapes,xShapes,traceShapes,detachShapes,scrawlShapes,pullShapes,pressureShapes,splatterShapes,ribbonShapes" param="create">
             <sequential>
                 <copy todir="${build.dir}/modules/@{create}/org/alchemy/create">
                     <!-- Include all files that begin with the module name -->
@@ -259,18 +259,27 @@
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>
         
+
+        <!-- Move the Alchemy folder to a sub directory to make a drag and drop install easier -->
+        <move todir="${alchemy.dir}/Alchemy">
+            <fileset dir="${alchemy.dir}" />
+        </move>
         
         <!-- Create a Mac .dmg file for distribution. 
              Create a hidden folder and copy the background image, 
              then copy the DS_Store file which holds the preferences of how it looks,
              finally create the .dmg file using the command line hdiutil-->
-             
         <copy file="${basedir}/res/dmg/Alchemy.png" todir="${alchemy.dir}/.background"/>
         <copy file="${basedir}/res/dmg/DS_Store" todir="${alchemy.dir}"/>
         <move file="${alchemy.dir}/DS_Store" tofile="${alchemy.dir}/.DS_Store"/>
+        
         <exec executable="hdiutil">
             <arg line="create -srcfolder ${alchemy.dir} ${dist.dir}/Alchemy-${version.number}.dmg"/>
         </exec> 
+        
+        <move todir="${alchemy.dir}">
+            <fileset dir="${alchemy.dir}/Alchemy" />
+        </move>
         
     </target>
     
