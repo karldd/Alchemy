@@ -21,11 +21,18 @@ package org.alchemy.create;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 /**
  *
  * RibbonShapes.java
+ * 
+ * 
+ * 
  */
 public class RibbonShapes extends AlcModule implements AlcConstants {
 
@@ -35,8 +42,14 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     private float randomness = 0.2F;
     private RibbonManager ribbonManager;
     //
-    private long delayGap = 50;
-    private long delayTime;
+    private AlcToolBarSubSection subToolBarSection;
+    //
+    private int spacing = 25;
+    private long time;
+    // 
+    private final int initialGravity = 50;
+    private final int initialFriction = 110;
+    private final int initialSize = 10;
 
     public RibbonShapes() {
     }
@@ -44,26 +57,110 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     @Override
     public void setup() {
         ribbonManager = new RibbonManager(ribbonAmount, ribbonParticleAmount, randomness);
-        ribbonManager.setRadiusMax(12);                 // default = 8
-        ribbonManager.setRadiusDivide(10);              // default = 10
+        ribbonManager.setRadiusMax(initialSize);                 // default = 8
+        ribbonManager.setRadiusDivide(1F);              // default = 10
         ribbonManager.setGravity(0.07F);                   // default = .03
         ribbonManager.setFriction(1.1F);                  // default = 1.1
         ribbonManager.setMaxDistance(40);               // default = 40
         ribbonManager.setDrag(1.8F);                      // default = 2
         ribbonManager.setDragFlare(0.015F);                 // default = .008
+
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    protected void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    private void createSubToolBarSection() {
+        subToolBarSection = new AlcToolBarSubSection(this);
+        
+        // Size Slider
+        final AlcSubSpinner sizeSpinner = new AlcSubSpinner("Size", 1, 100, initialSize, 1 );
+        sizeSpinner.setToolTipText("Adjust the ribbon size");
+        sizeSpinner.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!sizeSpinner.getValueIsAdjusting()) {
+                            int value = sizeSpinner.getValue();
+                            
+                            ribbonManager.setRadiusMax(value);
+                            float divide = (100 - value) / 5F;
+                            //System.out.println(value + " " + divide);
+                            ribbonManager.setRadiusDivide(divide);
+                        }
+                    }
+                });
+        subToolBarSection.add(sizeSpinner);
+        
+        
+        // Spacing Slider
+        final AlcSubSpinner spacingSpinner = new AlcSubSpinner("Spacing", 1, 100, spacing, 1);
+        spacingSpinner.setToolTipText("Adjust the spacing interval");
+        spacingSpinner.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!spacingSpinner.getValueIsAdjusting()) {
+                            spacing = spacingSpinner.getValue();
+                        }
+                    }
+                });
+        subToolBarSection.add(spacingSpinner);
+        
+
+
+        // Friction Slider
+        final AlcSubSlider frictionSlider = new AlcSubSlider("Friction", 1, 200, initialFriction);
+        frictionSlider.setToolTipText("Adjust the ribbon friction");
+        frictionSlider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!frictionSlider.getValueIsAdjusting()) {
+                            int value = frictionSlider.getValue();
+                            float friction = value * 0.01F;
+                            ribbonManager.setFriction(friction);
+                        }
+                    }
+                });
+        subToolBarSection.add(frictionSlider);
+
+        // Gravity Slider
+        final AlcSubSlider gravitySlider = new AlcSubSlider("Gravity", 0, 200, initialGravity);
+        gravitySlider.setToolTipText("Adjust the ribbon gravity");
+        gravitySlider.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!gravitySlider.getValueIsAdjusting()) {
+                            int value = gravitySlider.getValue();
+                            float gravity = value * 0.01F;
+                            //System.out.println(gravity);
+                            ribbonManager.setGravity(gravity);
+                        }
+                    }
+                });
+        subToolBarSection.add(gravitySlider);
+
+
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        addShapes();
+        canvas.createShapes.add(new AlcShape());
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (System.currentTimeMillis() - delayTime >= delayGap) {
+        if (System.currentTimeMillis() - time >= spacing) {
             canvas.commitShapes();
-            addShapes();
-            delayTime = System.currentTimeMillis();
+            canvas.createShapes.add(new AlcShape());
+            time = System.currentTimeMillis();
 
         } else {
             ribbonManager.update(e.getX(), e.getY());
@@ -72,16 +169,10 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        ribbonManager.init();
         //System.out.println(canvas.createShapes.size());
         canvas.commitShapes();
         canvas.redraw();
-    }
-
-    private void addShapes() {
-        for (int i = 0; i < ribbonParticleAmount - 4; i++) {
-            AlcShape shape = new AlcShape();
-            canvas.createShapes.add(shape);
-        }
     }
 
     class Ribbon {
@@ -147,42 +238,76 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
             for (int i = 1; i < particlesAssigned - 1; i++) {
                 RibbonParticle p = particles[i];
                 p.calculateParticles(particles[i - 1], particles[i + 1], ribbonParticleAmount, i);
-               
-                
-
             }
 
-            for (int i = particlesAssigned - 4; i > 1; i--) {
-                RibbonParticle p = particles[i];
-                RibbonParticle pm1 = particles[i - 1];
+            if (particlesAssigned > 1) {
 
-                // System.out.println((i - 1) + " : " + pm1.rcx2 + " " + pm1.rcy2 + " " + pm1.lcx2 + "" + pm1.lcy2);
-                System.out.println(i + " " + (i - 1));
-                
-                AlcShape shape = canvas.createShapes.get(i-1);
+                AlcShape shape = canvas.getCurrentCreateShape();
+                //GeneralPath path = shape.getPath();
                 GeneralPath path = new GeneralPath();
+                ArrayList<Point2D.Float> spine = new ArrayList<Point2D.Float>(particles.length - 4);
 
-                path.moveTo(p.lcx2, p.lcy2);
-                path.curveTo(p.leftPX, p.leftPY, pm1.lcx2, pm1.lcy2, pm1.lcx2, pm1.lcy2);
-                path.lineTo(pm1.rcx2, pm1.rcy2);
-                path.curveTo(p.rightPX, p.rightPY, p.rcx2, p.rcy2, p.rcx2, p.rcy2);
-                //path.lineTo(p.lcx2, p.lcy2);
-                //path.closePath();
+
+
+                RibbonParticle p0 = particles[1];
+                path.moveTo(p0.lcx2, p0.lcy2);
+                spine.add(new Point2D.Float(p0.px, p0.py));
+
+                for (int i = 2; i < particlesAssigned - 4; i++) {
+
+                    RibbonParticle p = particles[i];
+                    spine.add(new Point2D.Float(p.px, p.py));
+                    path.curveTo(p.leftPX, p.leftPY, p.lcx2, p.lcy2, p.lcx2, p.lcy2);
+                //path.lineTo(p.leftPX, p.leftPY);
+
+                }
+
+                for (int i = particlesAssigned - 4; i > 1; i--) {
+
+                    RibbonParticle p = particles[i];
+                    RibbonParticle pm1 = particles[i - 1];
+                    spine.add(new Point2D.Float(p.px, p.py));
+                    path.curveTo(p.rightPX, p.rightPY, pm1.rcx2, pm1.rcy2, pm1.rcx2, pm1.rcy2);
+                //path.lineTo(p.rightPX, p.rightPY);
+
+                }
+
+                path.closePath();
                 shape.setPath(path);
+                canvas.redraw();
             }
-            canvas.redraw();
+
+//            for (int i = particlesAssigned - 4; i > 1; i--) {
+//                RibbonParticle p = particles[i];
+//                RibbonParticle pm1 = particles[i - 1];
+//
+//                // System.out.println((i - 1) + " : " + pm1.rcx2 + " " + pm1.rcy2 + " " + pm1.lcx2 + "" + pm1.lcy2);
+//                System.out.println(i + " " + (i - 1));
+//                
+//                AlcShape shape = canvas.createShapes.get(i-1);
+//                GeneralPath path = new GeneralPath();
+//
+//                path.moveTo(p.lcx2, p.lcy2);
+//                path.curveTo(p.leftPX, p.leftPY, pm1.lcx2, pm1.lcy2, pm1.lcx2, pm1.lcy2);
+//                path.lineTo(pm1.rcx2, pm1.rcy2);
+//                path.curveTo(p.rightPX, p.rightPY, p.rcx2, p.rcy2, p.rcx2, p.rcy2);
+//                //path.lineTo(p.lcx2, p.lcy2);
+//                //path.closePath();
+//                shape.setPath(path);
+//            }
+
         }
     }
 
     class RibbonParticle {
 
-        float px,  py;                                       // x and y position of particle (this is the bexier point)
-        float xSpeed,  ySpeed = 0;                           // speed of the x and y positions
-        float cx1,  cy1,  cx2,  cy2;                           // the avarage x and y positions between px and py and the points of the surrounding Particles
-        float leftPX,  leftPY,  rightPX,  rightPY;             // the x and y points of that determine the thickness of this segment
-        float lpx,  lpy,  rpx,  rpy;                           // the x and y points of the outer bezier points
-        float lcx1,  lcy1,  lcx2,  lcy2;                       // the avarage x and y positions between leftPX and leftPX and the left points of the surrounding Particles
-        float rcx1,  rcy1,  rcx2,  rcy2;                       // the avarage x and y positions between rightPX and rightPX and the right points of the surrounding Particles
+        float px, py;                                       // x and y position of particle (this is the bexier point)
+        float xSpeed, ySpeed = 0;                           // speed of the x and y positions
+        float cx1, cy1, cx2, cy2;                           // the avarage x and y positions between px and py and the points of the surrounding Particles
+        float leftPX, leftPY, rightPX, rightPY;             // the x and y points of that determine the thickness of this segment
+        float lpx, lpy, rpx, rpy;                           // the x and y points of the outer bezier points
+        float lcx1, lcy1, lcx2, lcy2;                       // the avarage x and y positions between leftPX and leftPX and the left points of the surrounding Particles
+        float rcx1, rcy1, rcx2, rcy2; // the avarage x and y positions between rightPX and rightPX and the right points of the surrounding Particles
         float radius;                                       // thickness of current particle
         float randomness;
         Ribbon ribbon;

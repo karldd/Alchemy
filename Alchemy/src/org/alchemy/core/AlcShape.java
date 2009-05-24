@@ -699,7 +699,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @return True if the path uses a spine else false
      */
     public boolean hasSpine() {
-        return spine != null && spineWidth != null;
+        return spine != null;
     }
 
     /** 
