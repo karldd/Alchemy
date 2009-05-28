@@ -19,10 +19,7 @@
  */
 package org.alchemy.affect;
 
-import org.alchemy.core.AlcModule;
-import org.alchemy.core.AlcShape;
-import org.alchemy.core.AlcSubSlider;
-import org.alchemy.core.AlcToolBarSubSection;
+import org.alchemy.core.*;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
