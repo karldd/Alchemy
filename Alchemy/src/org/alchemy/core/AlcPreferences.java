@@ -108,7 +108,8 @@ class AlcPreferences implements AlcConstants {
     /** The default start section of the session file name */
     private final String defaultSessionFilePreName = "Alchemy-";
     /** The default Date format for the session pdf */
-    private final String defaultSessionFileDateFormat = "yyyy-MM-dd-HH-mm-ss";    //////////////////////////////////////////////////////////////
+    private final String defaultSessionFileDateFormat = "yyyy-MM-dd-HH-mm-ss";    
+    //////////////////////////////////////////////////////////////
     // SHAPES 
     //////////////////////////////////////////////////////////////
     /** Directory to load shapes from */
@@ -146,6 +147,11 @@ class AlcPreferences implements AlcConstants {
     int bgColour;
     /** Colour */
     int colour;
+    //////////////////////////////////////////////////////////////
+    // GENERAL
+    //////////////////////////////////////////////////////////////
+    /** Export directory loaded by default by the file chooser */
+    String exportDirectory;
 
     AlcPreferences() {
         loadPreferences();
@@ -182,6 +188,9 @@ class AlcPreferences implements AlcConstants {
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
         bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
         colour = prefs.getInt("Colour", 0x000000);
+        
+        exportDirectory = prefs.get("Export Directory", DIR_DESKTOP);
+
     }
 
     /** Save the changes on exit */
@@ -208,6 +217,8 @@ class AlcPreferences implements AlcConstants {
 
         prefs.putInt("Background Colour", Alchemy.canvas.getBackgroundColour().getRGB());
         prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());
+        
+        prefs.put("Export Directory", exportDirectory);
 
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", switchVectorApp);

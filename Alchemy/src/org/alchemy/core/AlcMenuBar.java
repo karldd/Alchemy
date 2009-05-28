@@ -763,12 +763,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     /** Ask for a path and filename to export a PDF to */
     private void export() {
 
-        //FileDialog fileDialog = new FileDialog(root, "Export Pdf", FileDialog.SAVE);
-        //fileDialog.setVisible(true);
-        //String fileString = fileDialog.getFile();
-
-
-        final AlcFileChooser fc = new AlcFileChooser(DIR_DESKTOP);
+        final AlcFileChooser fc = new AlcFileChooser(Alchemy.preferences.exportDirectory);
         fc.setDialogTitle(Alchemy.bundle.getString("exportFileTitle"));
         fc.setAcceptAllFileFilterUsed(false);
         fc.setFileFilter(new ExportFileFilter("PNG - Transparent"));
@@ -780,8 +775,12 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         // in response to a button click:
         int returnVal = fc.showSaveDialog(this);
         if (returnVal == AlcFileChooser.APPROVE_OPTION) {
-
+            
             File file = fc.getSelectedFile();
+            String parent = file.getParent();
+            if(parent != null){
+                Alchemy.preferences.exportDirectory = parent;
+            }
             String format = fc.getFileFilter().getDescription();
 
             if (format.equals("PDF")) {
