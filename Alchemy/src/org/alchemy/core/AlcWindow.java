@@ -44,7 +44,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     /** Minimum Size for the window */
     private static final Dimension minWindowSize = new Dimension(640, 400);
     /** Second monitor black out window */
-    private static JWindow[] screens;
+//    private static JWindow[] screens;
 
     /** The Alchemy window <br>
      *  Handles things like fullscreen, setup of the canvas/toolbar, exiting etc...
@@ -207,15 +207,15 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
             // NORMAL WINDOW
             if (!fullscreen) {
 
-                // Remove the other windows if present
-                if (screens != null) {
-                    //System.out.println("Remove Called");
-                    for (int i = 0; i < screens.length; i++) {
-                        screens[i].setVisible(false);
-                        screens[i].dispose();
-                    }
-                    screens = null;
-                }
+//                // Remove the other windows if present
+//                if (screens != null) {
+//                    //System.out.println("Remove Called");
+//                    for (int i = 0; i < screens.length; i++) {
+//                        screens[i].setVisible(false);
+//                        screens[i].dispose();
+//                    }
+//                    screens = null;
+//                }
 
                 if (Alchemy.preferences.transparentFullscreen) {
                     Alchemy.canvas.setTransparentImage(null);
@@ -236,8 +236,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                 this.setBounds(oldBounds);
                 //setAlwaysOnTop(false);
 
-                // Turn on the menubar
-                if (Alchemy.OS == OS_MAC) {
+                // Turn off the menubar if this is OSX and it is the primary monitor
+                if (Alchemy.OS == OS_MAC && bounds.x == 0 && bounds.y == 0) {
                     AlcNative.setMenubarVisible(true);
                 }
 
@@ -253,23 +253,23 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     // If there are multiple monitors present
                     if (devices.length > 1) {
                         // As many screens as devices minus one for the primary monitor
-                        screens = new JWindow[devices.length - 1];
-                        int index = 0;
+//                        screens = new JWindow[devices.length - 1];
+//                        int index = 0;
                         for (int i = 0; i < devices.length; i++) {
                             Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
                             // If not the current monitor make a new black window for each
                             if (!screenBounds.equals(bounds)) {
                                 //System.out.println(i + " - " + screenBounds);
-                                screens[index] = new JWindow(this);
-                                screens[index].setBounds(screenBounds);
-                                // Set the window background to black
-                                JPanel blackBackground = new JPanel();
-                                blackBackground.setOpaque(true);
-                                blackBackground.setBackground(Color.BLACK);
-                                screens[index].setContentPane(blackBackground);
-                                screens[index].setFocusable(false);
-                                screens[index].setVisible(true);
-                                index++;
+//                                screens[index] = new JWindow(this);
+//                                screens[index].setBounds(screenBounds);
+//                                // Set the window background to black
+//                                JPanel blackBackground = new JPanel();
+//                                blackBackground.setOpaque(true);
+//                                blackBackground.setBackground(Color.BLACK);
+//                                screens[index].setContentPane(blackBackground);
+//                                screens[index].setFocusable(false);
+//                                screens[index].setVisible(true);
+//                                index++;
                             } else {
                                 currentDevice = i;
                             }
@@ -322,8 +322,8 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
 
-                    // Turn off the menubar
-                    if (Alchemy.OS == OS_MAC) {
+                    // Turn off the menubar if on OSX and this is the primary monitor
+                    if (Alchemy.OS == OS_MAC && bounds.x == 0 && bounds.y == 0) {
                         AlcNative.setMenubarVisible(false);
                     }
 
