@@ -81,7 +81,7 @@ public class Smooth extends AlcModule {
     }
 
     private void smoothShape(AlcShape shape, ArrayList<Point2D.Float> points) {
-        shape.setPath(null);
+        //shape.setPath(null);
         GeneralPath path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
         Point2D.Float firstPoint = points.get(0);
         //System.out.println(points.size());
@@ -100,7 +100,9 @@ public class Smooth extends AlcModule {
                 path.lineTo(x, y);
             }
         }
-        shape.setPath(path);
+        //shape.setPath(path);
+        canvas.shapes.add(new AlcShape(path));
+        //System.out.println(canvas.affectShapes.size());
     }
 
     @Override
