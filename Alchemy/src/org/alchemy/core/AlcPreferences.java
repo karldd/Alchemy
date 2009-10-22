@@ -42,6 +42,11 @@ class AlcPreferences implements AlcConstants {
     /** Preferences package */
     static Preferences prefs;
     //////////////////////////////////////////////////////////////
+    //  DEFINE CONSTANTS
+    //////////////////////////////////////////////////////////////
+    public final int FORMAT_PDF = 0;
+    public final int FORMAT_SVG = 1;
+    //////////////////////////////////////////////////////////////
     //  WINDOW LAYOUT 
     //////////////////////////////////////////////////////////////
     /** The preferences window */
@@ -119,6 +124,8 @@ class AlcPreferences implements AlcConstants {
     //////////////////////////////////////////////////////////////
     /** Switch Vector Application */
     String switchVectorApp;
+    /** What format when Switch to Vector Application */
+    int switchVectorFormat;
     /** Switch Bitmap Application */
     String switchBitmapApp;
     //////////////////////////////////////////////////////////////
@@ -175,6 +182,7 @@ class AlcPreferences implements AlcConstants {
         shapesPath = prefs.get("Shapes Path", new File("shapes").getAbsolutePath());
 
         switchVectorApp = prefs.get("Switch Vector Application", null);
+        switchVectorFormat = prefs.getInt("Switch Vector Format", 0);
         switchBitmapApp = prefs.get("Switch Bitmap Application", null);
 
         paletteAttached = prefs.getBoolean("Palette Attached", false);
@@ -223,6 +231,7 @@ class AlcPreferences implements AlcConstants {
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", switchVectorApp);
         }
+        prefs.putInt("Switch Vector Format", switchVectorFormat);
         if (switchBitmapApp != null) {
             prefs.put("Switch Bitmap Application", switchBitmapApp);
         }

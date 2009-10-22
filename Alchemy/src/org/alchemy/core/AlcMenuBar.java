@@ -2,6 +2,7 @@
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
  *  Copyright (c) 2007-2009 Karl D.D. Willis
+ *  Copyright (c) 2009 Steren Giannini (steren.giannini@gmail.com)
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -552,6 +553,39 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         switchVectorAppItem.setup(setVectorApp);
         switchMenu.add(switchVectorAppItem);
 
+        // Format submenu
+        AlcMenu formatMenu = new AlcMenu(getS("setVectorFormat"));
+        ButtonGroup formatGroup = new ButtonGroup();
+        //PDF
+        AlcRadioButtonMenuItem pdfItem = new AlcRadioButtonMenuItem(Alchemy.preferences.FORMAT_PDF, "PDF");
+        if (Alchemy.preferences.switchVectorFormat == Alchemy.preferences.FORMAT_PDF) {
+            pdfItem.setSelected(true);
+        }
+        pdfItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
+                Alchemy.preferences.switchVectorFormat = source.getIndex();
+            }
+        });
+        formatGroup.add(pdfItem);
+        formatMenu.add(pdfItem);
+        //SVG
+        AlcRadioButtonMenuItem svgItem = new AlcRadioButtonMenuItem(Alchemy.preferences.FORMAT_SVG, "SVG");
+        if (Alchemy.preferences.switchVectorFormat == Alchemy.preferences.FORMAT_SVG) {
+            svgItem.setSelected(true);
+        }
+        svgItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AlcRadioButtonMenuItem source = (AlcRadioButtonMenuItem) e.getSource();
+                Alchemy.preferences.switchVectorFormat = source.getIndex();
+            }
+        });
+        formatGroup.add(svgItem);
+        formatMenu.add(svgItem);
+        
+        formatMenu.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 5));
+        switchMenu.add(formatMenu);
+
 
         // Switch Bitmap App
         final String setBitmapApp = getS("setBitmapApp");
@@ -770,6 +804,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         fc.setFileFilter(new ExportFileFilter("PNG"));
         fc.setFileFilter(new ExportFileFilter("JPG"));
         fc.setFileFilter(new ExportFileFilter("PDF"));
+        fc.setFileFilter(new ExportFileFilter("SVG"));
         fc.setSelectedFile(new File(Alchemy.bundle.getString("defaultFileName")));
 
         // in response to a button click:
@@ -791,6 +826,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 Alchemy.canvas.saveBitmap(file);
             } else if (format.equals("PNG - Transparent")) {
                 Alchemy.canvas.saveBitmap(file, true);
+            } else if (format.equals("SVG")) {
+                Alchemy.session.saveSVG(file);
             }
         }
     }
@@ -810,13 +847,25 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     /** Make a temporary file, create a PDF, and then open it */
     private void switchVector() {
         try {
-            File tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
-            tempVector.deleteOnExit();
-            if (Alchemy.session.saveSinglePdf(tempVector)) {
-                openSwitch(tempVector.toString(), Alchemy.preferences.switchVectorApp);
-            } else {
-                System.out.println("Didn't save???");
+            if(Alchemy.preferences.switchVectorFormat == Alchemy.preferences.FORMAT_SVG) {
+                File tempVector = File.createTempFile("AlchemyTempVectorFile", ".svg");
+                tempVector.deleteOnExit();
+                if (Alchemy.session.saveSVG(tempVector)) {
+                    openSwitch(tempVector.toString(), Alchemy.preferences.switchVectorApp);
+                } else {
+                    System.out.println("Didn't save SVG");
+                }
+            } else {  //Otherwise, save to pdf
+                File tempVector = File.createTempFile("AlchemyTempVectorFile", ".pdf");
+                tempVector.deleteOnExit();
+                if (Alchemy.session.saveSinglePdf(tempVector)) {
+                    openSwitch(tempVector.toString(), Alchemy.preferences.switchVectorApp);
+                } else {
+                    System.out.println("Didn't save PDF");
+                }
             }
+
+
         } catch (IOException ex) {
             System.err.println(ex);
         }
