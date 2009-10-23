@@ -228,7 +228,7 @@ class AlcSession implements ActionListener, AlcConstants {
         java.awt.Rectangle bounds = Alchemy.canvas.getVisibleRect();
         //int singlePdfWidth = Alchemy.window.getWindowSize().width;
         //int singlePdfHeight = Alchemy.window.getWindowSize().height;
-        Document document = new Document(new com.lowagie.text.Rectangle(bounds.width, bounds.height), 0, 0, 0, 0);
+        com.lowagie.text.Document document = new com.lowagie.text.Document(new com.lowagie.text.Rectangle(bounds.width, bounds.height), 0, 0, 0, 0);
         System.out.println("Save Single Pdf Called: " + file.toString());
         boolean noError = true;
 
