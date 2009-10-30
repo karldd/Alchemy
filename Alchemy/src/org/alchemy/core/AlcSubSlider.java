@@ -71,6 +71,15 @@ public class AlcSubSlider extends JPanel implements AlcConstants {
     public int getValue() {
         return slider.trueValue;
     }
+    
+    /**
+     * Set the value of the slider.
+     * 
+     * @param val The value.
+     */
+    public void setValue(int val) {
+    	slider.setValue(val);
+    }
 
     /**
      * This method registers a listener to this slider. The listener will be

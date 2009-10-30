@@ -19,6 +19,8 @@
 package org.alchemy.affect;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
@@ -32,64 +34,64 @@ import org.alchemy.core.*;
  */
 public class Smooth extends AlcModule {
 
-    private boolean mouseDown = false;
     private int spacing = 50;
     private long time;
-
-    public Smooth() {
-    }
+    private boolean repeat = false;
+    private AlcToolBarSubSection subToolBarSection;
+    private AlcSubToggleButton repeatButton;
 
     @Override
     protected void setup() {
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
 
+
     @Override
-    protected void reselect() {
+    public void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    public void createSubToolBarSection() {
+        subToolBarSection = new AlcToolBarSubSection(this);
+
+        // Repeat button
+        repeatButton = new AlcSubToggleButton("Repeat", AlcUtil.getUrlPath("repeat.png", getClassLoader()));
+        repeatButton.setSelected(repeat);
+        repeatButton.setToolTipText("Toggle repeat on/off");
+
+        repeatButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        repeat = !repeat;
+                    }
+                });
+        subToolBarSection.add(repeatButton);
+
     }
 
     private void smoothShape(Point currentLoc, int index) {
         AlcShape shape = canvas.shapes.get(index);
-        ArrayList<Point2D.Float> points = getPoints(shape.getPath());
-        smoothShape(shape, points);
+        AlcShape smoothedShape = smoothShape(shape.getPoints());
+        if (repeat) {
+            canvas.shapes.add(smoothedShape);
+        } else {
+            shape.setPath(smoothedShape.getPath());
+        }
         canvas.redraw(true);
     }
 
-    private ArrayList<Point2D.Float> getPoints(GeneralPath path) {
-        PathIterator pathIterator = path.getPathIterator(null);
-        float[] points = new float[6];
-        ArrayList<Point2D.Float> list = new ArrayList<Point2D.Float>(1000);
-
-        while (!pathIterator.isDone()) {
-
-            switch (pathIterator.currentSegment(points)) {
-                case PathIterator.SEG_MOVETO:
-                    list.add(new Point2D.Float(points[0], points[1]));
-                    break;
-                case PathIterator.SEG_LINETO:
-                    list.add(new Point2D.Float(points[0], points[1]));
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    list.add(new Point2D.Float(points[2], points[3]));
-                    break;
-                case PathIterator.SEG_CUBICTO:
-                    list.add(new Point2D.Float(points[4], points[5]));
-                    break;
-            }
-            pathIterator.next();
-        }
-        return list;
-    }
-
-    private void smoothShape(AlcShape shape, ArrayList<Point2D.Float> points) {
+    private AlcShape smoothShape(ArrayList<Point2D.Float> points) {
         //shape.setPath(null);
-        GeneralPath path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+        
         Point2D.Float firstPoint = points.get(0);
         //System.out.println(points.size());
-        path.moveTo(firstPoint.x, firstPoint.y);
+        AlcShape shape = new AlcShape(new Point2D.Float(firstPoint.x, firstPoint.y));
         for (int i = 0; i < points.size() - 1; i++) {
-            if (i == points.size() - 2) {
+            if (i >= points.size() - 2) {
                 Point2D.Float pt = points.get(i);
-                path.lineTo(pt.x, pt.y);
+                shape.addLinePoint(new Point2D.Float(pt.x, pt.y));
             } else {
                 Point2D.Float p0 = points.get(i);
                 Point2D.Float p1 = points.get(i + 1);
@@ -97,17 +99,15 @@ public class Smooth extends AlcModule {
 
                 float x = p0.x * 0.25F + p1.x * 0.5F + p2.x * 0.25F;
                 float y = p0.y * 0.25F + p1.y * 0.5F + p2.y * 0.25F;
-                path.lineTo(x, y);
+                shape.addCurvePoint(new Point2D.Float(x, y));
             }
         }
-        //shape.setPath(path);
-        canvas.shapes.add(new AlcShape(path));
-        //System.out.println(canvas.affectShapes.size());
+        return shape;
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (!mouseDown) {
+        if (!canvas.isPenDown()) {
             if (System.currentTimeMillis() - time >= spacing) {
                 int firstShape = -1;
                 Point pt = e.getPoint();
@@ -125,15 +125,5 @@ public class Smooth extends AlcModule {
                 time = System.currentTimeMillis();
             }
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        mouseDown = true;
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        mouseDown = false;
     }
 }

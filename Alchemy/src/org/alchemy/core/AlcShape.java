@@ -90,7 +90,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         setupPoint(p);
         setupDefaultAttributes();
     }
-
+    
     /**
      * Creates a new instance of AlcShape with defined values
      * @param p         Initial point to set the GeneralPath moveto
@@ -733,6 +733,37 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public void setSpineWidth(ArrayList<Float> spineWidth) {
         this.spineWidth = spineWidth;
     }
+
+    /**
+     * Return a simple list of x,y points from this AlcShap object
+     * @return  ArrayList<Point2D.Float> containing x,y points
+     */
+    public ArrayList<Point2D.Float> getPoints() {
+        PathIterator pathIterator = path.getPathIterator(null);
+        float[] points = new float[6];
+        ArrayList<Point2D.Float> list = new ArrayList<Point2D.Float>(1000);
+
+        while (!pathIterator.isDone()) {
+
+            switch (pathIterator.currentSegment(points)) {
+                case PathIterator.SEG_MOVETO:
+                    list.add(new Point2D.Float(points[0], points[1]));
+                    break;
+                case PathIterator.SEG_LINETO:
+                    list.add(new Point2D.Float(points[0], points[1]));
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    list.add(new Point2D.Float(points[2], points[3]));
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    list.add(new Point2D.Float(points[4], points[5]));
+                    break;
+            }
+            pathIterator.next();
+        }
+        return list;
+    }
+
     //////////////////////////////////////////////////////////////
     // UTILITY
     //////////////////////////////////////////////////////////////

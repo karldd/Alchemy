@@ -89,7 +89,17 @@
         <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.mime-util.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
-        
+        <unjar src="${file.reference.beads.jar}" dest="${build.classes.dir}"/>
+
+        <!-- The mass of batik libraries -->
+        <unjar src="${file.reference.batik-awt-util.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.batik-dom.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.batik-ext.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.batik-svggen.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.batik-util.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.batik-xml.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.xml-apis.jar}" dest="${build.classes.dir}"/>
+
         
         <!-- Copy the module folder over to be built.-->
         <copy todir="${build.dir}/modules">
@@ -117,7 +127,7 @@
         
         
         <!-- AFFECTS -->
-        <for list="mirror,blindness,random,micExpand,repeat,displace,colourSwitcher,shapeSwap,gradient,snooth" param="affect">
+        <for list="mirror,blindness,random,micExpand,repeat,displace,colourSwitcher,shapeSwap,gradient,smooth,limit" param="affect">
             <sequential>
                 <copy todir="${build.dir}/modules/@{affect}/org/alchemy/affect">
                     <!-- Include all files that begin with the module name -->
@@ -273,10 +283,12 @@
         <copy file="${basedir}/res/dmg/DS_Store" todir="${alchemy.dir}"/>
         <move file="${alchemy.dir}/DS_Store" tofile="${alchemy.dir}/.DS_Store"/>
         
+        -->
+
         <exec executable="hdiutil">
             <arg line="create -srcfolder ${alchemy.dir} ${dist.dir}/Alchemy-${version.number}.dmg"/>
         </exec>
-        -->
+        
         
         <move todir="${alchemy.dir}">
             <fileset dir="${alchemy.dir}/Alchemy" />
