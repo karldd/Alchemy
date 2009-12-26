@@ -45,6 +45,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
     private AlcCheckBoxMenuItem linkSessionItem;
     /** Fullscreen toggle global so it can be set on startup */
     AlcCheckBoxMenuItem fullScreenItem, transparentItem;
+    /** Export dialog to set image size */
+    private AlcExportDialog exportDialog;
 
     /** Creates a new instance of AlcMenuBar */
     AlcMenuBar() {
@@ -800,9 +802,10 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         final AlcFileChooser fc = new AlcFileChooser(Alchemy.preferences.exportDirectory);
         fc.setDialogTitle(Alchemy.bundle.getString("exportFileTitle"));
         fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(new ExportFileFilter("PNG - Transparent"));
+//        fc.setFileFilter(new ExportFileFilter("PNG - Transparent"));
         fc.setFileFilter(new ExportFileFilter("PNG"));
         fc.setFileFilter(new ExportFileFilter("JPG"));
+//        fc.setFileFilter(new ExportFileFilter("GIF"));
         fc.setFileFilter(new ExportFileFilter("PDF"));
         fc.setFileFilter(new ExportFileFilter("SVG"));
         fc.setSelectedFile(new File(Alchemy.bundle.getString("defaultFileName")));
@@ -820,14 +823,13 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
             if (format.equals("PDF")) {
                 Alchemy.session.saveSinglePdf(file);
-            } else if (format.equals("JPG")) {
-                Alchemy.canvas.saveBitmap(file, "jpg");
-            } else if (format.equals("PNG")) {
-                Alchemy.canvas.saveBitmap(file);
-            } else if (format.equals("PNG - Transparent")) {
-                Alchemy.canvas.saveBitmap(file, true);
             } else if (format.equals("SVG")) {
                 Alchemy.session.saveSVG(file);
+            } else if (format.equals("JPG") || format.equals("PNG")) {
+                if(exportDialog == null){
+                    exportDialog = new AlcExportDialog();
+                }
+                exportDialog.showWindow(file, format);
             }
         }
     }

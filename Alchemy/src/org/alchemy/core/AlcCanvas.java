@@ -1060,7 +1060,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @return
      */
     Image renderCanvas(boolean vectorMode) {
-        return renderCanvas(vectorMode, false, 1);
+        return renderCanvas(vectorMode, false, 1, -1, -1);
     }
 
     /** Create an image from the canvas
@@ -1071,7 +1071,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @return
      */
     Image renderCanvas(boolean vectorMode, boolean transparent) {
-        return renderCanvas(vectorMode, transparent, 1);
+        return renderCanvas(vectorMode, transparent, 1, -1, -1);
     }
 
     /** Create an image from the canvas
@@ -1082,7 +1082,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @return
      */
     Image renderCanvas(boolean vectorMode, double scale) {
-        return renderCanvas(vectorMode, false, scale);
+        return renderCanvas(vectorMode, false, scale, -1, -1);
     }
 
     /** Create an image from the canvas
@@ -1093,16 +1093,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param scale         Scale setting to scale the canvas up or down
      * @return
      */
-    Image renderCanvas(boolean vectorMode, boolean transparent, double scale) {
-        // Get the canvas size with out the frame/decorations
-        java.awt.Rectangle visibleRect = this.getVisibleRect();
+    Image renderCanvas(boolean vectorMode, boolean transparent, double scale, int width, int height) {
+        if (width == -1 || height == -1) {
+            // Get the canvas size with out the frame/decorations
+            java.awt.Rectangle visibleRect = this.getVisibleRect();
+            width = visibleRect.width;
+            height = visibleRect.height;
+        }
         ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         gc = ge.getDefaultScreenDevice().getDefaultConfiguration();
         BufferedImage buffImage;
         if (transparent) {
-            buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height, Transparency.TRANSLUCENT);
+            buffImage = gc.createCompatibleImage(width, height, Transparency.TRANSLUCENT);
         } else {
-            buffImage = gc.createCompatibleImage(visibleRect.width, visibleRect.height);
+            buffImage = gc.createCompatibleImage(width, height, Transparency.OPAQUE);
         }
         // Paint the buffImage with the canvas
         Graphics2D g2 = buffImage.createGraphics();
@@ -1118,6 +1122,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             vectorCanvas.paintComponent(g2);
             vectorCanvas.transparent = false;
         } else {
+//            vectorCanvas.transparent = false;
             if (vectorMode) {
                 vectorCanvas.paintComponent(g2);
             } else {
@@ -1170,12 +1175,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     boolean saveBitmap(File file, String format, boolean transparent) {
         try {
             setGuide(false);
-            Image bitmapImage;
-            if (transparent) {
-                bitmapImage = renderCanvas(true, true);
-            } else {
-                bitmapImage = renderCanvas(true);
-            }
+            Image bitmapImage = renderCanvas(true, transparent);
             setGuide(true);
             ImageIO.write((BufferedImage) bitmapImage, format, file);
             return true;
