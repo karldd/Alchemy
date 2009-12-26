@@ -20,19 +20,12 @@
 package org.alchemy.core;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.text.*;
 import java.util.Iterator;
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
+import javax.imageio.*;
 import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.*;
 import net.miginfocom.swing.MigLayout;
@@ -50,11 +43,9 @@ class AlcExportDialog extends JDialog implements AlcConstants {
 
     AlcExportDialog(){
         super(Alchemy.window, Alchemy.bundle.getString("exportFileTitle"), true);
-        Dimension size = new Dimension(250, 300);
+        Dimension size = new Dimension(250, 250);
         this.setPreferredSize(size);
 
-        // fill entire space provided, 2 pixel gap between components and
-        // 10 pixel insets from all edges
         JPanel contentPanel = new JPanel(new MigLayout("fill, insets 15, gap 2"));
 //        contentPanel.setPreferredSize(size);
 
@@ -72,11 +63,11 @@ class AlcExportDialog extends JDialog implements AlcConstants {
 
         contentPanel.add(getLabel("exportPercent"), "gap para");
         percentField = getNumberField(100);
-        contentPanel.add(percentField, "growx, wrap");
+        contentPanel.add(percentField, "growx, wrap 10px");
         
         transparencyCheckBox = new JCheckBox(Alchemy.bundle.getString("exportTransparency"));
         transparencyCheckBox.setFont(font);
-        contentPanel.add(transparencyCheckBox, "gap para, span, wrap");
+        contentPanel.add(transparencyCheckBox, "gap para, span, wrap 10px");
 
 
 

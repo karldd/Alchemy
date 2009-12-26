@@ -735,7 +735,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     }
 
     /**
-     * Return a simple list of x,y points from this AlcShap object
+     * Return a simple list of x,y points from this AlcShape object
      * @return  ArrayList<Point2D.Float> containing x,y points
      */
     public ArrayList<Point2D.Float> getPoints() {

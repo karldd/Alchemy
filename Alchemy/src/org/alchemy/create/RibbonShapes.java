@@ -31,7 +31,11 @@ import org.alchemy.core.*;
  *
  * RibbonShapes.java
  * 
- * 
+ * Based on James Alliban's code
+ * http://jamesalliban.wordpress.com/2008/12/04/2d-ribbons/
+ *
+ * Which is based on Eric Natzke's code
+ * http://www.flickr.com/photos/natzke/2343461294/
  * 
  */
 public class RibbonShapes extends AlcModule implements AlcConstants {
