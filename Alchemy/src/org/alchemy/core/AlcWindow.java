@@ -523,8 +523,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                 visibleRect.width += Alchemy.toolBar.toolBarWidth;
             }
             
-            System.out.println(visibleRect);
-
             // Set the canvas size
             Alchemy.preferences.canvasSize = new Dimension(visibleRect.width, visibleRect.height);
         }

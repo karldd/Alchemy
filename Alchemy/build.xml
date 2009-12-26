@@ -90,6 +90,7 @@
         <unjar src="${file.reference.mime-util.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.beads.jar}" dest="${build.classes.dir}"/>
+        <unjar src="${file.reference.miglayout.jar}" dest="${build.classes.dir}"/>
 
         <!-- The mass of batik libraries -->
         <unjar src="${file.reference.batik-awt-util.jar}" dest="${build.classes.dir}"/>
