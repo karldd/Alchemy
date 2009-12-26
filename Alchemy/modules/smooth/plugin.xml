@@ -18,7 +18,7 @@
         <parameter id="class" value="org.alchemy.affect.Smooth"/> 
         <parameter id="name" value="Smooth"/> 
         <parameter id="description" value="Smooth over shapes" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>
