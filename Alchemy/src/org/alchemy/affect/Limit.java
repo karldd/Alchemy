@@ -19,28 +19,55 @@
  */
 package org.alchemy.affect;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 public class Limit extends AlcModule {
 
-    private int limit = 4;
+    private int defaultNumber = 10;
+    private int limit = defaultNumber - 1;
+
+    private AlcToolBarSubSection subToolBarSection;
+
+
+    @Override
+    public void setup() {
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    protected void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    private void createSubToolBarSection() {
+        subToolBarSection = new AlcToolBarSubSection(this);
+
+        final AlcSubSpinner numberSpinner = new AlcSubSpinner("Number", 1, 100, defaultNumber, 1);
+        numberSpinner.setToolTipText("The number of shapes to limit to");
+        numberSpinner.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!numberSpinner.getValueIsAdjusting()) {
+                            int value = numberSpinner.getValue();
+                            limit = value - 1;
+                        }
+                    }
+                });
+        subToolBarSection.add(numberSpinner);
+    }
+
 
     @Override
     protected void affect() {
 
-//        System.out.print("Create: " + canvas.createShapes.size());
-//        System.out.print(" Affect: " + canvas.affectShapes.size());
-//        System.out.println(" Shapes: " + canvas.shapes.size());
-
         if(canvas.shapes.size() > limit){
 
             int end = canvas.shapes.size() - limit;
-
-            for (int i = 0; i < end; i++) {
-//                System.out.println("Removing " + i);
-                canvas.shapes.remove(i);
-            }
-
+            canvas.shapes.subList(0, end).clear();
             canvas.redraw(true);
 
         }
