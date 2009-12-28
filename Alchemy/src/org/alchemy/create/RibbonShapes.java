@@ -40,7 +40,6 @@ import org.alchemy.core.*;
  */
 public class RibbonShapes extends AlcModule implements AlcConstants {
 
-    private boolean TESTING = false;
     private int ribbonAmount = 1;
     private int ribbonParticleAmount = 20;
     private float randomness = 0.2F;
@@ -51,9 +50,16 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     private int spacing = 25;
     private long time;
     // 
-    private final int initialGravity = 50;
+    private final int initialGravity = 15;
     private final int initialFriction = 110;
-    private final int initialSize = 10;
+    private final int initialSize = 50;
+
+    private int size = initialSize;
+    private float gravity = initialGravity * 0.01F;
+    private float friction = initialFriction * 0.01F;
+    private int maxDistance = 40;
+    private float drag = 2F;
+    private float dragFlare = 0.015F;
 
     public RibbonShapes() {
     }
@@ -62,12 +68,13 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     public void setup() {
         ribbonManager = new RibbonManager(ribbonAmount, ribbonParticleAmount, randomness);
         ribbonManager.setRadiusMax(initialSize);                 // default = 8
-        ribbonManager.setRadiusDivide(1F);              // default = 10
-        ribbonManager.setGravity(0.07F);                   // default = .03
-        ribbonManager.setFriction(1.1F);                  // default = 1.1
-        ribbonManager.setMaxDistance(40);               // default = 40
-        ribbonManager.setDrag(1.8F);                      // default = 2
-        ribbonManager.setDragFlare(0.015F);                 // default = .008
+        float divide = (100 - size) / 5F;
+        ribbonManager.setRadiusDivide(divide);              // default = 10
+        ribbonManager.setGravity(gravity);                   // default = .03
+        ribbonManager.setFriction(friction);                  // default = 1.1
+        ribbonManager.setMaxDistance(maxDistance);               // default = 40
+        ribbonManager.setDrag(drag); //1.8                     // default = 2
+        ribbonManager.setDragFlare(dragFlare);                 // default = .008
 
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
@@ -76,6 +83,19 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     @Override
     protected void reselect() {
         toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    @Override
+    protected void cleared() {
+        ribbonManager.setRadiusMax(size);
+        float divide = (100 - size) / 5F;
+        ribbonManager.setRadiusDivide(divide);
+        ribbonManager.setFriction(friction);
+        ribbonManager.setGravity(gravity);
+        ribbonManager.setMaxDistance(maxDistance);
+        ribbonManager.setDrag(drag);
+        ribbonManager.setDragFlare(dragFlare);
+
     }
 
     private void createSubToolBarSection() {
@@ -90,8 +110,8 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
                     public void stateChanged(ChangeEvent e) {
                         if (!sizeSpinner.getValueIsAdjusting()) {
                             int value = sizeSpinner.getValue();
-                            
-                            ribbonManager.setRadiusMax(value);
+                            size = value;
+                            ribbonManager.setRadiusMax(size);
                             float divide = (100 - value) / 5F;
                             //System.out.println(value + " " + divide);
                             ribbonManager.setRadiusDivide(divide);
@@ -126,7 +146,7 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
                     public void stateChanged(ChangeEvent e) {
                         if (!frictionSlider.getValueIsAdjusting()) {
                             int value = frictionSlider.getValue();
-                            float friction = value * 0.01F;
+                            friction = value * 0.01F;
                             ribbonManager.setFriction(friction);
                         }
                     }
@@ -142,7 +162,7 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
                     public void stateChanged(ChangeEvent e) {
                         if (!gravitySlider.getValueIsAdjusting()) {
                             int value = gravitySlider.getValue();
-                            float gravity = value * 0.01F;
+                            gravity = value * 0.01F;
                             //System.out.println(gravity);
                             ribbonManager.setGravity(gravity);
                         }
@@ -150,6 +170,22 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
                 });
         subToolBarSection.add(gravitySlider);
 
+        // Drag Slider
+//        float initialDrag = AlcMath.map(dragFlare, 0.001f, 0.05f, 1, 100);
+//        final AlcSubSlider dragSlider = new AlcSubSlider("Drag", 0, 100,(int) initialDrag);
+//        dragSlider.setToolTipText("Adjust the ribbon drag");
+//        dragSlider.addChangeListener(
+//                new ChangeListener() {
+//
+//                    public void stateChanged(ChangeEvent e) {
+//                        if (!dragSlider.getValueIsAdjusting()) {
+//                            int value = dragSlider.getValue();
+//                            drag = AlcMath.map(value, 1, 100, 0.001f, 0.05f);
+//                            ribbonManager.setDrag(drag);
+//                        }
+//                    }
+//                });
+//        subToolBarSection.add(dragSlider);
 
 
     }
