@@ -17,8 +17,8 @@
     <extension plugin-id="org.alchemy.core" point-id="Create" id="ribbonShapesCreate"> 
         <parameter id="class" value="org.alchemy.create.RibbonShapes"/> 
         <parameter id="name" value="Ribbon Shapes"/> 
-        <parameter id="description" value="Shapes created with ribbons - code from Eric Natzke via James Allbian" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="description" value="Shapes created with ribbons" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>
