@@ -20,29 +20,84 @@ package org.alchemy.create;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.alchemy.core.*;
 
 /**
  *
  * SplatterShapes.java
+ *
+ * Based on "Splatter" by Stamen Design
+ * http://stamen.com/projects/splatter
+ * http://creativecommons.org/licenses/by-nc-sa/2.5/
+ *
  */
 public class SplatterShapes extends AlcModule {
 
     private Point2D.Float start;
     private Point2D.Float end;
     private float newSizeInfluence,  midPointPush,  maxLineWidth,  size;
+    private AlcToolBarSubSection subToolBarSection;
+    private int initialSize = 50;
+    private int drips = 10;
 
     @Override
     protected void setup() {
-        newSizeInfluence = 0.5F;
-        midPointPush = 0.75F;
+        newSizeInfluence = AlcMath.map(initialSize, 1, 100, 0, 2);
+        midPointPush = 0.5F;
         //newSizeInfluence = (float) Math.floor(math.random(20) / 10F) - 0.5F;
         //midPointPush = (float) (Math.floor(math.random(8)) / 4F) - 1F;
         maxLineWidth = math.random(50) + 50F;
         size = 1;
+        
+        createSubToolBarSection();
+        toolBar.addSubToolBarSection(subToolBarSection);
     }
+
+    @Override
+    protected void reselect() {
+        toolBar.addSubToolBarSection(subToolBarSection);
+    }
+
+    private void createSubToolBarSection() {
+        subToolBarSection = new AlcToolBarSubSection(this);
+
+        final AlcSubSpinner numberSpinner = new AlcSubSpinner("Size", 1, 100, initialSize, 1);
+        numberSpinner.setToolTipText("The size of the splatter");
+        numberSpinner.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!numberSpinner.getValueIsAdjusting()) {
+                            int value = numberSpinner.getValue();
+                            newSizeInfluence = AlcMath.map(value, 1, 100, 0, 2);
+                             size = newSizeInfluence;
+                        }
+                    }
+                });
+        subToolBarSection.add(numberSpinner);
+
+
+        final AlcSubSpinner dripSpinner = new AlcSubSpinner("Drips", 0, 50, drips, 1);
+        dripSpinner.setToolTipText("The number of drips");
+        dripSpinner.addChangeListener(
+                new ChangeListener() {
+
+                    public void stateChanged(ChangeEvent e) {
+                        if (!dripSpinner.getValueIsAdjusting()) {
+                            int value = dripSpinner.getValue();
+                            drips = value;
+                        }
+                    }
+                });
+        subToolBarSection.add(dripSpinner);
+    }
+
+
 
     private void splat(Point2D.Float start, Point2D.Float end, Point2D.Float mid, float d) {
 
@@ -58,7 +113,9 @@ public class SplatterShapes extends AlcModule {
         // splotch
         float splotch = (float) Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
 
-        for (int i = 0; i < Math.floor(5F * Math.pow(math.random(1), 4)); i++) {
+        //Math.floor(1F * Math.pow(math.random(1), 4))
+        int quarterDrips = drips / 4;
+        for (int i = 0; i < quarterDrips + math.random(0, drips); i++) {
             // positioning of splotch varies between ±4dd, tending towards 0
             int splat_range = 1;
             float x4 = (float) (splotch * 1F * (Math.pow(math.random(1), splat_range) - (splat_range / 2F)));
@@ -67,11 +124,17 @@ public class SplatterShapes extends AlcModule {
             float x5 = math.random(1) - 0.5F;
             float y5 = math.random(1) - 0.5F;
             float dd = d * (0.5F + math.random(1));
-
-            AlcShape shape = new AlcShape(new Point2D.Float(start.x + x4, start.y + y4));
             if (dd < 0) {
                 dd = 0;
             }
+            
+            AlcShape shape = new AlcShape(new Point2D.Float(start.x + x4, start.y + y4));
+
+            // Use an elipse to draw faster
+//            Ellipse2D.Double circle = new Ellipse2D.Double(start.x + x4, start.y + y4, dd, dd);
+//            AlcShape shape = new AlcShape(new GeneralPath(circle));
+
+
             shape.setLineWidth(dd);
             shape.addCurvePoint(new Point2D.Float((start.x + x4 + x5), (start.y + y4 + y5)));
             canvas.createShapes.add(shape);
