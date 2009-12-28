@@ -17,8 +17,8 @@
     <extension plugin-id="org.alchemy.core" point-id="Create" id="splatterShapesCreate"> 
         <parameter id="class" value="org.alchemy.create.SplatterShapes"/> 
         <parameter id="name" value="Splatter Shapes"/> 
-        <parameter id="description" value="Create splatter shapes - Based on code by Stamen Design" />
-        <parameter id="icon" value="icon.gif" />
+        <parameter id="description" value="Create splatter shapes" />
+        <parameter id="icon" value="icon.png" />
     </extension>
     
 </plugin>
