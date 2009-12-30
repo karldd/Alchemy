@@ -130,7 +130,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
 
             Point2D.Float p = canvas.getPenLocation();
             float micLevel = getMicLevel();
-
+            
             // SHAKE MODE
             if (shake) {
                 byte[] buffer = micIn.getBuffer();

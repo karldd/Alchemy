@@ -577,22 +577,56 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // UI FUNCTIONS
     //////////////////////////////////////////////////////////////
+
     /**
      *  Calculate the centre of the screen with multiple monitors
-     *  From: http://www.juixe.com/techknow/index.php/2007/06/20/multiscreen-dialogs-and-the-jfilechooser/ 
-     * 
-     * @param popupFrame    The popup window
+     *
+     * @param popup         The popup window
      * @return              The centred location as a Point
      */
-    public static Point calculateCenter(Container popupFrame) {
-        KeyboardFocusManager kfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        Window windowFrame = kfm.getFocusedWindow();
-        Point frameTopLeft = windowFrame.getLocation();
-        Dimension frameSize = windowFrame.getSize();
-        Dimension popSize = popupFrame.getSize();
+    public static Point calculateCenter(Container popup) {
+        return calculateCenter(popup, false);
+    }
+    
+    /**
+     *  Calculate the centre of the screen with multiple monitors
+     * 
+     * @param popup         The popup window
+     * @param palette       Popup in the window of the palette
+     * @return              The centred location as a Point
+     */
+    public static Point calculateCenter(Container popup, boolean palette) {
+        GraphicsConfiguration grapConfig = popup.getGraphicsConfiguration();
+        Rectangle mainWindowBounds = grapConfig.getBounds();
+        // Each screen device
+        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        // The popup window bounds
+        Rectangle popupBounds = popup.getBounds();
+        // The parent bounds
+        Rectangle parentBounds = Alchemy.window.getBounds();
+        // If we want to popup in the palette window
+        if(palette && Alchemy.preferences.paletteAttached){
+            parentBounds = Alchemy.palette.getBounds();
+        }
 
-        int x = (int) (frameTopLeft.getX() + (frameSize.width / 2) - (popSize.width / 2));
-        int y = (int) (frameTopLeft.getY() + (frameSize.height / 2) - (popSize.height / 2));
+        // The bounds of the window containing the parent
+        Rectangle windowBounds = null;
+
+        if (devices.length > 1) {
+            for (int i = 0; i < devices.length; i++) {
+                Rectangle screenBounds = devices[i].getDefaultConfiguration().getBounds();
+                if (screenBounds.contains(parentBounds.x + parentBounds.width/2, parentBounds.y + parentBounds.height/2)) {
+                    windowBounds = screenBounds;
+                }
+            }
+        }
+
+        if(windowBounds == null){
+            windowBounds = mainWindowBounds;
+        }
+
+        int x = windowBounds.x + (windowBounds.width - popupBounds.width) / 2;
+        int y = windowBounds.y + (windowBounds.height - popupBounds.height) / 2;
         Point center = new Point(x, y);
         return center;
     }

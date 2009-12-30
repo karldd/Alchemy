@@ -924,6 +924,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public void setLineWidth(float lineWidth) {
         this.lineWidth = lineWidth;
     }
+
     //////////////////////////////////////////////////////////////
     // DISPLAY
     //////////////////////////////////////////////////////////////
