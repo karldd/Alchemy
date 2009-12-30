@@ -306,6 +306,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         if (spineWidth == null) {
             spineWidth = new ArrayList<Float>(1000);
         }
+
         // Check that the pen location has changed
         if (Alchemy.canvas.isPenLocationChanged()) {
             // If this is the first point then add it

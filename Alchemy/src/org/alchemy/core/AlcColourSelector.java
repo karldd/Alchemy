@@ -136,7 +136,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
             setColour(initialColour);
         }
         range.init = true;
-        Point p = AlcUtil.calculateCenter(this);
+        Point p = AlcUtil.calculateCenter(this, true);
         this.setLocation(p);
         this.setVisible(true);
     }

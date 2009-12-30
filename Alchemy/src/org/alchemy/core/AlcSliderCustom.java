@@ -177,6 +177,8 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
      * identifies the slider as the source.
      */
     void fireStateChanged() {
+        // Repaint here incase the UI element is triggered by a shortcut
+        this.repaint();
         Object[] changeListeners = listenerList.getListenerList();
         if (changeEvent == null) {
             changeEvent = new ChangeEvent(this);
