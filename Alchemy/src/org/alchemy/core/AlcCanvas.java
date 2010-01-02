@@ -295,7 +295,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         applyAffects();
         if (redraw) {
             if (fullRedraw) {
-                canvasImage = renderCanvas(true);
+                // If the window is transparent
+                if (Alchemy.window.isTransparent()) {
+                    canvasImage = renderCanvas(true, true);
+                } else {
+                    canvasImage = renderCanvas(true);
+                }
             }
             this.repaint();
             // Something has happened on the canvas and the user is still active
