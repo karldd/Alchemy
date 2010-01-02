@@ -47,8 +47,8 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         this.setFocusable(true);
 
         mainPalette = new JPanel();
-        mainPalette.setBackground(AlcToolBar.COLOUR_UI_BG);
-        mainPalette.setBorder(new LineBorder(AlcToolBar.COLOUR_UI_LINE, 1));
+        mainPalette.setBackground(AlcToolBar.COLOR_UI_BG);
+        mainPalette.setBorder(new LineBorder(AlcToolBar.COLOR_UI_LINE, 1));
         mainPalette.setLayout(new BorderLayout());
         mainPalette.setCursor(CURSOR_ARROW);
         this.addKeyListener(this);

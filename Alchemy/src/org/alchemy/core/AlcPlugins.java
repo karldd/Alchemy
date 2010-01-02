@@ -201,11 +201,11 @@ class AlcPlugins implements AlcConstants {
     void initialiseModules() {
         // Set the global access to root, canvas, and toolBar for each module
         for (int i = 0; i < creates.length; i++) {
-            creates[i].setGlobals(Alchemy.canvas, Alchemy.toolBar, Alchemy.math, Alchemy.colourSelector);
+            creates[i].setGlobals(Alchemy.canvas, Alchemy.toolBar, Alchemy.math, Alchemy.colorSelector);
         }
         if (getNumberOfAffectModules() > 0) {
             for (int i = 0; i < affects.length; i++) {
-                affects[i].setGlobals(Alchemy.canvas, Alchemy.toolBar, Alchemy.math, Alchemy.colourSelector);
+                affects[i].setGlobals(Alchemy.canvas, Alchemy.toolBar, Alchemy.math, Alchemy.colorSelector);
             }
         }
 

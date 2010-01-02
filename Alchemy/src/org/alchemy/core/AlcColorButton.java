@@ -29,43 +29,43 @@ import javax.swing.JLabel;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-class AlcColourButton extends JComponent implements MouseListener, AlcPopupInterface, AlcConstants {
+class AlcColorButton extends JComponent implements MouseListener, AlcPopupInterface, AlcConstants {
 
     private AlcPopupMenu fgPopup,  bgPopup;
     //
-    // COLOUR PANEL
-    private JComponent colourPanel;
-    private Image colourPanelImage;
-    private final Image colourFg = AlcUtil.getImage("colour-fg.png");
-    private final Image colourBg = AlcUtil.getImage("colour-bg.png");
-    private final Image colourSwitch = AlcUtil.getImage("colour-switch.png");
-    private final Color highlightColour = new Color(0, 0, 0, 50);
+    // COLOR PANEL
+    private JComponent colorPanel;
+    private Image colorPanelImage;
+    private final Image colorFg = AlcUtil.getImage("color-fg.png");
+    private final Image colorBg = AlcUtil.getImage("color-bg.png");
+    private final Image colorSwitch = AlcUtil.getImage("color-switch.png");
+    private final Color highlightColor = new Color(0, 0, 0, 50);
     private final int FOREGROUND = 1;
     private final int BACKGROUND = 2;
     private final int SWITCH = 3;
     private int highlight = 0;
     private final int swatchSize = 17;
     //    
-    /** Creates a new instance of AlcColourButton */
-    AlcColourButton(String text, String toolTip) {
+    /** Creates a new instance of AlcColorButton */
+    AlcColorButton(String text, String toolTip) {
 
         //this.setOpaque(true);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-        // COLOUR PANEL
-        colourPanel = new JComponent() {
+        // COLOR PANEL
+        colorPanel = new JComponent() {
 
             @Override
             public void paintComponent(Graphics g) {
-                g.drawImage(colourPanelImage, 0, 0, null);
+                g.drawImage(colorPanelImage, 0, 0, null);
             }
         };
 
-        colourPanel.setPreferredSize(new Dimension(34, 24));
-        colourPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        colourPanel.addMouseListener(this);
+        colorPanel.setPreferredSize(new Dimension(34, 24));
+        colorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        colorPanel.addMouseListener(this);
 
-        this.add(colourPanel);
+        this.add(colorPanel);
 
         // TEXT LABEL
         JLabel label = new JLabel(text);
@@ -73,7 +73,7 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
         label.setFont(FONT_MEDIUM);
         label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
 
-        // Clicking on the label brings up the Foreground colour popup
+        // Clicking on the label brings up the Foreground color popup
         label.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -89,7 +89,7 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
 
         this.add(label);
 
-        colourPanel.setToolTipText(toolTip);
+        colorPanel.setToolTipText(toolTip);
         label.setToolTipText(toolTip);
         this.setToolTipText(toolTip);
 
@@ -136,16 +136,15 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
         bgPopup.add(item);
     }
 
-    /** Refresh the colour panel */
+    /** Refresh the color panel */
     void refresh() {
-        colourPanelImage = getColourPanelImage();
-        colourPanel.repaint();
+        colorPanelImage = getColorPanelImage();
+        colorPanel.repaint();
     }
 
-    /** Switch the foreground and background colours */
-    void switchColours() {
-//        foregroundColour = !foregroundColour;
-        Alchemy.canvas.setBackgroundColourActive(!Alchemy.canvas.isBackgroundColourActive());
+    /** Switch the foreground and background colors */
+    void switchColors() {
+        Alchemy.canvas.setBackgroundColorActive(!Alchemy.canvas.isBackgroundColorActive());
         refresh();
     }
 
@@ -159,7 +158,7 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
     }
 
     public boolean isInside() {
-        if (!Alchemy.canvas.isBackgroundColourActive()) {
+        if (!Alchemy.canvas.isBackgroundColorActive()) {
             return fgPopup.inside;
         } else {
             return bgPopup.inside;
@@ -184,12 +183,12 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
         }
 
         // Foreground Active
-        if (!Alchemy.canvas.isBackgroundColourActive() && x >= 7 && x < swatchSize && y >= swatchSize ||
-                !Alchemy.canvas.isBackgroundColourActive() && x >= swatchSize && x <= 23 && y >= 7) {
+        if (!Alchemy.canvas.isBackgroundColorActive() && x >= 7 && x < swatchSize && y >= swatchSize ||
+                !Alchemy.canvas.isBackgroundColorActive() && x >= swatchSize && x <= 23 && y >= 7) {
             return BACKGROUND;
 
         // Background Active    
-        } else if (Alchemy.canvas.isBackgroundColourActive() && x >= 7 && x <= 23 && y >= 7) {
+        } else if (Alchemy.canvas.isBackgroundColorActive() && x >= 7 && x <= 23 && y >= 7) {
             return BACKGROUND;
 
         } else {
@@ -197,41 +196,41 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
         }
     }
 
-    /** Get the colour panel image */
-    private Image getColourPanelImage() {
+    /** Get the color panel image */
+    private Image getColorPanelImage() {
         BufferedImage image = new BufferedImage(35, 24, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
 
         // Foreground Active
-        if (!Alchemy.canvas.isBackgroundColourActive()) {
+        if (!Alchemy.canvas.isBackgroundColorActive()) {
 
-            // Draw the foreground colour
-            g.setColor(Alchemy.canvas.getForegroundColour());
+            // Draw the foreground color
+            g.setColor(Alchemy.canvas.getForegroundColor());
             g.fillRect(2, 2, 13, 13);
-            // Draw the background colour
-            g.setColor(Alchemy.canvas.getBackgroundColour());
+            // Draw the background color
+            g.setColor(Alchemy.canvas.getBackgroundColor());
             // bottom left
             g.fillRect(9, 17, 10, 5);
             // right
             g.fillRect(16, 9, 6, 13);
 
             // Draw the base image
-            g.drawImage(colourFg, 0, 0, null);
+            g.drawImage(colorFg, 0, 0, null);
 
         // Background Active
         } else {
-            // Draw the foreground colour
-            g.setColor(Alchemy.canvas.getForegroundColour());
+            // Draw the foreground color
+            g.setColor(Alchemy.canvas.getForegroundColor());
             // top
             g.fillRect(2, 2, 13, 5);
             // left
             g.fillRect(2, 7, 6, 10);
-            // Draw the background colour
-            g.setColor(Alchemy.canvas.getBackgroundColour());
+            // Draw the background color
+            g.setColor(Alchemy.canvas.getBackgroundColor());
             g.fillRect(9, 9, 13, 13);
 
             // Draw the base image
-            g.drawImage(colourBg, 0, 0, null);
+            g.drawImage(colorBg, 0, 0, null);
 
         }
 
@@ -239,8 +238,8 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
         switch (highlight) {
 
             case FOREGROUND:
-                g.setColor(highlightColour);
-                if (!Alchemy.canvas.isBackgroundColourActive()) {
+                g.setColor(highlightColor);
+                if (!Alchemy.canvas.isBackgroundColorActive()) {
                     g.fillRect(0, 0, swatchSize, swatchSize);
                 } else {
                     g.fillRect(0, 0, swatchSize, 7);
@@ -249,8 +248,8 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
                 break;
 
             case BACKGROUND:
-                g.setColor(highlightColour);
-                if (!Alchemy.canvas.isBackgroundColourActive()) {
+                g.setColor(highlightColor);
+                if (!Alchemy.canvas.isBackgroundColorActive()) {
                     g.fillRect(7, swatchSize, 10, 7);
                     g.fillRect(swatchSize, 7, 7, swatchSize);
                 } else {
@@ -259,7 +258,7 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
                 break;
 
             case SWITCH:
-                g.drawImage(colourSwitch, 24, 0, null);
+                g.drawImage(colorSwitch, 24, 0, null);
                 break;
         }
         return image;
@@ -273,7 +272,7 @@ class AlcColourButton extends JComponent implements MouseListener, AlcPopupInter
         switch (area) {
             case SWITCH:
                 highlight = SWITCH;
-                Alchemy.canvas.setBackgroundColourActive(!Alchemy.canvas.isBackgroundColourActive());
+                Alchemy.canvas.setBackgroundColorActive(!Alchemy.canvas.isBackgroundColorActive());
                 refresh();
                 break;
 

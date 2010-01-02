@@ -262,7 +262,7 @@ class AlcSession implements ActionListener, AlcConstants {
             document.newPage();
             
             cb.getPdfWriter().setGroup(transGroup);
-            // Make sure the colour space is Device RGB
+            // Make sure the color space is Device RGB
             cb.setDefaultColorspace(PdfName.CS, PdfName.DEVICERGB);
 
             // Draw into the template and add it to the PDF 

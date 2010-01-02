@@ -46,7 +46,7 @@ class AlcNumberDialog extends JDialog implements AlcConstants {
         JPanel content = new JPanel();
         content.setPreferredSize(new Dimension(250, 90));
         content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        content.setBackground(COLOUR_UI_HIGHLIGHT);
+        content.setBackground(COLOR_UI_HIGHLIGHT);
 
         minField = new JSpinner();
         maxField = new JSpinner();

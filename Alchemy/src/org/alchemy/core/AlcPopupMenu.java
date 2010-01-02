@@ -34,11 +34,11 @@ class AlcPopupMenu extends JPopupMenu implements AlcConstants {
     /** Creates a new instance of AlcPopupMenu */
     AlcPopupMenu() {
 
-        // Set the colour for the bg
-        this.setBackground(COLOUR_UI_HIGHLIGHT);
+        // Set the color for the bg
+        this.setBackground(COLOR_UI_HIGHLIGHT);
         // Make sure the popup is opaque
         this.setOpaque(true);
-        Border outline = BorderFactory.createLineBorder(COLOUR_UI_LINE, 1);
+        Border outline = BorderFactory.createLineBorder(COLOR_UI_LINE, 1);
         Border empty = BorderFactory.createEmptyBorder(2, 2, 2, 2);
         // Compound border combining the above two
         Border compound = BorderFactory.createCompoundBorder(outline, empty);

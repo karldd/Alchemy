@@ -941,7 +941,7 @@ public class AlcUtil implements AlcConstants {
     //////////////////////////////////////////////////////////////
     public static void drawSoftRect(Graphics g, int x, int y, int width, int height) {
         // CORNERS
-        g.setColor(COLOUR_UI_LINE_ALPHA);
+        g.setColor(COLOR_UI_LINE_ALPHA);
         // Top Left
         g.drawLine(x, y, x, y);
         // Top Right
@@ -952,7 +952,7 @@ public class AlcUtil implements AlcConstants {
         g.drawLine(x + width - 1, y + height - 1, x + width - 1, y + height - 1);
 
         // LINES
-        g.setColor(COLOUR_UI_LINE);
+        g.setColor(COLOR_UI_LINE);
         // Top 
         g.drawLine(x + 1, y, x + width - 2, y);
         // Right
@@ -963,14 +963,14 @@ public class AlcUtil implements AlcConstants {
         g.drawLine(x, y + height - 2, x, y + 1);
     }
     //////////////////////////////////////////////////////////////
-    // COLOUR
+    // COLOR
     //////////////////////////////////////////////////////////////
-    /** Get the brightness of a colour
+    /** Get the brightness of a color
      * 
-     * @param rgb   An rgb colour (bit-shifted int format)
+     * @param rgb   An rgb color (bit-shifted int format)
      * @return      The brightness as an int
      */
-    public static int getColourBrightness(int rgb) {
+    public static int getColorBrightness(int rgb) {
         int oldR = (rgb >>> 16) & 255;
         int oldG = (rgb >>> 8) & 255;
         int oldB = (rgb >>> 0) & 255;

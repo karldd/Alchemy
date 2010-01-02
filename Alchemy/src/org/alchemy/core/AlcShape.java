@@ -27,7 +27,7 @@ import java.util.ArrayList;
 /**
  * A shape class used by Alchemy<br>
  * The main shape is stored as a {@link GeneralPath} object
- * with other variables defining the colour, style, alpha etc...
+ * with other variables defining the color, style, alpha etc...
  */
 public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
@@ -36,8 +36,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     //////////////////////////////////////////////////////////////
     /** The main path stored as a GeneralPath */
     GeneralPath path;
-    /** Colour of this shape */
-    Color colour;
+    /** Color of this shape */
+    Color color;
     /** Alpha of this shape */
     int alpha = 255;
     /** Style of this shape - (1) LINE or (2) SOLID FILL */
@@ -94,27 +94,27 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /**
      * Creates a new instance of AlcShape with defined values
      * @param p         Initial point to set the GeneralPath moveto
-     * @param colour    Colour of the shape
+     * @param color     Color of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public AlcShape(Point p, Color colour, int alpha, int style, float lineWidth) {
+    public AlcShape(Point p, Color color, int alpha, int style, float lineWidth) {
         setupPoint(p);
-        setupAttributes(colour, alpha, style, lineWidth);
+        setupAttributes(color, alpha, style, lineWidth);
     }
 
     /**
      * Creates a new instance of AlcShape with defined values
      * @param p         Initial point to set the GeneralPath moveto
-     * @param colour    Colour of the shape
+     * @param color    color of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public AlcShape(Point2D.Float p, Color colour, int alpha, int style, float lineWidth) {
+    public AlcShape(Point2D.Float p, Color color, int alpha, int style, float lineWidth) {
         setupPoint(p);
-        setupAttributes(colour, alpha, style, lineWidth);
+        setupAttributes(color, alpha, style, lineWidth);
     }
 
     /** 
@@ -137,14 +137,14 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /**
      * Creates a new instance of AlcShape with defined values
      * @param path      GeneralPath path
-     * @param colour    Colour of the shape
+     * @param color     Color of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public AlcShape(GeneralPath path, Color colour, int alpha, int style, float lineWidth) {
+    public AlcShape(GeneralPath path, Color color, int alpha, int style, float lineWidth) {
         setupShape(path);
-        setupAttributes(colour, alpha, style, lineWidth);
+        setupAttributes(color, alpha, style, lineWidth);
     }
 
     //////////////////////////////////////////////////////////////
@@ -175,14 +175,14 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
     /** Setup the attributes of a shape
      * 
-     * @param colour    Colour of the shape
+     * @param color     Color of the shape
      * @param alpha     Alpha value of the shape
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public void setupAttributes(Color colour, int alpha, int style, float lineWidth) {
+    public void setupAttributes(Color color, int alpha, int style, float lineWidth) {
         this.alpha = alpha;
-        setColour(colour);
+        setColor(color);
         this.style = style;
         if (lineWidth < 0) {
             lineWidth = 0;
@@ -190,12 +190,12 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         this.lineWidth = lineWidth;
     }
 
-    /** Set the attributes of this shape (Alpha/Colour/Style/LineWidth)
+    /** Set the attributes of this shape (Alpha/Color/Style/LineWidth)
      *  to the current values of the canvas
      */
     public void setupDefaultAttributes() {
         this.alpha = Alchemy.canvas.getAlpha();
-        setColour(Alchemy.canvas.getColour());
+        setColor(Alchemy.canvas.getColor());
         this.style = Alchemy.canvas.getStyle();
         if (Alchemy.canvas.getLineWidth() < 0) {
             this.lineWidth = 0;
@@ -547,19 +547,19 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     }
 
     /**
-     * Get the colour of this shape
-     * @return The colour
+     * Get the color of this shape
+     * @return The color
      */
-    public Color getColour() {
-        return colour;
+    public Color getColor() {
+        return color;
     }
 
     /**
-     * Set the colour of this shape
-     * @param colour The colour
+     * Set the color of this shape
+     * @param color The color
      */
-    public void setColour(Color colour) {
-        this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+    public void setColor(Color color) {
+        this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
 
     /**
@@ -570,7 +570,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         if (this.gradientPaint != null) {
             return this.gradientPaint;
         } else {
-            return this.colour;
+            return this.color;
         }
     }
 
@@ -588,15 +588,15 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      */
     public void setAlpha(int alpha) {
         this.alpha = alpha;
-        setColour(this.colour);
+        setColor(this.color);
     }
 
     /**
-     * Set a colour with alpha directly 
-     * @param colour
+     * Set a color with alpha directly
+     * @param color
      */
-    public void setAlphaColour(Color colour) {
-        this.colour = colour;
+    public void setAlphaColor(Color color) {
+        this.color = color;
     }
 
     /**
@@ -787,13 +787,13 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     // CLONE STUFF
     //////////////////////////////////////////////////////////////
     /**
-     * 'Deep' Clone this object using the existing style/colour etc.. values
+     * 'Deep' Clone this object using the existing style/color etc.. values
      * @return An new cloned object of this shape
      */
     @Override
     public Object clone() {
         //Deep copy
-        AlcShape tempShape = new AlcShape(this.path, this.colour, this.alpha, this.style, this.lineWidth);
+        AlcShape tempShape = new AlcShape(this.path, this.color, this.alpha, this.style, this.lineWidth);
         cloneAttributes(tempShape);
         return tempShape;
     }

@@ -150,10 +150,10 @@ class AlcPreferences implements AlcConstants {
     boolean smoothing;
     /** Line smoothing */
     boolean lineSmoothing;
-    /** Canvas background colour */
-    int bgColour;
-    /** Colour */
-    int colour;
+    /** Canvas background color */
+    int bgColor;
+    /** Color */
+    int color;
     //////////////////////////////////////////////////////////////
     // GENERAL
     //////////////////////////////////////////////////////////////
@@ -194,8 +194,8 @@ class AlcPreferences implements AlcConstants {
 
         smoothing = prefs.getBoolean("Smoothing", true);
         lineSmoothing = prefs.getBoolean("Line Smoothing", true);
-        bgColour = prefs.getInt("Background Colour", 0xFFFFFF);
-        colour = prefs.getInt("Colour", 0x000000);
+        bgColor = prefs.getInt("Background Color", 0xFFFFFF);
+        color = prefs.getInt("Color", 0x000000);
         
         exportDirectory = prefs.get("Export Directory", DIR_DESKTOP);
 
@@ -223,8 +223,8 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Simple ToolBar", simpleToolBar);
         prefs.putBoolean("Transparent Fullscreen", transparentFullscreen);
 
-        prefs.putInt("Background Colour", Alchemy.canvas.getBackgroundColour().getRGB());
-        prefs.putInt("Colour", Alchemy.canvas.getForegroundColour().getRGB());
+        prefs.putInt("Background Color", Alchemy.canvas.getBackgroundColor().getRGB());
+        prefs.putInt("Color", Alchemy.canvas.getForegroundColor().getRGB());
         
         prefs.put("Export Directory", exportDirectory);
 
@@ -356,7 +356,7 @@ class AlcPreferences implements AlcConstants {
         masterPanel.add(getTabPanel());
 
         // BACKGROUND PANEL
-        // The coloured panel that starts below the button panel
+        // The colored panel that starts below the button panel
         // Content is added to this panel
         bgPanel = new JPanel();
         bgPanel.setOpaque(true);
@@ -372,7 +372,7 @@ class AlcPreferences implements AlcConstants {
         }
         bgPanel.setBounds(0, tabPanelHeight, prefsWindowSize.width + bgPanelWidthOffset, prefsWindowSize.height - tabPanelHeight - bgPanelHeightOffset);
         bgPanel.setLayout(new BorderLayout());
-        bgPanel.setBackground(COLOUR_UI_HIGHLIGHT);
+        bgPanel.setBackground(COLOR_UI_HIGHLIGHT);
         bgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         masterPanel.add(bgPanel);
 
@@ -456,10 +456,10 @@ class AlcPreferences implements AlcConstants {
 
         JPanel tabPanel = new JPanel() {
 
-            // Draw the background colour
-            final Color unifiedLineColour = new Color(64, 64, 64);
-//            final Color tabButtonStartColour = new Color(187, 187, 187);
-//            final Color tabButtonEndColour = new Color(150, 150, 150);
+            // Draw the background color
+            final Color unifiedLineColor = new Color(64, 64, 64);
+//            final Color tabButtonStartColor = new Color(187, 187, 187);
+//            final Color tabButtonEndColor = new Color(150, 150, 150);
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -470,13 +470,13 @@ class AlcPreferences implements AlcConstants {
 
 //                    // OSX 10.5 Unified toolbar
 //                    if (Alchemy.OS == MACOSX && JAVA_SUBVERSION >= 13) {
-//                        g2.setPaint(unifiedLineColour);
+//                        g2.setPaint(unifiedLineColor);
 //                        g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    } else {
-                    GradientPaint gradientPaint = new GradientPaint(0, 0, COLOUR_UI_START, 0, tabPanelHeight, COLOUR_UI_END, true);
+                    GradientPaint gradientPaint = new GradientPaint(0, 0, COLOR_UI_START, 0, tabPanelHeight, COLOR_UI_END, true);
                     g2.setPaint(gradientPaint);
                     g2.fillRect(0, 0, targetWidth, tabPanelHeight);
-                    g2.setPaint(COLOUR_UI_LINE);
+                    g2.setPaint(COLOR_UI_LINE);
                     g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
 //                    }
                 }
@@ -599,7 +599,7 @@ class AlcPreferences implements AlcConstants {
         JPanel mp = new JPanel();
         //mp.setOpaque(true);
         mp.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        mp.setBackground(COLOUR_UI_START);
+        mp.setBackground(COLOR_UI_START);
         int plugins = Alchemy.plugins.creates.length + Alchemy.plugins.affects.length;
         mp.setLayout(new GridLayout(plugins, 1, 5, 5));
         //JCheckBox[] checkBoxes = new JCheckBox[plugins];
@@ -899,7 +899,7 @@ class AlcPreferences implements AlcConstants {
             String moduleName = currentModule.getName();
             final String moduleNodeName = modulePrefix + moduleName;
             final JCheckBox checkBox = new JCheckBox(moduleName);
-            checkBox.setBackground(COLOUR_UI_START);
+            checkBox.setBackground(COLOR_UI_START);
             checkBox.setFont(FONT_MEDIUM);
 
             // Set the state of the checkbox

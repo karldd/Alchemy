@@ -117,7 +117,7 @@ public interface AlcConstants {
             Toolkit.getDefaultToolkit().createImage(new MemoryImageSource(16, 16, new int[16 * 16], 0, 16)),
             new Point(0, 0),
             "Blank");
-    /** Cursor - Circle Cursor used with the colour picker */
+    /** Cursor - Circle Cursor used with the color picker */
     static final Cursor CURSOR_CIRCLE = AlcUtil.getCursor("cursor-circle.png");
     /** Cursor - Eyedropper Cursor */
     static final Cursor CURSOR_EYEDROPPER = AlcUtil.getCursor("cursor-eyedropper.png");
@@ -151,20 +151,20 @@ public interface AlcConstants {
     //
 
     //////////////////////////////////////////////////////////////
-    // INTERFACE COLOURS
+    // INTERFACE COLORS
     //////////////////////////////////////////////////////////////
-    /** UI background colour */
-    static final Color COLOUR_UI_BG = new Color(225, 225, 225);
-    /** UI gradient background start colour */
-    static final Color COLOUR_UI_START = new Color(235, 235, 235, 240);
-    /** UI gradient background end colour */
-    static final Color COLOUR_UI_END = new Color(215, 215, 215, 240);
-    /** UI line colour */
-    static final Color COLOUR_UI_LINE = new Color(140, 140, 140);
-    /** UI line alpha colour - 50% Alpha for soft corners */
-    static final Color COLOUR_UI_LINE_ALPHA = new Color(140, 140, 140, 128);
-    /** UI highlight colour */
-    static final Color COLOUR_UI_HIGHLIGHT = new Color(231, 231, 231);
-    /** UI box colour - used for the CheckBox Boxes */
-    static final Color COLOUR_UI_BOX = new Color(190, 190, 190);
+    /** UI background color */
+    static final Color COLOR_UI_BG = new Color(225, 225, 225);
+    /** UI gradient background start color */
+    static final Color COLOR_UI_START = new Color(235, 235, 235, 240);
+    /** UI gradient background end color */
+    static final Color COLOR_UI_END = new Color(215, 215, 215, 240);
+    /** UI line color */
+    static final Color COLOR_UI_LINE = new Color(140, 140, 140);
+    /** UI line alpha color - 50% Alpha for soft corners */
+    static final Color COLOR_UI_LINE_ALPHA = new Color(140, 140, 140, 128);
+    /** UI highlight color */
+    static final Color COLOR_UI_HIGHLIGHT = new Color(231, 231, 231);
+    /** UI box color - used for the CheckBox Boxes */
+    static final Color COLOR_UI_BOX = new Color(190, 190, 190);
 }

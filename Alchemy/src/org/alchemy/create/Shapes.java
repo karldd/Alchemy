@@ -41,7 +41,7 @@ public class Shapes extends AlcModule implements AlcConstants {
     private Point lastPt;
     private int guideSize = -1;
     private GeneralPath secondPath = null;
-    private Color guideColour = new Color(0, 255, 255);
+    private Color guideColor = new Color(0, 255, 255);
 
     public Shapes() {
     }
@@ -121,7 +121,7 @@ public class Shapes extends AlcModule implements AlcConstants {
         if (straightShapes && !firstClick && lastPt != null) {
 
             GeneralPath line = new GeneralPath(new Line2D.Float(lastPt.x, lastPt.y, e.getX(), e.getY()));
-            AlcShape guide = new AlcShape(line, guideColour, 100, STYLE_STROKE, 1);
+            AlcShape guide = new AlcShape(line, guideColor, 100, STYLE_STROKE, 1);
 
             if (guideSize == canvas.guideShapes.size()) {
                 if (secondPath != null) {

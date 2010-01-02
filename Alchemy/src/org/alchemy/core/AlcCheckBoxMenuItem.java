@@ -83,7 +83,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setOpaque(true);
         if (Alchemy.OS != OS_LINUX) {
-            this.setBackground(AlcToolBar.COLOUR_UI_HIGHLIGHT);
+            this.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
         }
         this.setFont(FONT_MEDIUM);
 
@@ -105,7 +105,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
         super.paintComponent(g);
         if (Alchemy.OS != OS_LINUX && !Alchemy.OS_IS_VISTA) {
             if (!this.getState()) {
-                g.setColor(AlcToolBar.COLOUR_UI_BOX);
+                g.setColor(AlcToolBar.COLOR_UI_BOX);
                 // This is the toolbar menu popup
                 if (moduleType > 0) {
                     g.drawRect(checkX, 16, 7, 7);

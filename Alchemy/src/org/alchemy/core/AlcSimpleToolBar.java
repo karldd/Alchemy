@@ -32,7 +32,7 @@ import javax.swing.event.ChangeListener;
  */
 public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants {
 
-    final ColourBox colourBox;
+    final ColorBox colorBox;
     AlcSliderCustom transparencySlider;
 
     AlcSimpleToolBar() {
@@ -40,9 +40,9 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         this.toolBarWidth = 150;
         // Left align layout
         this.setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
-        this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, COLOUR_UI_LINE));
+        this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, COLOR_UI_LINE));
         this.setOpaque(true);
-        this.setBackground(COLOUR_UI_BG);
+        this.setBackground(COLOR_UI_BG);
         this.setName("Toolbar");
 
 
@@ -105,54 +105,54 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
 
         //////////////////////////////////////////////////////////////
-        // COLOUR BOX
+        // COLOR BOX
         //////////////////////////////////////////////////////////////
-        colourBox = new ColourBox(toolBarWidth, 25, Alchemy.canvas.getColour());
-        colourBox.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOUR_UI_LINE));
+        colorBox = new ColorBox(toolBarWidth, 25, Alchemy.canvas.getColor());
+        colorBox.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOR_UI_LINE));
 
         //////////////////////////////////////////////////////////////
-        // COLOUR PICKER
+        // COLOR PICKER
         //////////////////////////////////////////////////////////////
         // Get the icon for the label
-        ImageIcon colourPickerIcon = AlcUtil.getImageIcon("simple-colour-picker.png");
+        ImageIcon colorPickerIcon = AlcUtil.getImageIcon("simple-color-picker.png");
         // Create a rectangle for easy reference 
-        final Rectangle colourPickerRect = new Rectangle(0, 0, colourPickerIcon.getIconWidth(), colourPickerIcon.getIconHeight());
+        final Rectangle colorPickerRect = new Rectangle(0, 0, colorPickerIcon.getIconWidth(), colorPickerIcon.getIconHeight());
 
-        // Create buffered image to get the colour using .getRGB()
-        final BufferedImage colourPickerBuffImage = AlcUtil.getBufferedImage(colourPickerIcon.getImage());
+        // Create buffered image to get the color using .getRGB()
+        final BufferedImage colorPickerBuffImage = AlcUtil.getBufferedImage(colorPickerIcon.getImage());
 
-        JLabel colourPicker = new JLabel(colourPickerIcon);
-        colourPicker.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOUR_UI_LINE));
-        colourPicker.setToolTipText(getS("colourDescription"));
+        JLabel colorPicker = new JLabel(colorPickerIcon);
+        colorPicker.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_UI_LINE));
+        colorPicker.setToolTipText(getS("colorDescription"));
         final Cursor pickerCursor = AlcUtil.getCursor("cursor-circle.png");
-        colourPicker.setCursor(pickerCursor);
-        colourPicker.addMouseListener(new MouseAdapter() {
+        colorPicker.setCursor(pickerCursor);
+        colorPicker.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 Point p = e.getPoint();
-                if (colourPickerRect.contains(p)) {
-                    Color c = new Color(colourPickerBuffImage.getRGB(p.x, p.y));
-                    Alchemy.canvas.setColour(c);
-                    colourBox.update(Alchemy.canvas.getColour());
+                if (colorPickerRect.contains(p)) {
+                    Color c = new Color(colorPickerBuffImage.getRGB(p.x, p.y));
+                    Alchemy.canvas.setColor(c);
+                    colorBox.update(Alchemy.canvas.getColor());
                 //System.out.println(c + " " + e.getPoint());
                 }
             }
         });
 
-        colourPicker.addMouseMotionListener(new MouseMotionAdapter() {
+        colorPicker.addMouseMotionListener(new MouseMotionAdapter() {
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 Point p = e.getPoint();
-                if (colourPickerRect.contains(p)) {
-                    Color c = new Color(colourPickerBuffImage.getRGB(p.x, p.y));
-                    Alchemy.canvas.setColour(c);
-                    colourBox.update(Alchemy.canvas.getColour());
+                if (colorPickerRect.contains(p)) {
+                    Color c = new Color(colorPickerBuffImage.getRGB(p.x, p.y));
+                    Alchemy.canvas.setColor(c);
+                    colorBox.update(Alchemy.canvas.getColor());
                 }
             }
         });
-        this.add(colourPicker);
+        this.add(colorPicker);
 
 
         //////////////////////////////////////////////////////////////
@@ -161,7 +161,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         transparencySlider = new AlcSliderCustom(null, toolBarWidth, 25, 0, 255, 254);
         transparencySlider.setBorderPainted(false);
         transparencySlider.setFillPainted(false);
-        transparencySlider.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, COLOUR_UI_LINE));
+        transparencySlider.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, COLOR_UI_LINE));
         transparencySlider.setToolTipText(getS("transparencyDescription"));
 
         GradientPaint gradientPaint = new GradientPaint(0, 0, new Color(0, 0, 0, 0), toolBarWidth, 0, new Color(0, 0, 0, 255), true);
@@ -180,19 +180,19 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
 
                         //if (!transparencySlider.getValueIsAdjusting()) {
                         Alchemy.canvas.setAlpha(transparencySlider.getValue());
-                        colourBox.update(Alchemy.canvas.getColour());
+                        colorBox.update(Alchemy.canvas.getColor());
                     //}
                     }
                 });
 
         this.add(transparencySlider);
 
-        this.add(colourBox);
+        this.add(colorBox);
 
 
 
-        ColourBox separator = new ColourBox(toolBarWidth, 10, COLOUR_UI_BG);
-        separator.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOUR_UI_LINE));
+        ColorBox separator = new ColorBox(toolBarWidth, 10, COLOR_UI_BG);
+        separator.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, COLOR_UI_LINE));
 
         //////////////////////////////////////////////////////////////
         // MODULES
@@ -201,7 +201,7 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
         addModules(Alchemy.plugins.creates);
         this.add(separator);
         addModules(Alchemy.plugins.affects);
-        this.add((ColourBox) separator.clone());
+        this.add((ColorBox) separator.clone());
 
 
         //////////////////////////////////////////////////////////////
@@ -314,8 +314,8 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
     }
 
     @Override
-    void refreshColourButton() {
-        colourBox.update(Alchemy.canvas.getColour());
+    void refreshColorButton() {
+        colorBox.update(Alchemy.canvas.getColor());
     }
 
     @Override
@@ -351,27 +351,27 @@ public class AlcSimpleToolBar extends AlcAbstractToolBar implements AlcConstants
     }
 }
 
-class ColourBox extends JPanel implements Cloneable {
+class ColorBox extends JPanel implements Cloneable {
 
     final int width,  height;
-    Color colour;
+    Color color;
 
-    ColourBox(int width, int height, Color colour) {
+    ColorBox(int width, int height, Color color) {
         this.width = width;
         this.height = height;
-        this.colour = colour;
+        this.color = color;
         this.setOpaque(false);
         this.setPreferredSize(new Dimension(width, height));
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        g.setColor(colour);
+        g.setColor(color);
         g.fillRect(0, 0, width, height);
     }
 
-    void update(Color colour) {
-        this.colour = colour;
+    void update(Color color) {
+        this.color = color;
         this.repaint();
     }
 

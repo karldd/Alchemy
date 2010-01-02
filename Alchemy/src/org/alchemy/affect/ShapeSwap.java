@@ -62,7 +62,7 @@ public class ShapeSwap extends AlcModule {
                     if(obj instanceof AlcShape){
                         AlcShape shape = (AlcShape)obj;
                         canvas.createShapes.add(shape);
-                        System.out.println(shape.getColour());
+                        System.out.println(shape.getColor());
                         System.out.println(shape.getAlpha());
                     }
                     
@@ -99,10 +99,7 @@ public class ShapeSwap extends AlcModule {
 
         if (currentShape != null) {
 
-            //System.out.println("Total Points: " + currentShape.getTotalPoints());
-            //System.out.println("Colour: " + currentShape.getColour());
-
-            // Only add shape that have more than a certain number of points
+           // Only add shape that have more than a certain number of points
             if (currentShape.getTotalPoints() > minPoints) {
 
                 try {
@@ -121,9 +118,9 @@ public class ShapeSwap extends AlcModule {
                             // e.setPersistenceDelegate(GeneralPath.class, new GeneralPathDelegate());
                             // or http://forums.sun.com/thread.jspa?threadID=144581&forumID=20
 
-                            encoder.setPersistenceDelegate(AlcShape.class, new DefaultPersistenceDelegate(new String[]{"path", "colour", "alpha", "style", "lineWidth"}));
+                            encoder.setPersistenceDelegate(AlcShape.class, new DefaultPersistenceDelegate(new String[]{"path", "color", "alpha", "style", "lineWidth"}));
                             encoder.setPersistenceDelegate(GeneralPath.class, new GeneralPathDelegate());
-                            //(Point p, Color colour, int alpha, int style, float lineWidth) {
+                            //(Point p, Color color, int alpha, int style, float lineWidth) {
 
                             System.out.println("Writing XML");
                             // Write object.

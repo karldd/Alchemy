@@ -27,36 +27,36 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 /**
- * AlcColour Selector
+ * AlcColor Selector
  * Based on code from the lovely Processing ColorSelector [sic]
  * http://dev.processing.org/source/index.cgi/trunk/processing/app/src/processing/app/tools/ColorSelector.java?view=markup
  */
-public class AlcColourSelector extends JDialog implements DocumentListener, AlcConstants {
+public class AlcColorSelector extends JDialog implements DocumentListener, AlcConstants {
 
     private int hue,  saturation,  brightness;  // range 360, 100, 100
     private int red,  green,  blue;   // range 256, 256, 256
-    private ColourRange range;
-    private ColourSlider slider;
+    private ColorRange range;
+    private ColorSlider slider;
     private JTextField hueField,  saturationField,  brightnessField;
     private JTextField redField,  greenField,  blueField;
     private JTextField hexField;
-    private JPanel colourPanel;
+    private JPanel colorPanel;
     private JButton okButton,  cancelButton;
     private boolean updating;
     private int labelH;
     private ActionListener okListener,  cancelListener;
 
-    AlcColourSelector(String title) {
+    AlcColorSelector(String title) {
 
         super(Alchemy.window, title);
 
         this.getContentPane().setLayout(new BorderLayout());
-        this.getContentPane().setBackground(COLOUR_UI_HIGHLIGHT);
+        this.getContentPane().setBackground(COLOR_UI_HIGHLIGHT);
 
         Box box = Box.createHorizontalBox();
         box.setBorder(new EmptyBorder(12, 12, 12, 12));
 
-        range = new ColourRange();
+        range = new ColorRange();
 
         Box rangeBox = new Box(BoxLayout.Y_AXIS);
         rangeBox.setAlignmentY(0);
@@ -65,7 +65,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         box.add(rangeBox);
         box.add(Box.createHorizontalStrut(10));
 
-        slider = new ColourSlider();
+        slider = new ColorSlider();
 
         Box sliderBox = new Box(BoxLayout.Y_AXIS);
         sliderBox.setAlignmentY(0);
@@ -104,7 +104,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         hexField.setText("FFFFFF");
     }
 
-    /** Creates and shows a JDialog with the Alchemy colour pane and the given actions 
+    /** Creates and shows a JDialog with the Alchemy color pane and the given actions
      * 
      * @param okListener        The ActionListener for the OK button
      * @param cancelListener    The ActionListener for the CANCEL button
@@ -113,13 +113,13 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         show(okListener, cancelListener, null);
     }
 
-    /** Creates and shows a JDialog with the Alchemy colour pane and the given actions 
+    /** Creates and shows a JDialog with the Alchemy color pane and the given actions
      * 
      * @param okListener        The ActionListener for the OK button
      * @param cancelListener    The ActionListener for the CANCEL button
-     * @param initialColour     The initial colour to display
+     * @param initialColor     The initial color to display
      */
-    public void show(ActionListener okListener, ActionListener cancelListener, Color initialColour) {
+    public void show(ActionListener okListener, ActionListener cancelListener, Color initialColor) {
         // Remove the old Actions
         if (this.okListener != null) {
             okButton.removeActionListener(this.okListener);
@@ -132,8 +132,8 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         this.cancelListener = cancelListener;
         okButton.addActionListener(okListener);
         cancelButton.addActionListener(cancelListener);
-        if (initialColour != null) {
-            setColour(initialColour);
+        if (initialColor != null) {
+            setColor(initialColor);
         }
         range.init = true;
         Point p = AlcUtil.calculateCenter(this, true);
@@ -141,20 +141,20 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         this.setVisible(true);
     }
 
-    /**  Gets the current color value from the colour selector
-     * @return  The current colour value
+    /**  Gets the current color value from the color selector
+     * @return  The current color value
      */
-    public Color getColour() {
+    public Color getColor() {
         return new Color(red, green, blue);
     }
 
-    public void setColour(Color colour) {
-        updateRGB2(colour.getRGB());
+    public void setColor(Color color) {
+        updateRGB2(color.getRGB());
         updateHSB();
         updateHex();
         range.repaint();
         slider.repaint();
-        colourPanel.repaint();
+        colorPanel.repaint();
     }
 
     public void changedUpdate(DocumentEvent e) {
@@ -213,7 +213,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         }
         range.repaint();
         slider.repaint();
-        colourPanel.repaint();
+        colorPanel.repaint();
         updating = false;
     }
 
@@ -302,7 +302,7 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         Box box = Box.createVerticalBox();
         box.setAlignmentY(0);
 
-        colourPanel = new JPanel() {
+        colorPanel = new JPanel() {
 
             @Override
             public void paintComponent(Graphics g) {
@@ -311,12 +311,12 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
                 g.fillRect(0, 0, size.width, size.height);
             }
         };
-        colourPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        colorPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
         Dimension dim = new Dimension(60, 40);
-        colourPanel.setMinimumSize(dim);
+        colorPanel.setMinimumSize(dim);
         //colorPanel.setMaximumSize(dim);
         //colorPanel.setPreferredSize(dim);
-        box.add(colourPanel);
+        box.add(colorPanel);
         box.add(Box.createVerticalStrut(15));
 
         Box row = Box.createHorizontalBox();
@@ -440,17 +440,17 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         return label;
     }
 
-    /** ColourRange panel to select a colour visually */
-    class ColourRange extends JPanel implements MouseListener, MouseMotionListener {
+    /** ColorRange panel to select a color visually */
+    class ColorRange extends JPanel implements MouseListener, MouseMotionListener {
 
         static final int WIDE = 256;
         static final int HIGH = 256;
         int lastX,   lastY;
         private int pixels[] = new int[WIDE * HIGH];
-        private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
+        private BufferedImage colorArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
         boolean init = true;
 
-        ColourRange() {
+        ColorRange() {
             this.setPreferredSize(new Dimension(WIDE, HIGH));
             this.setCursor(CURSOR_CIRCLE);
             this.addMouseListener(this);
@@ -462,12 +462,12 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
 
             int index = 0;
             float fhue = hue / 359f;
-            Color targetColour = new Color(red, green, blue);
+            Color targetColor = new Color(red, green, blue);
             for (int j = 0; j < 256; j++) {
                 for (int i = 0; i < 256; i++) {
                     Color c = Color.getHSBColor(fhue, i / 255f, (255 - j) / 255f);
                     if (init) {
-                        if (nearlyEquals(targetColour, c)) {
+                        if (nearlyEquals(targetColor, c)) {
                             lastX = i;
                             lastY = j;
                             //System.out.println("HIT: " + lastX + " " + lastY);
@@ -478,16 +478,16 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
                 }
             }
 
-            // Make the colour array into an image
-            colourArray.setRGB(0, 0, WIDE, HIGH, pixels, 0, WIDE);
+            // Make the color array into an image
+            colorArray.setRGB(0, 0, WIDE, HIGH, pixels, 0, WIDE);
             Graphics2D g2 = (Graphics2D) g;
-            g2.drawImage(colourArray, 0, 0, null);
+            g2.drawImage(colorArray, 0, 0, null);
 
             g2.setColor((brightness > 50) ? Color.BLACK : Color.WHITE);
             g2.drawRect(lastX - 4, lastY - 4, 8, 8);
         }
 
-        /** Work out if two colours are nearly equal */
+        /** Work out if two colors are nearly equal */
         private boolean nearlyEquals(Color c1, Color c2) {
             boolean result = false;
             final int difference = 1;
@@ -559,15 +559,15 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
         }
     }
 
-    /** ColourSlider class to select a hue */
-    class ColourSlider extends JPanel implements MouseListener, MouseMotionListener {
+    /** ColorSlider class to select a hue */
+    class ColorSlider extends JPanel implements MouseListener, MouseMotionListener {
 
         static final int WIDE = 20;
         static final int HIGH = 256;
         private int pixels[] = new int[WIDE * HIGH];
-        private BufferedImage colourArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
+        private BufferedImage colorArray = new BufferedImage(WIDE, HIGH, BufferedImage.TYPE_INT_ARGB);
 
-        ColourSlider() {
+        ColorSlider() {
             this.setPreferredSize(new Dimension(WIDE, HIGH));
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
@@ -588,10 +588,10 @@ public class AlcColourSelector extends JDialog implements DocumentListener, AlcC
                     pixels[index++] = c.getRGB();
                 }
             }
-            // Make the colour array into an image
-            colourArray.setRGB(0, 0, WIDE, HIGH, pixels, 0, WIDE);
+            // Make the color array into an image
+            colorArray.setRGB(0, 0, WIDE, HIGH, pixels, 0, WIDE);
             Graphics2D g2 = (Graphics2D) g;
-            g2.drawImage(colourArray, 0, 0, null);
+            g2.drawImage(colorArray, 0, 0, null);
 
         }
 

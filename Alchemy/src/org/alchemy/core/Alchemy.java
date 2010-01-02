@@ -91,8 +91,8 @@ public class Alchemy implements AlcConstants {
     static ResourceBundle bundleEn;
     /** Class of utility math functions */
     static final AlcMath math = new AlcMath();
-    /** Custom reusable colour selector */
-    static AlcColourSelector colourSelector;
+    /** Custom reusable color selector */
+    static AlcColorSelector colorSelector;
 
     Alchemy() {
 
@@ -147,8 +147,8 @@ public class Alchemy implements AlcConstants {
         // LOAD SHORTCUTS
         shortcuts = new AlcShortcuts(window);
 
-        // Colour Selector
-        colourSelector = new AlcColourSelector(bundle.getString("colourTitle"));
+        // Color Selector
+        colorSelector = new AlcColorSelector(bundle.getString("colorTitle"));
         //cs.setVisible(true);
 
         // LOAD PLUGINS

@@ -43,8 +43,8 @@ public abstract class AlcModule implements AlcConstants {
     protected static AlcAbstractToolBar toolBar;
     /** Access to the Alchemy math class */
     protected static AlcMath math;
-    /** Access to the Alchemy colour selector */
-    protected static AlcColourSelector colourSelector;
+    /** Access to the Alchemy color selector */
+    protected static AlcColorSelector colorSelector;
     //
     //////////////////////////////////////////////////////////////
     // MODULE INSTANCE REFERENCES
@@ -72,11 +72,11 @@ public abstract class AlcModule implements AlcConstants {
     // STRUCTURE
     //////////////////////////////////////////////////////////////
     /** Sets global references to the root, canvas, and toolbar */
-    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m, AlcColourSelector cs) {
+    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m, AlcColorSelector cs) {
         canvas = c;
         toolBar = t;
         math = m;
-        colourSelector = cs;
+        colorSelector = cs;
     }
 
     /** Called when the module is first selected in the menu.
