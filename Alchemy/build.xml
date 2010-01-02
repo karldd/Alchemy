@@ -308,8 +308,10 @@
          
          <!-- LINUX Shell Script to Launch Alchemy -->
         <copy file="${basedir}/res/Alchemy" todir="${alchemy.dir}"/>
+        <copy file="${basedir}/res/AlchemyOpenGL" todir="${alchemy.dir}"/>
         <!-- Make the shell script executable -->
         <chmod file="${alchemy.dir}/Alchemy" perm="+x"/>
+        <chmod file="${alchemy.dir}/AlchemyOpenGL" perm="+x"/>
         
         <!-- JPen -->
         <copy file="${basedir}/lib/jpen/libjpen-2-2.so" todir="${alchemy.dir}/lib"/>

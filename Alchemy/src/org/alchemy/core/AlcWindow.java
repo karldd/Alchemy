@@ -27,7 +27,7 @@ import java.awt.datatransfer.*;
  * AlcWindow
  * @author Karl D.D. Willis
  */
-class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyListener, ClipboardOwner {
+class AlcWindow extends JFrame implements AlcConstants, WindowListener, ComponentListener, KeyListener, ClipboardOwner {
 
     //////////////////////////////////////////////////////////////
     // FULLSCREEN
@@ -36,6 +36,15 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     private boolean fullscreen = false;
     /** For storing the old display size & location before entering fullscreen */
     private Rectangle oldBounds = null;
+    /** Flag indicating if the window has been disposed or not */
+    private boolean windowDisposed = false;
+    /** Finish switching into transparent fullscreen */
+    private boolean finishTransparentFullscreen = false;
+    /** Device to use for finishing transparent fullscreen */
+    private GraphicsDevice finishDevice = null;
+    /** Bounds to use for finishing transparent fullscreen */
+    private Rectangle finishBounds = null;
+
     //////////////////////////////////////////////////////////////
     // WINDOW
     //////////////////////////////////////////////////////////////    
@@ -66,6 +75,7 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
 
         this.addComponentListener(this);        // Add a component listener to detect window resizing
         //this.addWindowStateListener(this);    // Add a window state listener to detect window maximising
+        this.addWindowListener(this);
 
         this.addKeyListener(this);              // Key Listener
 
@@ -290,28 +300,25 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     //remove the frame from being displayable.
                     this.dispose();
 
+                    // Turn off the menubar if on OSX and this is the primary monitor
+                    if (Alchemy.OS == OS_MAC && bounds.x == 0 && bounds.y == 0) {
+                        AlcNative.setMenubarVisible(false);
+                    }
+
                     // If the current monitor and transparency is on
                     if (Alchemy.preferences.transparentFullscreen) {
 
-                        Robot robot = null;
-                        if (devices[currentDevice] != null) {
-                            robot = new Robot(devices[currentDevice]);
-                        } else {
-                            robot = new Robot();
+                        // If the window has not been properly disposed
+                        // Save the state and schedule it to be called
+                        // when the window is officially closed
+                        if(!windowDisposed){
+                            finishDevice = devices[currentDevice];
+                            finishBounds = bounds;
+                            finishTransparentFullscreen = true;
+                            return;
                         }
-                        // Reset the location to zero
-                        Rectangle newBounds = new Rectangle(0, 0, bounds.width, bounds.height);
-                        Image screenCapture = null;
-                        try {
-                            screenCapture = robot.createScreenCapture(newBounds);
-                        } catch (IllegalArgumentException ex) {
-                            // If an error is thrown then use the old bounds
-                            screenCapture = robot.createScreenCapture(bounds);
-                            ex.printStackTrace();
-                        }
-                        Alchemy.canvas.setTransparentImage(screenCapture);
-                        Alchemy.canvas.updateCanvasImage(true);
-                        Alchemy.canvas.repaint();
+                           
+                        captureTransparentScreen(devices[currentDevice], bounds);
 
                     }
 
@@ -321,11 +328,6 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
                     this.setBounds(bounds);
                     //setAlwaysOnTop(true);
                     //device.setFullScreenWindow(this);   //make the window fullscreen.
-
-                    // Turn off the menubar if on OSX and this is the primary monitor
-                    if (Alchemy.OS == OS_MAC && bounds.x == 0 && bounds.y == 0) {
-                        AlcNative.setMenubarVisible(false);
-                    }
 
                     this.setVisible(true);                   //show the frame
 
@@ -369,6 +371,49 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
      */
     void setTransparent(boolean transparent) {
         Alchemy.preferences.transparentFullscreen = transparent;
+    }
+
+    /** Finish switching into transparent fullscreen mode */
+    private void finishTransparentFullscreen() {
+        captureTransparentScreen(finishDevice, finishBounds);
+        this.setUndecorated(true);
+        this.setBounds(finishBounds);
+        this.setVisible(true);
+        if (Alchemy.preferences.paletteAttached) {
+            Alchemy.palette.toFront();
+        }
+        this.toFront();
+        this.repaint();
+        finishTransparentFullscreen = false;
+    }
+
+    /** Capture the image for the transparent screen using the robot */
+    private void captureTransparentScreen(GraphicsDevice device, Rectangle bounds) {
+        try {
+            Robot robot = null;
+            if (device != null) {
+                robot = new Robot(device);
+            } else {
+                robot = new Robot();
+            }
+            // Reset the location to zero
+            Rectangle newBounds = new Rectangle(0, 0, bounds.width, bounds.height);
+            Image screenCapture = null;
+            try {
+                screenCapture = robot.createScreenCapture(newBounds);
+            } catch (IllegalArgumentException ex) {
+                // If an error is thrown then use the old bounds
+                screenCapture = robot.createScreenCapture(bounds);
+                ex.printStackTrace();
+            }
+            Alchemy.canvas.setTransparentImage(screenCapture);
+            Alchemy.canvas.updateCanvasImage(true);
+            Alchemy.canvas.repaint();
+        } catch (Exception e) {
+            System.err.println("Error Entering Fullscreen");
+            e.printStackTrace();
+        }
+
     }
 
     /** Check if a point is on screen
@@ -652,5 +697,31 @@ class AlcWindow extends JFrame implements AlcConstants, ComponentListener, KeyLi
     }
 
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
+    }
+
+    public void windowOpened(WindowEvent e) {
+    }
+
+    public void windowClosing(WindowEvent e) {
+    }
+
+    public void windowClosed(WindowEvent e) {
+        windowDisposed = true;
+        if(finishTransparentFullscreen){
+            finishTransparentFullscreen();
+        }
+    }
+
+    public void windowIconified(WindowEvent e) {
+    }
+
+    public void windowDeiconified(WindowEvent e) {
+    }
+
+    public void windowActivated(WindowEvent e) {
+        windowDisposed = false;
+    }
+
+    public void windowDeactivated(WindowEvent e) {
     }
 }
