@@ -36,12 +36,14 @@ public class Shapes extends AlcModule implements AlcConstants {
 
     private boolean straightShapes = false;
     private boolean firstClick = true;
+    private boolean outlineMode = false;
     private AlcToolBarSubSection subToolBarSection;
     private boolean secondClick;
     private Point lastPt;
     private int guideSize = -1;
     private GeneralPath secondPath = null;
     private Color guideColor = new Color(0, 255, 255);
+    
 
     public Shapes() {
     }
@@ -92,13 +94,30 @@ public class Shapes extends AlcModule implements AlcConstants {
                 });
         subToolBarSection.add(lineTypeButton);
 
+
+        // Outline Mode
+        AlcSubToggleButton outlineButton = new AlcSubToggleButton("Outline", AlcUtil.getUrlPath("outline.png", getClassLoader()));
+        outlineButton.setToolTipText("Draw in outline mode until the shape is finished");
+        outlineButton.addActionListener(
+                new ActionListener() {
+
+                    public void actionPerformed(ActionEvent e) {
+                        outlineMode = !outlineMode;
+                    }
+                });
+        subToolBarSection.add(outlineButton);
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
         if (!straightShapes) {
             Point p = e.getPoint();
-            canvas.createShapes.add(new AlcShape(p));
+            AlcShape shape = new AlcShape(p);
+            canvas.createShapes.add(shape);
+            if(outlineMode && canvas.getStyle() == STYLE_FILL){
+                shape.setStyle(STYLE_STROKE);
+            }
             canvas.redraw();
         }
     }
@@ -201,6 +220,10 @@ public class Shapes extends AlcModule implements AlcConstants {
             }
             canvas.redraw();
             if (!straightShapes) {
+                if (outlineMode && canvas.getStyle() == STYLE_FILL) {
+                    canvas.getCurrentCreateShape().setStyle(STYLE_FILL);
+                }
+                canvas.redraw();
                 canvas.commitShapes();
             }
         }
