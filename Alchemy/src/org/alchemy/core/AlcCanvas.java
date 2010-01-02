@@ -205,7 +205,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 g2.drawImage(image, imageLocation.x, imageLocation.y, null);
             }
             // Paint background.
-            g2.setColor(bgColor);
+            g2.setColor(new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()));
             g2.fillRect(0, 0, w, h);
         }
 
@@ -805,6 +805,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      */
     public void setBackgroundColorActive(boolean backgroundActive) {
         this.backgroundActive = backgroundActive;
+        Alchemy.toolBar.refreshTransparencySlider();
     }
 
     /** Get the Background Color
@@ -817,8 +818,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Set the Background Color
      * @param bgColor 
      */
-    public void setBackgroundColor(Color bgColor) {
-        this.bgColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgAlpha);
+    public void setBackgroundColor(Color color) {
+        this.bgColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), bgAlpha);
         redraw(true);
     }
 
@@ -843,7 +844,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @return 
      */
     public int getAlpha() {
-        return alpha;
+        if (backgroundActive) {
+            return bgAlpha;
+        } else {
+            return alpha;
+        }
     }
 
     /** Set the current alpha value
@@ -1458,8 +1463,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
             // Do not draw the background when creating a transparent image
             if (!transparent) {
-                // Paint background.
-                g2.setColor(Alchemy.canvas.getBackgroundColor());
+                // Paint background without transparency
+                Color bgColor = Alchemy.canvas.getBackgroundColor();
+                g2.setColor(new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()));
                 g2.fillRect(0, 0, width, height);
             }
 
