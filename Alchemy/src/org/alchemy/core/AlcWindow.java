@@ -378,6 +378,7 @@ class AlcWindow extends JFrame implements AlcConstants, WindowListener, Componen
         captureTransparentScreen(finishDevice, finishBounds);
         this.setUndecorated(true);
         this.setBounds(finishBounds);
+
         this.setVisible(true);
         if (Alchemy.preferences.paletteAttached) {
             Alchemy.palette.toFront();
