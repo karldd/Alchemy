@@ -185,6 +185,38 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         copyItem.setup(copyTitle, copyKey);
         editMenu.add(copyItem);
 
+        
+        editMenu.add(new JSeparator());
+
+
+        // Flip Horizontal
+        String flipHorizontalTitle = getS("flipHorizontal");
+        AbstractAction flipHorizontalAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.canvas.flipHorizontal();
+            }
+        };
+        AlcMenuItem flipHorizontalItem = new AlcMenuItem(flipHorizontalAction);
+        // Shortcut - Modifier ;
+        int flipHorizontalKey = Alchemy.shortcuts.setShortcut(flipHorizontalItem, KeyEvent.VK_SEMICOLON, "flipHorizontal", flipHorizontalAction, KEY_MODIFIER);
+        flipHorizontalItem.setup(flipHorizontalTitle, flipHorizontalKey);
+        editMenu.add(flipHorizontalItem);
+
+        // Flip Vertical
+        String flipVerticalTitle = getS("flipVertical");
+        AbstractAction flipVerticalAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.canvas.flipVertical();
+            }
+        };
+        AlcMenuItem flipVerticalItem = new AlcMenuItem(flipVerticalAction);
+        // Shortcut - Modifier '
+        int flipVerticalKey = Alchemy.shortcuts.setShortcut(flipVerticalItem, KeyEvent.VK_QUOTE, "flipVertical", flipVerticalAction, KEY_MODIFIER);
+        flipVerticalItem.setup(flipVerticalTitle, flipVerticalKey);
+        editMenu.add(flipVerticalItem);
+
         this.add(editMenu);
 
 

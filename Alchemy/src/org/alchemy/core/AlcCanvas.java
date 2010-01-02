@@ -941,6 +941,40 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             return this.autoToggleToolBar;
         }
     }
+
+    //////////////////////////////////////////////////////////////
+    // TRANSFORM
+    //////////////////////////////////////////////////////////////
+    /** Flip the shapes on the canvas horizontally */
+    void flipHorizontal(){
+        AffineTransform horizontalReflection = new AffineTransform();
+        // Move the reflection into place
+        horizontalReflection.translate(this.getWidth(), 0);
+        // Reflect it using a negative scale
+        horizontalReflection.scale(-1, 1);
+        // Apply to every shape
+        for(AlcShape shape : shapes){
+            GeneralPath reflectedPath = (GeneralPath) shape.getPath().createTransformedShape(horizontalReflection);
+            shape.setPath(reflectedPath);
+        }
+        redraw(true);
+    }
+
+    /** Flip the shapes on the canvas Vertically */
+    void flipVertical(){
+        AffineTransform verticalReflection = new AffineTransform();
+        // Move the reflection into place
+        verticalReflection.translate(0, this.getHeight());
+        // Reflect it using a negative scale
+        verticalReflection.scale(1, -1);
+        // Apply to every shape
+        for(AlcShape shape : shapes){
+            GeneralPath reflectedPath = (GeneralPath) shape.getPath().createTransformedShape(verticalReflection);
+            shape.setPath(reflectedPath);
+        }
+        redraw(true);
+    }
+
     //////////////////////////////////////////////////////////////
     // IMAGE
     //////////////////////////////////////////////////////////////
