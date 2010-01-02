@@ -167,7 +167,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         if (image != null && imageSize.contains(p)) {
             Point aP = new Point(p.x - imageSize.x, p.y - imageSize.y);
             // The pixel value under the cursor
-            int xy = AlcUtil.getColourBrightness(image.getRGB(aP.x, aP.y));
+            int xy = AlcUtil.getColorBrightness(image.getRGB(aP.x, aP.y));
 
             // Where to look
             int startX = aP.x - halfArea;
@@ -192,7 +192,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
 
             for (int x = startX; x < endX; x++) {
                 for (int y = startY; y < endY; y++) {
-                    int thisPixel = AlcUtil.getColourBrightness(image.getRGB(x, y));
+                    int thisPixel = AlcUtil.getColorBrightness(image.getRGB(x, y));
                     int difference = Math.abs(thisPixel - xy);
                     if (difference > tolerance) {
                         if (difference > contrast) {

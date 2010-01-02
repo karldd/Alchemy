@@ -461,8 +461,8 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
                 int r = (int) math.random(0, 255);
                 int g = (int) math.random(0, 255);
                 int b = (int) math.random(0, 255);
-                Color randomColour = new Color(r, g, b);
-                ribbons[i] = new Ribbon(ribbonParticleAmount, randomColour, randomness);
+                Color randomColor = new Color(r, g, b);
+                ribbons[i] = new Ribbon(ribbonParticleAmount, randomColor, randomness);
             }
         }
 

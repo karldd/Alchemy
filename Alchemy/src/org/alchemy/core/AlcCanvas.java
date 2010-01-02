@@ -51,21 +51,21 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
-    /** Colour of this shape */
-    private Color colour;
-    /** Alpha of this shape */
+    /** Global Shape Foreground color */
+    private Color color;
+    /** Global Shape Foreground Alpha */
     private int alpha = 255;
-    /** Style of this shape - (1) LINE or (2) SOLID FILL */
+    /** Global Shape Style - (1) LINE or (2) SOLID FILL */
     private int style = STYLE_STROKE;
-    /** Line Weight if the style is line */
+    /** Globl Shape Line Weight (if the style is line) */
     private float lineWidth = 1F;
     //////////////////////////////////////////////////////////////
     // GLOBAL SETTINGS
     ////////////////////////////////////////////////////////////// 
-    /** Background colour */
-    private Color bgColour;
-    /** Old colour set when the colours are swapped */
-    private Color oldColour;
+    /** Background color */
+    private Color bgColor;
+    /** Background Alpha */
+    private int bgAlpha = 255;
     /** Swap state - true if the background is currently swapped in */
     private boolean backgroundActive = false;
     /** 'Redraw' on or off **/
@@ -147,8 +147,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     AlcCanvas() {
 
         this.smoothing = Alchemy.preferences.smoothing;
-        this.bgColour = new Color(Alchemy.preferences.bgColour);
-        this.colour = new Color(Alchemy.preferences.colour);
+        this.bgColor = new Color(Alchemy.preferences.bgColor);
+        this.color = new Color(Alchemy.preferences.color);
         this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
 
         this.addMouseListener(this);
@@ -205,7 +205,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 g2.drawImage(image, imageLocation.x, imageLocation.y, null);
             }
             // Paint background.
-            g2.setColor(bgColour);
+            g2.setColor(bgColor);
             g2.fillRect(0, 0, w, h);
         }
 
@@ -261,11 +261,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 if (currentShape.style == STYLE_STROKE) {
                     //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                     g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                    g2.setColor(currentShape.colour);
+                    g2.setColor(currentShape.color);
                     g2.draw(currentShape.path);
                 // SOLID
                 } else {
-                    g2.setColor(currentShape.colour);
+                    g2.setColor(currentShape.color);
                     g2.fill(currentShape.path);
                 }
             }
@@ -484,15 +484,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 // Set the current pen type
                 // Changing the background/foreground setting as required
                 if (backgroundActive) {
-                    setBackgroundColourActive(false);
-                    Alchemy.toolBar.refreshColourButton();
+                    setBackgroundColorActive(false);
+                    Alchemy.toolBar.refreshColorButton();
                 }
                 penType = PEN_STYLUS;
                 break;
             case ERASER:
                 if (!backgroundActive) {
-                    setBackgroundColourActive(true);
-                    Alchemy.toolBar.refreshColourButton();
+                    setBackgroundColorActive(true);
+                    Alchemy.toolBar.refreshColorButton();
                 }
                 penType = PEN_ERASER;
                 break;
@@ -759,118 +759,84 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     //////////////////////////////////////////////////////////////
-    // SHAPE/COLOUR SETTINGS
+    // SHAPE/COLOR SETTINGS
     //////////////////////////////////////////////////////////////
-    /** Get the current colour
-     * @return      The current colour
+    /** Get the current color
+     * @return      The current color
      */
-    public Color getColour() {
-        return colour;
-    }
-
-    /** Set the current colour
-     * @param colour 
-     */
-    public void setColour(Color colour) {
-        try {
-            // Control how the Foreground/Background button is updated
-            if (backgroundActive) {
-                bgColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
-                this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue());
-                redraw(true);
-            } else {
-                this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
-            }
-
-            if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
-                Alchemy.toolBar.refreshColourButton();
-//        } else {
-//            Alchemy.toolBar.queueColourButtonRefresh();
-            }
-        } catch (IllegalArgumentException ex) {
-            // Ignore the colour out of range exception caused by out of bounds slider settings
+    public Color getColor() {
+        if (backgroundActive) {
+            return bgColor;
+        } else {
+            return color;
         }
     }
 
-    /** Get the old colour */
-    Color getOldColour() {
-        return oldColour;
-    }
+    /** Set the current color
+     * @param color
+     */
+    public void setColor(Color color) {
+        try {
+            // Control how the Foreground/Background button is updated
+            if (backgroundActive) {
+                bgColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), bgAlpha);
+                redraw(true);
+            } else {
+                this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+            }
 
-    /** Set the old colour when backgroundActive state is true */
-    void setOldColour(Color colour) {
-        this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
+            if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
+                Alchemy.toolBar.refreshColorButton();
+            }
+        } catch (IllegalArgumentException ex) {
+            // Ignore the color out of range exception caused by out of bounds slider settings
+        }
     }
 
     /** Whether the background is active or not
      * @return State of the background
      */
-    public boolean isBackgroundColourActive() {
+    public boolean isBackgroundColorActive() {
         return backgroundActive;
     }
 
-    /** Set the background colour to be active 
+    /** Set the background color to be active
      * @param backgroundActive  
      */
-    public void setBackgroundColourActive(boolean backgroundActive) {
-        // Save the foreground colour and bring the bg colour to the front
-        if (backgroundActive) {
-            oldColour = colour;
-            colour = new Color(bgColour.getRGB());
-            this.backgroundActive = true;
-        } else {
-            // Revert to the old foreground colour
-            colour = new Color(oldColour.getRed(), oldColour.getGreen(), oldColour.getBlue(), alpha);
-            this.backgroundActive = false;
-        }
+    public void setBackgroundColorActive(boolean backgroundActive) {
+        this.backgroundActive = backgroundActive;
     }
 
-    /** Get the Background Colour
-     * @return 
+    /** Get the Background Color
+     * @return Color object of the background color
      */
-    public Color getBackgroundColour() {
-        if (backgroundActive) {
-            return colour;
-        } else {
-            return bgColour;
-        }
+    public Color getBackgroundColor() {
+        return bgColor;
     }
 
-    /** Set the Background Colour
-     * @param bgColour 
+    /** Set the Background Color
+     * @param bgColor 
      */
-    public void setBackgroundColour(Color bgColour) {
-        // Ignore the alpha value
-        this.bgColour = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue());
-        if (backgroundActive) {
-            colour = new Color(bgColour.getRed(), bgColour.getGreen(), bgColour.getBlue());
-        }
+    public void setBackgroundColor(Color bgColor) {
+        this.bgColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgAlpha);
         redraw(true);
     }
 
-    /** Get the current forground colour
-     *  This method returns the foreground colour 
+    /** Get the current forground color
+     *  This method returns the foreground color
      *  even if it is not currently active.
-     *  E.g. The active colour is the background colour
+     *  E.g. The active color is the background color
      * @return
      */
-    public Color getForegroundColour() {
-        if (backgroundActive) {
-            return oldColour;
-        } else {
-            return colour;
-        }
+    public Color getForegroundColor() {
+         return color;
     }
 
-    /** Set the Foreground Colour
-     * @param colour 
+    /** Set the Foreground color
+     * @param color
      */
-    public void setForegroundColour(Color colour) {
-        if (backgroundActive) {
-            this.oldColour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
-        } else {
-            this.colour = new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), alpha);
-        }
+    public void setForegroundColor(Color color) {
+        this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
     }
 
     /** Get the current alpha value
@@ -884,12 +850,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param alpha 
      */
     public void setAlpha(int alpha) {
-        this.alpha = alpha;
         if (backgroundActive) {
-            setOldColour(this.oldColour);
+            this.bgAlpha = alpha;
         } else {
-            setColour(this.colour);
+            this.alpha = alpha;
         }
+        setColor(this.getColor());
         Alchemy.toolBar.refreshTransparencySlider();
     }
 
@@ -1493,7 +1459,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             // Do not draw the background when creating a transparent image
             if (!transparent) {
                 // Paint background.
-                g2.setColor(Alchemy.canvas.getBackgroundColour());
+                g2.setColor(Alchemy.canvas.getBackgroundColor());
                 g2.fillRect(0, 0, width, height);
             }
 
@@ -1505,7 +1471,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
                 int pageWidth = (int) Alchemy.session.pdfReadPage.getWidth();
                 int pageHeight = (int) Alchemy.session.pdfReadPage.getHeight();
-                PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBackgroundColour());
+                PDFRenderer renderer = new PDFRenderer(Alchemy.session.pdfReadPage, g2, new Rectangle(0, 0, pageWidth, pageHeight), null, Alchemy.canvas.getBackgroundColor());
                 try {
                     Alchemy.session.pdfReadPage.waitForFinish();
                     renderer.run();
@@ -1566,11 +1532,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     if (currentShape.style == STYLE_STROKE) {
                         //g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL));
                         g2.setStroke(new BasicStroke(currentShape.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL));
-                        g2.setColor(currentShape.colour);
+                        g2.setColor(currentShape.color);
                         g2.draw(currentShape.path);
                     // SOLID
                     } else {
-                        g2.setColor(currentShape.colour);
+                        g2.setColor(currentShape.color);
                         g2.fill(currentShape.path);
                     }
                 }
@@ -1615,7 +1581,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     true);
             template.paintShading(shading);
 
-            // Draw the actual colour under the mask
+            // Draw the actual color under the mask
             g2.setColor(gp.getColor1());
             // SOLID
             if (fill) {

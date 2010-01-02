@@ -34,7 +34,7 @@ class AlcToolBarMain extends JPanel implements AlcConstants{
         // Allow a transparent background
         this.setOpaque(false);
         //this.setName("Toolbar");
-        //this.setBackground(AlcToolBar.toolBarBgColour);
+        //this.setBackground(AlcToolBar.toolBarBgColor);
         //this.setBorderPainted(false);
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         //this.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
@@ -50,7 +50,7 @@ class AlcToolBarMain extends JPanel implements AlcConstants{
         super.paintComponent(g);
 
         //int panelWidth = getWidth();
-        GradientPaint gradientPaint = new GradientPaint(0, 0, COLOUR_UI_START, 0, this.height, COLOUR_UI_END, true);
+        GradientPaint gradientPaint = new GradientPaint(0, 0, COLOR_UI_START, 0, this.height, COLOR_UI_END, true);
         if (g instanceof Graphics2D) {
             Graphics2D g2 = (Graphics2D) g;
             // Turn on text antialias - windows does not use it by default
@@ -58,7 +58,7 @@ class AlcToolBarMain extends JPanel implements AlcConstants{
             int targetWidth = getRootPane().getSize().width;
             g2.setPaint(gradientPaint);
             g2.fillRect(0, 0, targetWidth, this.height);
-            g2.setPaint(COLOUR_UI_LINE);
+            g2.setPaint(COLOR_UI_LINE);
             int heightMinusOne = this.height - 1;
             g2.drawLine(0, heightMinusOne, targetWidth, heightMinusOne);
         }

@@ -33,14 +33,14 @@ class AlcMenu extends JMenu implements AlcConstants {
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
-        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColor);
         if (Alchemy.OS != OS_LINUX) {
-            this.setBackground(COLOUR_UI_HIGHLIGHT);
+            this.setBackground(COLOR_UI_HIGHLIGHT);
         }
         // Hacky work around - because the JMenu is layered on top of the JMenuBar - doubling the opacity  
         //this.setBackground(new Color(0, 0, 0, 0));
         //this.setBackground(new Color(231, 231, 231, 150));
-        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColor);
         this.setFont(FONT_MEDIUM);
 
     //JPopupMenu popup = super.getPopupMenu();

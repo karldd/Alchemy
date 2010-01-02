@@ -61,9 +61,9 @@ class AlcMenuItem extends JMenuItem implements AlcShortcutInterface, AlcConstant
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         this.setOpaque(true);
         if(Alchemy.OS != OS_LINUX){
-            this.setBackground(COLOUR_UI_HIGHLIGHT);
+            this.setBackground(COLOR_UI_HIGHLIGHT);
         }
-        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColour);
+        //this.setBackground(AlcToolBar.toolBarAlphaHighlightColor);
         this.setFont(FONT_MEDIUM);
 
     }

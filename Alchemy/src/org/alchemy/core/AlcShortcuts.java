@@ -60,7 +60,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         //masterPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.PAGE_AXIS));
         masterPanel.setOpaque(true);
-        masterPanel.setBackground(AlcToolBar.COLOUR_UI_HIGHLIGHT);
+        masterPanel.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
         masterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 
@@ -174,7 +174,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
         JPanel panel = new JPanel();
         panel.setOpaque(true);
         panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        panel.setBackground(AlcToolBar.COLOUR_UI_START);
+        panel.setBackground(AlcToolBar.COLOR_UI_START);
         panel.setLayout(new GridLayout(userShortcuts.size(), 2, 5, 5));
 
         for (int i = 0; i < userShortcuts.size(); i++) {
@@ -197,7 +197,7 @@ class AlcShortcuts extends JDialog implements AlcConstants {
                 public void mousePressed(MouseEvent e) {
                     listenerActive = true;
                     textfield.setText("");
-                    textfield.setBackground(AlcToolBar.COLOUR_UI_BG);
+                    textfield.setBackground(AlcToolBar.COLOR_UI_BG);
                 }
             });
 

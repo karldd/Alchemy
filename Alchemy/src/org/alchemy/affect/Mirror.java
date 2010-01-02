@@ -161,7 +161,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                         }
 
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundColourActive()) {
+                        if (canvas.isBackgroundColorActive()) {
                             cloneShape.setAlpha(255);
                         }
                         canvas.affectShapes.add(cloneShape);
@@ -207,7 +207,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                         }
 
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundColourActive()) {
+                        if (canvas.isBackgroundColorActive()) {
                             cloneShape.setAlpha(255);
                         }
 
@@ -247,7 +247,7 @@ public class Mirror extends AlcModule implements AlcConstants {
                         }
 
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundColourActive()) {
+                        if (canvas.isBackgroundColorActive()) {
                             cloneShape.setAlpha(255);
                         }
 

@@ -88,7 +88,7 @@ class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionLi
             g2.drawImage(bgImage, 0, 0, null);
         } else {
             // BACKGROUND FILL
-            g2.setColor(COLOUR_UI_START);
+            g2.setColor(COLOR_UI_START);
             g2.fillRect(1, 1, width - 2, height - 2);
         }
         g2.setColor(Color.LIGHT_GRAY);

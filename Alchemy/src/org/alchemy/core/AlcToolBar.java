@@ -36,10 +36,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // TOOLBAR ELEMENTS
     //////////////////////////////////////////////////////////////
-    /** Popup buttons for the colour, create, amd affect buttons in the toolbar
+    /** Popup buttons for the color, create, amd affect buttons in the toolbar
      *  These are declared global so we can hide the popup menus when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
-    private AlcColourButton colourButton;
+    private AlcColorButton colorButton;
     /** The main tool bar inside the toolbar */
     private AlcToolBarMain mainToolBar;
     /** The sub toolbar below the main toolbar */
@@ -56,9 +56,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     private AlcToolBarSubSection createSubToolBarSection;
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
-    /** Colour picker */
-    private AlcColourPicker fgPicker,  bgPicker;
-    /** Foreground Background Button - gets updated when the colours are swapped */
+    /** Color picker */
+    private AlcColorPicker fgPicker,  bgPicker;
+    /** Foreground Background Button - gets updated when the colors are swapped */
     AlcToggleButton fgbgButton;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
@@ -143,7 +143,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         AbstractAction eyedropperAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                if (Alchemy.canvas.isBackgroundColourActive()) {
+                if (Alchemy.canvas.isBackgroundColorActive()) {
                     if (!bgPicker.isEyeDropperActive()) {
                         bgPicker.startEyeDropper();
                     }
@@ -294,25 +294,25 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
 
         //////////////////////////////////////////////////////////////
-        // COLOUR  BUTTON
+        // color  BUTTON
         //////////////////////////////////////////////////////////////
-        String colourTitle = getS("colourTitle");
-        colourButton = new AlcColourButton(colourTitle, getS("colourDescription"));
-        fgPicker = new AlcColourPicker(colourButton);
-        bgPicker = new AlcColourPicker(colourButton, true);
-        colourButton.addFgItem(fgPicker);
-        colourButton.addBgItem(bgPicker);
-        toolBar.add(colourButton);
+        String colorTitle = getS("colorTitle");
+        colorButton = new AlcColorButton(colorTitle, getS("colorDescription"));
+        fgPicker = new AlcColorPicker(colorButton);
+        bgPicker = new AlcColorPicker(colorButton, true);
+        colorButton.addFgItem(fgPicker);
+        colorButton.addBgItem(bgPicker);
+        toolBar.add(colorButton);
 
         AbstractAction fgbgAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                colourButton.switchColours();
+                colorButton.switchColors();
             }
         };
 
         // Shortcut - X
-        Alchemy.shortcuts.setShortcut(colourButton, KeyEvent.VK_X, "fgbgTitle", fgbgAction);
+        Alchemy.shortcuts.setShortcut(colorButton, KeyEvent.VK_X, "fgbgTitle", fgbgAction);
 
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -326,7 +326,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                         //JSlider source = (JSlider) e.getSource();
                         if (!transparencySlider.getValueIsAdjusting()) {
                             Alchemy.canvas.setAlpha(transparencySlider.getValue());
-                            refreshColourButton();
+                            refreshColorButton();
                         }
                     }
                 });
@@ -629,7 +629,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 Alchemy.canvas.restoreCursor();
                 //Alchemy.canvas.setCursor(CURSOR_CROSS);
                 this.setCursor(CURSOR_ARROW);
-                colourButton.hidePopup();
+                colorButton.hidePopup();
                 createButton.hidePopup();
                 if (affectButton != null) {
                     affectButton.hidePopup();
@@ -872,7 +872,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Check if any of the popup menus are visible */
     boolean isPopupMenusVisible() {
 
-        if (colourButton.isPopupVisible()) {
+        if (colorButton.isPopupVisible()) {
             return true;
         }
 
@@ -896,7 +896,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 public void actionPerformed(ActionEvent e) {
                     if (!insideToolBar) {
                         if (isPopupMenusVisible()) {
-                            if (!colourButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
+                            if (!colorButton.isInside() && !createButton.isInside() && !affectButton.isInside()) {
                                 //System.out.println("Timer setting visibility");
                                 setToolBarVisible(false);
                                 insideToolBar = false;
@@ -969,10 +969,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     //////////////////////////////////////////////////////////////
     // UTLITY
     //////////////////////////////////////////////////////////////
-    /** Refreshes the colours of the Foreground/Background button */
+    /** Refreshes the colors of the Foreground/Background button */
     @Override
-    void refreshColourButton() {
-        colourButton.refresh();
+    void refreshColorButton() {
+        colorButton.refresh();
     }
 
     @Override

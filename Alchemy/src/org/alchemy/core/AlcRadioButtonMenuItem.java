@@ -82,7 +82,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
         // Top Left Bottom Right
         this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
         if (Alchemy.OS != OS_LINUX) {        
-            this.setBackground(COLOUR_UI_HIGHLIGHT);
+            this.setBackground(COLOR_UI_HIGHLIGHT);
         }
         this.setFont(FONT_MEDIUM);
     }
@@ -104,7 +104,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             // SELECTED
             if (!this.isSelected()) {
-                g2.setColor(COLOUR_UI_BOX);
+                g2.setColor(COLOR_UI_BOX);
                 // This is the toolbar menu popup
                 if (moduleType != -1) {
                     g2.draw(toolCircleLine);
