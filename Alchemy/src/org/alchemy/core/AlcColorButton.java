@@ -29,6 +29,13 @@ import javax.swing.JLabel;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+/**
+ * AlcColorButton
+ *
+ * Custom color button
+ *
+ * @author Karl D.D. Willis
+ */
 class AlcColorButton extends JComponent implements MouseListener, AlcPopupInterface, AlcConstants {
 
     private AlcPopupMenu fgPopup,  bgPopup;
@@ -210,7 +217,7 @@ class AlcColorButton extends JComponent implements MouseListener, AlcPopupInterf
             // Draw the background color
             g.setColor(Alchemy.canvas.getBackgroundColor());
             // bottom left
-            g.fillRect(9, 17, 10, 5);
+            g.fillRect(9, 17, 7, 5);
             // right
             g.fillRect(16, 9, 6, 13);
 

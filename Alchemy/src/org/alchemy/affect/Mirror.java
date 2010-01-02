@@ -161,9 +161,9 @@ public class Mirror extends AlcModule implements AlcConstants {
                         }
 
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundColorActive()) {
-                            cloneShape.setAlpha(255);
-                        }
+//                        if (canvas.isBackgroundColorActive()) {
+//                            cloneShape.setAlpha(255);
+//                        }
                         canvas.affectShapes.add(cloneShape);
 
                         // Also flip the gradient
@@ -207,9 +207,9 @@ public class Mirror extends AlcModule implements AlcConstants {
                         }
 
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundColorActive()) {
-                            cloneShape.setAlpha(255);
-                        }
+//                        if (canvas.isBackgroundColorActive()) {
+//                            cloneShape.setAlpha(255);
+//                        }
 
                         // Also flip the gradient
                         GradientPaint gp = cloneShape.getGradientPaint();
@@ -247,9 +247,9 @@ public class Mirror extends AlcModule implements AlcConstants {
                         }
 
                         // Make sure there is no transparency when the background is on
-                        if (canvas.isBackgroundColorActive()) {
-                            cloneShape.setAlpha(255);
-                        }
+//                        if (canvas.isBackgroundColorActive()) {
+//                            cloneShape.setAlpha(255);
+//                        }
 
                         // Also flip the gradient
                         GradientPaint gp = cloneShape.getGradientPaint();

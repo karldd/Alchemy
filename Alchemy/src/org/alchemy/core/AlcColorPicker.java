@@ -27,6 +27,9 @@ import javax.swing.JPanel;
 
 /**
  * AlcColorPicker
+ *
+ * Custom popup window color picker
+ *
  * @author Karl D.D. Willis
  */
 class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
