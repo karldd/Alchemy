@@ -120,7 +120,7 @@ public class TraceShapes extends AlcModule implements AlcConstants {
         if (file != null && file.exists()) {
             Image newImage = null;
             try {
-                newImage = AlcUtil.getImage(file.toURL());
+                newImage = AlcUtil.getImage(file.toURI().toURL());
             } catch (Exception ex) {
                 // Ignore
             }
