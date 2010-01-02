@@ -265,7 +265,7 @@
         <copy file="${basedir}/lib/libAlcNative.jnilib" todir="${mac.bundle}"/>
         
         <!-- JPen -->
-        <copy file="${basedir}/lib/jpen/libjpen-2-2.jnilib" todir="${mac.bundle}"/>
+        <copy file="${basedir}/lib/jpen/libjpen-2-3.jnilib" todir="${mac.bundle}"/>
 
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>
