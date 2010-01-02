@@ -176,6 +176,9 @@ public class Mirror extends AlcModule implements AlcConstants {
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hPath);
+                        cloneAttributes(shape, thisShape);
+                        
+                        
                         if (thisShape.hasSpine()) {
                             thisShape.setSpine(makeHorizontalReflectedSpine(spine));
                         }
@@ -224,6 +227,8 @@ public class Mirror extends AlcModule implements AlcConstants {
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(vPath);
+                        cloneAttributes(shape, thisShape);
+
                         if (thisShape.hasSpine()) {
                             vSpine = makeVerticalReflectedSpine(spine);
                             thisShape.setSpine(vSpine);
@@ -262,6 +267,8 @@ public class Mirror extends AlcModule implements AlcConstants {
                     } else {
                         AlcShape thisShape = (canvas.affectShapes.get(index));
                         thisShape.setPath(hvPath);
+                        cloneAttributes(shape, thisShape);
+
                         if (thisShape.hasSpine() && vSpine != null) {
                             thisShape.setSpine(makeHorizontalReflectedSpine(vSpine));
                         }
@@ -378,6 +385,14 @@ public class Mirror extends AlcModule implements AlcConstants {
         shapeCount += horizontal ? 1 : 0;
         shapeCount += vertical ? 1 : 0;
         shapeCount += horizontal && vertical ? 1 : 0;
+    }
+
+    /** Clone attributes of this shape */
+    private void cloneAttributes(AlcShape shape, AlcShape cloneShape) {
+//        cloneShape.setAlpha(shape.getAlpha());
+        cloneShape.setStyle(shape.getStyle());
+//        cloneShape.setLineWidth(shape.getLineWidth());
+//        cloneShape.setColor(shape.getColor());
     }
 
     @Override
