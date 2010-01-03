@@ -282,7 +282,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
                 if (file != null && file.exists()) {
                     Image image = null;
                     try {
-                        image = AlcUtil.getImage(file.toURL());
+                        image = AlcUtil.getImage(file.toURI().toURL());
                     } catch (Exception ex) {
                         // Ignore
                         }
