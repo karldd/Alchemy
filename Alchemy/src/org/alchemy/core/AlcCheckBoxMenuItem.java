@@ -80,7 +80,7 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
         this.setText(title);
 
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(6, 0, 6, 0));
+        this.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
         this.setOpaque(true);
         if (Alchemy.OS != OS_LINUX) {
             this.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);

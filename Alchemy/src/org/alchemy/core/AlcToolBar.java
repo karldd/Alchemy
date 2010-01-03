@@ -294,7 +294,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
 
         //////////////////////////////////////////////////////////////
-        // color  BUTTON
+        // COLOR  BUTTON
         //////////////////////////////////////////////////////////////
         String colorTitle = getS("colorTitle");
         colorButton = new AlcColorButton(colorTitle, getS("colorDescription"));

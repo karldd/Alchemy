@@ -32,7 +32,7 @@ class AlcMenu extends JMenu implements AlcConstants {
         //this.setMnemonic(KeyEvent.VK_A);
         //this.getAccessibleContext().setAccessibleDescription("Some decription text");
         // Top Left Bottom Right
-        this.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 2));
+        this.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 2));
         //this.setBackground(AlcToolBar.toolBarAlphaHighlightColor);
         if (Alchemy.OS != OS_LINUX) {
             this.setBackground(COLOR_UI_HIGHLIGHT);
