@@ -178,12 +178,20 @@ public class ColorSwitcher extends AlcModule {
 
                 if (newColor != null) {
 
-                    if (canvas.getCurrentCreateShape() != null) {
-                        canvas.getCurrentCreateShape().setAlphaColor(newColor);
+//                    if (canvas.getCurrentCreateShape() != null) {
+//                        canvas.getCurrentCreateShape().setAlphaColor(newColor);
+//                    }
+//                    if (canvas.getCurrentAffectShape() != null) {
+//                        canvas.getCurrentAffectShape().setAlphaColor(newColor);
+//                    }
+                    
+                    for (int i = 0; i < canvas.createShapes.size(); i++) {
+                        canvas.createShapes.get(i).setAlphaColor(newColor);
                     }
-                    if (canvas.getCurrentAffectShape() != null) {
-                        canvas.getCurrentAffectShape().setAlphaColor(newColor);
+                    for (int j = 0; j < canvas.affectShapes.size(); j++) {
+                        canvas.affectShapes.get(j).setAlphaColor(newColor);
                     }
+
                 }
 
             }
