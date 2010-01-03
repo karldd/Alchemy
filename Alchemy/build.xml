@@ -89,7 +89,9 @@
         <unjar src="${file.reference.PDFRenderer.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.mime-util.jar}" dest="${build.classes.dir}"/>
         <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
+        <!--
         <unjar src="${file.reference.beads.jar}" dest="${build.classes.dir}"/>
+        -->
         <unjar src="${file.reference.miglayout.jar}" dest="${build.classes.dir}"/>
 
         <!-- The mass of batik libraries -->
@@ -170,6 +172,7 @@
             <fileset dir="${build.dir}/modules">
                 <include name="**/*.zip"/>
                 <exclude name="**/*shapeSwap*"/>
+                <exclude name="**/*pitchShapes*"/>
             </fileset>
         </copy>
         
