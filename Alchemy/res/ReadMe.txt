@@ -36,10 +36,30 @@ Alchemy Forum: http://al.chemy.org/forum/
 Version History
 --------------------------------------
 ALPHA 008
-??.??.2009
+??.??.2010
+
+FEATURES
++ SVG Export & Switching support added using the Batik Library - Big thanks to Steren!
++ Support for scaling image size when exporting as a JPEG or PNG file
++ Flip canvas, horizontally or vertically - Thanks to Count_Zero!
++ Smooth module added to smooth up sharp edges and hard angles
++ Ribbon Shapes module added, based on code by James Alliban & Eric Natzke - Thanks Guys!
++ Limit module added, to limit the number of shapes on the canvas - Thanks to hellocatfood!
++ Splatter Shapes module added, based on code by Stamen Design - Thanks!
 
 CHANGES
++ Transparency of the background color can now be set
 + Persian Localisation added - Thanks to Omid Saadat!
++ Shapes Module: Added option to render just the outline of the shape until the pen is lifted
++ Alchemy now remembers the Export file directory between sessions
+
+BUG FIXES
++ Fixed inconsistant coloring bug with Mirror & Color Switcher
++ Color Palette now pops up in the middle of the screen (not outside it)
++ Updated JPen tablet library, with support for Java 1.6 on mac and other improvements
++ Fixed bug causing fullscreen transparent mode to draw the background with some affect modules
++ Fixed Color Switcher bug where bg/fg colors were switching
++ Line Width UI element now updates correctly when using shortcuts
 
 --------------------------------------
 ALPHA 007.2

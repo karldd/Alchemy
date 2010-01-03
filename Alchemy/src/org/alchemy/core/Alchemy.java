@@ -184,6 +184,8 @@ public class Alchemy implements AlcConstants {
 
         window.setVisible(true);
 
+//        new AlcResourceBundleChecker();
+
         System.out.println("Java Version: " + JAVA_VERSION_NAME);
         System.out.println("Platform: " + OS_NAME);
         System.out.println("OS Version: " + System.getProperty("os.version"));
