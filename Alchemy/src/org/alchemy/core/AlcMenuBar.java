@@ -589,6 +589,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         // Format submenu
         AlcMenu formatMenu = new AlcMenu(getS("setVectorFormat"));
+        formatMenu.setOpaque(true);
+        formatMenu.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
         ButtonGroup formatGroup = new ButtonGroup();
         //PDF
         AlcRadioButtonMenuItem pdfItem = new AlcRadioButtonMenuItem(Alchemy.preferences.FORMAT_PDF, "PDF");
