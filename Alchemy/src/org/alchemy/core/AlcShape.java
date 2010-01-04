@@ -171,6 +171,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         // Add the path
         this.path = path;
         path.setWindingRule(GeneralPath.WIND_NON_ZERO);
+        recalculateTotalPoints();
     }
 
     /** Setup the attributes of a shape
