@@ -20,6 +20,7 @@ package org.alchemy.affect;
 
 import java.awt.Point;
 import java.awt.event.*;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import org.alchemy.core.*;
@@ -69,7 +70,7 @@ public class Smooth extends AlcModule {
 
     private void smoothShape(Point currentLoc, int index) {
         AlcShape shape = canvas.shapes.get(index);
-        AlcShape smoothedShape = smoothShape(shape.getPoints());
+        AlcShape smoothedShape = smoothShape(shape.getPoints(), currentLoc);
         if (repeat) {
             canvas.shapes.add(smoothedShape);
         } else {
@@ -78,29 +79,44 @@ public class Smooth extends AlcModule {
         canvas.redraw(true);
     }
 
-    private AlcShape smoothShape(ArrayList<Point2D.Float> points) {
+    private AlcShape smoothShape(ArrayList<Point2D.Float> points, Point currentLoc) {
         //shape.setPath(null);
-        
-        Point2D.Float firstPoint = points.get(0);
-        AlcShape shape = new AlcShape(new Point2D.Float(firstPoint.x, firstPoint.y));
+
+        GeneralPath path = new GeneralPath(GeneralPath.WIND_NON_ZERO, points.size());
         for (int i = 0; i < points.size(); i++) {
-            if (i == points.size() - 2) {
+
+            // FIRST
+            if (i == 0) {
+//                shape.addLinePoint(points.get(i));
                 Point2D.Float pt = points.get(i);
-                shape.addCurvePoint(new Point2D.Float(pt.x, pt.y));
+                path.moveTo(pt.x, pt.y);
+
+            // LAST
             } else if (i == points.size() - 1) {
+//                shape.addLinePoint(points.get(i));
                 Point2D.Float pt = points.get(i);
-                shape.addLinePoint(new Point2D.Float(pt.x, pt.y));
+                path.lineTo(pt.x, pt.y);
 
             } else {
-                Point2D.Float p0 = points.get(i);
-                Point2D.Float p1 = points.get(i + 1);
-                Point2D.Float p2 = points.get(i + 2);
+                Point2D.Float p0 = points.get(i - 1);
+                Point2D.Float p1 = points.get(i);
+                Point2D.Float p2 = points.get(i + 1);
+
+//                if (p0.distance(currentLoc) < 25) {
 
                 float x = p0.x * 0.25F + p1.x * 0.5F + p2.x * 0.25F;
                 float y = p0.y * 0.25F + p1.y * 0.5F + p2.y * 0.25F;
-                shape.addCurvePoint(new Point2D.Float(x, y));
+
+                // New control point value
+                Point2D.Float pt = new Point2D.Float();
+                pt.x = (p0.x + x) / 2F;
+                pt.y = (p0.y + y) / 2F;
+
+                // Add the Quadratic curve - control point x1, y1 and actual point x2, y2
+                path.quadTo(p0.x, p0.y, pt.x, pt.y);
             }
         }
+        AlcShape shape = new AlcShape(path);
         return shape;
     }
 
