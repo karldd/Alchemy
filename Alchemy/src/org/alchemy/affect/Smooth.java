@@ -104,10 +104,11 @@ public class Smooth extends AlcModule {
 
 //                if (p0.distance(currentLoc) < 25) {
 
+                // Average the 3 points
                 float x = p0.x * 0.25F + p1.x * 0.5F + p2.x * 0.25F;
                 float y = p0.y * 0.25F + p1.y * 0.5F + p2.y * 0.25F;
 
-                // New control point value
+                // Setup for curves
                 Point2D.Float pt = new Point2D.Float();
                 pt.x = (p0.x + x) / 2F;
                 pt.y = (p0.y + y) / 2F;

@@ -110,8 +110,8 @@ public class DetachShapes extends AlcModule {
             //oldP = p;
             newPath = false;
         } else {
-            if (canvas.getCurrentCreateShape() != null) {
-                canvas.getCurrentCreateShape().addCurvePoint(newPt);
+            if (canvas.hasCreateShapes()) {
+                canvas.getCurrentCreateShape().curveTo(newPt);
                 canvas.redraw();
             //oldP = p;
             }

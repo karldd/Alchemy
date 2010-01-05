@@ -100,11 +100,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // SHAPES
     //////////////////////////////////////////////////////////////
-    /** Array list containing shapes that have been archived */
+    /** Array list containing shapes that have been commited.
+     *  Shapes in this list are generally rendered to the image buffer
+     *  to improve performance */
     public ArrayList<AlcShape> shapes;
-    /** Array list containing shapes made by create modules */
+    /** Array list containing shapes currently in use by create modules */
     public ArrayList<AlcShape> createShapes;
-    /** Array list containing shapes made by affect modules */
+    /** Array list containing shapes currently in use by affect modules */
     public ArrayList<AlcShape> affectShapes;
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList<AlcShape> guideShapes;
@@ -384,21 +386,21 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // PEN EVENTS
     //////////////////////////////////////////////////////////////
-    /** Turn on/off Events being sent to modules
+    /** Turn on/off mouse/pen events being sent to modules
      * @param events 
      */
     public void setEvents(boolean events) {
         this.events = events;
     }
 
-    /** Turn on/off Events being sent to create modules
+    /** Turn on/off mouse/pen events  being sent to create modules
      * @param createEvents 
      */
     public void setCreateEvents(boolean createEvents) {
         this.createEvents = createEvents;
     }
 
-    /** Turn on/off Events being sent to affect modules
+    /** Turn on/off mouse/pen events  being sent to affect modules
      * @param affectEvents 
      */
     public void setAffectEvents(boolean affectEvents) {
@@ -412,7 +414,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         return penDown;
     }
 
-    /** Pen Pressure if available 
+    /** Pen (or mouse) down or up
+     * @return  The state of the pen or mouse
+     */
+    public boolean isMouseDown() {
+        return penDown;
+    }
+
+    /** Get the pen pressure (if available)
      * @return
      */
     public float getPenPressure() {
@@ -426,7 +435,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         return penTilt;
     }
 
-    /** Pen Location as a new Point2D.Float object
+    /** Pen Location as a new Point2D.Float object. <br>
+     *  If a pen tablet is available, this method will return more accurate
+     *  information on the pen location than the standard {@link MouseEvent}
      * @return  Point2D.Float with pen location information
      */
     public Point2D.Float getPenLocation() {
@@ -465,7 +476,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     /** The type of pen being used
-     * @return  STYLUS (1) /  ERASER (2) / CURSOR (3) or zero for unknown
+     * @return  {@link AlcConstants#PEN_STYLUS}, {@link AlcConstants#PEN_ERASER}, {@link AlcConstants#PEN_CURSOR} or ZERO for unknown
      */
     public int getPenType() {
         return penType;
@@ -514,7 +525,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.setBounds(x, 0, windowSize.width, windowSize.height);
     }
 
-    /** Clear the canvas */
+    /** Clear all shapes and then redraws the canvas */
     public void clear() {
         shapes.clear();
         createShapes.clear();
@@ -580,7 +591,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         }
     }
 
-    /** Commit all shapes to the main shapes array */
+    /** Commit all shapes to the main {@link #shapes} array and render the image buffer */
     public void commitShapes() {
         // Add the createShapes and affectShapes to the main array
         // Add to the bottom if drawUnder is on
@@ -623,6 +634,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // SHAPES
     //////////////////////////////////////////////////////////////
+    /** Check if there are {@link #shapes} available
+     * @return True if there are shapes available, else false
+     */
+    public boolean hasShapes(){
+        return shapes.size() > 0;
+    }
+
     /** Returns the most recently added shape
      * @return The current shape
      */
@@ -635,7 +653,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     /** Sets the most recently added shape
-     * @param shape Shape to become the current shape
+     * @param shape (@link AlcShape} to become the current shape
      */
     public void setCurrentShape(AlcShape shape) {
         if (shapes.size() > 0) {
@@ -653,6 +671,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // CREATE SHAPES
     //////////////////////////////////////////////////////////////
+    /** Check if there are {@link #createShapes} available
+     * @return True if there are create shapes available, else false
+     */
+    public boolean hasCreateShapes(){
+        return createShapes.size() > 0;
+    }
+
     /** Returns the most recently added create shape
      * @return The current create shape
      */
@@ -664,7 +689,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     /** Sets the most recently added create shape
-     * @param shape     Shape to become the current create shape
+     * @param shape     (@link AlcShape} to become the current create shape
      */
     public void setCurrentCreateShape(AlcShape shape) {
         if (createShapes.size() > 0) {
@@ -691,6 +716,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // AFFECT SHAPES
     //////////////////////////////////////////////////////////////
+    /** Check if there are {@link #affectShapes} available
+     * @return True if there are affect shapes available, else false
+     */
+    public boolean hasAffectShapes(){
+        return affectShapes.size() > 0;
+    }
+
     /** Returns the most recently added affect shape
      * @return The current create shape
      */
@@ -703,7 +735,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
 
     /** Sets the most recently added affect shape
-     * @param shape     Shape to become the current affect shape
+     * @param shape     (@link AlcShape} to become the current affect shape
      */
     public void setCurrentAffectShape(AlcShape shape) {
         if (affectShapes.size() > 0) {
@@ -808,15 +840,15 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         Alchemy.toolBar.refreshTransparencySlider();
     }
 
-    /** Get the Background Color
+    /** Get the background color
      * @return Color object of the background color
      */
     public Color getBackgroundColor() {
         return bgColor;
     }
 
-    /** Set the Background Color
-     * @param bgColor 
+    /** Set the background Color
+     * @param color
      */
     public void setBackgroundColor(Color color) {
         this.bgColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), bgAlpha);
@@ -833,7 +865,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
          return color;
     }
 
-    /** Set the Foreground color
+    /** Set the foreground color
      * @param color
      */
     public void setForegroundColor(Color color) {

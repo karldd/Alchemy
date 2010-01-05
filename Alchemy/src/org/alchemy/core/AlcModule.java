@@ -165,7 +165,7 @@ public abstract class AlcModule implements AlcConstants {
 
     /** 
      * Get the type of module
-     * @return  The type of module - either "MODULE_CREATE" (0) or "MODULE_AFFECT" (1)
+     * @return  The type of module - either {@link AlcConstants#MODULE_CREATE} or {@link AlcConstants#MODULE_AFFECT}
      */
     protected int getModuleType() {
         return this.moduleType;

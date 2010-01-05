@@ -310,9 +310,9 @@ public class TraceShapes extends AlcModule implements AlcConstants {
     public void mouseDragged(MouseEvent e) {
 
         // Need to test if it is null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
+        if (canvas.hasCreateShapes()) {
             Point p = e.getPoint();
-            canvas.getCurrentCreateShape().addCurvePoint(checkSnap(p));
+            canvas.getCurrentCreateShape().curveTo(checkSnap(p));
             canvas.redraw();
         }
 

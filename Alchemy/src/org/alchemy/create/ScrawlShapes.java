@@ -113,7 +113,7 @@ public class ScrawlShapes extends AlcModule {
                     float x2 = p1x += xStep + math.random(-noise, noise);
                     float y2 = p1y += yStep + math.random(-noise, noise);
                     Point newPt = new Point((int) x2, (int) y2);
-                    shape.addCurvePoint(newPt);
+                    shape.curveTo(newPt);
                 }
             }
         //shape.addCurvePoint(p2);

@@ -78,8 +78,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param p Initial point to set the GeneralPath moveto
      */
     public AlcShape(Point p) {
-        setupPoint(p);
-        setupDefaultAttributes();
+        setup(p);
+        setup();
     }
 
     /**
@@ -87,8 +87,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param p Initial point to set the GeneralPath moveto
      */
     public AlcShape(Point2D.Float p) {
-        setupPoint(p);
-        setupDefaultAttributes();
+        setup(p);
+        setup();
     }
     
     /**
@@ -100,8 +100,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param lineWidth Line width of the shape
      */
     public AlcShape(Point p, Color color, int alpha, int style, float lineWidth) {
-        setupPoint(p);
-        setupAttributes(color, alpha, style, lineWidth);
+        setup(p);
+        setup(color, alpha, style, lineWidth);
     }
 
     /**
@@ -113,16 +113,17 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param lineWidth Line width of the shape
      */
     public AlcShape(Point2D.Float p, Color color, int alpha, int style, float lineWidth) {
-        setupPoint(p);
-        setupAttributes(color, alpha, style, lineWidth);
+        setup(p);
+        setup(color, alpha, style, lineWidth);
     }
 
     /** 
      * Creates a blank AlcShape object
      */
     public AlcShape() {
-        setupBlank();
-        setupDefaultAttributes();
+        // Create an empty shape
+        path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+        setup();
     }
 
     /**
@@ -130,8 +131,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param path    GeneralPath path
      */
     public AlcShape(GeneralPath path) {
-        setupShape(path);
-        setupDefaultAttributes();
+        setup(path);
+        setup();
     }
 
     /**
@@ -143,23 +144,18 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param lineWidth Line width of the shape
      */
     public AlcShape(GeneralPath path, Color color, int alpha, int style, float lineWidth) {
-        setupShape(path);
-        setupAttributes(color, alpha, style, lineWidth);
+        setup(path);
+        setup(color, alpha, style, lineWidth);
     }
 
     //////////////////////////////////////////////////////////////
     // SHAPE INITILISATION
     //////////////////////////////////////////////////////////////
-    private void setupBlank() {
-        // Create an empty shape
-        path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
+    private void setup(Point p) {
+        setup(new Point2D.Float(p.x, p.y));
     }
 
-    private void setupPoint(Point p) {
-        setupPoint(new Point2D.Float(p.x, p.y));
-    }
-
-    private void setupPoint(Point2D.Float p) {
+    private void setup(Point2D.Float p) {
         // Create the path and move to the first point
         path = new GeneralPath(GeneralPath.WIND_NON_ZERO, 1000);
         path.moveTo(p.x, p.y);
@@ -167,7 +163,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         savePoints(p);
     }
 
-    private void setupShape(GeneralPath path) {
+    private void setup(GeneralPath path) {
         // Add the path
         this.path = path;
         path.setWindingRule(GeneralPath.WIND_NON_ZERO);
@@ -181,7 +177,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param style     Style of the shape - (1) LINE or (2) SOLID FILL 
      * @param lineWidth Line width of the shape
      */
-    public void setupAttributes(Color color, int alpha, int style, float lineWidth) {
+    public void setup(Color color, int alpha, int style, float lineWidth) {
         this.alpha = alpha;
         setColor(color);
         this.style = style;
@@ -194,7 +190,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     /** Set the attributes of this shape (Alpha/Color/Style/LineWidth)
      *  to the current values of the canvas
      */
-    public void setupDefaultAttributes() {
+    public void setup() {
         this.alpha = Alchemy.canvas.getAlpha();
         setColor(Alchemy.canvas.getColor());
         this.style = Alchemy.canvas.getStyle();
@@ -210,8 +206,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * This method uses a simple smoothing algorithm to get rid of hard edges
      * @param p Point to curve to
      */
-    public void addCurvePoint(Point p) {
-        addCurvePoint(new Point2D.Float(p.x, p.y));
+    public void curveTo(Point p) {
+        curveTo(new Point2D.Float(p.x, p.y));
     }
 
     /** 
@@ -219,7 +215,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * This method uses a simple smoothing algorithm to get rid of hard edges
      * @param p Point to curve to
      */
-    public void addCurvePoint(Point2D.Float p) {
+    public void curveTo(Point2D.Float p) {
         if (lineSmoothing) {
 
             // Filter out repeats
@@ -255,7 +251,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                 }
             }
         } else {
-            addLinePoint(p);
+            lineTo(p);
         }
     }
 
@@ -263,15 +259,15 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * Add a straight line point to the shape
      * @param p Point to draw a line to
      */
-    public void addLinePoint(Point p) {
-        addLinePoint(new Point2D.Float(p.x, p.y));
+    public void lineTo(Point p) {
+        lineTo(new Point2D.Float(p.x, p.y));
     }
 
     /**
      * Add a straight line point to the shape
      * @param p Point to draw a line to
      */
-    public void addLinePoint(Point2D.Float p) {
+    public void lineTo(Point2D.Float p) {
         // Filter out repeats
         if (!p.equals(lastPoint)) {
             // At the start just draw lines so smaller marks can be made
@@ -299,7 +295,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
      * @param p     The point to add
      * @param width The width of the line
      */
-    public void addSpinePoint(Point2D.Float p, float width) {
+    public void spineTo(Point2D.Float p, float width) {
         this.penShape = true;
         if (spine == null) {
             spine = new ArrayList<Point2D.Float>(1000);
@@ -340,7 +336,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                 Point2D.Float p1 = spine.get(i);
                 float level = (spineWidth.get(i)).floatValue();
                 Point2D.Float pOut = rightAngle(p1, p2, level);
-                addCurvePoint(pOut);
+                curveTo(pOut);
             }
             // Draw the inner points
             for (int j = 1; j < spine.size(); j++) {
@@ -349,7 +345,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
                 Point2D.Float p1 = spine.get(index - 1);
                 float level = (spineWidth.get(index)).floatValue();
                 Point2D.Float pIn = rightAngle(p1, p2, level);
-                addCurvePoint(pIn);
+                curveTo(pIn);
             }
             // Close the shape
             closePath();
@@ -378,32 +374,18 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         penShape = true;
     }
 
-    /** Add the first point
+    /** Move to the given Point
      * @param p Point to draw a line to
      */
-    public void addFirstPoint(Point p) {
+    public void moveTo(Point p) {
         path.moveTo(p.x, p.y);
     }
 
-    /** Add the first point
+    /** Move to the given Point
      * @param p Point to draw a line to
      */
-    public void addFirstPoint(Point2D.Float p) {
+    public void moveTo(Point2D.Float p) {
         path.moveTo(p.x, p.y);
-    }
-
-    /** Add the last point as a straight line 
-     * @param p Point to draw a line to
-     */
-    public void addLastPoint(Point p) {
-        path.lineTo(p.x, p.y);
-    }
-
-    /** Add the last point as a straight line 
-     * @param p Point to draw a line to
-     */
-    public void addLastPoint(Point2D.Float p) {
-        path.lineTo(p.x, p.y);
     }
 
     /**
@@ -602,7 +584,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
     /**
      * Get the style of this shape
-     * @return  The style of this shape - (1) LINE or (2) SOLID FILL
+     * @return  The style of this shape as {@link AlcConstants#STYLE_STROKE} or {@link AlcConstants#STYLE_FILL}
      */
     public int getStyle() {
         return style;
@@ -610,7 +592,7 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
 
     /**
      * Set the style of this shape
-     * @param style  The style of this shape - (1) LINE or (2) SOLID FILL 
+     * @param style  The style of this shape either {@link AlcConstants#STYLE_STROKE} or {@link AlcConstants#STYLE_FILL}
      */
     public void setStyle(int style) {
         this.style = style;
