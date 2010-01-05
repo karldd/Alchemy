@@ -178,7 +178,7 @@ public class PitchShapes extends AlcModule implements AlcConstants {
     public void mousePressed(MouseEvent e) {
         AlcShape shape = new AlcShape();
         canvas.createShapes.add(shape);
-        shape.addSpinePoint(canvas.getPenLocation(), weight);
+        shape.spineTo(canvas.getPenLocation(), weight);
         canvas.redraw();
         lastPt = canvas.getPenLocation();
     }
@@ -198,7 +198,7 @@ public class PitchShapes extends AlcModule implements AlcConstants {
         // Need to test if it is null incase the shape has been auto-cleared
         if (currentShape != null) {
             Point2D.Float p = canvas.getPenLocation();
-            currentShape.addSpinePoint(p, weight);
+            currentShape.spineTo(p, weight);
             canvas.redraw();
             lastPt = new Point2D.Float(p.x, p.y);
         }

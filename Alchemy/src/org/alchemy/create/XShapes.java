@@ -109,7 +109,7 @@ public class XShapes extends AlcModule implements AlcConstants {
 
         // Need to test if it is null incase the shape has been auto-cleared
 
-        if (canvas.getCurrentCreateShape() != null) {
+        if (canvas.hasCreateShapes()) {
             double speed = getAverageCursorSpeed(p, oldP);
             double points = canvas.getCurrentCreateShape().getTotalPoints() * 0.01;
             //System.out.println(points);
@@ -117,7 +117,7 @@ public class XShapes extends AlcModule implements AlcConstants {
 //            if (freeform) {
 //                canvas.getCurrentCreateShape().addCurvePoint(pt);
 //            } else {
-            canvas.getCurrentCreateShape().addLinePoint(pt);
+            canvas.getCurrentCreateShape().lineTo(pt);
 //            }
 
             canvas.redraw();

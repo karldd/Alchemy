@@ -167,8 +167,8 @@ public class Shapes extends AlcModule implements AlcConstants {
            //System.out.println(canvas.getPenType() + " " + canvas.getPenPressure());
             Point p = e.getPoint();
             // Need to test if it is null incase the shape has been auto-cleared
-            if (canvas.getCurrentCreateShape() != null) {
-                canvas.getCurrentCreateShape().addCurvePoint(p);
+            if (canvas.hasCreateShapes()) {
+                canvas.getCurrentCreateShape().curveTo(p);
                 canvas.redraw();
             }
         } else {
@@ -197,25 +197,25 @@ public class Shapes extends AlcModule implements AlcConstants {
                         secondClick = false;
                         AlcShape secondShape = (canvas.guideShapes.get(guideSize - 1));
                         if (secondShape != null) {
-                            secondShape.addLinePoint(p);
+                            secondShape.lineTo(p);
                         }
                         // Get the current shape and keep it as secondPath
                         secondPath = new GeneralPath(canvas.getCurrentGuideShape().getPath());
-                        if (canvas.getCurrentCreateShape() != null) {
-                            canvas.getCurrentCreateShape().addLinePoint(p);
+                        if (canvas.hasCreateShapes()) {
+                            canvas.getCurrentCreateShape().lineTo(p);
                         }
                     }
                 } else {
                     secondPath = null;
-                    if (canvas.getCurrentCreateShape() != null) {
-                        canvas.getCurrentCreateShape().addLinePoint(p);
+                    if (canvas.hasCreateShapes()) {
+                        canvas.getCurrentCreateShape().lineTo(p);
                     }
                 }
                 lastPt = p;
             } else {
                 // Need to test if it is null incase the shape has been auto-cleared
-                if (canvas.getCurrentCreateShape() != null) {
-                    canvas.getCurrentCreateShape().addLastPoint(p);
+                if (canvas.hasCreateShapes()) {
+                    canvas.getCurrentCreateShape().lineTo(p);
                 }
             }
             canvas.redraw();

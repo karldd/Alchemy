@@ -93,11 +93,11 @@ public class MedianShapes extends AlcModule {
     public void mouseDragged(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
+        if (canvas.hasCreateShapes()) {
 
             if (captureControlGesture) {
 
-                canvas.getCurrentCreateShape().addCurvePoint(p);
+                canvas.getCurrentCreateShape().curveTo(p);
                 canvas.redraw();
 
                 controlShapePoints.add(p);
@@ -117,11 +117,11 @@ public class MedianShapes extends AlcModule {
                     //controlPoint.x += p.x + xOffset;
                     //controlPoint.y += p.y + yOffset;
                     AlcShape thisShape = canvas.createShapes.get(canvas.createShapes.size() - 2);
-                    thisShape.addCurvePoint(tempPoint);
+                    thisShape.curveTo(tempPoint);
 
                 }
                 controlShapePointsBuffer.add(pointCount, p);
-                canvas.getCurrentCreateShape().addCurvePoint(p);
+                canvas.getCurrentCreateShape().curveTo(p);
                 canvas.redraw();
             }
         }
@@ -131,12 +131,12 @@ public class MedianShapes extends AlcModule {
     public void mouseReleased(MouseEvent e) {
         Point p = e.getPoint();
         // Need to test if it null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
+        if (canvas.hasCreateShapes()) {
 
             if (captureControlGesture) {
                 captureControlGesture = false;
 
-                canvas.getCurrentCreateShape().addLastPoint(p);
+                canvas.getCurrentCreateShape().lineTo(p);
                 //canvas.commitTempShape(tempShapeIndex1);
                 canvas.redraw();
                 canvas.commitShapes();

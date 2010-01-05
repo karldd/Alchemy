@@ -96,15 +96,15 @@ public class SpeedShapes extends AlcModule implements AlcConstants {
     @Override
     public void mouseDragged(MouseEvent e) {
         // Need to test if it is null incase the shape has been auto-cleared
-        if (canvas.getCurrentCreateShape() != null) {
+        if (canvas.hasCreateShapes()) {
             Point p = e.getPoint();
             int speed = getCursorSpeed(p, oldP) / 2;
 
             Point pt = getAngle(p, oldP, speed);
             if (freeform) {
-                canvas.getCurrentCreateShape().addCurvePoint(pt);
+                canvas.getCurrentCreateShape().curveTo(pt);
             } else {
-                canvas.getCurrentCreateShape().addLinePoint(pt);
+                canvas.getCurrentCreateShape().lineTo(pt);
             }
 
             canvas.redraw();

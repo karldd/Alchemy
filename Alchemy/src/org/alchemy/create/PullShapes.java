@@ -290,7 +290,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
             int y = e.getY() - (bounds.height >> 1);
             cloneShape.move(x, y);
 
-            cloneShape.setupDefaultAttributes();
+            cloneShape.setup();
             canvas.createShapes.add(cloneShape);
             canvas.redraw();
         }

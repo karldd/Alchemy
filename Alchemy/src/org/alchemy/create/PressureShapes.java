@@ -76,7 +76,7 @@ public class PressureShapes extends AlcModule {
     public void mousePressed(MouseEvent e) {
         AlcShape shape = new AlcShape();
         Point2D.Float p = canvas.getPenLocation();
-        shape.addSpinePoint(p, getPressure());
+        shape.spineTo(p, getPressure());
         canvas.createShapes.add(shape);
     }
 
@@ -85,7 +85,7 @@ public class PressureShapes extends AlcModule {
         AlcShape currentShape = canvas.getCurrentCreateShape();
         if (currentShape != null) {
             Point2D.Float p = canvas.getPenLocation();
-            currentShape.addSpinePoint(p, getPressure());
+            currentShape.spineTo(p, getPressure());
             canvas.redraw();
         }
     }

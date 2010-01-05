@@ -76,8 +76,8 @@ public class InverseShapes extends AlcModule {
                 moveTo = false;
             } else {
                 // Need to test if it is null incase the shape has been auto-cleared
-                if (canvas.getCurrentCreateShape() != null) {
-                    canvas.getCurrentCreateShape().addCurvePoint(p);
+                if (canvas.hasCreateShapes()) {
+                    canvas.getCurrentCreateShape().curveTo(p);
                     canvas.redraw();
                 }
             }

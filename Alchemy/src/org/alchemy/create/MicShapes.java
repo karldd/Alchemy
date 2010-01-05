@@ -115,7 +115,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
             shape = new AlcShape(p);
         } else {
             shape = new AlcShape();
-            shape.addSpinePoint(p, getMicLevel());
+            shape.spineTo(p, getMicLevel());
         }
         canvas.createShapes.add(shape);
         lastPt = new Point2D.Float(p.x, p.y);
@@ -144,7 +144,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
                 }
 
                 Point2D.Float pt = AlcShape.rightAngle(p, lastPt, thisLevel * volume);
-                currentShape.addCurvePoint(pt);
+                currentShape.curveTo(pt);
 
             // FATTEN MODE
             } else {
@@ -153,7 +153,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
                 if (micLevel < 1) {
                     micLevel = 1;
                 }
-                currentShape.addSpinePoint(p, micLevel);
+                currentShape.spineTo(p, micLevel);
             }
             canvas.redraw();
             lastPt = new Point2D.Float(p.x, p.y);
@@ -169,7 +169,7 @@ public class MicShapes extends AlcModule implements AlcConstants {
         if (currentShape != null) {
             Point2D.Float p = canvas.getPenLocation();
             if (shake) {
-                currentShape.addLastPoint(p);
+                currentShape.lineTo(p);
             }
             canvas.redraw();
             canvas.commitShapes();

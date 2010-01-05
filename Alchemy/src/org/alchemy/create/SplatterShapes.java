@@ -136,7 +136,7 @@ public class SplatterShapes extends AlcModule {
 
 
             shape.setLineWidth(dd);
-            shape.addCurvePoint(new Point2D.Float((start.x + x4 + x5), (start.y + y4 + y5)));
+            shape.curveTo(new Point2D.Float((start.x + x4 + x5), (start.y + y4 + y5)));
             canvas.createShapes.add(shape);
         }
 
