@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007-2009 Karl D.D. Willis
+ *  Copyright (c) 2007-2010 Karl D.D. Willis
  * 
  *  Alchemy is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,11 +33,11 @@ public class Alchemy implements AlcConstants {
     public static int OS;
     /** Are you tolerant enough to user the dreaded Windows Vista? */
     public static boolean OS_IS_VISTA = false;
-    /** Modifier Key String - This looks like <en>\u2318</em> for Mac or <em>Ctrl</em> otherwise */
+    /** Modifier Key String - This looks like <en>?</em> for Mac or <em>Ctrl</em> otherwise */
     public static String KEY_MODIFIER_STRING = "Ctrl";
-    /** Shift Key String - This looks like <en>\u21E7</em> for Mac or <em>Shift</em> otherwise */
+    /** Shift Key String - This looks like <en>?</em> for Mac or <em>Shift</em> otherwise */
     public static String KEY_SHIFT_STRING = "Shift";
-    /** Alt Key String - This looks like <en>\u2325</em> for Mac or <em>Alt</em> otherwise */
+    /** Alt Key String - This looks like <en>?</em> for Mac or <em>Alt</em> otherwise */
     public static String KEY_ALT_STRING = "Alt";
     
 
@@ -46,9 +46,9 @@ public class Alchemy implements AlcConstants {
             OS = OS_MAC;
             // Unicode sequences to display the correct mac symbols for
             // Command/Apple, Shift, Alt/Option keys
-            KEY_MODIFIER_STRING = "\u2318";
-            KEY_SHIFT_STRING = "\u21E7";
-            KEY_ALT_STRING = "\u2325";
+            KEY_MODIFIER_STRING = "?";
+            KEY_SHIFT_STRING = "?";
+            KEY_ALT_STRING = "?";
 
         } else if (OS_NAME.indexOf("Windows") != -1) {
             OS = OS_WINDOWS;

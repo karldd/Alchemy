@@ -25,7 +25,7 @@ however be sure to not mix older modules with newer versions or vice versa.
 CREDITS/LICENSE ----------------------
 Alchemy was initiated by Karl D.D. Willis & Jacob Hina. 
 The source code is released under the GNU General Public License and 
-Copyright © 2007-2009 Karl D.D. Willis. 
+Copyright © 2007-2010 Karl D.D. Willis. 
 Please see the 'COPYING' file for the full license.
 
 WEB ----------------------------------
