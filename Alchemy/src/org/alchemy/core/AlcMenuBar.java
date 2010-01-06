@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Alchemy project - http://al.chemy.org
  * 
- *  Copyright (c) 2007-2009 Karl D.D. Willis
+ *  Copyright (c) 2007-2010 Karl D.D. Willis
  *  Copyright (c) 2009 Steren Giannini (steren.giannini@gmail.com)
  * 
  *  Alchemy is free software: you can redistribute it and/or modify

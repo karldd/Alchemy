@@ -1,7 +1,7 @@
 /*
  * This file is part of the Alchemy project - http://al.chemy.org
  * 
- * Copyright (c) 2007-2009 Karl D.D. Willis
+ * Copyright (c) 2007-2010 Karl D.D. Willis
  * 
  * Alchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,7 +323,7 @@ public class AlcColorSelector extends JDialog implements DocumentListener, AlcCo
 
         row.add(createFixedLabel("H:"));
         row.add(hueField = new NumberField(4, false));
-        row.add(new JLabel(" \u00B0"));  // degree symbol
+        row.add(new JLabel(" °"));  // degree symbol
         row.add(Box.createHorizontalGlue());
         box.add(row);
         //box.add(Box.createVerticalStrut(5));
