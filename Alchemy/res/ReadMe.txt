@@ -33,10 +33,12 @@ Alchemy website: http://al.chemy.org/
 Download Alchemy: http://al.chemy.org/download/
 Alchemy Forum: http://al.chemy.org/forum/
 
-Version History
+
+
+VERSION HISTORY
 --------------------------------------
 BETA 008
-??.??.2010
+01.07.2010
 
 FEATURES
 + SVG Export & Switching support added using the Batik Library - Big thanks to Steren!

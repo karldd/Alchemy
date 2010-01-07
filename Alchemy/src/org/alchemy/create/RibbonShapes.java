@@ -67,14 +67,15 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     @Override
     public void setup() {
         ribbonManager = new RibbonManager(ribbonAmount, ribbonParticleAmount, randomness);
-        ribbonManager.setRadiusMax(initialSize);                 // default = 8
-        float divide = (100 - size) / 5F;
-        ribbonManager.setRadiusDivide(divide);              // default = 10
-        ribbonManager.setGravity(gravity);                   // default = .03
-        ribbonManager.setFriction(friction);                  // default = 1.1
-        ribbonManager.setMaxDistance(maxDistance);               // default = 40
-        ribbonManager.setDrag(drag); //1.8                     // default = 2
-        ribbonManager.setDragFlare(dragFlare);                 // default = .008
+        setupRibbonManager();
+//        ribbonManager.setRadiusMax(initialSize);                 // default = 8
+//        float divide = (100 - size) / 5F;
+//        ribbonManager.setRadiusDivide(divide);              // default = 10
+//        ribbonManager.setGravity(gravity);                   // default = .03
+//        ribbonManager.setFriction(friction);                  // default = 1.1
+//        ribbonManager.setMaxDistance(maxDistance);               // default = 40
+//        ribbonManager.setDrag(drag); //1.8                     // default = 2
+//        ribbonManager.setDragFlare(dragFlare);                 // default = .008
 
         createSubToolBarSection();
         toolBar.addSubToolBarSection(subToolBarSection);
@@ -87,15 +88,7 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
 
     @Override
     protected void cleared() {
-        ribbonManager.setRadiusMax(size);
-        float divide = (100 - size) / 5F;
-        ribbonManager.setRadiusDivide(divide);
-        ribbonManager.setFriction(friction);
-        ribbonManager.setGravity(gravity);
-        ribbonManager.setMaxDistance(maxDistance);
-        ribbonManager.setDrag(drag);
-        ribbonManager.setDragFlare(dragFlare);
-
+        setupRibbonManager();
     }
 
     private void createSubToolBarSection() {
@@ -190,6 +183,18 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
 
     }
 
+    private void setupRibbonManager() {
+        ribbonManager.setRadiusMax(size);
+        float divide = (100 - size) / 5F;
+        ribbonManager.setRadiusDivide(divide);
+        ribbonManager.setFriction(friction);
+        ribbonManager.setGravity(gravity);
+        ribbonManager.setMaxDistance(maxDistance);
+        ribbonManager.setDrag(drag);
+        ribbonManager.setDragFlare(dragFlare);
+    }
+
+
     @Override
     public void mousePressed(MouseEvent e) {
         canvas.createShapes.add(new AlcShape());
@@ -210,6 +215,7 @@ public class RibbonShapes extends AlcModule implements AlcConstants {
     @Override
     public void mouseReleased(MouseEvent e) {
         ribbonManager.init();
+        setupRibbonManager();
         //System.out.println(canvas.createShapes.size());
         canvas.commitShapes();
         canvas.redraw();
