@@ -232,6 +232,7 @@ class AlcPlugins implements AlcConstants {
                 Extension ext = (Extension) it.next();
                 PluginDescriptor descr = ext.getDeclaringPluginDescriptor();
                 pluginManager.activatePlugin(descr.getId());
+                System.out.println(descr.getId());
 
                 ClassLoader classLoader = pluginManager.getPluginClassLoader(descr);
                 Class pluginCls = classLoader.loadClass(ext.getParameter("class").valueAsString());

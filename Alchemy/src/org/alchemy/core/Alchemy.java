@@ -184,6 +184,7 @@ public class Alchemy implements AlcConstants {
 
         window.setVisible(true);
 
+        // Check for missing language keys
 //        new AlcResourceBundleChecker();
 
         System.out.println("Java Version: " + JAVA_VERSION_NAME);

@@ -1,5 +1,5 @@
 Alchemy 
-ALPHA 008 PRE
+BETA 008
 
 
 
@@ -35,7 +35,7 @@ Alchemy Forum: http://al.chemy.org/forum/
 
 Version History
 --------------------------------------
-ALPHA 008
+BETA 008
 ??.??.2010
 
 FEATURES
