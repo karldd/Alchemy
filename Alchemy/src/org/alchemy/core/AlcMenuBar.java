@@ -396,8 +396,10 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         // Interval submenu
         AlcMenu intervalMenu = new AlcMenu(getS("recordIntervalTitle"));
         // Set the opacity and color of this to overide the defaults used for the top menus
-        intervalMenu.setOpaque(true);
-        intervalMenu.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
+        if (Alchemy.OS != OS_LINUX) {
+            intervalMenu.setOpaque(true);
+            intervalMenu.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
+        }
         ButtonGroup group = new ButtonGroup();
         for (int i = 0; i < recordingIntervalString.length; i++) {
             AlcRadioButtonMenuItem intervalItem = new AlcRadioButtonMenuItem(recordingInterval[i], recordingIntervalString[i]);
@@ -589,8 +591,10 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
 
         // Format submenu
         AlcMenu formatMenu = new AlcMenu(getS("setVectorFormat"));
-        formatMenu.setOpaque(true);
-        formatMenu.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
+        if (Alchemy.OS != OS_LINUX) {
+            formatMenu.setOpaque(true);
+            formatMenu.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
+        }
         ButtonGroup formatGroup = new ButtonGroup();
         //PDF
         AlcRadioButtonMenuItem pdfItem = new AlcRadioButtonMenuItem(Alchemy.preferences.FORMAT_PDF, "PDF");
