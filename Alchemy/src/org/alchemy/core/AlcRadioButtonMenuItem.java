@@ -43,11 +43,11 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
             checkX = 6;
         }
     }
-    Ellipse2D.Double toolCircle = new Ellipse2D.Double(checkX, 15, 8, 8);
+    Ellipse2D.Double toolCircle = new Ellipse2D.Double(checkX, 13, 8, 8);
     Ellipse2D.Double toolCircleLine = new Ellipse2D.Double(checkX + 1, 15, 6, 6);
-    Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX + 1, 16, 6, 6);
-    Ellipse2D.Double menuCircle = new Ellipse2D.Double(checkX, 9, 8, 8);
-    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(checkX + 1, 10, 6, 6);
+    Ellipse2D.Double toolInnerCircle = new Ellipse2D.Double(checkX + 1, 14, 6, 6);
+    Ellipse2D.Double menuCircle = new Ellipse2D.Double(checkX, 7, 8, 8);
+    Ellipse2D.Double menuInnerCircle = new Ellipse2D.Double(checkX + 1, 8, 6, 6);
 
     AlcRadioButtonMenuItem() {
     }
@@ -102,7 +102,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
         if (Alchemy.OS != OS_LINUX && !Alchemy.OS_IS_VISTA) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            // SELECTED
+            // NOT SELECTED
             if (!this.isSelected()) {
                 g2.setColor(COLOR_UI_BOX);
                 // This is the toolbar menu popup
@@ -113,7 +113,7 @@ class AlcRadioButtonMenuItem extends JRadioButtonMenuItem implements AlcShortcut
                 } else {
                     g2.draw(menuInnerCircle);
                 }
-            // NOT SELECTED
+            // SELECTED
             } else {
                 if (moduleType != -1) {
                     if (Alchemy.OS != OS_MAC) {
