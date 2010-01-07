@@ -108,11 +108,11 @@ class AlcCheckBoxMenuItem extends JCheckBoxMenuItem implements AlcShortcutInterf
                 g.setColor(AlcToolBar.COLOR_UI_BOX);
                 // This is the toolbar menu popup
                 if (moduleType > 0) {
-                    g.drawRect(checkX, 16, 7, 7);
+                    g.drawRect(checkX, 14, 7, 7);
 
                 // This is the menubar
                 } else {
-                    g.drawRect(checkX, 10, 7, 7);
+                    g.drawRect(checkX, 8, 7, 7);
                 }
             }
         }
