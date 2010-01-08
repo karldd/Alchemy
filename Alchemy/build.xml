@@ -250,7 +250,7 @@
             jar="${dist.jar}"
             
             icon="${basedir}/res/Alchemy.icns" 
-            jvmversion="1.5*" 
+            jvmversion="1.5+"
             version="${version.numeric}"
             infostring="${version.string}, ${copyright}" 
             arguments="-Xms128m -Xmx512m">
