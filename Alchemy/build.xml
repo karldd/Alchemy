@@ -108,14 +108,14 @@
         <if>
             <equals arg1="${mac}" arg2="true" />
             <then>
-                <echo message="Mac" />
+                <echo message="Ignoring the JPen Library for now" />
             </then>
             <else>
-                <echo message="Not Mac" />
+                <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
             </else>
         </if>
 
-        <unjar src="${file.reference.jpen-2.jar}" dest="${build.classes.dir}"/>
+        
         <!--
         <unjar src="${file.reference.beads.jar}" dest="${build.classes.dir}"/>
         -->
@@ -282,7 +282,14 @@
         <copy file="${basedir}/lib/libAlcNative.jnilib" todir="${mac.bundle}"/>
         
         <!-- JPen -->
+        <!-- Copy the regular version -->
         <copy file="${basedir}/lib/jpen/libjpen-2-3.jnilib" todir="${mac.bundle}"/>
+        <copy file="${file.reference.jpen-2.jar}" todir="${mac.bundle}/lib"/>
+        
+        <!-- Copy the Tiger version 
+        <copy file="${basedir}/lib/jpen/jpen-tiger/libjpen-2.jnilib" todir="${mac.bundle}"/>
+        <copy file="${basedir}/lib/jpen/jpen-tiger/jpen-2.jar" todir="${mac.bundle}/lib"/>
+        -->
 
         <!-- Delete the Alchemy Jar file -->
         <delete file="${dist.dir}/Alchemy.jar"/>
