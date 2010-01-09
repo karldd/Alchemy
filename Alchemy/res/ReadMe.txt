@@ -37,6 +37,15 @@ Alchemy Forum: http://al.chemy.org/forum/
 
 VERSION HISTORY
 --------------------------------------
+BETA 008.1
+01.08.2010
+
+BUG FIXES
++ Fixed bug on startup with the Simple Interface
++ Fixed bugs with the Color Switcher
++ Released a separate version for Mac OS X Tiger 10.4
+
+--------------------------------------
 BETA 008
 01.07.2010
 
