@@ -988,9 +988,29 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         for(AlcShape shape : shapes){
             GeneralPath reflectedPath = (GeneralPath) shape.getPath().createTransformedShape(horizontalReflection);
             shape.setPath(reflectedPath);
+            shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
         }
         redraw(true);
     }
+
+    /** Make a GradientPaint reflected through the horizontal axis */
+    private GradientPaint makeHorizontalReflectedGradientPaint(GradientPaint gp) {
+        if(gp == null){
+            return null;
+        }
+        float horizontalAxis = this.getWidth() / 2;
+        float x1 = horizontalAxis - ((float) gp.getPoint1().getX() - horizontalAxis);
+        float x2 = horizontalAxis - ((float) gp.getPoint2().getX() - horizontalAxis);
+        GradientPaint newGp = new GradientPaint(
+                x1,
+                (float) gp.getPoint1().getY(),
+                gp.getColor1(),
+                x2,
+                (float) gp.getPoint2().getY(),
+                gp.getColor2());
+        return newGp;
+    }
+
 
     /** Flip the shapes on the canvas Vertically */
     void flipVertical(){
@@ -1003,8 +1023,27 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         for(AlcShape shape : shapes){
             GeneralPath reflectedPath = (GeneralPath) shape.getPath().createTransformedShape(verticalReflection);
             shape.setPath(reflectedPath);
+            shape.setGradientPaint(makeVerticalReflectedGradientPaint(shape.getGradientPaint()));
         }
         redraw(true);
+    }
+
+    /** Make a GradientPaint reflected through the vertical axis */
+    private GradientPaint makeVerticalReflectedGradientPaint(GradientPaint gp) {
+        if(gp == null){
+            return null;
+        }
+        float verticalAxis = this.getHeight() / 2;
+        float y1 = verticalAxis - ((float) gp.getPoint1().getY() - verticalAxis);
+        float y2 = verticalAxis - ((float) gp.getPoint2().getY() - verticalAxis);
+        GradientPaint newGp = new GradientPaint(
+                (float) gp.getPoint1().getX(),
+                y1,
+                gp.getColor1(),
+                (float) gp.getPoint2().getX(),
+                y2,
+                gp.getColor2());
+        return newGp;
     }
 
     //////////////////////////////////////////////////////////////
