@@ -182,7 +182,15 @@ public class Alchemy implements AlcConstants {
             menuBar.fullScreenItem.setSelected(true);
         }
 
+
+        toolBar.removeSubToolBarSection(0);
+        plugins.setCurrentCreate(8);
+        
+
         window.setVisible(true);
+
+        
+
 
         // Check for missing language keys
 //        new AlcResourceBundleChecker();

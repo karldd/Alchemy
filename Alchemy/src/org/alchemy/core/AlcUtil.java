@@ -358,7 +358,7 @@ public class AlcUtil implements AlcConstants {
         File[] pdfs = listFilesAsArray(shapesDir, pdfFilter, true);
         // For each pdf add the shapes to the array list
         for (int i = 0; i < pdfs.length; i++) {
-            shapes.addAll(getPDFShapes(pdfs[i], true));
+            shapes.addAll(getPDFShapes(pdfs[i], true, 0));
         }
         if (shapes.size() > 0) {
             AlcShape[] arr = new AlcShape[shapes.size()];
@@ -391,7 +391,26 @@ public class AlcUtil implements AlcConstants {
      * @return                  An array of AlcShapes from the PDF, else null
      */
     public static AlcShape[] getPDFShapesAsArray(File file, boolean resetLocation) {
-        Collection<AlcShape> shapes = getPDFShapes(file, resetLocation);
+        return getPDFShapesAsArray(file, resetLocation, 0);
+    }
+
+        /**
+     * Get a set of vector paths (shapes) from a PDF file.
+     * Does not return clipping paths or
+     * any shape that is bigger or the same size as the page
+     *
+     * This is a rather long and hacky way using the swing labs
+     * PDFRenderer library.
+     * It uses reflection to access private variables but seems to be working...
+     * for now anyway.
+     *
+     * @param file              The PDF file to retrive the shapes from
+     * @param resetLocation     Reset the location of each path to 0,0
+     * @param pixelSize         Pixel size to scale the shapes to. No scaling if less than zero.
+     * @return                  An array of AlcShapes from the PDF, else null
+     */
+    public static AlcShape[] getPDFShapesAsArray(File file, boolean resetLocation, int pixelSize) {
+        Collection<AlcShape> shapes = getPDFShapes(file, resetLocation, pixelSize);
         if (shapes != null) {
             AlcShape[] arr = new AlcShape[shapes.size()];
             return shapes.toArray(arr);
@@ -404,9 +423,10 @@ public class AlcUtil implements AlcConstants {
      * 
      * @param file              The PDF file to retrive the shapes from
      * @param resetLocation     Reset the location of each path to 0,0
+     * @param pixelSize         Pixel size to scale the shapes to. No scaling if less than zero.
      * @return                  A Collection of AlcShapes from the PDF, else null
      */
-    public static Collection<AlcShape> getPDFShapes(File file, boolean resetLocation) {
+    public static Collection<AlcShape> getPDFShapes(File file, boolean resetLocation, int pixelSize) {
         // set up the PDF reading
         PDFFile pdfFile = null;
         PDFPage pdfPage = null;
@@ -472,19 +492,35 @@ public class AlcUtil implements AlcConstants {
                         if (style != STYLE_CLIP) {
                             // Save the shape if it is within the page size
                             if (gpBounds.width < pageBounds.width && gpBounds.height < pageBounds.height && !pageBounds.equals(gpBounds)) {
+                                
+                                // Scale to a set pixel size
+                                if(pixelSize > 0){
+                                    // Figure out the longest side
+                                    int longestSize = (gpBounds.width > gpBounds.height) ? gpBounds.width : gpBounds.height;
+                                    // Create the scaling factor
+                                    double scale = (float) pixelSize / longestSize;
+                                    AffineTransform scaleTransform = new AffineTransform();
+                                    scaleTransform.scale(scale, scale);
+                                    gp = (GeneralPath) gp.createTransformedShape(scaleTransform);
+                                    gpBounds = gp.getBounds();
+                                }
+
                                 // For some reason the shapes come in flipped, o re-flip them here
-                                AffineTransform verticalReflection = new AffineTransform();
+                                AffineTransform transform = new AffineTransform();
                                 int axis = (gpBounds.y * 2) + gpBounds.height;
                                 // Move the reflection into place and reset to 0,0 if required
                                 if (resetLocation) {
-                                    verticalReflection.translate(0 - gpBounds.x, axis - gpBounds.y);
+                                    transform.translate(0 - gpBounds.x, axis - gpBounds.y);
                                 } else {
-                                    verticalReflection.translate(0, axis);
+                                    transform.translate(0, axis);
                                 }
+
                                 // Reflect it using a negative scale
-                                verticalReflection.scale(1, -1);
-                                GeneralPath reflectedPath = (GeneralPath) gp.createTransformedShape(verticalReflection);
-                                AlcShape shape = new AlcShape(reflectedPath);
+                                transform.scale(1, -1);
+                                GeneralPath transformedPath = (GeneralPath) gp.createTransformedShape(transform);
+
+                               
+                                AlcShape shape = new AlcShape(transformedPath);
                                 shape.recalculateTotalPoints();
                                 if (style == STYLE_BOTH) {
                                     shape.setStyle(STYLE_FILL);

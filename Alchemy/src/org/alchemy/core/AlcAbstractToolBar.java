@@ -52,6 +52,9 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     void setToolBarVisible(boolean visible) {
     }
 
+    void removeSubToolBarSection(int index) {
+    }
+
     void refreshColorButton() {
     }
 
