@@ -213,7 +213,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
             ArrayList<AlcShape> rootShapes = new ArrayList<AlcShape>();
             for (int i = 0; i < rootPdfs.length; i++) {
                 // Add the shapes from each pdf to the root shape list
-                rootShapes.addAll(AlcUtil.getPDFShapes(rootPdfs[i], true));
+                rootShapes.addAll(AlcUtil.getPDFShapes(rootPdfs[i], true, 0));
             }
             // Add the rootShapes to the main array
             shapeLists[0] = rootShapes;
@@ -241,7 +241,7 @@ public class PullShapes extends AlcModule implements AlcConstants {
                 ArrayList<AlcShape> folderShapes = new ArrayList<AlcShape>();
                 for (int j = 0; j < pdfs.length; j++) {
                     // Add the shapes from each pdf to the folder shape list
-                    folderShapes.addAll(AlcUtil.getPDFShapes(pdfs[j], true));
+                    folderShapes.addAll(AlcUtil.getPDFShapes(pdfs[j], true, 0));
                 }
                 // Store this folder of shapes in the main array
                 shapeLists[count] = folderShapes;

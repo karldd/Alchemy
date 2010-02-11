@@ -694,6 +694,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public void setCurrentCreateShape(AlcShape shape) {
         if (createShapes.size() > 0) {
             createShapes.set(createShapes.size() - 1, shape);
+        } else {
+            createShapes.add(shape);
         }
     }
 
@@ -740,6 +742,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public void setCurrentAffectShape(AlcShape shape) {
         if (affectShapes.size() > 0) {
             affectShapes.set(affectShapes.size() - 1, shape);
+        } else {
+            affectShapes.add(shape);
         }
     }
 

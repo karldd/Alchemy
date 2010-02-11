@@ -715,6 +715,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     }
 
     /** Remove a subtoolbar section at the specified index */
+    @Override
     void removeSubToolBarSection(int index) {
         // If the index is 0 then it is a create section
         if (index == 0) {
