@@ -338,9 +338,9 @@
         <chmod file="${alchemy.dir}/AlchemyOpenGL" perm="+x"/>
         
         <!-- JPen -->
-        <copy file="${basedir}/lib/jpen/libjpen-2-2.so" todir="${alchemy.dir}/lib"/>
-        <copy file="${basedir}/lib/jpen/libjpen-2-2-ia64.so" todir="${alchemy.dir}/lib"/>
-        <copy file="${basedir}/lib/jpen/libjpen-2-2-x86_64.so" todir="${alchemy.dir}/lib"/>
+        <copy file="${basedir}/lib/jpen/libjpen-2-3.so" todir="${alchemy.dir}/lib"/>
+        <copy file="${basedir}/lib/jpen/libjpen-2-3-ia64.so" todir="${alchemy.dir}/lib"/>
+        <copy file="${basedir}/lib/jpen/libjpen-2-3-x86_64.so" todir="${alchemy.dir}/lib"/>
         
         <!-- Move the Jar file -->
         <move file="${dist.dir}/Alchemy.jar" tofile="${alchemy.dir}/Alchemy.jar"/>

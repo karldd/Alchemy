@@ -28,13 +28,13 @@ import javax.swing.event.ChangeListener;
  * 
  * 
  */
-class AlcSlider extends JPanel implements AlcShortcutInterface, AlcConstants{
+public class AlcSlider extends JPanel implements AlcShortcutInterface, AlcConstants{
 
     protected AlcSliderCustom slider;
     private JLabel label;
     private String toolTip;
 
-    AlcSlider(String name, String toolTip, int minValue, int maxValue, int startValue) {
+    public AlcSlider(String name, String toolTip, int minValue, int maxValue, int startValue) {
 
         // Top Left Bottom Right
         //this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));

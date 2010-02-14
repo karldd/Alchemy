@@ -26,7 +26,7 @@ import java.net.URL;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-class AlcToggleButton extends JToggleButton implements AlcShortcutInterface, AlcConstants {
+public class AlcToggleButton extends JToggleButton implements AlcShortcutInterface, AlcConstants {
 
     private String toolTip;
     private boolean preferenceButton = false;
@@ -44,22 +44,22 @@ class AlcToggleButton extends JToggleButton implements AlcShortcutInterface, Alc
     private Color outerMiddle = new Color(133, 133, 133);
     private Image backgroundImage;
 
-    AlcToggleButton() {
+    public AlcToggleButton() {
     }
 
-    AlcToggleButton(Action action) {
+    public AlcToggleButton(Action action) {
         this.setAction(action);
     }
 
-    AlcToggleButton(URL iconUrl) {
+    public AlcToggleButton(URL iconUrl) {
         setup(null, null, iconUrl, false);
     }
 
-    AlcToggleButton(String text, String toolTip, URL iconUrl) {
+    public AlcToggleButton(String text, String toolTip, URL iconUrl) {
         setup(text, toolTip, iconUrl, false);
     }
 
-    AlcToggleButton(String text, String toolTip, URL iconUrl, boolean preferenceButton) {
+    public AlcToggleButton(String text, String toolTip, URL iconUrl, boolean preferenceButton) {
         setup(text, toolTip, iconUrl, preferenceButton);
     }
 

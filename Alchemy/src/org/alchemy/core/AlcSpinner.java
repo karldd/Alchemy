@@ -26,10 +26,10 @@ import javax.swing.*;
  * AlcSpinner
  * 
  */
-class AlcSpinner extends AlcAbstractSpinner {
+public class AlcSpinner extends AlcAbstractSpinner {
 
 
-    AlcSpinner(String title, int min, int max, int value, int step) {
+    public AlcSpinner(String title, int min, int max, int value, int step) {
 
         this.setOpaque(false);
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));

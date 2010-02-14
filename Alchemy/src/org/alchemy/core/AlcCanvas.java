@@ -176,6 +176,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
         pm = new PenManager(this);
         pm.pen.addListener(this);
+        pm.pen.setFrequencyLater(200);
 
         this.setCursor(CURSOR_CROSS);
     }
@@ -629,6 +630,40 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 }
             }
         }
+    }
+
+    /** Get a normalized array of shapes with the top-left corner set to 0,0
+     *  and the size set to the given value
+     *
+     * @param inputShapes   The shapes to normalize
+     * @param size          The size to scale the shapes to
+     * @return              The normailzed array list of shapes
+     */
+    public ArrayList<AlcShape> normailzeShapes(ArrayList<AlcShape> inputShapes, int size){
+        ArrayList<AlcShape> outputShapes = new ArrayList<AlcShape>(inputShapes.size());
+
+        for (AlcShape shape : inputShapes) {
+
+            // Scale to size
+            Rectangle bounds = shape.getBounds();
+            // Figure out the longest side
+            int longestSize = (bounds.width > bounds.height) ? bounds.width : bounds.height;
+            // Create the scaling factor
+            double scale = (float) size / longestSize;
+            AffineTransform scaleTransform = new AffineTransform();
+            scaleTransform.scale(scale, scale);
+            GeneralPath gp = (GeneralPath) shape.getPath().createTransformedShape(scaleTransform);
+            bounds = gp.getBounds();
+
+            // Reset to 0, 0
+            AffineTransform transform = new AffineTransform();
+            transform.translate(0 - bounds.x, 0 - bounds.y);
+            GeneralPath transformedPath = (GeneralPath) gp.createTransformedShape(transform);
+            outputShapes.add(shape.customClone(transformedPath));
+        }
+
+
+        return outputShapes;
     }
 
     //////////////////////////////////////////////////////////////

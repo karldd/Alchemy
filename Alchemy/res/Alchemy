@@ -1,5 +1,6 @@
 #!/bin/sh
 cd `dirname $0`
+export LD_LIBRARY_PATH="./lib"
 if [ -n "$JAVA_HOME" ]; then
   $JAVA_HOME/bin/java -jar ./Alchemy.jar $*
 else

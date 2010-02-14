@@ -22,6 +22,7 @@ package org.alchemy.core;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * The Alchemy Module Class
@@ -45,6 +46,10 @@ public abstract class AlcModule implements AlcConstants {
     protected static AlcMath math;
     /** Access to the Alchemy color selector */
     protected static AlcColorSelector colorSelector;
+    /** Access to the Alchemy window */
+    protected static AlcWindow window;
+    /** Access to the Alchemy language bundle */
+    protected static ResourceBundle bundle;
     //
     //////////////////////////////////////////////////////////////
     // MODULE INSTANCE REFERENCES
@@ -72,11 +77,13 @@ public abstract class AlcModule implements AlcConstants {
     // STRUCTURE
     //////////////////////////////////////////////////////////////
     /** Sets global references to the root, canvas, and toolbar */
-    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m, AlcColorSelector cs) {
+    void setGlobals(AlcCanvas c, AlcAbstractToolBar t, AlcMath m, AlcColorSelector cs, AlcWindow w, ResourceBundle b) {
         canvas = c;
         toolBar = t;
         math = m;
         colorSelector = cs;
+        window = w;
+        bundle = b;
     }
 
     /** Called when the module is first selected in the menu.
