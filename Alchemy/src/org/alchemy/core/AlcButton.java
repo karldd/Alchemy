@@ -23,26 +23,26 @@ import java.awt.Insets;
 import java.net.URL;
 import javax.swing.*;
 
-class AlcButton extends JButton implements AlcShortcutInterface, AlcConstants {
+public class AlcButton extends JButton implements AlcShortcutInterface, AlcConstants {
 
     private String toolTip;
 
-    AlcButton() {
+    public AlcButton() {
     }
 
-    AlcButton(Action action) {
+    public AlcButton(Action action) {
         this.setAction(action);
     }
 
-    AlcButton(URL iconUrl) {
+    public AlcButton(URL iconUrl) {
         setup(null, null, iconUrl);
     }
 
-    AlcButton(String text, String toolTip) {
+    public AlcButton(String text, String toolTip) {
         setup(text, toolTip, null);
     }
 
-    AlcButton(String text, String toolTip, URL iconUrl) {
+    public AlcButton(String text, String toolTip, URL iconUrl) {
         setup(text, toolTip, iconUrl);
     }
 

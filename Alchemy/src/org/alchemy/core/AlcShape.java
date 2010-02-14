@@ -60,6 +60,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     private ArrayList<Point2D.Float> spine;
     /** For shapes drawn as a line with a variable width, this is the width of the shape */
     private ArrayList<Float> spineWidth;
+    /** Utility variable used for storing the sort index of an array of AlcShapes */
+    private int sortIndex = 0;
     //////////////////////////////////////////////////////////////
     // SHAPE PREFERENCES
     //////////////////////////////////////////////////////////////
@@ -725,7 +727,8 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
     public ArrayList<Point2D.Float> getPoints() {
         PathIterator pathIterator = path.getPathIterator(null);
         float[] points = new float[6];
-        ArrayList<Point2D.Float> list = new ArrayList<Point2D.Float>(1000);
+        int allocate = (totalPoints > 0) ? totalPoints : 1000;
+        ArrayList<Point2D.Float> list = new ArrayList<Point2D.Float>(allocate);
 
         while (!pathIterator.isDone()) {
 
@@ -766,6 +769,19 @@ public class AlcShape implements AlcConstants, Cloneable, Serializable {
         double y = p1.y + (distance * Math.sin(angle));
         return new Point2D.Float((float) x, (float) y);
     }
+
+    /** Get the sort index */
+    public int getSortIndex() {
+        return sortIndex;
+    }
+
+    /** Set the sort index */
+    public void setSortIndex(int sortIndex) {
+        this.sortIndex = sortIndex;
+    }
+
+
+
     //////////////////////////////////////////////////////////////
     // CLONE STUFF
     //////////////////////////////////////////////////////////////

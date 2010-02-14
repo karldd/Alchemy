@@ -28,7 +28,7 @@ import javax.swing.event.ChangeListener;
  * AlcSliderCustom
  * @author Karl D.D. Willis
  */
-class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcNumberDialogInterface, AlcConstants {
+public class AlcSliderCustom extends JComponent implements MouseListener, MouseMotionListener, MouseWheelListener, KeyListener, AlcNumberDialogInterface, AlcConstants {
 
     int width, height;
     /** Minimum / Maximum / Display Position of the slider */

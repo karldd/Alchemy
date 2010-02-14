@@ -183,8 +183,8 @@ public class Alchemy implements AlcConstants {
         }
 
 
-        toolBar.removeSubToolBarSection(0);
-        plugins.setCurrentCreate(8);
+//        toolBar.removeSubToolBarSection(0);
+//        plugins.setCurrentCreate(8);
         
 
         window.setVisible(true);
