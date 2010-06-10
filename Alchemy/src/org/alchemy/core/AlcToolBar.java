@@ -938,8 +938,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     @Override
     void attachToolBar() {
         if (Alchemy.OS != OS_MAC) {
-            Alchemy.window.setJMenuBar(null);
-            this.add("North", Alchemy.menuBar);
+//            Alchemy.window.setJMenuBar(null);
+//            this.add("North", Alchemy.menuBar);
         }
 
         if (currentSubToolBarSections < 1) {
