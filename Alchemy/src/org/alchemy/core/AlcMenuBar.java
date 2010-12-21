@@ -68,7 +68,7 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
         this.setBackground(AlcToolBar.COLOR_UI_HIGHLIGHT);
 
         // Recording interval array in milliseconds
-        int[] recordingInterval = {5000, 15000, 30000, 60000, 120000, 300000, 600000};
+        int[] recordingInterval = {500, 1000, 5000, 15000, 30000, 60000, 120000, 300000, 600000};
         // Recording interval array in readable form
         String[] recordingIntervalString = new String[recordingInterval.length];
         // Initialise the array of recording intervals from the bundle
