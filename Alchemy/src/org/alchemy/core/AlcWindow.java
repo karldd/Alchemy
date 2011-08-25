@@ -123,7 +123,7 @@ public class AlcWindow extends JFrame implements AlcConstants, WindowListener, C
 //                this.setJMenuBar(Alchemy.menuBar);
             //Toolbar
             } else {
-//                Alchemy.toolBar.add("North", Alchemy.menuBar);
+                Alchemy.toolBar.add("North", Alchemy.menuBar);
                 Alchemy.toolBar.calculateTotalHeight();
             }
         //}

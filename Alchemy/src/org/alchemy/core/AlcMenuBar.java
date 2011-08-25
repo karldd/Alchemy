@@ -701,6 +701,8 @@ class AlcMenuBar extends JMenuBar implements AlcConstants {
             };
             AlcMenuItem optionsItem = new AlcMenuItem(optionsAction);
             optionsItem.setup(getS("optionsTitle"));
+            int optionsKey = Alchemy.shortcuts.setShortcut(optionsItem, KeyEvent.VK_U, "optionsTitle", optionsAction, KEY_MODIFIER);
+            optionsItem.setup("optionsTitle", optionsKey);
             settingsMenu.add(optionsItem);
         }
 
