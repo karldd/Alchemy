@@ -160,7 +160,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.color = new Color(Alchemy.preferences.color);
         this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
         
-        swatch = new ArrayList<Color>(15);
+        /** Holds saved swatch colors */
+        swatch = new ArrayList<Color>();
+        /** Keeps track of which swatch color is active */
         activeSwatchIndex = -1;
 
         this.addMouseListener(this);
@@ -179,6 +181,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         fullShapeList[1] = createShapes;
         fullShapeList[2] = affectShapes;
         
+        /** Keeps track of which shapes in "shapes" array were laid down
+         *  in a single mouse/pen click                                   */
         shapeGroups = new ArrayList<Integer>();
         
         activeShapeList[0] = createShapes;
@@ -715,6 +719,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         }
     }
     
+    /** Removes the most recently added group of shapes which were
+     *  laid down in a single mouse/pen event                      */
     public void removeShapeGroup(){
         
         if (!shapes.isEmpty()){
@@ -727,6 +733,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             
     }
     
+    /** Adds the current color, to the swatch array, sets it active */
     public void addCurrentColorToSwatch(){
         swatch.add(activeSwatchIndex+1,color);
         activeSwatchIndex+=1;
@@ -1460,6 +1467,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     }
                 }
             }
+        /** update shapeGroups array with the first "shapes" index from this group */
         shapeGroups.add(shapes.size());
         }
     }
