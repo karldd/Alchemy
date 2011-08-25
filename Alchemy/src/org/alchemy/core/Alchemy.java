@@ -166,7 +166,7 @@ public class Alchemy implements AlcConstants {
         if (preferences.simpleToolBar) {
             toolBar = new AlcSimpleToolBar();
         } else {
-            toolBar = new AlcToolBar();
+           toolBar = new AlcToolBar();
         }
 
         // Menu Bar

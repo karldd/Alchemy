@@ -55,6 +55,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private Color color;
     /** Global Shape Foreground Alpha */
     private int alpha = 255;
+    
+    public ArrayList<Color> swatch;
+    public int activeSwatchIndex;
+    
     /** Global Shape Style - (1) LINE or (2) SOLID FILL */
     private int style = STYLE_STROKE;
     /** Globl Shape Line Weight (if the style is line) */
@@ -111,6 +115,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList<AlcShape> guideShapes;
     /** Full shape array of each array list */
+    public ArrayList<Integer> shapeGroups; 
+    /** Keeps track of the shape number of the first shape in a group for undo
+        new numbers are entered on mouse presses. Correspondes to "shapes" array */        
     ArrayList[] fullShapeList = new ArrayList[3];
     /** Active shape list plus guides */
     ArrayList[] activeShapeList = new ArrayList[2];
@@ -152,6 +159,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.bgColor = new Color(Alchemy.preferences.bgColor);
         this.color = new Color(Alchemy.preferences.color);
         this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
+        
+        swatch = new ArrayList<Color>(15);
+        activeSwatchIndex = -1;
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -168,7 +178,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         fullShapeList[0] = shapes;
         fullShapeList[1] = createShapes;
         fullShapeList[2] = affectShapes;
-
+        
+        shapeGroups = new ArrayList<Integer>();
+        
         activeShapeList[0] = createShapes;
         activeShapeList[1] = affectShapes;
 
@@ -701,6 +713,23 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (shapes.size() > 0) {
             shapes.remove(shapes.size() - 1);
         }
+    }
+    
+    public void removeShapeGroup(){
+        
+        if (!shapes.isEmpty()){
+           while(shapes.size()>shapeGroups.get(shapeGroups.size()-1)){
+              removeCurrentShape();                
+           }
+           redraw(true);
+           shapeGroups.remove(shapeGroups.size()-1);
+        }
+            
+    }
+    
+    public void addCurrentColorToSwatch(){
+        swatch.add(activeSwatchIndex+1,color);
+        activeSwatchIndex+=1;
     }
 
     //////////////////////////////////////////////////////////////
@@ -1431,6 +1460,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     }
                 }
             }
+        shapeGroups.add(shapes.size());
         }
     }
 
@@ -1449,7 +1479,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                         }
                     }
                 }
-            }
+            }           
         }
     }
 
