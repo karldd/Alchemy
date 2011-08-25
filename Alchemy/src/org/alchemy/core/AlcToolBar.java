@@ -39,20 +39,27 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Popup buttons for the color, create, amd affect buttons in the toolbar
      *  These are declared global so we can hide the popup menus when hiding the toolbar */
     private AlcPopupButton createButton,  affectButton;
+    /** Modified version of AlColorButton which just holds a single color */
     private AlcSingleColorButton colorButton;
+    /** Saved swatch colors are built using this button */
+    private JButton swatchButton;
     /** The main tool bar inside the toolbar */
     private AlcToolBarMain mainToolBar;
+    /** The swatch tool bar inside the toolbar */
     private AlcToolBarMain swatchToolBar;
     /** The sub toolbar below the main toolbar */
     private AlcToolBarSub subToolBar;
     /** Container holding the main and sub toolbars */
     JPanel toolBars;
     /** Detach toolbar button */
+    
+    // The swatch toolbar area that holds saved colors
     JPanel swatchColors;
-
+    // the rest of the swatch toolbar
     Box swatchTools;
-    private JButton swatchButton;
+    
 
+    //GridBagConstraints for the swatch toolbar
     GridBagConstraints sHighlightc = new GridBagConstraints();
     GridBagConstraints sColorc = new GridBagConstraints();
     GridBagConstraints sFooterc = new GridBagConstraints();
@@ -228,8 +235,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     }
     
     private AlcToolBarMain loadSwatchBar(){
-     
-        // Pulled from loadToolBar Function....
+
         AlcToolBarMain toolBarGroup = new AlcToolBarMain();
 
         JPanel toolBar = new JPanel();
@@ -238,7 +244,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         toolBar.setLayout(new BorderLayout());        
         
         swatchTools = new Box(BoxLayout.X_AXIS);
-        //in the future we will pass this box off to a constructor...
         
         //Set up swatch colors panel with gridbaglayout
         swatchColors = new JPanel();
@@ -271,13 +276,11 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
 
         AlcButton deswatchButton = new AlcButton(toolBarFlipAction);
-        deswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("back.png"));
+        deswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("backSwatch.png"));
         swatchTools.add(deswatchButton);
         
         swatchTools.add(Box.createHorizontalStrut(10));
-               
-        
-        
+                    
         String colorTitle = getS("colorTitle");
         colorButton = new AlcSingleColorButton(colorTitle, getS("colorDescription"), 64);
         fgPicker = new AlcColorPicker(colorButton);
@@ -399,6 +402,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         JPanel toolBar = new JPanel();
         toolBar.setOpaque(false);
         toolBar.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
+        
+                //////////////////////////////////////////////////////////////
+        // Switch to Tools Bar Button
+        //////////////////////////////////////////////////////////////
+
+       // AlcButton reswatchButton = new AlcButton(toolBarFlipAction);
+       // reswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("backTools.png"));
+       // toolBar.add(reswatchButton);
 
         //////////////////////////////////////////////////////////////
         // STYLE BUTTON
