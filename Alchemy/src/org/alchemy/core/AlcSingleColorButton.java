@@ -32,9 +32,8 @@ import javax.swing.event.PopupMenuListener;
 /**
  * AlcSingleColorButton
  *
- * Custom color button
- *
- * @author crowline
+ * Custom color button - really rough placeholder,
+ *  
  * based on AlcColorButton by Karl D.D. Willis
  */
 class AlcSingleColorButton extends JComponent implements MouseListener, AlcPopupInterface, AlcConstants {
