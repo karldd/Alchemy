@@ -34,7 +34,7 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     Dimension windowSize;
     /** Width of the toolbar */
     int toolBarWidth;
-
+    
     boolean isToolBarVisible() {
         return this.isVisible();
     }
@@ -83,6 +83,13 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     }
 
     void addPaletteContent() {
+    }
+    
+    void setSwatchLRButtons() {   
+    }
+    void disableUndo() {   
+    }
+    void enableUndo() {   
     }
 
     public void addSubToolBarSection(AlcToolBarSubSection subSection) {

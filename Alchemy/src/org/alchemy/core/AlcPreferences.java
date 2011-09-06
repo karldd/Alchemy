@@ -66,7 +66,7 @@ class AlcPreferences implements AlcConstants {
     /** Ok Button */
     private JButton okButton;
     /** Size of the preferences window */
-    private final Dimension prefsWindowSize = new Dimension(500, 450);
+    private final Dimension prefsWindowSize = new Dimension(500, 465);
     /** Height of the tab panel */
     private final int tabPanelHeight = 65;
     //////////////////////////////////////////////////////////////
@@ -74,6 +74,7 @@ class AlcPreferences implements AlcConstants {
     //////////////////////////////////////////////////////////////
     private AlcToggleButton generalTabButton;
     private JComboBox interfaceBox;
+    private JComboBox undoDepthBox;
     private JCheckBox recordOnStartUp;
     private JTextField sessionDirectoryTextField;
     private JLabel sessionFileRenameOutput;
@@ -154,6 +155,7 @@ class AlcPreferences implements AlcConstants {
     int bgColor;
     /** Color */
     int color;
+    int undoDepth;
     //////////////////////////////////////////////////////////////
     // GENERAL
     //////////////////////////////////////////////////////////////
@@ -198,6 +200,7 @@ class AlcPreferences implements AlcConstants {
         color = prefs.getInt("Color", 0x000000);
         
         exportDirectory = prefs.get("Export Directory", DIR_DESKTOP);
+        undoDepth = prefs.getInt("Undo Depth", 0);
 
     }
 
@@ -227,7 +230,9 @@ class AlcPreferences implements AlcConstants {
         prefs.putInt("Color", Alchemy.canvas.getForegroundColor().getRGB());
         
         prefs.put("Export Directory", exportDirectory);
-
+        
+        prefs.putInt("Undo Depth", undoDepth);
+        
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", switchVectorApp);
         }
@@ -558,11 +563,32 @@ class AlcPreferences implements AlcConstants {
         }
         interfaceSelector.add(interfaceBox);
 
-        JLabel restart = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
-        restart.setFont(new Font("sansserif", Font.PLAIN, 10));
-        restart.setForeground(Color.GRAY);
-        interfaceSelector.add(restart);
+//        JLabel restart = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
+//        restart.setFont(new Font("sansserif", Font.PLAIN, 10));
+//        restart.setForeground(Color.GRAY);
+//        interfaceSelector.add(restart);
         gp.add(interfaceSelector);
+        
+        
+        // Undo Depth SELECTOR
+        JPanel undoDepthSelector = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+        undoDepthSelector.setOpaque(false);
+        undoDepthSelector.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        undoDepthSelector.add(new JLabel(Alchemy.bundle.getString("undodepth") + ": "));
+
+        String[] undoDepthString = {"Disabled","Single","Unlimited"};
+        undoDepthBox = new JComboBox(undoDepthString);
+        if (Alchemy.preferences.undoDepth==0) {
+            undoDepthBox.setSelectedIndex(0);
+        }else if(Alchemy.preferences.undoDepth==1){
+            undoDepthBox.setSelectedIndex(1);
+        }else{
+            undoDepthBox.setSelectedIndex(2);
+        }
+        undoDepthSelector.add(undoDepthBox);
+        //undoDepthSelector.add(restart);
+        gp.add(undoDepthSelector);
+        
 
         // MODULES LABEL
         JPanel modulesLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -572,15 +598,22 @@ class AlcPreferences implements AlcConstants {
         modulesLabelPanel.setOpaque(false);
         modulesLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 2, 0));
         modulesLabelPanel.add(modulesLabel);
-        // Restart required
-        JLabel restart2 = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
-        restart2.setFont(FONT_SMALL);
-        restart2.setForeground(Color.GRAY);
-        restart2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        modulesLabelPanel.add(restart2);
+//        // Restart required
+//        JLabel restart2 = new JLabel("* " + Alchemy.bundle.getString("restartRequired"));
+//        restart2.setFont(FONT_SMALL);
+//        restart2.setForeground(Color.GRAY);
+//        restart2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+//        modulesLabelPanel.add(restart2);
         gp.add(modulesLabelPanel);
-
         gp.add(getModulesPane());
+        
+        JLabel restart5 = new JLabel("These Options Require Alchemy To Be Restarted");
+        restart5.setFont(FONT_SMALL);
+        restart5.setForeground(Color.GRAY);
+        restart5.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        gp.add(Box.createVerticalStrut(3));
+        gp.add(restart5);
+        
         return gp;
     }
 
@@ -612,7 +645,7 @@ class AlcPreferences implements AlcConstants {
 
     private void refreshModulePanel() {
         generalPanel.remove(scrollPane);
-        generalPanel.add(getModulesPane());
+        generalPanel.add(getModulesPane(),3);
         generalPanel.revalidate();
     }
     //////////////////////////////////////////////////////////////
@@ -774,6 +807,7 @@ class AlcPreferences implements AlcConstants {
                 sessionRecordingState = false;
                 recordOnStartUp.setSelected(sessionRecordingState);
                 interfaceBox.setSelectedIndex(0);
+                undoDepthBox.setSelectedIndex(0);
             }
         });
 
@@ -802,6 +836,7 @@ class AlcPreferences implements AlcConstants {
                         boolean restart = false;
                         // Set the interface to simple or not
                         Alchemy.preferences.simpleToolBar = (interfaceBox.getSelectedIndex() == 1) ? true : false;
+                        Alchemy.preferences.undoDepth=(undoDepthBox.getSelectedIndex());
                         // If the session file name has changed
                         if (!sessionFileRenamePre.getText().equals(sessionFilePreName) || !sessionFileRenameDate.getText().equals(sessionFileDateFormat)) {
                             try {

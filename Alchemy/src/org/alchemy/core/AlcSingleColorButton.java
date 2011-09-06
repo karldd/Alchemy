@@ -170,7 +170,7 @@ class AlcSingleColorButton extends JComponent implements MouseListener, AlcPopup
 
     /** Get the color panel image */
     private Image getColorPanelImage() {
-        BufferedImage image = new BufferedImage(64, 60, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(64, 59, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
 
         // Foreground Active
@@ -178,7 +178,7 @@ class AlcSingleColorButton extends JComponent implements MouseListener, AlcPopup
 
             // Draw the foreground color
             g.setColor(Alchemy.canvas.getForegroundColor());
-            g.fillRect(5, 5, 59, 50);
+            g.fillRect(5, 5, 59, 46);
             // Draw the background color
             //g.setColor(Alchemy.canvas.getBackgroundColor());
             // bottom left
@@ -228,7 +228,7 @@ class AlcSingleColorButton extends JComponent implements MouseListener, AlcPopup
       //              refresh();
       //          }
       //          break;
-        }
+        }   
     }
 
     public void mouseReleased(MouseEvent e) {

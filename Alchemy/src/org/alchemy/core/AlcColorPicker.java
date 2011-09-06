@@ -56,12 +56,13 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
 
     private void setup(AlcPopupInterface parent) {
         this.parent = parent;
-        this.setPreferredSize(new Dimension(100, 115));
+        this.setPreferredSize(new Dimension(500, 320));
+        //this.setPreferredSize(new Dimension(200, 330));
 
         this.setOpaque(true);
         this.setBackground(Color.WHITE);
 
-        colorArray = AlcUtil.getBufferedImage("color-picker.png");
+        colorArray = AlcUtil.getBufferedImage("color-picker2.png");
 
         this.setCursor(CURSOR_CIRCLE);
         this.addMouseListener(this);
