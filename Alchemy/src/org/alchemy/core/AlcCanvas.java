@@ -55,6 +55,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private Color color;
     /** Global Shape Foreground Alpha */
     private int alpha = 255;
+    private boolean alphaLocked = false;
+    
+    private int undoDepth;// = 0;
     
     public ArrayList<Color> swatch;
     public int activeSwatchIndex;
@@ -159,6 +162,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.bgColor = new Color(Alchemy.preferences.bgColor);
         this.color = new Color(Alchemy.preferences.color);
         this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
+        this.undoDepth = Alchemy.preferences.undoDepth;
         
         /** Holds saved swatch colors */
         swatch = new ArrayList<Color>();
@@ -970,6 +974,22 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         setColor(this.getColor());
         Alchemy.toolBar.refreshTransparencySlider();
     }
+    
+    public boolean isAlphaLocked(){
+        return alphaLocked;
+    }
+    
+    public void setAlphaLocked(boolean b){
+        alphaLocked = b;
+    }
+    
+    public void setUndoDepth(int i){
+        undoDepth = i;
+    }
+    
+    public int getUndoDepth(){
+        return undoDepth;
+    }
 
     /** Get the current style
      * @return 
@@ -1546,6 +1566,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     }
                 }
             }
+        if(undoDepth>0){Alchemy.toolBar.enableUndo();}
         }
     }
 

@@ -38,6 +38,9 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
     // COLOR PANEL
     private JComponent colorPanel;
     private Image colorPanelImage;
+    
+    private Color trans ;
+    private Color opaque;
 
     
     /** Creates a new instance of AlcSwatchColorButton */
@@ -88,6 +91,8 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         int mCounter = 0;
         //how much taller is the active swatch element than its peers?
         int highlightSize = 10;
+        //the size of the tray that shows each colors alpha
+        int alphaTraySize = 12;        
         //the height we will pass to the paint method
         int h;
         //the starting y location we will pass to the paint method
@@ -100,13 +105,16 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         
         //loop that steps through building all swatch colors
         for(int n=0; n<Alchemy.canvas.swatch.size();n++){
-           g.setColor(Alchemy.canvas.swatch.get(n));
+           
+            trans = Alchemy.canvas.swatch.get(n);
+            
+            g.setColor(trans);
            
            if(n==Alchemy.canvas.activeSwatchIndex){
-               h = (int)d.getHeight()-1;
+               h = (int)d.getHeight() - alphaTraySize - 1;
                h2 = 0;
            }else{
-               h = (int)d.getHeight() - highlightSize -1;
+               h = (int)d.getHeight() - alphaTraySize - highlightSize -1;
                h2 = highlightSize;
            }
            
@@ -117,6 +125,15 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
                w=baseWidth;
            }
            
+           //paint alpha tray
+           g.fillRect(lastEdge,h2+h,w,alphaTraySize);
+           
+           opaque = new Color (trans.getRed(),trans.getGreen(),trans.getBlue(),255);
+           
+           //set opaque
+           g.setColor(opaque);
+           
+           //paint opaque top
            if(n==Alchemy.canvas.activeSwatchIndex){
               g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                  RenderingHints.VALUE_ANTIALIAS_ON);
@@ -125,7 +142,6 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
            }else{
               g.fillRect(lastEdge,h2,w,h);
            }
-
 
            lastEdge+=w;
            
@@ -154,10 +170,24 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
             n = ((x-modSize)/baseWidth)+m;
         }
         
-        Alchemy.canvas.setColor(Alchemy.canvas.swatch.get(n));
+        trans = Alchemy.canvas.swatch.get(n);
+        
+        Alchemy.canvas.setColor(trans);
+        
+        if(Alchemy.canvas.isAlphaLocked()){
+            
+        }else{
+           Alchemy.canvas.setAlpha(trans.getAlpha());
+        }
+        
         Alchemy.canvas.activeSwatchIndex=n;
+        
+        Alchemy.toolBar.setSwatchLRButtons();
+        
         refresh();
+
         Alchemy.toolBar.refreshColorButton();
+
  
     }
 

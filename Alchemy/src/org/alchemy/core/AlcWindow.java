@@ -82,6 +82,10 @@ public class AlcWindow extends JFrame implements AlcConstants, WindowListener, C
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Let the exitAlchemy function take care of closing
         //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        //This enables TAB to be used to switch between toolbar and swatchtoolbar
+        this.setFocusTraversalKeysEnabled(false);
+        
+        
         // Find out how big the parent screen is
         GraphicsConfiguration grapConfig = this.getGraphicsConfiguration();
         Dimension currentWindowSize = grapConfig.getBounds().getSize();
