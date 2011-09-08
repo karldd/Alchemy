@@ -25,6 +25,8 @@ import javax.swing.*;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import java.util.Random;
         
 /**
  * Alchemy Toolbar
@@ -96,6 +98,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     private javax.swing.Timer toolBarTimer;
     /** Cursor inside toolbar or not */
     private boolean insideToolBar;
+    
+    private Random random = new Random();
     
     private boolean swatched=false;
     private AbstractAction toolBarFlipAction;
@@ -276,7 +280,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
          
         AbstractAction setBackgroundAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {                
-                //Alchemy.canvas.setBackgroundColor(Alchemy.colorSelector.getColor());
                 ActionListener colorAction = new ActionListener() {
                     public void actionPerformed(ActionEvent event) {             
                         Alchemy.canvas.setBackgroundColor(Alchemy.colorSelector.getColor());
@@ -298,6 +301,24 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         //------------------------------------------------------------
         // Swatch Menu -> ColourLovers.com Swatch        
+        
+        AlcMenuItem setColourLovers; 
+         
+        AbstractAction setColourLoversAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.colourLovers.setSwatch(random.nextInt(3000)+1);
+                swatchColorButton.refresh();
+                    
+            }
+        };
+        setColourLovers = new AlcMenuItem(setColourLoversAction);
+        setColourLovers.setup("get Colour Lovers");
+        swatchMenuButton.addItem(setColourLovers);
+        
+        
+        
+        
+
         
         
         swatchTools.add(swatchMenuButton);
@@ -321,7 +342,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         swatchTools.add(transparencySlider);
         
-        //swatchTools.add(Box.createHorizontalStrut(10));
                     
         String colorTitle = getS("colorTitle");
         colorButton = new AlcSingleColorButton(colorTitle, getS("colorDescription"), 64);
@@ -331,9 +351,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //colorButton.addBgItem(bgPicker);
         swatchTools.add(colorButton);
         
-        
-        //swatchTools.add(Box.createHorizontalStrut(10));
-
 
         //////////////////////////////////////////////////////////////
         // SEPARATOR
