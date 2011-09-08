@@ -93,6 +93,8 @@ public class Alchemy implements AlcConstants {
     static final AlcMath math = new AlcMath();
     /** Custom reusable color selector */
     static AlcColorSelector colorSelector;
+    
+    static AlcColourLovers colourLovers;
 
     Alchemy() {
 
@@ -127,6 +129,9 @@ public class Alchemy implements AlcConstants {
 
         // LOAD PREFERENCES
         preferences = new AlcPreferences();
+        
+        // Initiate ColourLovers.com Class
+        colourLovers = new AlcColourLovers();
 
         // Create the window
         window = new AlcWindow();
