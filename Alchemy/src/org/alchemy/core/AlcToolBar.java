@@ -62,7 +62,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     // the rest of the swatch toolbar
     JPanel swatchTools;
     Box addRemoveBox;
-    Boolean alphaLocked = false;
+    Box transparencyBox;
     AlcButton removeFromSwatchButton;
     AlcButton moveColorLeftButton;
     AlcButton moveColorRightButton;
@@ -250,8 +250,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         
         swatchTools = new JPanel();
         swatchTools.setOpaque(false);
-        swatchTools.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        swatchTools.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
         addRemoveBox = new Box(BoxLayout.Y_AXIS);
+        transparencyBox = new Box(BoxLayout.X_AXIS);
+        
         
         JPanel swatchColorPanel = new JPanel();
         swatchColorPanel.setLayout(new BorderLayout());
@@ -265,13 +267,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         AlcButton deswatchButton = new AlcButton(toolBarFlipAction);
         deswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("switch-swatch.png"));
+        deswatchButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 6, 5));
         swatchTools.add(deswatchButton);
  
         //////////////////////////////////////////////////////////////
         // Swatch Menu
         //////////////////////////////////////////////////////////////       
         
-        swatchMenuButton = new AlcPopupButton("Menu", getS("createDescription"), AlcUtil.getUrlPath("create.png"));
+        swatchMenuButton = new AlcPopupButton("Menu", getS("swatchMenuDescription"), AlcUtil.getUrlPath("swatchMenu.png"));
         
         //------------------------------------------------------------
         // Swatch Menu -> Set Background Color
@@ -295,10 +298,33 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         
         //------------------------------------------------------------
         // Swatch Menu -> Save Swatch
+        AlcMenuItem saveSwatch; 
+         
+        AbstractAction saveSwatchAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.colourIO.exportSwatch();                    
+            }
+        };
+        saveSwatch = new AlcMenuItem(saveSwatchAction);
+        saveSwatch.setup("Export Swatch...");
+        swatchMenuButton.addItem(saveSwatch);
         
         //------------------------------------------------------------
         // Swatch Menu -> Load Swatch
-
+        AlcMenuItem loadSwatch; 
+         
+        AbstractAction loadSwatchAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.colourIO.importFileSwatch();
+                swatchColorButton.refresh();
+                setSwatchLRButtons();
+                setRemoveColorButton();
+                    
+            }
+        };
+        loadSwatch = new AlcMenuItem(loadSwatchAction);
+        loadSwatch.setup("Import Swatch...");
+        swatchMenuButton.addItem(loadSwatch);
         //------------------------------------------------------------
         // Swatch Menu -> ColourLovers.com Swatch        
         
@@ -306,8 +332,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
          
         AbstractAction setColourLoversAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {                
-                Alchemy.colourLovers.setSwatch(random.nextInt(3000)+1);
+                Alchemy.colourIO.setCLSwatch(random.nextInt(3000)+1);
                 swatchColorButton.refresh();
+                setSwatchLRButtons();
+                setRemoveColorButton();
                     
             }
         };
@@ -315,13 +343,29 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         setColourLovers.setup("get Colour Lovers");
         swatchMenuButton.addItem(setColourLovers);
         
-        
-        
-        
-
-        
-        
         swatchTools.add(swatchMenuButton);
+        swatchTools.add(new AlcSeparator());
+        
+        // ---------------
+        // END SWATCH MENU
+        // ---------------
+        
+        //////////////////////////////////////////////////////////////
+        // TRANSPARENCY LOCK
+        //////////////////////////////////////////////////////////////
+        final AlcToggleButton lockButton = new AlcToggleButton();
+        AbstractAction styleAction = new AbstractAction() {
+
+            public void actionPerformed(ActionEvent e) {
+                Alchemy.canvas.toggleAlphaLocked();
+                swatchColorButton.refresh();
+            }
+        };
+
+        lockButton.setAction(styleAction);
+        lockButton.setup("", getS("alphaLockDescription"), AlcUtil.getUrlPath("lock.png"));
+
+        transparencyBox.add(lockButton);
         
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
@@ -336,12 +380,13 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                         if (!transparencySlider.getValueIsAdjusting()) {
                             Alchemy.canvas.setAlpha(transparencySlider.getValue());
                             refreshColorButton();
+                            swatchColorButton.refresh();
                         }
                     }
                 });
 
-        swatchTools.add(transparencySlider);
-        
+        transparencyBox.add(transparencySlider);
+        swatchTools.add(transparencyBox);
                     
         String colorTitle = getS("colorTitle");
         colorButton = new AlcSingleColorButton(colorTitle, getS("colorDescription"), 64);
@@ -355,7 +400,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
-        swatchTools.add(new AlcSeparator());
+        //swatchTools.add(new AlcSeparator());
         //swatchTools.add(Box.createHorizontalStrut(10));
         
         //////////////////////////////////////////////////////////////
@@ -474,6 +519,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             swatchColorButton.refresh();
         }
         
+        setRemoveColorButton();
         setSwatchLRButtons();
                
         toolBar.add(swatchTools, BorderLayout.WEST);  
@@ -499,6 +545,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
 
         AlcButton reswatchButton = new AlcButton(toolBarFlipAction);
         reswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("switch-tools.png"));
+        reswatchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         toolBar.add(reswatchButton);
 
         //////////////////////////////////////////////////////////////
@@ -1353,6 +1400,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
             moveColorRightButton.setEnabled(false);
         }else{
             moveColorRightButton.setEnabled(true);
+        }
+    }
+    void setRemoveColorButton(){
+        if(Alchemy.canvas.swatch.isEmpty()){
+            removeFromSwatchButton.setEnabled(false);
+        }else{
+            removeFromSwatchButton.setEnabled(true);
+
         }
     }
     @Override

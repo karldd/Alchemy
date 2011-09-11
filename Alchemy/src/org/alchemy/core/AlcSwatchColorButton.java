@@ -84,7 +84,12 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         BufferedImage image = new BufferedImage((int)d.getWidth(), (int)d.getHeight(), BufferedImage.TYPE_INT_ARGB);
         //Graphics g = image.createGraphics();
         Graphics2D g = image.createGraphics();
-        int baseWidth = (int)d.getWidth()/Alchemy.canvas.swatch.size();
+        int baseWidth;
+        if(Alchemy.canvas.swatch.isEmpty()){
+            baseWidth = 0;   
+        }else{
+            baseWidth = (int)d.getWidth()/Alchemy.canvas.swatch.size();
+        }
         //modulus to find how many extra width pixels
         int m = (int)d.getWidth()%Alchemy.canvas.swatch.size();
         //keeps track of how many of the mudulus pixels we've filled
@@ -108,7 +113,12 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
            
             trans = Alchemy.canvas.swatch.get(n);
             
+            if(Alchemy.canvas.isAlphaLocked()){
+                trans = new Color(trans.getRed(),trans.getGreen(),trans.getBlue(),Alchemy.canvas.getAlpha());
+            }
+            
             g.setColor(trans);
+            
            
            if(n==Alchemy.canvas.activeSwatchIndex){
                h = (int)d.getHeight() - alphaTraySize - 1;
