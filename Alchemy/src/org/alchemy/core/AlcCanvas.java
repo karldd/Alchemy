@@ -955,11 +955,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @return 
      */
     public int getAlpha() {
-        if (backgroundActive) {
-            return bgAlpha;
-        } else {
             return alpha;
-        }
     }
 
     /** Set the current alpha value
@@ -979,8 +975,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         return alphaLocked;
     }
     
-    public void setAlphaLocked(boolean b){
-        alphaLocked = b;
+    public void toggleAlphaLocked(){
+        if(alphaLocked){
+            alphaLocked=false;
+        }else{
+            alphaLocked=true;
+        }
     }
     
     public void setUndoDepth(int i){

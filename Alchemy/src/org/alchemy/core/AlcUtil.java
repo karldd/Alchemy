@@ -36,6 +36,7 @@ import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
+import java.util.regex.*;
 
 /**
  * Static utility methods used in Alchemy
@@ -609,7 +610,7 @@ public class AlcUtil implements AlcConstants {
         // Return collection of files
         return files;
     }
-
+    
     //////////////////////////////////////////////////////////////
     // UI FUNCTIONS
     //////////////////////////////////////////////////////////////
