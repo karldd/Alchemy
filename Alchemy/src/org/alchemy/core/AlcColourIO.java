@@ -25,6 +25,12 @@ import java.net.*;
 import java.awt.Color;
 import java.util.regex.*;
 import java.util.ArrayList;
+import java.nio.*;
+import java.nio.charset.Charset;
+
+
+
+
 
 public class AlcColourIO implements AlcConstants{ 
     private String titleReg = "\\s*?<title><!\\[CDATA\\[(.+?)\\]\\]><\\/title>\\s*?";
@@ -39,6 +45,8 @@ public class AlcColourIO implements AlcConstants{
     private String urlString;
     private int errorType;
     private String errorText;
+    private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+
     
     AlcColourIO(){
         colours = new ArrayList<Color>();      
@@ -137,38 +145,79 @@ public class AlcColourIO implements AlcConstants{
        }
     }
     public void importFileSwatch(){
-        File file = AlcUtil.showFileChooser();
+       File file = AlcUtil.showFileChooser();
+       int type = getFileType(file);
+       if (type==1){
+           readGPL(file);
+       }else if(type==2){
+           try{
+               readASE(file);
+           }catch (IOException e) {
+               e.printStackTrace();
+           }   
+       }
+
+    }
+    public void exportSwatch(){
+       File file = AlcUtil.showFileChooser();
+       int type = getFileType(file);
+       if (type==1){
+           writeGPL(file);
+       }else if(type==2){
+           writeASE(file);
+       }
+
+        
+    }
+    private int getFileType(File file){
+        String extensionReg = "[\\d\\D]+?(\\.\\w*)$";
+        Pattern extension = Pattern.compile(extensionReg);
+        Matcher m;
+        int type=0;
+        
+        m = extension.matcher(file.getName());
+            if (m.matches()){
+               if (m.group(1).equals(".gpl")){
+                   type = 1;
+               }else if(m.group(1).equals(".ase")){
+                   type = 2;
+               }
+               
+            }else{
+                  
+            }
+        return type;
+    }
+    private void readGPL(File file){
         FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        DataInputStream dis = null;
+        BufferedReader buff;
         String colReg = "\\s*?(\\d+?)\\s+?(\\d+?)\\s+?(\\d+?)\\s+?[\\d\\D]*";
         Pattern colLine = Pattern.compile(colReg);
         colours.clear();
         Matcher m;
-        String line;
+        String nextLine;
         try {
           fis = new FileInputStream(file);
-
-          // Here BufferedInputStream is added for fast reading.
-          bis = new BufferedInputStream(fis);
-          dis = new DataInputStream(bis);
-
-          // dis.available() returns 0 if the file does not have more lines.
-          while (dis.available() != 0) {
-          line = dis.readLine();
-          m = colLine.matcher(line);
-                 if (m.matches()) {
-                     //System.out.println(m.group(1)+" "+m.group(2)+" "+m.group(3)+"\n"+line+"\n\n");
-                     colours.add(new Color(Integer.parseInt(m.group(1)),
-                                           Integer.parseInt(m.group(2)),
-                                           Integer.parseInt(m.group(3))));
-                 }
+          buff = new BufferedReader(new InputStreamReader(fis));
+          
+          while (true){
+             nextLine =buff.readLine();  
+             if (nextLine != null){        
+                m = colLine.matcher(nextLine);
+                if (m.matches()) {
+                    colours.add(new Color(Integer.parseInt(m.group(1)),
+                                          Integer.parseInt(m.group(2)),
+                                          Integer.parseInt(m.group(3))));
+                } 
+             }else{
+                 break;
+             } 
           }
 
-          // dispose all the resources after using them.
+          // clean up
           fis.close();
-          bis.close();
-          dis.close();
+          buff.close();
+
 
         } catch (FileNotFoundException e) {
           //e.printStackTrace();
@@ -184,23 +233,6 @@ public class AlcColourIO implements AlcConstants{
                 n++;
             }
         }
-    }
-    public void exportSwatch(){
-        File file = AlcUtil.showFileChooser();
-        String extensionReg = "[\\d\\D]+?(\\.\\w*)$";
-        Pattern extension = Pattern.compile(extensionReg);
-        Matcher m;
-        
-        m = extension.matcher(file.getName());
-            if (m.matches()){
-               if (m.group(1).equals(".gpl")){
-                   writeGPL(file);
-               }
-               
-            }else{
-                
-            }
-        
     }
     
     public void writeGPL(File file){
@@ -271,4 +303,162 @@ public class AlcColourIO implements AlcConstants{
         }
         return returnHex;
     }
+    
+    
+    //Code pulled from "Processessing's Generative Design Library
+    
+	private void writeASE(File file) {
+		String NUL = new Character((char) 0).toString();
+		String SOH = new Character((char) 1).toString();
+                String colorName=null;
+
+		int countColors = Alchemy.canvas.swatch.size();
+
+		String ase = "ASEF" + NUL + SOH + NUL + NUL;
+		for (int i = 24; i >= 0; i -= 8) {
+			ase += new Character((char) ((countColors >> i) & 0xFF)).toString();
+		}
+		ase += NUL;
+
+		for (int i = 0; i < Alchemy.canvas.swatch.size(); i++) {
+                        colorName= getSwatchHexString(i);
+			ase += SOH + NUL + NUL + NUL;
+			ase += new Character(
+					(char) ((((colorName.length() + 1) * 2) + 20)))
+					.toString()
+					+ NUL;
+			ase += new Character((char) (colorName.length() + 1)).toString()
+					+ NUL;
+
+			for (int j = 0; j < colorName.length(); j++) {
+				ase += colorName.substring(j, j + 1) + NUL;
+			}
+
+			String r = new String(floatTobytes(Alchemy.canvas.swatch.get(i).getRed() / 255f));
+			String g = new String(floatTobytes(Alchemy.canvas.swatch.get(i).getGreen() / 255f));
+			String b = new String(floatTobytes(Alchemy.canvas.swatch.get(i).getBlue() / 255f));
+
+			ase += NUL + "RGB ";
+			ase += r.substring(0, 1) + r.substring(1, 2) + r.substring(2, 3)
+					+ NUL;
+			ase += g.substring(0, 1) + g.substring(1, 2) + g.substring(2, 3)
+					+ NUL;
+			ase += b.substring(0, 1) + b.substring(1, 2) + b.substring(2, 3)
+					+ NUL;
+			if ((i + 1) != countColors) {
+				ase += NUL + NUL + NUL;
+			}
+		}
+		ase += NUL + NUL;
+
+		try{
+                    FileOutputStream fos = new FileOutputStream(file);
+                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+                    bos.write(ase.getBytes());
+                    bos.flush();
+                    bos.close();
+                    fos.close();
+                }catch (IOException e) {
+                   e.printStackTrace();
+                }
+	}
+
+	// mini helper function for "saveASE"
+	private static byte[] floatTobytes(float theNumber) {
+		ByteBuffer buf = ByteBuffer.allocate(4);
+		buf.putFloat(theNumber);
+		return buf.array();
+	}
+        private void readASE(File file) throws IOException{
+            FileInputStream in = null;
+            DataInputStream dis = null;
+            System.out.println("trying ase");
+            colours.clear();
+
+            try {
+                in = new FileInputStream(file);
+                dis = new DataInputStream(in);
+                
+                int numberOfBlocks = 0;
+                short blockType;// = (char)0;
+                int blockLength = 0;
+                short nameLength = 0;
+                int n = 0;
+                String colorMode;
+                float red,green,blue;
+                
+                byte[] fourByte = new byte[4];
+
+                dis.read(fourByte);
+                String header = decodeUTF8(fourByte);
+                
+                if (header.equals("ASEF")){
+                   System.out.println("okeydokey");
+                   dis.read(fourByte);
+                   numberOfBlocks=dis.readInt();
+                   System.out.println("number of blocks "+numberOfBlocks);
+                   while(n < numberOfBlocks){
+                       blockType=dis.readShort();
+                       System.out.println("block type "+blockType);
+                       blockLength=dis.readInt();
+                       System.out.println("block lenght "+blockLength);
+                       
+                       // Is this a color block?
+                       if(blockType==1){
+                           nameLength=dis.readShort();
+                           System.out.println("name length "+nameLength);
+                           dis.skipBytes(nameLength*2);
+                           dis.read(fourByte);
+                           colorMode = decodeUTF8(fourByte);
+                           System.out.println(colorMode+".");
+                           if(colorMode.equals("RGB ")){
+                               red   = dis.readFloat();
+                               green = dis.readFloat();
+                               blue  = dis.readFloat();
+                               System.out.println("RGB: "+red+", "+green+", "+blue);
+                               colours.add(new Color(red,green,blue));                            
+                           }else if (colorMode.equals("CMYK")){
+                               dis.skipBytes(16);
+                           }else if (colorMode.equals("LAB ")){
+                               dis.skipBytes(12);
+                           }else if (colorMode.equals("Gray")){
+                               dis.skipBytes(4);
+                           }
+                           dis.skipBytes(2);
+                       }else{ //not a color block, skip
+                           dis.skipBytes(blockLength);
+                       }
+                       
+                       n++;
+                   }
+                   if(!colours.isEmpty()){
+                       Alchemy.canvas.swatch.clear();
+                       n = 0;
+                       while(n<colours.size()){
+                           Alchemy.canvas.swatch.add(colours.get(n));
+                           n++;
+                       }
+                       Alchemy.canvas.activeSwatchIndex=0;
+                   }
+                }
+            in.close();
+            dis.close();
+
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+                if (dis != null){
+                    dis.close();
+                }
+            }
+        }
+        
+        String decodeUTF8(byte[] bytes) {
+            return new String(bytes, UTF8_CHARSET);
+        }
+
+
+
+
 }
