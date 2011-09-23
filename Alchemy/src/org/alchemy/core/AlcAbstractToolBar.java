@@ -91,6 +91,8 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     }
     void enableUndo() {   
     }
+    void refreshRClickPicker(){
+    }
 
     public void addSubToolBarSection(AlcToolBarSubSection subSection) {
     }

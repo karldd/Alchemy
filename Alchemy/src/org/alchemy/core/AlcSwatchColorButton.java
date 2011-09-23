@@ -183,7 +183,7 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         }else{
             n = ((x-modSize)/baseWidth)+m;
         }
-        
+             
         trans = Alchemy.canvas.swatch.get(n);
         
         Alchemy.canvas.setColor(trans);
@@ -201,6 +201,8 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         refresh();
 
         Alchemy.toolBar.refreshColorButton();
+        
+        
 
  
     }
