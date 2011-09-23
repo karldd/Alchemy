@@ -80,7 +80,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     /** Number of current sub toolbar sections loaded */
     private int currentSubToolBarSections = 0;
     /** Color picker */
-    private AlcColorPicker fgPicker,  bgPicker;
+    private AlcColorPicker lClickPicker,  rClickPicker;
     /** Foreground Background Button - gets updated when the colors are swapped */
     AlcToggleButton fgbgButton;
     //////////////////////////////////////////////////////////////
@@ -218,15 +218,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         AbstractAction eyedropperAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-                if (Alchemy.canvas.isBackgroundColorActive()) {
-                    if (!bgPicker.isEyeDropperActive()) {
-                        bgPicker.startEyeDropper();
-                    }
-                } else {
-                    if (!fgPicker.isEyeDropperActive()) {
-                        fgPicker.startEyeDropper();
-                    }
-                }
+
+                        lClickPicker.startEyeDropper();
+ 
             }
         };
 
@@ -353,6 +347,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY LOCK
         //////////////////////////////////////////////////////////////
+        
         final AlcToggleButton lockButton = new AlcToggleButton();
         AbstractAction styleAction = new AbstractAction() {
 
@@ -370,6 +365,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY SLIDER
         //////////////////////////////////////////////////////////////
+        
         transparencySlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 254);
         transparencySlider.addChangeListener(
                 new ChangeListener() {
@@ -390,18 +386,86 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                     
         String colorTitle = getS("colorTitle");
         colorButton = new AlcSingleColorButton(colorTitle, getS("colorDescription"), 64);
-        fgPicker = new AlcColorPicker(colorButton);
-       // bgPicker = new AlcColorPicker(colorButton, true);
-        colorButton.addFgItem(fgPicker);
+        lClickPicker = new AlcColorPicker(colorButton,0);
+        rClickPicker = new AlcColorPicker(colorButton,1);
+        colorButton.addlClickItem(lClickPicker);
+        colorButton.addrClickItem(rClickPicker);
         //colorButton.addBgItem(bgPicker);
         swatchTools.add(colorButton);
         
-
+        //////////////////////////////////////////////////////
+        // SWATCH NUMBERPAD ACTIONS
+        ////////////////////////////////////////////////////////////// 
+        
+        AbstractAction transparencyUpAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(Alchemy.canvas.getAlpha()<255){
+                    if(Alchemy.canvas.getAlpha()>245){
+                        Alchemy.canvas.setAlpha(255);
+                    }else{
+                        Alchemy.canvas.setAlpha(Alchemy.canvas.getAlpha()+10);
+                    }
+                    swatchColorButton.refresh();
+                    refreshColorButton();
+                }
+            }
+        };
+        AbstractAction transparencyDownAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(Alchemy.canvas.getAlpha()>0){
+                    if(Alchemy.canvas.getAlpha()<10){
+                        Alchemy.canvas.setAlpha(0);
+                    }else{
+                        Alchemy.canvas.setAlpha(Alchemy.canvas.getAlpha()-10);
+                    }
+                    swatchColorButton.refresh();
+                    refreshColorButton();
+                }
+            }
+        };
+        AbstractAction nextColorAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(Alchemy.canvas.activeSwatchIndex<Alchemy.canvas.swatch.size()-1){
+                    Alchemy.canvas.activeSwatchIndex++;                
+                }else{
+                    Alchemy.canvas.activeSwatchIndex=0;
+                }
+                updateSwatchColorChange();
+            }
+        };
+        AbstractAction prevColorAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(Alchemy.canvas.activeSwatchIndex==0){
+                    Alchemy.canvas.activeSwatchIndex=Alchemy.canvas.swatch.size()-1;                
+                }else{
+                    Alchemy.canvas.activeSwatchIndex--;
+                }
+                updateSwatchColorChange();
+            }
+        };
+        
+        
         //////////////////////////////////////////////////////////////
-        // SEPARATOR
-        //////////////////////////////////////////////////////////////
-        //swatchTools.add(new AlcSeparator());
-        //swatchTools.add(Box.createHorizontalStrut(10));
+        // SWATCH NUMBERPAD SHORTCUTS
+        ////////////////////////////////////////////////////////////// 
+        
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_MULTIPLY, "transparency up", transparencyUpAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_DIVIDE, "transparency down", transparencyDownAction);
+        final int VK_ADD = 0x6B;
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_ADD,  "next color", nextColorAction);
+        final int VK_SUBTRACT = 0x6D;
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_SUBTRACT, "prev color", prevColorAction);
+        
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD0, "num0", buildSwatchQuickKey(0));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD1, "num1", buildSwatchQuickKey(1));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD2, "num2", buildSwatchQuickKey(2));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD3, "num3", buildSwatchQuickKey(3));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD4, "num4", buildSwatchQuickKey(4));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD5, "num5", buildSwatchQuickKey(5));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD6, "num6", buildSwatchQuickKey(6));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD7, "num7", buildSwatchQuickKey(7));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD8, "num8", buildSwatchQuickKey(8));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD9, "num9", buildSwatchQuickKey(9));
         
         //////////////////////////////////////////////////////////////
         // ADD COLOR TO SWATCH BUTTON
@@ -527,7 +591,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         toolBar.add(swatchColorPanel, BorderLayout.CENTER);
         
         toolBarGroup.add(toolBar, BorderLayout.CENTER);
-        return toolBarGroup;
+        return toolBarGroup;     
     }
     
     /** Load the tool bar */
@@ -1421,5 +1485,29 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         if (!undoButton.isEnabled()){
         undoButton.setEnabled(true);
         }
+    }
+    
+    AbstractAction buildSwatchQuickKey(final int i){
+        AbstractAction sKA = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {               
+                if(Alchemy.canvas.swatch.size()>i){
+                    Alchemy.canvas.activeSwatchIndex=i;
+                    updateSwatchColorChange();
+                }
+            }
+        };
+        return sKA;
+    }
+    private void updateSwatchColorChange(){
+        Alchemy.canvas.setColor(Alchemy.canvas.swatch.get(Alchemy.canvas.activeSwatchIndex));
+        if(!Alchemy.canvas.isAlphaLocked()){
+           Alchemy.canvas.setAlpha(Alchemy.canvas.swatch.get(Alchemy.canvas.activeSwatchIndex).getAlpha());
+        }
+        setSwatchLRButtons(); 
+        swatchColorButton.refresh();
+        colorButton.refresh();
+    }
+    public void refreshRClickPicker(){
+        rClickPicker.refreshRClick();
     }
 }

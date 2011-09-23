@@ -146,6 +146,7 @@ public class AlcColourIO implements AlcConstants{
     }
     public void importFileSwatch(){
        File file = AlcUtil.showFileChooser();
+       //do fileinputsteam here, pass instead of file
        int type = getFileType(file);
        if (type==1){
            readGPL(file);
@@ -304,8 +305,10 @@ public class AlcColourIO implements AlcConstants{
         return returnHex;
     }
     
-    
-    //Code pulled from "Processessing's Generative Design Library
+    /////////--- ATTRIBUTION NOTE ---//////////////////////////////////////
+    // writeASE function code adapted from the Generative Design Library //
+    //    http://www.generative-gestaltung.de/codes/generativedesign/    //
+    ///////////////////////////////////////////////////////////////////////
     
 	private void writeASE(File file) {
 		String NUL = new Character((char) 0).toString();
@@ -363,7 +366,7 @@ public class AlcColourIO implements AlcConstants{
                 }
 	}
 
-	// mini helper function for "saveASE"
+	// mini helper function for "writeASE"
 	private static byte[] floatTobytes(float theNumber) {
 		ByteBuffer buf = ByteBuffer.allocate(4);
 		buf.putFloat(theNumber);
@@ -393,29 +396,28 @@ public class AlcColourIO implements AlcConstants{
                 String header = decodeUTF8(fourByte);
                 
                 if (header.equals("ASEF")){
-                   System.out.println("okeydokey");
                    dis.read(fourByte);
                    numberOfBlocks=dis.readInt();
-                   System.out.println("number of blocks "+numberOfBlocks);
+                   //System.out.println("number of blocks "+numberOfBlocks);
                    while(n < numberOfBlocks){
                        blockType=dis.readShort();
-                       System.out.println("block type "+blockType);
+                       //System.out.println("block type "+blockType);
                        blockLength=dis.readInt();
-                       System.out.println("block lenght "+blockLength);
+                       //System.out.println("block lenght "+blockLength);
                        
                        // Is this a color block?
                        if(blockType==1){
                            nameLength=dis.readShort();
-                           System.out.println("name length "+nameLength);
+                           //System.out.println("name length "+nameLength);
                            dis.skipBytes(nameLength*2);
                            dis.read(fourByte);
                            colorMode = decodeUTF8(fourByte);
-                           System.out.println(colorMode+".");
+                           //System.out.println(colorMode+".");
                            if(colorMode.equals("RGB ")){
                                red   = dis.readFloat();
                                green = dis.readFloat();
                                blue  = dis.readFloat();
-                               System.out.println("RGB: "+red+", "+green+", "+blue);
+                               //System.out.println("RGB: "+red+", "+green+", "+blue);
                                colours.add(new Color(red,green,blue));                            
                            }else if (colorMode.equals("CMYK")){
                                dis.skipBytes(16);
@@ -458,7 +460,138 @@ public class AlcColourIO implements AlcConstants{
             return new String(bytes, UTF8_CHARSET);
         }
 
+        
+//        
+//        EXPERIMENTAL RYB COLOR MODULATION BELOW
+//        
 
-
-
+        float cubicInt(float t, float A, float B){
+            float weight = t*t*(3-2*t);
+            return A + weight*(B-A);
+        }
+        
+        public Color RYBtoRGB(float iR, float iY, float iB){
+            float x0=0;// x1, x2, x3, y0, y1, oR, oG, oB;
+            float x1=0;
+            float x2=0;
+            float x3=0;
+            float y0=0;
+            float y1=0;
+            float red=0;
+            float green=0;
+            float blue=0;
+            //red
+            x0 = cubicInt(iB, 1.0f, 0.163f);
+            x1 = cubicInt(iB, 1.0f, 0.0f);
+            x2 = cubicInt(iB, 1.0f, 0.5f);
+            x3 = cubicInt(iB, 1.0f, 0.2f);
+            y0 = cubicInt(iY, x0, x1);
+            y1 = cubicInt(iY, x2, x3);
+            red = cubicInt(iR, y0, y1);
+            //green
+            x0 = cubicInt(iB, 1.0f, 0.373f);
+            x1 = cubicInt(iB, 1.0f, 0.66f);
+            x2 = cubicInt(iB, 0.0f, 0.0f);
+            x3 = cubicInt(iB, 0.5f, 0.094f);
+            y0 = cubicInt(iY, x0, x1);
+            y1 = cubicInt(iY, x2, x3);
+            green = cubicInt(iR, y0, y1);
+            //blue
+            x0 = cubicInt(iB, 1.0f, 0.6f);
+            x1 = cubicInt(iB, 0.0f, 0.2f);
+            x2 = cubicInt(iB, 0.0f, 0.5f);
+            x3 = cubicInt(iB, 0.0f, 0.0f);
+            y0 = cubicInt(iY, x0, x1);
+            y1 = cubicInt(iY, x2, x3);
+            blue = cubicInt(iR, y0, y1);
+            
+            Color c = new Color(red,green,blue);
+            return c;
+        }
+        public float hueDegstoWeightedDegs(float hDegs){
+            int base;
+            int cap;
+            int weightBase;
+            int weightCap;            
+            
+            if(hDegs<35){
+                base = 0;
+                cap  = 35;
+                weightBase = 0;
+                weightCap  = 60;
+            }else if(hDegs<60){
+                base = 35;
+                cap  = 60;
+                weightBase = 60;
+                weightCap  = 120;
+            }else if(hDegs<135){
+                base = 60;
+                cap  = 135;
+                weightBase = 120;
+                weightCap  = 180;
+            }else if(hDegs<225){
+                base = 135;
+                cap  = 225;
+                weightBase = 180;
+                weightCap  = 240;
+            }else if(hDegs<275){
+                base = 225;
+                cap  = 275;
+                weightBase = 240;
+                weightCap  = 300;
+            }else{
+                base = 275;
+                cap  = 360;
+                weightBase = 300;
+                weightCap  = 360;             
+            }
+            return weightBase+(hDegs-base)*((weightCap-weightBase)/(cap-base));
+        }
+        public float weightedDegstoHueDegs(float wDegs){
+            int base;
+            int cap;
+            int weightBase;
+            int weightCap;
+            if(wDegs<60){
+                base = 0;
+                cap  = 35;
+                weightBase = 0;
+                weightCap  = 60;
+            }else if(wDegs<120){
+                base = 35;
+                cap  = 60;
+                weightBase = 60;
+                weightCap  = 120;
+            }else if(wDegs<180){
+                base = 60;
+                cap  = 135;
+                weightBase = 120;
+                weightCap  = 180;
+            }else if(wDegs<240){
+                base = 135;
+                cap  = 225;
+                weightBase = 180;
+                weightCap  = 240;
+            }else if(wDegs<300){
+                base = 225;
+                cap  = 275;
+                weightBase = 240;
+                weightCap  = 300;
+            }else{
+                base = 275;
+                cap  = 360;
+                weightBase = 300;
+                weightCap  = 360;             
+            }
+            //return weightBase+(hDegs-base)*((weightCap-weightBase)/(cap-base));
+            return base      +(wDegs-weightBase)*((cap-base)/(weightCap-weightBase));
+        }
+        public float addWeightedHueDegrees(float hue, float degrees){
+            return weightedDegstoHueDegs((hueDegstoWeightedDegs(hue)+degrees)%360);
+            
+        }
+        public float addWeightedHSBDegrees(float hue, float degrees){
+            return addWeightedHueDegrees(hue*360,degrees)/360;
+            
+        }
 }

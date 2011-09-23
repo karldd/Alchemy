@@ -45,24 +45,28 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
     private javax.swing.Timer eyeDropperTimer;
     private boolean eyeDropperActive = false;
 
-    AlcColorPicker(AlcPopupInterface parent) {
-        setup(parent);
+    AlcColorPicker(AlcPopupInterface parent, int type) {
+        setup(parent,type);
     }
 
     AlcColorPicker(AlcPopupInterface parent, boolean background) {
-        setup(parent);
+        setup(parent,0);
         this.background = background;
     }
 
-    private void setup(AlcPopupInterface parent) {
+    private void setup(AlcPopupInterface parent, int type) {
         this.parent = parent;
-        this.setPreferredSize(new Dimension(500, 320));
+        this.setPreferredSize(new Dimension(512, 320));
         //this.setPreferredSize(new Dimension(200, 330));
 
         this.setOpaque(true);
-        this.setBackground(Color.WHITE);
-
-        colorArray = AlcUtil.getBufferedImage("color-picker2.png");
+        this.setBackground(Color.BLACK);
+        
+        if(type == 0){
+           colorArray = AlcUtil.getBufferedImage("color-picker2.png");
+        }else if(type == 1){
+           colorArray = getNearColors();  
+        }
 
         this.setCursor(CURSOR_CIRCLE);
         this.addMouseListener(this);
@@ -270,7 +274,7 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
         int y = e.getY();
 
         // Launch Color Picker
-        if (x >= 60 && x < 80 && y <= 20) {
+        if (x >= 470 && x < 491 && y <= 20) {
 
             if (!Alchemy.preferences.paletteAttached) {
                 Alchemy.toolBar.setToolBarVisible(false);
@@ -293,7 +297,7 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
 
 
         // Launch color Selector
-        } else if (e.getX() >= 80 && e.getY() <= 20) {
+        } else if (e.getX() >= 491 && e.getY() <= 20) {
 
             startColorSelector();
 
@@ -329,4 +333,70 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
             Alchemy.toolBar.setCursor(CURSOR_ARROW);
         }
     }
+    public BufferedImage getNearColors(){
+        BufferedImage image = new BufferedImage(512, 320, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = image.createGraphics();
+        Color c = Alchemy.canvas.getForegroundColor();
+        float[] hsbvals = new float[3];
+        
+        Color.RGBtoHSB(c.getRed(),c.getGreen(),c.getBlue(), hsbvals);
+        
+        int w=0;
+        int h=0;
+        int i=0;
+        float[] cusB = new float[5];
+         cusB[0]= 0.18f;
+         cusB[1]= 0.30f;
+         cusB[2]= 0.45f;
+         cusB[3]= 0.68f;
+         cusB[4]= 0.90f;
+        float[] cusH = new float[5];
+//         cusH[0]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],30.0f);
+//         cusH[1]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],330.0f);
+//         cusH[2]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],120.0f);
+//         cusH[3]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],360.0f);
+//         cusH[4]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],180.0f);
+         
+         cusH[0]=(((hsbvals[0]*360)+30)%360)/360;
+         cusH[1]=(((hsbvals[0]*360)+330)%360)/360;
+         cusH[2]=(((hsbvals[0]*360)+120)%360)/360;
+         cusH[3]=(((hsbvals[0]*360)+240)%360)/360;
+         cusH[4]=(((hsbvals[0]*360)+180)%360)/360;
+        
+        g.setColor(Color.getHSBColor(hsbvals[0],0.5f,0.15f));
+        g.fillRect(255, 0, 2, 320);
+    
+        while (w<5){
+            h=0;
+            while(h<5){
+                g.setColor(Color.getHSBColor(hsbvals[0],(((w+1)*18)*0.01f),cusB[h]));
+
+                g.fillRect(w*51, h*64, 51, 64);  
+                h++;
+            }
+            w++;
+ 
+        }
+        while (w<10){
+            h=0;
+            
+            while(h<5){
+                g.setColor(Color.getHSBColor(cusH[i],1-(((h+1)*9)*0.01f),cusB[h]));
+                g.fillRect((w*51)+2, h*64, 51, 64);  
+                h++;
+                
+            }
+            w++;
+            i++;
+            
+        }
+        
+        return image;
+    }
+    public void refreshRClick(){
+        colorArray = getNearColors();
+        this.repaint();
+    }
+        
+
 }
