@@ -464,51 +464,8 @@ public class AlcColourIO implements AlcConstants{
 //        
 //        EXPERIMENTAL RYB COLOR MODULATION BELOW
 //        
-
-        float cubicInt(float t, float A, float B){
-            float weight = t*t*(3-2*t);
-            return A + weight*(B-A);
-        }
         
-        public Color RYBtoRGB(float iR, float iY, float iB){
-            float x0=0;// x1, x2, x3, y0, y1, oR, oG, oB;
-            float x1=0;
-            float x2=0;
-            float x3=0;
-            float y0=0;
-            float y1=0;
-            float red=0;
-            float green=0;
-            float blue=0;
-            //red
-            x0 = cubicInt(iB, 1.0f, 0.163f);
-            x1 = cubicInt(iB, 1.0f, 0.0f);
-            x2 = cubicInt(iB, 1.0f, 0.5f);
-            x3 = cubicInt(iB, 1.0f, 0.2f);
-            y0 = cubicInt(iY, x0, x1);
-            y1 = cubicInt(iY, x2, x3);
-            red = cubicInt(iR, y0, y1);
-            //green
-            x0 = cubicInt(iB, 1.0f, 0.373f);
-            x1 = cubicInt(iB, 1.0f, 0.66f);
-            x2 = cubicInt(iB, 0.0f, 0.0f);
-            x3 = cubicInt(iB, 0.5f, 0.094f);
-            y0 = cubicInt(iY, x0, x1);
-            y1 = cubicInt(iY, x2, x3);
-            green = cubicInt(iR, y0, y1);
-            //blue
-            x0 = cubicInt(iB, 1.0f, 0.6f);
-            x1 = cubicInt(iB, 0.0f, 0.2f);
-            x2 = cubicInt(iB, 0.0f, 0.5f);
-            x3 = cubicInt(iB, 0.0f, 0.0f);
-            y0 = cubicInt(iY, x0, x1);
-            y1 = cubicInt(iY, x2, x3);
-            blue = cubicInt(iR, y0, y1);
-            
-            Color c = new Color(red,green,blue);
-            return c;
-        }
-        public float hueDegstoWeightedDegs(float hDegs){
+        public float RGBtoRYB(float hDegs){
             int base;
             int cap;
             int weightBase;
@@ -545,9 +502,9 @@ public class AlcColourIO implements AlcConstants{
                 weightBase = 300;
                 weightCap  = 360;             
             }
-            return weightBase+(hDegs-base)*((weightCap-weightBase)/(cap-base));
+            return process(hDegs,base,cap,weightBase,weightCap);
         }
-        public float weightedDegstoHueDegs(float wDegs){
+        public float RYBtoRGB(float wDegs){
             int base;
             int cap;
             int weightBase;
@@ -583,15 +540,18 @@ public class AlcColourIO implements AlcConstants{
                 weightBase = 300;
                 weightCap  = 360;             
             }
-            //return weightBase+(hDegs-base)*((weightCap-weightBase)/(cap-base));
-            return base      +(wDegs-weightBase)*((cap-base)/(weightCap-weightBase));
+            
+            return process(wDegs,weightBase,weightCap,base,cap);
         }
-        public float addWeightedHueDegrees(float hue, float degrees){
-            return weightedDegstoHueDegs((hueDegstoWeightedDegs(hue)+degrees)%360);
+        private float process(float x, float a, float b, float c, float d){
+            return c+(x-a)*((d-c)/(b-a));
             
         }
-        public float addWeightedHSBDegrees(float hue, float degrees){
-            return addWeightedHueDegrees(hue*360,degrees)/360;
-            
+        public float addRYBDegrees(float hue, float degrees){
+            hue=hue*360;
+            hue=RGBtoRYB(hue);
+            hue=(hue+degrees)%360;
+            hue=RYBtoRGB(hue);
+            return hue/360;
         }
 }
