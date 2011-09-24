@@ -44,6 +44,26 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
     private JDialog eyeDropperWindow;
     private javax.swing.Timer eyeDropperTimer;
     private boolean eyeDropperActive = false;
+    
+    
+    // arrays specifying saturation and brightness
+    // levels for the dynamic color picker
+    
+    private float[][] sats = {
+         {0.95f,0.95f,0.95f,0.95f,0.55f},
+         {0.75f,0.75f,0.75f,0.75f,0.65f},
+         {0.75f,0.75f,0.75f,0.75f,0.55f},
+         {0.85f,0.85f,0.85f,0.85f,0.85f},
+         {0.6f ,0.6f ,0.6f ,0.6f ,0.6f}
+        };
+    private float[][] rightBrights = {
+         {0.25f,0.25f,0.25f,0.25f,0.60f},
+         {0.45f,0.45f,0.45f,0.45f,0.80f,},
+         {0.75f,0.75f,0.75f,0.75f,0.60f},
+         {0.4f ,0.4f ,0.4f ,0.4f ,0.4f},
+         {0.75f,0.75f,0.75f,0.75f,0.75f},
+        };
+    float[] leftBrights = {0.18f,0.30f,0.45f,0.68f,0.90f};
 
     AlcColorPicker(AlcPopupInterface parent, int type) {
         setup(parent,type);
@@ -334,43 +354,47 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
         }
     }
     public BufferedImage getNearColors(){
+        
         BufferedImage image = new BufferedImage(512, 320, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
-        Color c = Alchemy.canvas.getForegroundColor();
-        float[] hsbvals = new float[3];
         
+        Color c = Alchemy.canvas.getForegroundColor();     
+        float[] hsbvals = new float[3];
         Color.RGBtoHSB(c.getRed(),c.getGreen(),c.getBlue(), hsbvals);
         
+        // HUE MODS (used in the right 5 rows)
+        // first group is used in the top three columns
+        // second group in the bottom two
+        
+        float[][] hues = {
+         {  Alchemy.colourIO.addRYBDegrees(hsbvals[0],30),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],15),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],345),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],330),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],90)
+         },
+         {  Alchemy.colourIO.addRYBDegrees(hsbvals[0],120),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],157.5f),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],180),
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],202.5f), 
+            Alchemy.colourIO.addRYBDegrees(hsbvals[0],240)
+            
+         },
+
+        };
+             
         int w=0;
         int h=0;
-        int i=0;
-        float[] cusB = new float[5];
-         cusB[0]= 0.18f;
-         cusB[1]= 0.30f;
-         cusB[2]= 0.45f;
-         cusB[3]= 0.68f;
-         cusB[4]= 0.90f;
-        float[] cusH = new float[5];
-//         cusH[0]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],30.0f);
-//         cusH[1]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],330.0f);
-//         cusH[2]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],120.0f);
-//         cusH[3]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],360.0f);
-//         cusH[4]=Alchemy.colourIO.addWeightedHSBDegrees(hsbvals[0],180.0f);
-         
-         cusH[0]=(((hsbvals[0]*360)+30)%360)/360;
-         cusH[1]=(((hsbvals[0]*360)+330)%360)/360;
-         cusH[2]=(((hsbvals[0]*360)+120)%360)/360;
-         cusH[3]=(((hsbvals[0]*360)+240)%360)/360;
-         cusH[4]=(((hsbvals[0]*360)+180)%360)/360;
+        float hue;           
         
         g.setColor(Color.getHSBColor(hsbvals[0],0.5f,0.15f));
         g.fillRect(255, 0, 2, 320);
     
+        //first 5 rows, generate brightness/saturation mods
         while (w<5){
             h=0;
             while(h<5){
-                g.setColor(Color.getHSBColor(hsbvals[0],(((w+1)*18)*0.01f),cusB[h]));
-
+                g.setColor(Color.getHSBColor(hsbvals[0],(((w+1)*18)*0.01f),leftBrights[h]));
                 g.fillRect(w*51, h*64, 51, 64);  
                 h++;
             }
@@ -379,24 +403,31 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
         }
         while (w<10){
             h=0;
-            
             while(h<5){
-                g.setColor(Color.getHSBColor(cusH[i],1-(((h+1)*9)*0.01f),cusB[h]));
-                g.fillRect((w*51)+2, h*64, 51, 64);  
-                h++;
+                // figure our hue, using hues array, 2 main color groups
+                // analagous/quadratic and triadic/splitcompliment/compliment
+                if(h<3){
+                    // in the last row, first three columns,  
+                    // manually calculate quadratic colors here. 
+                    if(w==9){
+                       hue=Alchemy.colourIO.addRYBDegrees(hues[0][w-5],90*h);
+                    }else{
+                       hue=hues[0][w-5];    
+                    }
+                }else{  //triadic/splitcompliment/compliment
+                    hue=hues[1][w-5];
+                }
                 
+                g.setColor(Color.getHSBColor(hue,sats[h][w-5],rightBrights[h][w-5]));
+                g.fillRect((w*51)+2, h*64, 51, 64);  
+                h++;             
             }
-            w++;
-            i++;
-            
-        }
-        
+            w++;            
+        }     
         return image;
     }
     public void refreshRClick(){
         colorArray = getNearColors();
         this.repaint();
     }
-        
-
 }
