@@ -50,16 +50,16 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
     // levels for the dynamic color picker
     
     private float[][] sats = {
-         {0.95f,0.95f,0.95f,0.95f,0.55f},
+         {0.95f,0.95f,0.95f,0.95f,0.65f},
          {0.75f,0.75f,0.75f,0.75f,0.65f},
-         {0.75f,0.75f,0.75f,0.75f,0.55f},
+         {0.75f,0.75f,0.75f,0.75f,0.75f},
          {0.85f,0.85f,0.85f,0.85f,0.85f},
          {0.6f ,0.6f ,0.6f ,0.6f ,0.6f}
         };
     private float[][] rightBrights = {
-         {0.25f,0.25f,0.25f,0.25f,0.60f},
+         {0.25f,0.25f,0.25f,0.25f,0.45f},
          {0.45f,0.45f,0.45f,0.45f,0.80f,},
-         {0.75f,0.75f,0.75f,0.75f,0.60f},
+         {0.75f,0.75f,0.75f,0.75f,0.70f},
          {0.4f ,0.4f ,0.4f ,0.4f ,0.4f},
          {0.75f,0.75f,0.75f,0.75f,0.75f},
         };

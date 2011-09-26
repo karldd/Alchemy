@@ -19,18 +19,24 @@
 package org.alchemy.core;
 
 import javax.swing.JOptionPane;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+import javax.swing.AbstractAction;
 import java.io.*;
 import java.net.*;
 import java.awt.Color;
+import java.awt.Dialog.ModalityType;
+import java.awt.event.ActionEvent;
 import java.util.regex.*;
 import java.util.ArrayList;
 import java.nio.*;
 import java.nio.charset.Charset;
-
-
-
-
+import javax.swing.Box;
+import javax.swing.BoxLayout; 
 
 public class AlcColourIO implements AlcConstants{ 
     private String titleReg = "\\s*?<title><!\\[CDATA\\[(.+?)\\]\\]><\\/title>\\s*?";
@@ -47,16 +53,13 @@ public class AlcColourIO implements AlcConstants{
     private String errorText;
     private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
-    
     AlcColourIO(){
         colours = new ArrayList<Color>();      
         errorType = 0;
-        errorText = null;        
+        errorText = null; 
+        
     }
     
-    public void getColourLovers(){
-
-    }
     public void setCLSwatch(int i){
         errorType=0;
         colours.clear();        
@@ -67,12 +70,12 @@ public class AlcColourIO implements AlcConstants{
         if(errorType==0){  //no errors         
             
             //Custom button text
-            Object[] options = {"Forget It","Sounds Good"};
+            Object[] options = {"CANCEL","OK"};
             int q = JOptionPane.showOptionDialog(frame,
-                   "Found a Colourlovers.com palette:\n\n"+
-                    "Author: "+authorString+"\n"
-                   +"Title: "+titleString,
-                    "Colourlovers.com",
+                   "\nColourLovers.com Swatch Retrieved:  \n\n"+
+                    "     Author: "+authorString+"  \n"
+                   +"     Title: "+titleString+"  \n\n",
+                    "Colourlovers.com Import",
                    JOptionPane.YES_NO_CANCEL_OPTION,
                    JOptionPane.PLAIN_MESSAGE,
                    null,
@@ -146,49 +149,215 @@ public class AlcColourIO implements AlcConstants{
     }
     public void importFileSwatch(){
        File file = AlcUtil.showFileChooser();
-       //do fileinputsteam here, pass instead of file
-       int type = getFileType(file);
-       if (type==1){
-           readGPL(file);
-       }else if(type==2){
+       if (file==null){
+       //    JOptionPane.showMessageDialog(null, "File is not defined.", 
+       //                                 "Error", JOptionPane.ERROR_MESSAGE);
+       }else if(!file.canRead()){
+           JOptionPane.showMessageDialog(null, "Not allowed to read that file.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+       }else{
+           int type=-1;
            try{
-               readASE(file);
-           }catch (IOException e) {
-               e.printStackTrace();
-           }   
-       }
-
-    }
-    public void exportSwatch(){
-       File file = AlcUtil.showFileChooser();
-       int type = getFileType(file);
-       if (type==1){
-           writeGPL(file);
-       }else if(type==2){
-           writeASE(file);
-       }
-
-        
-    }
-    private int getFileType(File file){
-        String extensionReg = "[\\d\\D]+?(\\.\\w*)$";
-        Pattern extension = Pattern.compile(extensionReg);
-        Matcher m;
-        int type=0;
-        
-        m = extension.matcher(file.getName());
-            if (m.matches()){
-               if (m.group(1).equals(".gpl")){
-                   type = 1;
-               }else if(m.group(1).equals(".ase")){
-                   type = 2;
+               type = getFileType(file);
+               if (type==1){
+                   //System.out.println("Reading GPL swatch file...");
+                   readGPL(file);
+               }else if(type==2){
+                   //System.out.println("Reading ASE swatch file...");
+                   readASE(file);
+               }else if(type==-1){
+                   JOptionPane.showMessageDialog(null, "File type did not seem valid.\n\n"+
+                                        "Please Choose an Adobe Swatch Exchange\nor GIMP Palette file.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
                }
-               
+
+           }catch (IOException ex) {
+                System.err.println(ex);
+           } 
+       }
+    }
+    
+    private int getFileType(File file){
+        FileInputStream fis = null;
+        DataInputStream dis = null;
+        int type=-1;
+
+        try {
+            fis = new FileInputStream(file);
+            dis = new DataInputStream(fis);
+
+            byte[] fourByte = new byte[4];
+
+            dis.read(fourByte);
+            String header = decodeUTF8(fourByte);
+            if (header.equals("GIMP")){
+                type = 1;
+            }else if(header.equals("ASEF")){
+                type = 2;
             }else{
-                  
+                type = -1;
             }
+            fis.close();
+            dis.close();
+           
+        }catch (IOException ex) {
+            System.err.println(ex);
+        }
+        
         return type;
     }
+    
+    public void exportSwatch(){
+       if (Alchemy.canvas.swatch.isEmpty()){
+           JOptionPane.showMessageDialog(null, "Swatch is empty, there would be no point really...", 
+                                        "Oops...", JOptionPane.ERROR_MESSAGE);
+       }else{
+           exportDialog eD = new exportDialog();
+           eD.setVisible(true);
+       }
+    }
+   
+    private class exportDialog extends JDialog{
+        
+       File f;   
+       JTextField fileField = new JTextField(25);
+       JComboBox comboTypes;
+        
+       exportDialog(){
+
+           fileField.setText("Select a File...");
+           fileField.setHorizontalAlignment(JTextField.CENTER);
+           fileField.setEditable(false);
+
+           String[] fileTypes = {"GIMP Palette (.gpl)","Adobe Swatch Exchange (.ase)"};
+           comboTypes = new JComboBox(fileTypes);
+           comboTypes.setSelectedIndex(0);
+
+           this.setModalityType(ModalityType.APPLICATION_MODAL);
+           this.setDefaultCloseOperation(2);
+           this.setSize(400,200);
+           this.setTitle("Export Swatch...");
+           this.setLocationRelativeTo(null);
+
+           this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+           Box fileStuff = new Box(BoxLayout.X_AXIS);
+           Box fileTypeStuff = new Box(BoxLayout.X_AXIS);
+           Box Buttons = new Box(BoxLayout.X_AXIS);
+
+           JLabel chooseFile = new JLabel("Choose File: ");
+
+           AbstractAction launchFileChooser = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) {                
+                   setFile(AlcUtil.showFileChooser());
+                   if(f!=null){
+                       setCombo(f.getName());
+                       updateFileField(f.getName());
+                       fileField.setHorizontalAlignment(JTextField.LEFT);
+                   }
+               }
+           };
+           
+           AbstractAction okAction = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) {               
+                   if (f==null){
+                       JOptionPane.showMessageDialog(null, "No File Selected.", 
+                                                    "Oops...", JOptionPane.ERROR_MESSAGE);
+                   }else if(!f.canWrite()){
+                       JOptionPane.showMessageDialog(null, "Unable to write to that file.", 
+                                                    "Oops...", JOptionPane.ERROR_MESSAGE);
+                   }else if(f.exists()){  
+                       if(JOptionPane.showConfirmDialog(null, "Overwrite Existing File?", "File Exists",0)==0){
+                           writeFile();
+                       }
+                   }else{
+                      writeFile();
+                   }
+               }
+           };
+           
+           AbstractAction cancelAction = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) { 
+                   closeDialog();
+               }
+           };
+           
+           JButton launchChooser = new JButton();
+           launchChooser.setAction(launchFileChooser);
+           launchChooser.setText("File...");
+
+           JLabel chooseType = new JLabel("File Type: ");  
+           JButton ok = new JButton();
+           ok.setAction(okAction);
+           ok.setText("OK");
+           JButton cancel = new JButton();
+           cancel.setAction(cancelAction);
+           cancel.setText("CANCEL");
+
+           fileStuff.add(Box.createHorizontalStrut(20));
+           fileStuff.add(chooseFile);
+           fileStuff.add(Box.createHorizontalStrut(20));
+           fileStuff.add(fileField);
+           fileStuff.add(launchChooser);
+           fileStuff.add(Box.createHorizontalStrut(20));
+
+           fileTypeStuff.add(Box.createHorizontalStrut(20));
+           fileTypeStuff.add(chooseType);
+           fileTypeStuff.add(Box.createHorizontalStrut(20));
+           fileTypeStuff.add(comboTypes);
+           fileTypeStuff.add(Box.createHorizontalStrut(20));
+
+           Buttons.add(ok);
+           Buttons.add(Box.createHorizontalStrut(40));
+           Buttons.add(cancel);
+
+           this.add(Box.createVerticalStrut(20));
+           this.add(fileStuff);
+           this.add(Box.createVerticalStrut(20));
+           this.add(fileTypeStuff);
+           this.add(Box.createVerticalStrut(20));
+           this.add(Buttons);
+           this.add(Box.createVerticalStrut(20));
+       }
+       private void setFile(File file){
+          f = file;
+       }
+       public File getFile(){
+           return f;
+       }
+       private void updateFileField(String s){
+          fileField.setText(s);
+       }
+       private void setCombo(String s){
+           String extensionReg = "[\\d\\D]+?(\\.\\w*)$";
+           Pattern extension = Pattern.compile(extensionReg);
+           Matcher m;
+           int type=0;
+
+           m = extension.matcher(f.getName());
+           if (m.matches()){
+              if (m.group(1).equals(".gpl")){
+                      comboTypes.setSelectedIndex(0);
+              }else if(m.group(1).equals(".ase")){
+                      comboTypes.setSelectedIndex(1);
+              }         
+           }           
+        }
+       public int getExportType(){
+           return comboTypes.getSelectedIndex();
+       }
+       private void closeDialog(){
+           this.setVisible(false);
+           this.dispose();
+       } private void writeFile(){
+           if (comboTypes.getSelectedIndex()==0){
+               writeGPL(f);
+           }else if(comboTypes.getSelectedIndex()==1){
+               writeASE(f);
+           }
+           closeDialog();
+       }
+    }
+    
     private void readGPL(File file){
         FileInputStream fis = null;
         BufferedReader buff;
@@ -214,16 +383,13 @@ public class AlcColourIO implements AlcConstants{
                  break;
              } 
           }
-
-          // clean up
           fis.close();
           buff.close();
 
-
-        } catch (FileNotFoundException e) {
-          //e.printStackTrace();
-        } catch (IOException e) {
-          //e.printStackTrace();
+        } catch (FileNotFoundException ex) {
+            System.err.println(ex);
+        } catch (IOException ex) {
+            System.err.println(ex);
         }
         if(!colours.isEmpty()){
             Alchemy.canvas.swatch.clear();
@@ -233,6 +399,9 @@ public class AlcColourIO implements AlcConstants{
                 Alchemy.canvas.swatch.add(colours.get(n));
                 n++;
             }
+        }else{
+            JOptionPane.showMessageDialog(null, "File didn't contain any colors, or was badly formatted.", 
+                                        "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -245,7 +414,6 @@ public class AlcColourIO implements AlcConstants{
         }else{ 
             cols = 10;
         }
-
         try {
 
           FileWriter outFile = new FileWriter(file);
@@ -282,8 +450,8 @@ public class AlcColourIO implements AlcConstants{
           }
           out.close();
           outFile.close();
-        } catch (IOException e) {
-          e.printStackTrace();
+        }catch (IOException ex) {
+           System.err.println(ex);
         }
 
     }
@@ -361,9 +529,9 @@ public class AlcColourIO implements AlcConstants{
                     bos.flush();
                     bos.close();
                     fos.close();
-                }catch (IOException e) {
-                   e.printStackTrace();
-                }
+                }catch (IOException ex) {
+               System.err.println(ex);
+            }
 	}
 
 	// mini helper function for "writeASE"
@@ -375,7 +543,6 @@ public class AlcColourIO implements AlcConstants{
         private void readASE(File file) throws IOException{
             FileInputStream in = null;
             DataInputStream dis = null;
-            System.out.println("trying ase");
             colours.clear();
 
             try {
@@ -395,64 +562,59 @@ public class AlcColourIO implements AlcConstants{
                 dis.read(fourByte);
                 String header = decodeUTF8(fourByte);
                 
-                if (header.equals("ASEF")){
-                   dis.read(fourByte);
-                   numberOfBlocks=dis.readInt();
-                   //System.out.println("number of blocks "+numberOfBlocks);
-                   while(n < numberOfBlocks){
-                       blockType=dis.readShort();
-                       //System.out.println("block type "+blockType);
-                       blockLength=dis.readInt();
-                       //System.out.println("block lenght "+blockLength);
-                       
-                       // Is this a color block?
-                       if(blockType==1){
-                           nameLength=dis.readShort();
-                           //System.out.println("name length "+nameLength);
-                           dis.skipBytes(nameLength*2);
-                           dis.read(fourByte);
-                           colorMode = decodeUTF8(fourByte);
-                           //System.out.println(colorMode+".");
-                           if(colorMode.equals("RGB ")){
-                               red   = dis.readFloat();
-                               green = dis.readFloat();
-                               blue  = dis.readFloat();
-                               //System.out.println("RGB: "+red+", "+green+", "+blue);
-                               colours.add(new Color(red,green,blue));                            
-                           }else if (colorMode.equals("CMYK")){
-                               dis.skipBytes(16);
-                           }else if (colorMode.equals("LAB ")){
-                               dis.skipBytes(12);
-                           }else if (colorMode.equals("Gray")){
-                               dis.skipBytes(4);
-                           }
-                           dis.skipBytes(2);
-                       }else{ //not a color block, skip
-                           dis.skipBytes(blockLength);
+               dis.read(fourByte);
+               numberOfBlocks=dis.readInt();
+               //System.out.println("number of blocks "+numberOfBlocks);
+               while(n < numberOfBlocks){
+                   blockType=dis.readShort();
+                   //System.out.println("block type "+blockType);
+                   blockLength=dis.readInt();
+                   //System.out.println("block lenght "+blockLength);
+
+                   // Is this a color block?
+                   if(blockType==1){
+                       nameLength=dis.readShort();
+                       //System.out.println("name length "+nameLength);
+                       dis.skipBytes(nameLength*2);
+                       dis.read(fourByte);
+                       colorMode = decodeUTF8(fourByte);
+                       //System.out.println(colorMode+".");
+                       if(colorMode.equals("RGB ")){
+                           red   = dis.readFloat();
+                           green = dis.readFloat();
+                           blue  = dis.readFloat();
+                           //System.out.println("RGB: "+red+", "+green+", "+blue);
+                           colours.add(new Color(red,green,blue));                            
+                       }else if (colorMode.equals("CMYK")){
+                           dis.skipBytes(16);
+                       }else if (colorMode.equals("LAB ")){
+                           dis.skipBytes(12);
+                       }else if (colorMode.equals("Gray")){
+                           dis.skipBytes(4);
                        }
-                       
+                       dis.skipBytes(2);
+                   }else{ //not a color block, skip
+                       dis.skipBytes(blockLength);
+                   }
+
+                   n++;
+               }
+               if(!colours.isEmpty()){
+                   Alchemy.canvas.swatch.clear();
+                   n = 0;
+                   while(n<colours.size()){
+                       Alchemy.canvas.swatch.add(colours.get(n));
                        n++;
                    }
-                   if(!colours.isEmpty()){
-                       Alchemy.canvas.swatch.clear();
-                       n = 0;
-                       while(n<colours.size()){
-                           Alchemy.canvas.swatch.add(colours.get(n));
-                           n++;
-                       }
-                       Alchemy.canvas.activeSwatchIndex=0;
-                   }
-                }
+                   Alchemy.canvas.activeSwatchIndex=0;
+               }else{
+                   JOptionPane.showMessageDialog(null, "File didn't contain any colors, or was badly formatted.", 
+                                                       "Error", JOptionPane.ERROR_MESSAGE);
+               }  
             in.close();
             dis.close();
-
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
-                if (dis != null){
-                    dis.close();
-                }
+            }catch (IOException ex) {
+               System.err.println(ex);
             }
         }
         
@@ -502,7 +664,7 @@ public class AlcColourIO implements AlcConstants{
                 weightBase = 300;
                 weightCap  = 360;             
             }
-            return process(hDegs,base,cap,weightBase,weightCap);
+            return processRYBRGB(hDegs,base,cap,weightBase,weightCap);
         }
         public float RYBtoRGB(float wDegs){
             int base;
@@ -541,9 +703,9 @@ public class AlcColourIO implements AlcConstants{
                 weightCap  = 360;             
             }
             
-            return process(wDegs,weightBase,weightCap,base,cap);
+            return processRYBRGB(wDegs,weightBase,weightCap,base,cap);
         }
-        private float process(float x, float a, float b, float c, float d){
+        private float processRYBRGB(float x, float a, float b, float c, float d){
             return c+(x-a)*((d-c)/(b-a));
             
         }
