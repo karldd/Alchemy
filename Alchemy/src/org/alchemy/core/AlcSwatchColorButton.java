@@ -113,7 +113,7 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         RoundRectangle2D rrect;
         
         //loop that steps through building all swatch colors
-        for(int n=0; n<Alchemy.canvas.swatch.size();n++){
+        for(int n=0; n<Alchemy.canvas.swatch.size(); n++){
            
             trans = Alchemy.canvas.swatch.get(n);
             
