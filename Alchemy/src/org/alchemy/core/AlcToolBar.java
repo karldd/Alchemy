@@ -289,19 +289,52 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         setBackgroundColor = new AlcMenuItem(setBackgroundAction);
         setBackgroundColor.setup("Set Background Color");
         swatchMenuButton.addItem(setBackgroundColor);
-        
+       
         //------------------------------------------------------------
-        // Swatch Menu -> Save Swatch
-        AlcMenuItem saveSwatch; 
+        // Swatch Menu -> ColourLovers.com Swatch        
+        
+        AlcMenuItem setColourLovers; 
          
-        AbstractAction saveSwatchAction = new AbstractAction() {
+        AbstractAction setColourLoversAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {                
-                Alchemy.colourIO.exportSwatch();                    
+                Alchemy.colourIO.setCLSwatch(random.nextInt(3000)+1);
+                swatchColorButton.refresh();
+                setSwatchLRButtons();
+                setRemoveColorButton();
+                    
             }
         };
-        saveSwatch = new AlcMenuItem(saveSwatchAction);
-        saveSwatch.setup("Export Swatch...");
-        swatchMenuButton.addItem(saveSwatch);
+        setColourLovers = new AlcMenuItem(setColourLoversAction);
+        setColourLovers.setup("Get Colourlovers.com Swatch...");
+        swatchMenuButton.addItem(setColourLovers);
+        
+        //------------------------------------------------------------
+        // Swatch Menu -> Modulate Swatch     
+        
+        AlcMenuItem modulateSwatch; 
+         
+        AbstractAction modulateSwatchAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.colourIO.launchModulateDialog();
+                swatchColorButton.refresh();
+            }
+        };
+        modulateSwatch = new AlcMenuItem(modulateSwatchAction);
+        modulateSwatch.setup("Modulate Swatch");
+        swatchMenuButton.addItem(modulateSwatch);
+        
+        AlcMenuItem repeatMod; 
+         
+        AbstractAction repeatModAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.colourIO.modulateSwatch();
+                swatchColorButton.refresh();
+            }
+        };
+        repeatMod = new AlcMenuItem(repeatModAction);
+        repeatMod.setup("Repeat Modulation");
+        swatchMenuButton.addItem(repeatMod);
+        //repeatMod.setEnabled(false);
         
         //------------------------------------------------------------
         // Swatch Menu -> Load Swatch
@@ -319,27 +352,23 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         loadSwatch = new AlcMenuItem(loadSwatchAction);
         loadSwatch.setup("Import Swatch...");
         swatchMenuButton.addItem(loadSwatch);
-        //------------------------------------------------------------
-        // Swatch Menu -> ColourLovers.com Swatch        
-        
-        AlcMenuItem setColourLovers; 
-         
-        AbstractAction setColourLoversAction = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {                
-                Alchemy.colourIO.setCLSwatch(random.nextInt(3000)+1);
-                swatchColorButton.refresh();
-                setSwatchLRButtons();
-                setRemoveColorButton();
-                    
-            }
-        };
-        setColourLovers = new AlcMenuItem(setColourLoversAction);
-        setColourLovers.setup("get Colour Lovers");
-        swatchMenuButton.addItem(setColourLovers);
         
         swatchTools.add(swatchMenuButton);
         swatchTools.add(new AlcSeparator());
         
+        //------------------------------------------------------------
+        // Swatch Menu -> Save Swatch
+        AlcMenuItem saveSwatch; 
+         
+        AbstractAction saveSwatchAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.colourIO.exportSwatch();                    
+            }
+        };
+        saveSwatch = new AlcMenuItem(saveSwatchAction);
+        saveSwatch.setup("Export Swatch...");
+        swatchMenuButton.addItem(saveSwatch);
+ 
         // ---------------
         // END SWATCH MENU
         // ---------------
@@ -455,6 +484,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_ADD,  "next color", nextColorAction);
         final int VK_SUBTRACT = 0x6D;
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_SUBTRACT, "prev color", prevColorAction);
+        final int VK_DECIMAL = 0x6E;
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_DECIMAL, "repeat Mod", repeatModAction);
         
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD0, "num0", buildSwatchQuickKey(0));
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD1, "num1", buildSwatchQuickKey(1));
@@ -466,6 +497,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD7, "num7", buildSwatchQuickKey(7));
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD8, "num8", buildSwatchQuickKey(8));
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD9, "num9", buildSwatchQuickKey(9));
+        
         
         //////////////////////////////////////////////////////////////
         // ADD COLOR TO SWATCH BUTTON
@@ -1104,6 +1136,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                 this.setCursor(CURSOR_ARROW);
                 colorButton.hidePopup();
                 createButton.hidePopup();
+                swatchMenuButton.hidePopup();
                 if (affectButton != null) {
                     affectButton.hidePopup();
                 }
@@ -1507,6 +1540,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         swatchColorButton.refresh();
         colorButton.refresh();
     }
+    
+    @Override
     public void refreshRClickPicker(){
         rClickPicker.refreshRClick();
     }
