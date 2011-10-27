@@ -82,6 +82,7 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         this.content = comp;
         mainPalette.add("Center", comp);
         mainPalette.revalidate();
+        mainPalette.repaint();
     }
 
     private void setGoodSize() {
@@ -92,6 +93,11 @@ class AlcPalette extends JWindow implements KeyListener, MouseListener, AlcConst
         } else {
             this.setSize(Alchemy.window.getWindowSize().width, paletteHeight);
         }
+    }
+    
+    public void flipRefresh(){
+        mainPalette.revalidate();
+        mainPalette.repaint();
     }
 
     // Send the key events to the root
