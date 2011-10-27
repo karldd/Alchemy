@@ -21,6 +21,8 @@ package org.alchemy.core;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -33,7 +35,7 @@ import java.awt.geom.RoundRectangle2D;
  * AlcSwatchColorButton
  * This big "button" shows all the swatch colors, interprets clicks by location
  */
-class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConstants {
+class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConstants{
 
     // COLOR PANEL
     private JComponent colorPanel;
@@ -57,6 +59,19 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
            }
         };
         
+        colorPanel.addComponentListener(new ComponentListener() {
+            public void componentHidden(ComponentEvent e) {}
+
+            public void componentMoved(ComponentEvent e) {}
+
+            public void componentResized(ComponentEvent e) {
+                refresh();
+            }
+
+            public void componentShown(ComponentEvent e) {}
+
+        });
+        
         colorPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         colorPanel.addMouseListener(this);
 
@@ -66,6 +81,7 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
 
        /** Refresh the color panel */
     void refresh() {
+        colorPanel.revalidate();     
         colorPanelImage = getColorPanelImage();
         colorPanel.repaint();
     }
@@ -81,6 +97,7 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
     /** Get the color panel image */
     private Image getColorPanelImage() {
         Dimension d = colorPanel.getSize();
+        System.out.println((int)d.getWidth()+" "+(int)d.getHeight());
         BufferedImage image = new BufferedImage((int)d.getWidth(), (int)d.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         int baseWidth;
@@ -201,10 +218,6 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
         refresh();
 
         Alchemy.toolBar.refreshColorButton();
-        
-        
-
- 
     }
 
     public void mouseReleased(MouseEvent e) {

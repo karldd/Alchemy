@@ -22,6 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.BorderFactory;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -1032,9 +1033,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         this.repaint();
         checkSubSections();
         
-        if(!Alchemy.canvas.swatch.isEmpty()){
-            swatchColorButton.refresh();
-        }
+//        if(!Alchemy.canvas.swatch.isEmpty()){
+//            swatchColorButton.refresh();
+//        }
 
     }
     
@@ -1512,11 +1513,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     @Override
     public void refreshRClickPicker(){
         rClickPicker.refreshRClick();
-    }
-    @Override
-    public void refreshSwatch(){
-        refreshToolBar();
-        swatchColorButton.refresh();
     }
     @Override
     public void flipToolBar(){
