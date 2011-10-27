@@ -27,7 +27,7 @@ import java.awt.datatransfer.*;
  * AlcWindow
  * @author Karl D.D. Willis
  */
-public class AlcWindow extends JFrame implements AlcConstants, WindowListener, ComponentListener, KeyListener, ClipboardOwner {
+public class AlcWindow extends JFrame implements AlcConstants, WindowStateListener, WindowListener, ComponentListener, KeyListener, ClipboardOwner {
 
     //////////////////////////////////////////////////////////////
     // FULLSCREEN
@@ -74,7 +74,7 @@ public class AlcWindow extends JFrame implements AlcConstants, WindowListener, C
         });
 
         this.addComponentListener(this);        // Add a component listener to detect window resizing
-        //this.addWindowStateListener(this);    // Add a window state listener to detect window maximising
+        this.addWindowStateListener(this);    // Add a window state listener to detect window maximising
         this.addWindowListener(this);
         this.addKeyListener(this);              // Key Listener
         this.setFocusable(true);                // Make the key listener focusable so we can get key events
@@ -515,6 +515,7 @@ public class AlcWindow extends JFrame implements AlcConstants, WindowListener, C
             Alchemy.palette.toFront();
             Alchemy.palette.requestFocus();
 
+
         // TOOLBAR
         } else {
             if (Alchemy.palette != null) {
@@ -724,5 +725,7 @@ public class AlcWindow extends JFrame implements AlcConstants, WindowListener, C
     }
 
     public void windowDeactivated(WindowEvent e) {
+    }
+    public void windowStateChanged(WindowEvent e) {
     }
 }

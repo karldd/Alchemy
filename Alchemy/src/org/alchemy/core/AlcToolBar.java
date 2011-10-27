@@ -33,7 +33,7 @@ import java.util.Random;
  * The disappearing toolbar
  * Housing access to all modules and their sub toolbars
  */
-public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
+public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
 
     //////////////////////////////////////////////////////////////
     // TOOLBAR ELEMENTS
@@ -57,6 +57,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     
     // The swatch toolbar area that holds saved colors
     JPanel swatchColors;
+    JPanel swatchColorPanel;
     AlcSwatchColorButton swatchColorButton;
    
     // the rest of the swatch toolbar
@@ -124,46 +125,14 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         
         // Flip between main and swatch toolbars
         toolBarFlipAction = new AbstractAction() {
-
             public void actionPerformed(ActionEvent e) {
-                //is toolbar currently set to "swatch view"? intitially false.
-                if(swatched){
-                  toolBars.remove(swatchToolBar);
-                  colorButton.hidePopup();
-                  
-                  toolBars.add("Center", mainToolBar);
-                  
-                  refreshSubToolBar();
-                  swatched=false;
-               } else {
-                  toolBars.remove(mainToolBar);
-                  subToolBar.setVisible(false);
-
-                  createButton.hidePopup();
-                  if (affectButton != null) {
-                      affectButton.hidePopup();
-                  }
-                  toolBars.add("Center", swatchToolBar);
-                  
-                  swatched=true;
-                  
-                  refreshToolBar();
-               }
-               
-               //set to "keyed on" when poped up with TAB key
-               if (!Alchemy.preferences.paletteAttached) {
-                    if (!toolBarVisible) {
-                        setToolBarVisible(true);
-                        toolBarKeyedOn = true;
-                    }
-               }
-            }
-            
+                flipToolBar();
+            }           
         };
         
         // Shortcut - TAB
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_TAB, "FlipToolBar", toolBarFlipAction);
-          
+               
         // Create and add the main toolbar      
         mainToolBar = loadToolBar();
         toolBars.add("Center", mainToolBar);
@@ -246,10 +215,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         swatchTools.setOpaque(false);
         swatchTools.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
         addRemoveBox = new Box(BoxLayout.Y_AXIS);
-        transparencyBox = new Box(BoxLayout.X_AXIS);
+        transparencyBox = new Box(BoxLayout.X_AXIS);         
         
-        
-        JPanel swatchColorPanel = new JPanel();
+        swatchColorPanel = new JPanel();
         swatchColorPanel.setLayout(new BorderLayout());
         swatchColorPanel.setOpaque(false);
         
@@ -536,7 +504,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
                   removeFromSwatchButton.setEnabled(false);
                   swatchColorButton.clear();
                }else{
-                   swatchColorButton.refresh();
+                  swatchColorButton.refresh();
                }
                
             }
@@ -1064,7 +1032,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
         this.repaint();
         checkSubSections();
         
-        if(!Alchemy.canvas.swatch.isEmpty()){         
+        if(!Alchemy.canvas.swatch.isEmpty()){
             swatchColorButton.refresh();
         }
 
@@ -1544,5 +1512,46 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants {
     @Override
     public void refreshRClickPicker(){
         rClickPicker.refreshRClick();
+    }
+    @Override
+    public void refreshSwatch(){
+        refreshToolBar();
+        swatchColorButton.refresh();
+    }
+    @Override
+    public void flipToolBar(){
+        //is toolbar currently set to "swatch view"? intitially false.
+        if(swatched){
+          toolBars.remove(swatchToolBar);
+          colorButton.hidePopup();
+
+          toolBars.add("Center", mainToolBar);
+
+          refreshSubToolBar();
+          swatched=false;
+       } else {
+          toolBars.remove(mainToolBar);
+          subToolBar.setVisible(false);
+
+          createButton.hidePopup();
+          if (affectButton != null) {
+              affectButton.hidePopup();
+          }
+          toolBars.add("Center", swatchToolBar);
+
+          swatched=true;
+
+          refreshToolBar();
+       }
+ 
+       //set to "keyed on" when poped up with TAB key
+       if (!Alchemy.preferences.paletteAttached) {          
+            if (!toolBarVisible) {
+                setToolBarVisible(true);
+                toolBarKeyedOn = true;
+            }
+       }else{
+           Alchemy.palette.flipRefresh();
+       }        
     }
 }

@@ -38,8 +38,7 @@ public class AlcColourIO implements AlcConstants{
     private String hexReg = "\\s*?<hex>(\\S+?)<\\/hex>\\s*?";
     private Pattern title = Pattern.compile(titleReg);
     private Pattern author = Pattern.compile(authorReg);
-    private Pattern hex = Pattern.compile(hexReg);
-    
+    private Pattern hex = Pattern.compile(hexReg);    
     private String titleString;
     private String authorString;
     private String urlString;
@@ -74,6 +73,7 @@ public class AlcColourIO implements AlcConstants{
         //clDialog sets this >0 if rereading from colourlovers.com
         dialogReturn = 0;
         
+        //this doesn't seem to work....
         Alchemy.toolBar.setVisible(false);
         
         while (dialogReturn<1){  // looking for a new palette       
@@ -98,7 +98,7 @@ public class AlcColourIO implements AlcConstants{
        errorText = null;
        
        urlString="http://www.colourlovers.com/api/palettes/top?numResults=1&resultOffset="+
-                          Integer.toString(i);
+                  Integer.toString(i);
        URL url = null;
        URLConnection urlConn = null;
        InputStreamReader inStream = null;
@@ -151,10 +151,7 @@ public class AlcColourIO implements AlcConstants{
    
     public void importFileSwatch(){
        File file = AlcUtil.showFileChooser();
-       if (file==null){
-       //    JOptionPane.showMessageDialog(null, "File is not defined.", 
-       //                                 "Error", JOptionPane.ERROR_MESSAGE);
-       }else if(!file.canRead()){
+       if(!file.canRead()){
            JOptionPane.showMessageDialog(null, "Not allowed to read that file.", 
                                         "Error", JOptionPane.ERROR_MESSAGE);
        }else{
@@ -162,10 +159,8 @@ public class AlcColourIO implements AlcConstants{
            try{
                type = getFileType(file);
                if (type==1){
-                   //System.out.println("Reading GPL swatch file...");
                    readGPL(file);
                }else if(type==2){
-                   //System.out.println("Reading ASE swatch file...");
                    readASE(file);
                }else if(type==-1){
                    JOptionPane.showMessageDialog(null, "File type did not seem valid.\n\n"+
@@ -219,9 +214,14 @@ public class AlcColourIO implements AlcConstants{
        }
     }
     
-    public void launchModulateDialog(){
-        modulateDialog mD = new modulateDialog();
-        mD.setVisible(true);
+    public void launchModulateDialog(){      
+        if (Alchemy.canvas.swatch.isEmpty()){
+           JOptionPane.showMessageDialog(null, "Swatch is empty, there would be no point really...", 
+                                        "Oops...", JOptionPane.ERROR_MESSAGE);
+       }else{
+           modulateDialog mD = new modulateDialog();
+           mD.setVisible(true);   
+       }        
     }
     
     public void modulateSwatch(){
@@ -266,15 +266,15 @@ public class AlcColourIO implements AlcConstants{
            //Adjust hue         
            if(modEnabled[0]){
                
-               if(!modAmounts[0]){  //"up to"               
-                   if(modVaried[0]||prevPercs[0]==-1){//if varied or not already defined
+               if(!modAmounts[0]){  //"up to" selected               
+                   if(modVaried[0]||prevPercs[0]==-1){ //if varied or not already defined
                        //get random amount percent of degs, to degrees
                        prevPercs[0] = ((random.nextFloat()*modPercents[0])/100)*360;
                    }   
                }
                
-               if(modDirection[0]==2){ //either direction
-                   if(modVaried[0]||prevDirs[0]==0){//reassign if varied or undefined
+               if(modDirection[0]==2){ //"either" direction selected
+                   if(modVaried[0]||prevDirs[0]==0){ //reassign if varied or undefined
                        r=random.nextFloat();
                        if(r>.5){
                            prevDirs[0] = 1;
@@ -651,11 +651,7 @@ public class AlcColourIO implements AlcConstants{
 
     String decodeUTF8(byte[] bytes) {
         return new String(bytes, UTF8_CHARSET);
-    }
-
-//        
-//        EXPERIMENTAL RYB COLOR MODULATION BELOW
-//        
+    }       
 
     public float RGBtoRYB(float hDegs){
         int base;
@@ -746,6 +742,9 @@ public class AlcColourIO implements AlcConstants{
         hue=RYBtoRGB(hue);
         return hue/360;
     }
+    
+   // Custom Dialog Windows From Here On //
+   //------------------------------------//
 
    private class clDialog extends JDialog{
        
