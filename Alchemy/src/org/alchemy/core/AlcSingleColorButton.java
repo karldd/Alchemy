@@ -144,7 +144,7 @@ class AlcSingleColorButton extends JComponent implements MouseListener, AlcPopup
         BufferedImage image = new BufferedImage(64, 59, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
 
-        g.setColor(Alchemy.canvas.getForegroundColor());
+        g.setColor(Alchemy.canvas.getColor());
         g.fillRect(5, 5, 59, 46);
         return image;
     }

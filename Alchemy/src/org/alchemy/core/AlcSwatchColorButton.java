@@ -97,7 +97,6 @@ class AlcSwatchColorButton extends JComponent implements MouseListener, AlcConst
     /** Get the color panel image */
     private Image getColorPanelImage() {
         Dimension d = colorPanel.getSize();
-        System.out.println((int)d.getWidth()+" "+(int)d.getHeight());
         BufferedImage image = new BufferedImage((int)d.getWidth(), (int)d.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         int baseWidth;
