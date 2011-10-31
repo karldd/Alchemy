@@ -227,7 +227,7 @@ class AlcPreferences implements AlcConstants {
         prefs.putBoolean("Transparent Fullscreen", transparentFullscreen);
 
         prefs.putInt("Background Color", Alchemy.canvas.getBackgroundColor().getRGB());
-        prefs.putInt("Color", Alchemy.canvas.getForegroundColor().getRGB());
+        prefs.putInt("Color", Alchemy.canvas.getColor().getRGB());
         
         prefs.put("Export Directory", exportDirectory);
         

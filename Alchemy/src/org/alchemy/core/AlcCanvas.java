@@ -57,6 +57,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private int alpha = 255;
     private boolean alphaLocked = false;
     
+    public ArrayList<Color> currentColorSet;
+    public int currentColorIndex;
+       
+    public Color previousColor;
+    
     private int undoDepth;// = 0;
     
     public ArrayList<Color> swatch;
@@ -73,8 +78,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private Color bgColor;
     /** Background Alpha */
     private int bgAlpha = 255;
-    /** Swap state - true if the background is currently swapped in */
-    private boolean backgroundActive = false;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** Smoothing on or off */
@@ -157,10 +160,16 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
-
+        currentColorSet = new ArrayList<Color>(2);
+        currentColorSet.add(Color.WHITE);
+        currentColorSet.add(Color.WHITE);
+        currentColorIndex = 0;
+        
         this.smoothing = Alchemy.preferences.smoothing;
         this.bgColor = new Color(Alchemy.preferences.bgColor);
-        this.color = new Color(Alchemy.preferences.color);
+        //this.color = new Color(Alchemy.preferences.color);
+        currentColorSet.set(currentColorIndex, new Color(Alchemy.preferences.color));
+
         this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
         this.undoDepth = Alchemy.preferences.undoDepth;
         
@@ -168,6 +177,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         swatch = new ArrayList<Color>();
         /** Keeps track of which swatch color is active */
         activeSwatchIndex = -1;
+        
+
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -513,19 +524,27 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 penType = 0;
                 break;
             case STYLUS:
-                // Set the current pen type
-                // Changing the background/foreground setting as required
-                if (backgroundActive) {
-                    setBackgroundColorActive(false);
-                    Alchemy.toolBar.refreshColorButton();
+                currentColorIndex = 0;
+                if(alphaLocked){
+                    setColor(new Color(currentColorSet.get(currentColorIndex).getRed(),
+                                       currentColorSet.get(currentColorIndex).getGreen(),
+                                       currentColorSet.get(currentColorIndex).getBlue(), Alchemy.canvas.getAlpha()));
+                }else{
+                    setColor(currentColorSet.get(currentColorIndex));
                 }
+                Alchemy.toolBar.refreshColorButton();
                 penType = PEN_STYLUS;
                 break;
             case ERASER:
-                if (!backgroundActive) {
-                    setBackgroundColorActive(true);
-                    Alchemy.toolBar.refreshColorButton();
+                currentColorIndex = 1;
+                if(alphaLocked){
+                    setColor(new Color(currentColorSet.get(currentColorIndex).getRed(),
+                                       currentColorSet.get(currentColorIndex).getGreen(),
+                                       currentColorSet.get(currentColorIndex).getBlue(), Alchemy.canvas.getAlpha()));
+                }else{
+                    setColor(currentColorSet.get(currentColorIndex));
                 }
+                Alchemy.toolBar.refreshColorButton();
                 penType = PEN_ERASER;
                 break;
             case CURSOR:
@@ -739,7 +758,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     
     /** Adds the current color, to the swatch array, sets it active */
     public void addCurrentColorToSwatch(){
-        swatch.add(activeSwatchIndex+1,color);
+        swatch.add(activeSwatchIndex+1, currentColorSet.get(currentColorIndex));
         activeSwatchIndex+=1;
     }
 
@@ -876,11 +895,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @return      The current color
      */
     public Color getColor() {
-        if (backgroundActive) {
-            return bgColor;
-        } else {
-            return color;
-        }
+            return currentColorSet.get(currentColorIndex);
     }
 
     /** Set the current color
@@ -888,13 +903,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      */
     public void setColor(Color color) {
         try {
-            // Control how the Foreground/Background button is updated
-            if (backgroundActive) {
-                bgColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), bgAlpha);
-                redraw(true);
-            } else {
-                this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-            }
+            previousColor = currentColorSet.get(currentColorIndex);
+            currentColorSet.set(currentColorIndex, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
 
             if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
                 Alchemy.toolBar.refreshColorButton();
@@ -902,21 +912,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         } catch (IllegalArgumentException ex) {
             // Ignore the color out of range exception caused by out of bounds slider settings
         }
-    }
-
-    /** Whether the background is active or not
-     * @return State of the background
-     */
-    public boolean isBackgroundColorActive() {
-        return backgroundActive;
-    }
-
-    /** Set the background color to be active
-     * @param backgroundActive  
-     */
-    public void setBackgroundColorActive(boolean backgroundActive) {
-        this.backgroundActive = backgroundActive;
-        Alchemy.toolBar.refreshTransparencySlider();
     }
 
     /** Get the background color
@@ -934,23 +929,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         redraw(true);
     }
 
-    /** Get the current forground color
-     *  This method returns the foreground color
-     *  even if it is not currently active.
-     *  E.g. The active color is the background color
-     * @return
-     */
-    public Color getForegroundColor() {
-         return color;
-    }
-
-    /** Set the foreground color
-     * @param color
-     */
-    public void setForegroundColor(Color color) {
-        this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
-    }
-
     /** Get the current alpha value
      * @return 
      */
@@ -962,11 +940,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param alpha 
      */
     public void setAlpha(int alpha) {
-        if (backgroundActive) {
-            this.bgAlpha = alpha;
-        } else {
+//        if (backgroundActive) {
+//            this.bgAlpha = alpha;
+//        } else {
             this.alpha = alpha;
-        }
+//        }
         setColor(this.getColor());
         Alchemy.toolBar.refreshTransparencySlider();
     }

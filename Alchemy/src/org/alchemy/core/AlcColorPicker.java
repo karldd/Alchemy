@@ -225,11 +225,8 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
                     c = new Color(screenShots[currentDevice].getRGB(mouseLoc.x - origin.x - 6, mouseLoc.y - origin.y + 6));
                 }
 
-                if (background) {
-                    Alchemy.canvas.setBackgroundColor(c);
-                } else {
-                    Alchemy.canvas.setForegroundColor(c);
-                }
+                Alchemy.canvas.setColor(c);
+
                 Alchemy.toolBar.refreshColorButton();
 
                 if (eyeDropperTimer.isRunning()) {
@@ -264,7 +261,7 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
                 if (background) {
                     Alchemy.canvas.setBackgroundColor(Alchemy.colorSelector.getColor());
                 } else {
-                    Alchemy.canvas.setForegroundColor(Alchemy.colorSelector.getColor());
+                  Alchemy.canvas.setColor(Alchemy.colorSelector.getColor());
                 }
                 Alchemy.toolBar.refreshColorButton();
             }
@@ -323,11 +320,8 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
 
         } else {
 
-            if (background) {
-                Alchemy.canvas.setBackgroundColor(this.getColor(e.getX(), e.getY()));
-            } else {
-                Alchemy.canvas.setForegroundColor(this.getColor(e.getX(), e.getY()));
-            }
+
+            Alchemy.canvas.setColor(this.getColor(e.getX(), e.getY()));
 
             //parent.hidePopup();
             if (Alchemy.OS == OS_MAC) {
@@ -358,7 +352,7 @@ class AlcColorPicker extends JMenuItem implements MouseListener, AlcConstants {
         BufferedImage image = new BufferedImage(512, 320, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.createGraphics();
         
-        Color c = Alchemy.canvas.getForegroundColor();     
+        Color c = Alchemy.canvas.getColor();     
         float[] hsbvals = new float[3];
         Color.RGBtoHSB(c.getRed(),c.getGreen(),c.getBlue(), hsbvals);
         
