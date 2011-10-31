@@ -57,8 +57,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private int alpha = 255;
     private boolean alphaLocked = false;
     
-    public ArrayList<Color> currentColorSet;
-    public int currentColorIndex;
+    private ArrayList<Color> currentColorSet;
+    private int[] currentAlphaSet = {255,255};
+    private int currentColorIndex;
        
     public Color previousColor;
     
@@ -161,13 +162,13 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
         currentColorSet = new ArrayList<Color>(2);
+        
         currentColorSet.add(Color.WHITE);
         currentColorSet.add(Color.WHITE);
         currentColorIndex = 0;
         
         this.smoothing = Alchemy.preferences.smoothing;
         this.bgColor = new Color(Alchemy.preferences.bgColor);
-        //this.color = new Color(Alchemy.preferences.color);
         currentColorSet.set(currentColorIndex, new Color(Alchemy.preferences.color));
 
         this.autoToggleToolBar = !Alchemy.preferences.paletteAttached;
@@ -525,25 +526,19 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 break;
             case STYLUS:
                 currentColorIndex = 0;
-                if(alphaLocked){
-                    setColor(new Color(currentColorSet.get(currentColorIndex).getRed(),
-                                       currentColorSet.get(currentColorIndex).getGreen(),
-                                       currentColorSet.get(currentColorIndex).getBlue(), Alchemy.canvas.getAlpha()));
-                }else{
-                    setColor(currentColorSet.get(currentColorIndex));
+                if(!alphaLocked){
+                    setAlpha(currentAlphaSet[currentColorIndex]);
                 }
+                setColor(currentColorSet.get(currentColorIndex));                    
                 Alchemy.toolBar.refreshColorButton();
                 penType = PEN_STYLUS;
                 break;
             case ERASER:
                 currentColorIndex = 1;
-                if(alphaLocked){
-                    setColor(new Color(currentColorSet.get(currentColorIndex).getRed(),
-                                       currentColorSet.get(currentColorIndex).getGreen(),
-                                       currentColorSet.get(currentColorIndex).getBlue(), Alchemy.canvas.getAlpha()));
-                }else{
-                    setColor(currentColorSet.get(currentColorIndex));
+                if(!alphaLocked){
+                    setAlpha(currentAlphaSet[currentColorIndex]);
                 }
+                setColor(currentColorSet.get(currentColorIndex));
                 Alchemy.toolBar.refreshColorButton();
                 penType = PEN_ERASER;
                 break;
@@ -904,7 +899,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public void setColor(Color color) {
         try {
             previousColor = currentColorSet.get(currentColorIndex);
-            currentColorSet.set(currentColorIndex, new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
+            currentColorSet.set(currentColorIndex, new Color(color.getRed(), color.getGreen(), color.getBlue()));
+            if(!alphaLocked){
+                currentAlphaSet[currentColorIndex] = alpha;
+            }
 
             if (Alchemy.preferences.paletteAttached || Alchemy.preferences.simpleToolBar) {
                 Alchemy.toolBar.refreshColorButton();
@@ -940,11 +938,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param alpha 
      */
     public void setAlpha(int alpha) {
-//        if (backgroundActive) {
-//            this.bgAlpha = alpha;
-//        } else {
-            this.alpha = alpha;
-//        }
+        this.alpha = alpha;
         setColor(this.getColor());
         Alchemy.toolBar.refreshTransparencySlider();
     }
@@ -956,6 +950,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public void toggleAlphaLocked(){
         if(alphaLocked){
             alphaLocked=false;
+            setAlpha(currentAlphaSet[currentColorIndex]);
         }else{
             alphaLocked=true;
         }

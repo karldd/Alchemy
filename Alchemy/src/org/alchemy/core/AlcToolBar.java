@@ -347,7 +347,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         //////////////////////////////////////////////////////////////
         
         final AlcToggleButton lockButton = new AlcToggleButton();
-        AbstractAction styleAction = new AbstractAction() {
+        AbstractAction toggleLockAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
                 Alchemy.canvas.toggleAlphaLocked();
@@ -355,7 +355,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
 
-        lockButton.setAction(styleAction);
+        lockButton.setAction(toggleLockAction);
         lockButton.setup("", getS("alphaLockDescription"), AlcUtil.getUrlPath("lock.png"));
 
         transparencyBox.add(lockButton);
