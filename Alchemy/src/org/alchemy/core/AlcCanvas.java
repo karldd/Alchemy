@@ -57,14 +57,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private int alpha = 255;
     private boolean alphaLocked = false;
     
+    // The current color is stored here.  An array is used so that
+    // mulitple "states" can be stored (Stylus/Eraser, etc)
     private ArrayList<Color> currentColorSet;
     private int[] currentAlphaSet = {255,255};
     private int currentColorIndex;
-       
+    
+    //  This is not currently used, but may be implemented for
+    //  recent color switching a la mypaint.
     public Color previousColor;
     
-    private int undoDepth;// = 0;
+    // 0-Disabled, 1-Single, 2-Unlimited
+    private int undoDepth;
     
+    // Swatch stored here
     public ArrayList<Color> swatch;
     public int activeSwatchIndex;
     
@@ -77,8 +83,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     ////////////////////////////////////////////////////////////// 
     /** Background color */
     private Color bgColor;
-    /** Background Alpha */
-    private int bgAlpha = 255;
     /** 'Redraw' on or off **/
     private boolean redraw = true;
     /** Smoothing on or off */
@@ -178,8 +182,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         swatch = new ArrayList<Color>();
         /** Keeps track of which swatch color is active */
         activeSwatchIndex = -1;
-        
-
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -923,7 +925,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param color
      */
     public void setBackgroundColor(Color color) {
-        this.bgColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), bgAlpha);
+        this.bgColor = new Color(color.getRed(), color.getGreen(), color.getBlue());
         redraw(true);
     }
 
@@ -943,10 +945,12 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         Alchemy.toolBar.refreshTransparencySlider();
     }
     
+    /** Returns the state of alpha lock */
     public boolean isAlphaLocked(){
         return alphaLocked;
     }
     
+    /** Toggles the state of alpha lock */
     public void toggleAlphaLocked(){
         if(alphaLocked){
             alphaLocked=false;

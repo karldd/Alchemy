@@ -45,7 +45,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     /** Modified version of AlColorButton which just holds a single color */
     AlcSingleColorButton colorButton;
     /** Saved swatch colors are built using this button */
-    private JButton swatchButton;
+    //private JButton swatchButton;
     /** The main tool bar inside the toolbar */
     private AlcToolBarMain mainToolBar;
     /** The swatch tool bar inside the toolbar */
@@ -54,24 +54,25 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     private AlcToolBarSub subToolBar;
     /** Container holding the main and sub toolbars */
     JPanel toolBars;
-    /** Detach toolbar button */
-    
-    // The swatch toolbar area that holds saved colors
-    JPanel swatchColors;
-    JPanel swatchColorPanel;
-    AlcSwatchColorButton swatchColorButton;
+
+    /** The swatch toolbar area that holds saved colors */
+    //private JPanel swatchColors;
+    private JPanel swatchColorPanel;
+    private AlcSwatchColorButton swatchColorButton;
    
-    // the rest of the swatch toolbar
-    JPanel swatchTools;
-    Box addRemoveBox;
-    Box transparencyBox;
-    AlcButton removeFromSwatchButton;
-    AlcButton moveColorLeftButton;
-    AlcButton moveColorRightButton;
+    /** The rest of the swatch toolbar */  
+    private JPanel swatchTools;
+    private Box addRemoveBox;
+    private Box transparencyBox;
     
-    AlcButton undoButton;
+    /** Swatch Color Control Buttons */
+    private AlcButton removeFromSwatchButton;
+    private AlcButton moveColorLeftButton;
+    private AlcButton moveColorRightButton;
     
+    private AlcButton undoButton;
     
+    /** Detach toolbar button */ 
     private JButton detachButton;
     /** Transparency slider */
     private AlcSlider transparencySlider;
@@ -84,7 +85,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     /** Color picker */
     private AlcColorPicker lClickPicker,  rClickPicker;
     /** Foreground Background Button - gets updated when the colors are swapped */
-    AlcToggleButton fgbgButton;
+    //AlcToggleButton fgbgButton;
     //////////////////////////////////////////////////////////////
     // TOOLBAR CONTROL
     //////////////////////////////////////////////////////////////
@@ -381,17 +382,21 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
 
         transparencyBox.add(transparencySlider);
         swatchTools.add(transparencyBox);
+        
+        //////////////////////////////////////////////////////////////
+        // Current Color Button
+        //////////////////////////////////////////////////////////////
                     
         String colorTitle = getS("colorTitle");
         colorButton = new AlcSingleColorButton(colorTitle, getS("colorDescription"), 64);
         lClickPicker = new AlcColorPicker(colorButton,0);
         rClickPicker = new AlcColorPicker(colorButton,1);
+        
         colorButton.addlClickItem(lClickPicker);
         colorButton.addrClickItem(rClickPicker);
-        //colorButton.addBgItem(bgPicker);
         swatchTools.add(colorButton);
         
-        //////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////
         // SWATCH NUMBERPAD ACTIONS
         ////////////////////////////////////////////////////////////// 
         
@@ -466,8 +471,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD7, "num7", buildSwatchQuickKey(7));
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD8, "num8", buildSwatchQuickKey(8));
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD9, "num9", buildSwatchQuickKey(9));
-        
-        
+              
         //////////////////////////////////////////////////////////////
         // ADD COLOR TO SWATCH BUTTON
         //////////////////////////////////////////////////////////////
@@ -487,6 +491,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         addToSwatchButton.setup("", getS("addToSwatchDescription"), AlcUtil.getUrlPath("add.png"));
 
         addRemoveBox.add(addToSwatchButton);
+        
         //////////////////////////////////////////////////////////////
         // REMOVE COLOR FROM SWATCH BUTTON
         //////////////////////////////////////////////////////////////
@@ -518,12 +523,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         addRemoveBox.add(Box.createVerticalStrut(5));
         swatchTools.add(addRemoveBox);
         
-        //swatchTools.add(Box.createHorizontalStrut(10));
-                //////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
         swatchTools.add(new AlcSeparator());
-        //swatchTools.add(Box.createHorizontalStrut(10));
         //////////////////////////////////////////////////////////////
         // Move Active Color Left Button
         //////////////////////////////////////////////////////////////
@@ -586,12 +589,19 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         
         setRemoveColorButton();
         setSwatchLRButtons();
-               
-        toolBar.add(swatchTools, BorderLayout.WEST);  
+        
+        //////////////////////////////////////////////////////////////       
+        // Add all the swatch stuff to the toolBar
+        //////////////////////////////////////////////////////////////
+        
+        toolBar.add(swatchTools, BorderLayout.WEST);
+        
         swatchColorPanel.add(swatchColorButton, BorderLayout.CENTER);
+        
         toolBar.add(swatchColorPanel, BorderLayout.CENTER);
         
         toolBarGroup.add(toolBar, BorderLayout.CENTER);
+        
         return toolBarGroup;     
     }
     
@@ -605,7 +615,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         toolBar.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 8));
         
         //////////////////////////////////////////////////////////////
-        // Switch to Tools Bar Button
+        // SWITCH TO SWATCH BAR BUTTON
         //////////////////////////////////////////////////////////////
 
         AlcButton reswatchButton = new AlcButton(toolBarFlipAction);
@@ -731,52 +741,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         //////////////////////////////////////////////////////////////
         toolBar.add(new AlcSeparator());
 
-
-        //////////////////////////////////////////////////////////////
-        // COLOR  BUTTON
-        //////////////////////////////////////////////////////////////
-        //String colorTitle = getS("colorTitle");
-        //colorButton = new AlcColorButton(colorTitle, getS("colorDescription"));
-        //fgPicker = new AlcColorPicker(colorButton);
-        //bgPicker = new AlcColorPicker(colorButton, true);
-        //colorButton.addFgItem(fgPicker);
-        //colorButton.addBgItem(bgPicker);
-        //toolBar.add(colorButton);
-
-        //AbstractAction fgbgAction = new AbstractAction() {
-
-          //  public void actionPerformed(ActionEvent e) {
-          //      colorButton.switchColors();
-          //  }
-        //};
-
-        // Shortcut - X
-        //Alchemy.shortcuts.setShortcut(colorButton, KeyEvent.VK_X, "fgbgTitle", fgbgAction);
-/*
-        //////////////////////////////////////////////////////////////
-        // TRANSPARENCY SLIDER
-        //////////////////////////////////////////////////////////////
-        transparencySlider = new AlcSlider(getS("transparencyTitle"), getS("transparencyDescription"), 0, 255, 254);
-        transparencySlider.addChangeListener(
-                new ChangeListener() {
-
-                    public void stateChanged(ChangeEvent e) {
-
-                        //JSlider source = (JSlider) e.getSource();
-                        if (!transparencySlider.getValueIsAdjusting()) {
-                            Alchemy.canvas.setAlpha(transparencySlider.getValue());
-                            refreshColorButton();
-                        }
-                    }
-                });
-
-        toolBar.add(transparencySlider);
-
-        //////////////////////////////////////////////////////////////
-        // SEPARATOR
-        //////////////////////////////////////////////////////////////
-        toolBar.add(new AlcSeparator());
-*/
         //////////////////////////////////////////////////////////////
         // CREATE
         //////////////////////////////////////////////////////////////
@@ -948,11 +912,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             toolBar.add(undoButton);
         }
         undoButton.setEnabled(false);
-        
-        //////////////////////////////////////////////////////////////
-        // SEPARATOR
-        //////////////////////////////////////////////////////////////
-        //toolBar.add(new AlcSeparator());
 
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
@@ -970,12 +929,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         Alchemy.shortcuts.setShortcut(clearButton, KeyEvent.VK_BACK_SPACE, "clearTitle", clearAction, KEY_MODIFIER);
         Alchemy.canvas.getActionMap().put(clearTitle, clearAction);
         toolBar.add(clearButton);
-
-        //////////////////////////////////////////////////////////////
-        // SEPARATOR
-        //////////////////////////////////////////////////////////////
-        // toolBar.add(new AlcSeparator());
-
 
         //////////////////////////////////////////////////////////////
         // DETACH BUTTON
@@ -1445,7 +1398,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     //////////////////////////////////////////////////////////////
     // UTLITY
     //////////////////////////////////////////////////////////////
-    /** Refreshes the colors of the Foreground/Background button */
+    /** Refreshes the colors of the CURRENT COLOR button */
     @Override
     void refreshColorButton() {
         colorButton.refresh();
@@ -1455,6 +1408,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     void refreshTransparencySlider() {
         transparencySlider.setValue(Alchemy.canvas.getAlpha());
     }
+    
+    /** updates the swatch move color l/r buttons */
     @Override
     void setSwatchLRButtons(){
         if(Alchemy.canvas.activeSwatchIndex<=0){
@@ -1468,6 +1423,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             moveColorRightButton.setEnabled(true);
         }
     }
+    
     void setRemoveColorButton(){
         if(Alchemy.canvas.swatch.isEmpty()){
             removeFromSwatchButton.setEnabled(false);
@@ -1489,6 +1445,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         }
     }
     
+    /** Helps build swatch quick keys for numberpad color switching */
     AbstractAction buildSwatchQuickKey(final int i){
         AbstractAction sKA = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {               
