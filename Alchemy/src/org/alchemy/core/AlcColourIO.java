@@ -92,6 +92,8 @@ public class AlcColourIO implements AlcConstants{
         }
     }
     
+    // Gets-Parses XML color data info from colourlovers.com.
+    //     -int i = which (by rank) palette to fetch.
     private void getColourLoversData(int i){
        String nextLine;
        errorType = 0;
@@ -148,7 +150,8 @@ public class AlcColourIO implements AlcConstants{
                     "URL:"+urlString;
        }
     }
-   
+    
+    // controls import of gpl/ase swatch files.
     public void importFileSwatch(){
        File file = AlcUtil.showFileChooser();
        if(!file.canRead()){
@@ -174,6 +177,7 @@ public class AlcColourIO implements AlcConstants{
        }
     }
     
+    // determines whether the file contains a gpl or ase swatch
     private int getFileType(File file){
         FileInputStream fis = null;
         DataInputStream dis = null;
@@ -214,6 +218,7 @@ public class AlcColourIO implements AlcConstants{
        }
     }
     
+    // pulls up the "modulate swatch" dialog
     public void launchModulateDialog(){      
         if (Alchemy.canvas.swatch.isEmpty()){
            JOptionPane.showMessageDialog(null, "Swatch is empty, there would be no point really...", 
@@ -224,6 +229,8 @@ public class AlcColourIO implements AlcConstants{
        }        
     }
     
+    // this function performs the modulations indicated in the 
+    // modulateDialog.  Kinda Messy.  Sorry.
     public void modulateSwatch(){
         Random random = new Random();
         float[] prevPercs = {-1.0f,-1.0f,-1.0f,-1.0f};
@@ -393,6 +400,7 @@ public class AlcColourIO implements AlcConstants{
        
     }
     
+    // Parses gpl swatch (text) files with regular expressions.
     private void readGPL(File file){
         FileInputStream fis = null;
         BufferedReader buff;
@@ -575,7 +583,9 @@ public class AlcColourIO implements AlcConstants{
             buf.putFloat(theNumber);
             return buf.array();
     }
-
+    
+    // reads Adobe Swatch Exchange files. ASE binary format detailed here:
+    // http://www.selapa.net/swatches/colors/fileformats.php#adobe_ase
     private void readASE(File file) throws IOException{
         FileInputStream in = null;
         DataInputStream dis = null;
@@ -652,6 +662,10 @@ public class AlcColourIO implements AlcConstants{
     String decodeUTF8(byte[] bytes) {
         return new String(bytes, UTF8_CHARSET);
     }       
+    
+    // The following RYB-RGB functions convert color hues between a pure 360 degree
+    // RGB wheel and a shifted RYBish wheel.  This allows for generating more 
+    // "painterly" or subjectively pleasant color relationships.
 
     public float RGBtoRYB(float hDegs){
         int base;
