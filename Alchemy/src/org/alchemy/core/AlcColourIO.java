@@ -135,19 +135,14 @@ public class AlcColourIO implements AlcConstants{
           }
        }catch(MalformedURLException e){
           errorType=1;
-          errorText="Somehow we generated a bad URL. Oops.\n"+
-                    "Here it is:"+urlString;
+          errorText=getS("getNetDataError1")+urlString;
        }catch(IOException  e1){
           errorType=2;
-          errorText="Couldn't access the internet.\n\n"
-                  + "You may have to restart Alchemy after\n"+"establishing a connection.";
+          errorText=getS("getNetDataError2");
        }
        if(colours.isEmpty()&&errorType==0){
           errorType=3;
-          errorText="Seems like we connected to Colourlovers.com,\n"+
-                    "but found no colours.\n\n"+
-                    "Maybe Colourlovers.com is down or changed their API\n\n"+
-                    "URL:"+urlString;
+          errorText=getS("getNetDataError3")+urlString;
        }
     }
     
@@ -155,8 +150,8 @@ public class AlcColourIO implements AlcConstants{
     public void importFileSwatch(){
        File file = AlcUtil.showFileChooser();
        if(!file.canRead()){
-           JOptionPane.showMessageDialog(null, "Not allowed to read that file.", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+           JOptionPane.showMessageDialog(null, getS("noReadError"), 
+                                        getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
        }else{
            int type=-1;
            try{
@@ -166,9 +161,8 @@ public class AlcColourIO implements AlcConstants{
                }else if(type==2){
                    readASE(file);
                }else if(type==-1){
-                   JOptionPane.showMessageDialog(null, "File type did not seem valid.\n\n"+
-                                        "Please Choose an Adobe Swatch Exchange\nor GIMP Palette file.", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+                   JOptionPane.showMessageDialog(null, getS("invalidImport"), 
+                                        getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
                }
 
            }catch (IOException ex) {
@@ -210,8 +204,7 @@ public class AlcColourIO implements AlcConstants{
     
     public void exportSwatch(){
        if (Alchemy.canvas.swatch.isEmpty()){
-           JOptionPane.showMessageDialog(null, "Swatch is empty, there would be no point really...", 
-                                        "Oops...", JOptionPane.ERROR_MESSAGE);
+           JOptionPane.showMessageDialog(null, getS("emptySwatch"), getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
        }else{
            exportDialog eD = new exportDialog();
            eD.setVisible(true);
@@ -221,8 +214,7 @@ public class AlcColourIO implements AlcConstants{
     // pulls up the "modulate swatch" dialog
     public void launchModulateDialog(){      
         if (Alchemy.canvas.swatch.isEmpty()){
-           JOptionPane.showMessageDialog(null, "Swatch is empty, there would be no point really...", 
-                                        "Oops...", JOptionPane.ERROR_MESSAGE);
+           JOptionPane.showMessageDialog(null, getS("emptySwatch"), getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
        }else{
            modulateDialog mD = new modulateDialog();
            mD.setVisible(true);   
@@ -443,8 +435,8 @@ public class AlcColourIO implements AlcConstants{
                 n++;
             }
         }else{
-            JOptionPane.showMessageDialog(null, "File didn't contain any colors, or was badly formatted.", 
-                                        "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, getS("badSwatchFile"), 
+                                          getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -649,8 +641,8 @@ public class AlcColourIO implements AlcConstants{
                }
                Alchemy.canvas.activeSwatchIndex=0;
            }else{
-               JOptionPane.showMessageDialog(null, "File didn't contain any colors, or was badly formatted.", 
-                                                   "Error", JOptionPane.ERROR_MESSAGE);
+               JOptionPane.showMessageDialog(null, getS("badSwatchFile"), 
+                                          getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
            }  
         in.close();
         dis.close();
@@ -757,6 +749,10 @@ public class AlcColourIO implements AlcConstants{
         return hue/360;
     }
     
+    String getS(String stringName) {
+        return Alchemy.bundle.getString(stringName);
+    }
+    
    // Custom Dialog Windows From Here On //
    //------------------------------------//
 
@@ -767,7 +763,7 @@ public class AlcColourIO implements AlcConstants{
            this.setModalityType(ModalityType.APPLICATION_MODAL);
            this.setDefaultCloseOperation(2);
            this.setSize(500,250);
-           this.setTitle("ColourLovers.com Import...");
+           this.setTitle(getS("colourLoversImportTitle"));
            this.setLocationRelativeTo(null);
 
            this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -830,9 +826,9 @@ public class AlcColourIO implements AlcConstants{
                }
            };
 
-           JLabel colorHeading = new JLabel("ColourLovers.com Swatch Retrieved:");
-           JLabel colorAuthor = new JLabel("Author: "+authorString);
-           JLabel colorTitle = new JLabel("      Title: "+titleString );
+           JLabel colorHeading = new JLabel(getS("swatchRetrieved"));
+           JLabel colorAuthor = new JLabel(getS("author")+" "+authorString);
+           JLabel colorTitle = new JLabel("      "+getS("title")+" "+titleString );
 
 
 
@@ -843,19 +839,19 @@ public class AlcColourIO implements AlcConstants{
 
            JButton addColors = new JButton();
            addColors.setAction(addColorsAction);
-           addColors.setText("ADD");
+           addColors.setText(getS("add"));
 
            JButton replaceColors = new JButton();
            replaceColors.setAction(replaceColorsAction);
-           replaceColors.setText("REPLACE");
+           replaceColors.setText(getS("replace"));
 
            JButton refreshColors = new JButton();
            refreshColors.setAction(refreshColorsAction);
-           refreshColors.setText("REFRESH");
+           refreshColors.setText(getS("refresh"));
 
            JButton cancel = new JButton();
            cancel.setAction(cancelAction);
-           cancel.setText("CANCEL");
+           cancel.setText(getS("cancel"));
 
            colorsBox.add(Box.createHorizontalStrut(10));
            colorsBox.add(colorPanel);
@@ -935,18 +931,18 @@ public class AlcColourIO implements AlcConstants{
         
        exportDialog(){
 
-           fileField.setText("Select a File...");
+           fileField.setText(getS("selectFileTitle"));
            fileField.setHorizontalAlignment(JTextField.CENTER);
            fileField.setEditable(false);
 
-           String[] fileTypes = {"GIMP Palette (.gpl)","Adobe Swatch Exchange (.ase)"};
+           String[] fileTypes = {getS("gplDescription"),getS("aseDesctiption")};
            comboTypes = new JComboBox(fileTypes);
            comboTypes.setSelectedIndex(0);
 
            this.setModalityType(ModalityType.APPLICATION_MODAL);
            this.setDefaultCloseOperation(2);
            this.setSize(400,200);
-           this.setTitle("Export Swatch...");
+           this.setTitle(getS("exportSwatchTitle"));
            this.setLocationRelativeTo(null);
 
            this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
@@ -954,7 +950,7 @@ public class AlcColourIO implements AlcConstants{
            Box fileTypeStuff = new Box(BoxLayout.X_AXIS);
            Box Buttons = new Box(BoxLayout.X_AXIS);
 
-           JLabel chooseFile = new JLabel("Choose File: ");
+           JLabel chooseFile = new JLabel(getS("chooseFile")+" ");
 
            AbstractAction launchFileChooser = new AbstractAction() {
                public void actionPerformed(ActionEvent e) {                
@@ -970,13 +966,13 @@ public class AlcColourIO implements AlcConstants{
            AbstractAction okAction = new AbstractAction() {
                public void actionPerformed(ActionEvent e) {               
                    if (f==null){
-                       JOptionPane.showMessageDialog(null, "No File Selected.", 
-                                                    "Oops...", JOptionPane.ERROR_MESSAGE);
+                       JOptionPane.showMessageDialog(null, getS("noFileError"), 
+                                                    getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
                    }else if(!f.canWrite()){
-                       JOptionPane.showMessageDialog(null, "Unable to write to that file.", 
-                                                    "Oops...", JOptionPane.ERROR_MESSAGE);
+                       JOptionPane.showMessageDialog(null,getS("noWriteError"), 
+                                                    getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
                    }else if(f.exists()){  
-                       if(JOptionPane.showConfirmDialog(null, "Overwrite Existing File?", "File Exists",0)==0){
+                       if(JOptionPane.showConfirmDialog(null, getS("overwriteFile"), getS("fileExistsTitle"),0)==0){
                            writeFile();
                        }
                    }else{
@@ -993,15 +989,15 @@ public class AlcColourIO implements AlcConstants{
            
            JButton launchChooser = new JButton();
            launchChooser.setAction(launchFileChooser);
-           launchChooser.setText("File...");
+           launchChooser.setText(getS("fileButtonTitle"));
 
-           JLabel chooseType = new JLabel("File Type: ");  
+           JLabel chooseType = new JLabel(getS("fileType")+" ");  
            JButton ok = new JButton();
            ok.setAction(okAction);
-           ok.setText("OK");
+           ok.setText(getS("ok"));
            JButton cancel = new JButton();
            cancel.setAction(cancelAction);
-           cancel.setText("CANCEL");
+           cancel.setText(getS("cancel"));
 
            fileStuff.add(Box.createHorizontalStrut(20));
            fileStuff.add(chooseFile);
@@ -1077,23 +1073,23 @@ public class AlcColourIO implements AlcConstants{
         private JComboBox[] amount = new JComboBox[4];
         private JSpinner[] percent = new JSpinner[4];
         private JCheckBox[] varied = new JCheckBox[4];
-        private String[] directionOps = {"Add","Subtract","Either"};
-        private String[] amountOps = {"Equal to","Up to"};
+        private String[] directionOps = {getS("add"),getS("subtract"),getS("either")};
+        private String[] amountOps = {getS("equalTo"),getS("upTo")};
     
        modulateDialog(){        
 
            this.setModalityType(ModalityType.APPLICATION_MODAL);
            this.setDefaultCloseOperation(2);
            this.setSize(550,280);
-           this.setTitle("Modulate Swatch...");
+           this.setTitle(getS("modulateSwatchTitle"));
            this.setLocationRelativeTo(null);
 
            this.setLayout(new FlowLayout(1,15,15));
            
-           JPanel huePanel    = buildModPanel(0,"Hue: ");
-           JPanel satPanel    = buildModPanel(1,"Saturation: ");
-           JPanel brightPanel = buildModPanel(2,"Brightness: ");
-           JPanel alphaPanel  = buildModPanel(3,"Alpha: ");
+           JPanel huePanel    = buildModPanel(0,getS("hue")+" ");
+           JPanel satPanel    = buildModPanel(1,getS("saturation")+" ");
+           JPanel brightPanel = buildModPanel(2,getS("brightness")+" ");
+           JPanel alphaPanel  = buildModPanel(3,getS("alpha")+" ");
            
            this.add(huePanel);
            this.add(satPanel);
@@ -1114,10 +1110,10 @@ public class AlcColourIO implements AlcConstants{
            
            JButton ok = new JButton();
            ok.setAction(okAction);
-           ok.setText("OK");
+           ok.setText(getS("ok"));
            JButton cancel = new JButton();
            cancel.setAction(cancelAction);
-           cancel.setText("CANCEL");
+           cancel.setText(getS("cancel"));
            
            Box buttonsBox = new Box(BoxLayout.X_AXIS);
            buttonsBox.add(ok);
@@ -1147,7 +1143,7 @@ public class AlcColourIO implements AlcConstants{
            amount[index] = new JComboBox(amountOps);
            percent[index] = new JSpinner(model);
            varied[index] = new JCheckBox();
-           varied[index].setText("varied");
+           varied[index].setText(getS("varied"));
            
            enabled[index].addItemListener(new ItemListener() {
                public void itemStateChanged(ItemEvent e) {

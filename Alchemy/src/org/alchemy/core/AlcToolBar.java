@@ -230,7 +230,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         //////////////////////////////////////////////////////////////
 
         AlcButton deswatchButton = new AlcButton(toolBarFlipAction);
-        deswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("switch-swatch.png"));
+        deswatchButton.setup("", getS("flipToolbarDescription"), AlcUtil.getUrlPath("switch-swatch.png"));
         deswatchButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 6, 5));
         swatchTools.add(deswatchButton);
  
@@ -238,7 +238,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         // Swatch Menu
         //////////////////////////////////////////////////////////////       
         
-        swatchMenuButton = new AlcPopupButton("Menu", getS("swatchMenuDescription"), AlcUtil.getUrlPath("swatchMenu.png"));
+        swatchMenuButton = new AlcPopupButton(getS("swatchMenuTitle"), getS("swatchMenuDescription"), AlcUtil.getUrlPath("swatchMenu.png"));
         
         //------------------------------------------------------------
         // Swatch Menu -> Clear Swatch
@@ -255,7 +255,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         clearSwatch = new AlcMenuItem(clearSwatchAction);
-        clearSwatch.setup("Clear Swatch");
+        clearSwatch.setup(getS("clearTitle"));
         swatchMenuButton.addItem(clearSwatch);
         
         //------------------------------------------------------------
@@ -275,7 +275,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         setBackgroundColor = new AlcMenuItem(setBackgroundAction);
-        setBackgroundColor.setup("Set Background Color");
+        setBackgroundColor.setup(getS("setBackgroundTitle"));
         swatchMenuButton.addItem(setBackgroundColor);
        
         //------------------------------------------------------------
@@ -293,7 +293,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         setColourLovers = new AlcMenuItem(setColourLoversAction);
-        setColourLovers.setup("Get Colourlovers.com Swatch...");
+        setColourLovers.setup(getS("getColourLoversTitle"));
         swatchMenuButton.addItem(setColourLovers);
         
         //------------------------------------------------------------
@@ -308,7 +308,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         modulateSwatch = new AlcMenuItem(modulateSwatchAction);
-        modulateSwatch.setup("Modulate Swatch");
+        modulateSwatch.setup(getS("modulateSwatchTitle"));
         swatchMenuButton.addItem(modulateSwatch);
         
         AlcMenuItem repeatMod; 
@@ -320,7 +320,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         repeatMod = new AlcMenuItem(repeatModAction);
-        repeatMod.setup("Repeat Modulation");
+        repeatMod.setup(getS("repeatModulationTitle"));
         swatchMenuButton.addItem(repeatMod);
         //repeatMod.setEnabled(false);
         
@@ -338,7 +338,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         loadSwatch = new AlcMenuItem(loadSwatchAction);
-        loadSwatch.setup("Import Swatch...");
+        loadSwatch.setup(getS("importSwatchTitle"));
         swatchMenuButton.addItem(loadSwatch);
         
         swatchTools.add(swatchMenuButton);
@@ -354,7 +354,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         saveSwatch = new AlcMenuItem(saveSwatchAction);
-        saveSwatch.setup("Export Swatch...");
+        saveSwatch.setup(getS("exportSwatchTitle"));
         swatchMenuButton.addItem(saveSwatch);
  
         // ---------------
@@ -637,7 +637,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         //////////////////////////////////////////////////////////////
 
         AlcButton reswatchButton = new AlcButton(toolBarFlipAction);
-        reswatchButton.setup("", "switch back to toolbar", AlcUtil.getUrlPath("switch-tools.png"));
+        reswatchButton.setup("", getS("flipToolbarDescription"), AlcUtil.getUrlPath("switch-tools.png"));
         reswatchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         toolBar.add(reswatchButton);
 
