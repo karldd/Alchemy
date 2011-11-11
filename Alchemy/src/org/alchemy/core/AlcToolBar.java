@@ -241,6 +241,24 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         swatchMenuButton = new AlcPopupButton("Menu", getS("swatchMenuDescription"), AlcUtil.getUrlPath("swatchMenu.png"));
         
         //------------------------------------------------------------
+        // Swatch Menu -> Clear Swatch
+        
+        AlcMenuItem clearSwatch; 
+         
+        AbstractAction clearSwatchAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.canvas.swatch.clear();
+                Alchemy.canvas.activeSwatchIndex = -1;
+                swatchColorButton.refresh();
+                setSwatchLRButtons();
+                setRemoveColorButton();          
+            }
+        };
+        clearSwatch = new AlcMenuItem(clearSwatchAction);
+        clearSwatch.setup("Clear Swatch");
+        swatchMenuButton.addItem(clearSwatch);
+        
+        //------------------------------------------------------------
         // Swatch Menu -> Set Background Color
         
         AlcMenuItem setBackgroundColor; 
