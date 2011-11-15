@@ -255,7 +255,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         clearSwatch = new AlcMenuItem(clearSwatchAction);
-        clearSwatch.setup(getS("clearTitle"));
+        clearSwatch.setup(getS("clearSwatchTitle"));
         swatchMenuButton.addItem(clearSwatch);
         
         //------------------------------------------------------------
@@ -930,7 +930,27 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             toolBar.add(undoButton);
         }
         undoButton.setEnabled(false);
+        
+        //////////////////////////////////////////////////////////////
+        // Zoom BUTTON
+        //////////////////////////////////////////////////////////////
+        
+        String zoomTitle = "zoom";//getS("undoTitle");
+          
+        AbstractAction zoomAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {                
+                Alchemy.canvas.zoomCanvas();
+                }
+        };
+        AlcButton zoomButton;
+        zoomButton = new AlcButton(zoomAction);
+        zoomButton.setup(zoomTitle, getS("undoDescription"), AlcUtil.getUrlPath("undo.png"));
 
+        toolBar.add(zoomButton);
+        
+        // Shortcuts - Modifier Delete/Backspace
+        //Alchemy.canvas.getActionMap().put(zoomTitle, zoomAction);    
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_Z, "zoom", zoomAction);
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
         //////////////////////////////////////////////////////////////

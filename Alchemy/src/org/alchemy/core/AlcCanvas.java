@@ -51,8 +51,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
-    /** Global Shape Foreground color */
-    private Color color;
+//    /** Global Shape Foreground color */
+//    private Color color;
     /** Global Shape Foreground Alpha */
     private int alpha = 255;
     private boolean alphaLocked = false;
@@ -91,6 +91,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private boolean canvasChanged = false;
     /** Draw under the other shapes on the canvas */
     private boolean drawUnder = false;
+    
+    private double zoomAmount = 0.25;
+    private double lastZoomX = 0.0;
+    private double lastZoomY = 0.0;
+    
     //////////////////////////////////////////////////////////////
     // PEN SETTINGS
     //////////////////////////////////////////////////////////////
@@ -1060,6 +1065,43 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         for(AlcShape shape : shapes){
             GeneralPath reflectedPath = (GeneralPath) shape.getPath().createTransformedShape(horizontalReflection);
             shape.setPath(reflectedPath);
+            shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
+        }
+        redraw(true);
+    }
+    
+    public void zoomCanvas(){
+        double x;
+        double y;
+        AffineTransform zoom = new AffineTransform();
+        
+        if(zoomAmount==0.25){
+            zoomAmount = 4.0;
+            Point location = MouseInfo.getPointerInfo().getLocation();
+            lastZoomX = location.getX();//+(this.getWidth()/4);
+            lastZoomY = location.getY();//+(this.getHeight()/4);
+            x = 0 - (4 * lastZoomX);//+(this.getWidth()/2);
+            y = 0 - (4 * lastZoomY);//+(this.getWidth()/2);
+
+            
+            System.out.println(this.getWidth());
+
+        }else{
+            zoomAmount = 0.25;
+            x = lastZoomX;
+            y = lastZoomY;
+
+            System.out.println(this.getWidth());
+            
+        }
+         
+        System.out.println(x+" "+y);
+        
+        zoom = AffineTransform.getTranslateInstance ( x,y );
+        zoom.scale(zoomAmount,zoomAmount);
+        for(AlcShape shape : shapes){
+            GeneralPath zoomPath = (GeneralPath) shape.getPath().createTransformedShape(zoom);
+            shape.setPath(zoomPath);
             shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
         }
         redraw(true);
