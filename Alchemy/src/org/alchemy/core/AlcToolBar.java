@@ -71,6 +71,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
     private AlcButton moveColorRightButton;
     
     private AlcButton undoButton;
+    private AlcToggleButton zoomButton;
     
     /** Detach toolbar button */ 
     private JButton detachButton;
@@ -905,6 +906,38 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         // SEPARATOR
         //////////////////////////////////////////////////////////////
         toolBar.add(new AlcSeparator());
+
+        //////////////////////////////////////////////////////////////
+        // ZOOM BUTTON
+        //////////////////////////////////////////////////////////////
+        
+        String zoomTitle = getS("zoomTitle");
+        zoomButton = new AlcToggleButton();
+          
+        AbstractAction zoomAction = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if (!e.getSource().getClass().getName().endsWith("AlcToggleButton")) {
+                    // Only toogle the button manually if it is triggered by a key
+                    zoomButton.setSelected(!zoomButton.isSelected());
+                    Alchemy.canvas.zoomCanvas();
+                }else{
+                    Alchemy.canvas.startZoomMousing();
+                    if(zoomButton.isSelected()){
+                        // Dont set button selected, wait till zoom location is selected
+                        zoomButton.setSelected(false);
+                    }
+                }           
+            }
+        };
+        
+        zoomButton.setAction(zoomAction);
+        zoomButton.setup(zoomTitle, getS("zoomDescription"), AlcUtil.getUrlPath("zoom.png"));
+
+        toolBar.add(zoomButton);
+        
+        // Shortcuts - Modifier Delete/Backspace
+        Alchemy.canvas.getActionMap().put(zoomTitle, zoomAction);    
+        Alchemy.shortcuts.setShortcut(zoomButton, KeyEvent.VK_Z, getS("zoomTitle"), zoomAction);
         
         //////////////////////////////////////////////////////////////
         // UNDO BUTTON
@@ -931,26 +964,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         }
         undoButton.setEnabled(false);
         
-        //////////////////////////////////////////////////////////////
-        // Zoom BUTTON
-        //////////////////////////////////////////////////////////////
-        
-        String zoomTitle = "zoom";//getS("undoTitle");
-          
-        AbstractAction zoomAction = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {                
-                Alchemy.canvas.zoomCanvas();
-                }
-        };
-        AlcButton zoomButton;
-        zoomButton = new AlcButton(zoomAction);
-        zoomButton.setup(zoomTitle, getS("undoDescription"), AlcUtil.getUrlPath("undo.png"));
-
-        toolBar.add(zoomButton);
-        
-        // Shortcuts - Modifier Delete/Backspace
-        //Alchemy.canvas.getActionMap().put(zoomTitle, zoomAction);    
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_Z, "zoom", zoomAction);
         //////////////////////////////////////////////////////////////
         // CLEAR BUTTON
         //////////////////////////////////////////////////////////////
@@ -1058,6 +1071,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             // Show the toolbar
             setToolBarVisible(true);
             insideToolBar = true;
+            // Kill mouse zooming when toggling the toolbar
+            Alchemy.canvas.stopZoomMousing();
 
         } else if (y > getTotalHeight() + 5) {
             // If rolling out of a popup menu set the toolbar to dissapear with a timer
@@ -1482,6 +1497,11 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         undoButton.setEnabled(true);
         }
     }
+    @Override
+    void setZoomButtonSelected(){
+        zoomButton.setSelected(true);
+    }
+    
     
     /** Helps build swatch quick keys for numberpad color switching */
     AbstractAction buildSwatchQuickKey(final int i){

@@ -91,6 +91,8 @@ public abstract class AlcAbstractToolBar extends JPanel implements AlcConstants 
     }
     void enableUndo() {   
     }
+    void setZoomButtonSelected(){
+    }
     void refreshRClickPicker(){
     }
     void flipToolBar(){

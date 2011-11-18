@@ -93,7 +93,7 @@ public class Alchemy implements AlcConstants {
     static final AlcMath math = new AlcMath();
     /** Custom reusable color selector */
     static AlcColorSelector colorSelector;
-    
+    /** Color import/export and modulation functions */
     static AlcColourIO colourIO;
 
     Alchemy() {
@@ -130,7 +130,7 @@ public class Alchemy implements AlcConstants {
         // LOAD PREFERENCES
         preferences = new AlcPreferences();
         
-        // Initiate ColourLovers.com Class
+        // Initiate Colour IO Class
         colourIO = new AlcColourIO();
 
         // Create the window

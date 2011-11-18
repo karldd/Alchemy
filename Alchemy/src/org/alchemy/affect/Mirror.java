@@ -377,6 +377,15 @@ public class Mirror extends AlcModule implements AlcConstants {
         horizontalAxis = size.width / 2;
         verticalAxis = size.height / 2;
     }
+    
+//    public void zoomMirrorAxis(){
+//        horizontalAxis*=4;
+//        verticalAxis*=4;
+//    }
+//    public void unzoomMirrorAxis(){
+//        horizontalAxis*=0.25;
+//        verticalAxis*=0.25;
+//    }
 
     private void countShapes() {
         // Add one for every axis currently on

@@ -91,7 +91,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     private boolean canvasChanged = false;
     /** Draw under the other shapes on the canvas */
     private boolean drawUnder = false;
-    
+    /** Boolean used to indicate if the user is picking a zoom location with the mouse */
+    private boolean zoomMousing = false;
+    /** Zoom data */
     private double zoomAmount = 0.25;
     private double lastZoomX = 0.0;
     private double lastZoomY = 0.0;
@@ -1070,43 +1072,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         redraw(true);
     }
     
-    public void zoomCanvas(){
-        double x;
-        double y;
-        AffineTransform zoom = new AffineTransform();
-        
-        if(zoomAmount==0.25){
-            zoomAmount = 4.0;
-            Point location = MouseInfo.getPointerInfo().getLocation();
-            lastZoomX = location.getX();//+(this.getWidth()/4);
-            lastZoomY = location.getY();//+(this.getHeight()/4);
-            x = 0 - (4 * lastZoomX);//+(this.getWidth()/2);
-            y = 0 - (4 * lastZoomY);//+(this.getWidth()/2);
-
-            
-            System.out.println(this.getWidth());
-
-        }else{
-            zoomAmount = 0.25;
-            x = lastZoomX;
-            y = lastZoomY;
-
-            System.out.println(this.getWidth());
-            
-        }
-         
-        System.out.println(x+" "+y);
-        
-        zoom = AffineTransform.getTranslateInstance ( x,y );
-        zoom.scale(zoomAmount,zoomAmount);
-        for(AlcShape shape : shapes){
-            GeneralPath zoomPath = (GeneralPath) shape.getPath().createTransformedShape(zoom);
-            shape.setPath(zoomPath);
-            shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
-        }
-        redraw(true);
-    }
-
     /** Make a GradientPaint reflected through the horizontal axis */
     private GradientPaint makeHorizontalReflectedGradientPaint(GradientPaint gp) {
         if(gp == null){
@@ -1158,6 +1123,68 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 y2,
                 gp.getColor2());
         return newGp;
+    }
+    
+    /** Zoom the Canvas 4x - keep location under mouse, under the mouse */
+    public void zoomCanvas(){
+        double x;
+        double y;
+        AffineTransform zoom = new AffineTransform();    
+        // Not Zoomed, lets set data for zooming/
+        if(zoomAmount==0.25){
+            zoomAmount = 4.0;
+            Point location = this.getMousePosition();
+            // set the zoom coordinate so that location under mouse remains under the mouse
+            lastZoomX = location.getX()-((this.getWidth()/4)*(location.getX()/this.getWidth()));
+            lastZoomY = location.getY()-((this.getHeight()/4)*(location.getY()/this.getHeight()));
+            x = 0 - ((4 * lastZoomX));
+            y = 0 - ((4 * lastZoomY)); 
+            //System.out.println(lastZoomX+" "+lastZoomY);
+        // Zoomed, lets set data for unzooming
+        }else{
+            zoomAmount = 0.25;
+            x = lastZoomX;
+            y = lastZoomY;         
+        }       
+        zoom = AffineTransform.getTranslateInstance ( x,y );
+        zoom.scale(zoomAmount,zoomAmount);
+        for(AlcShape shape : shapes){
+            GeneralPath zoomPath = (GeneralPath) shape.getPath().createTransformedShape(zoom);
+            shape.setPath(zoomPath);
+            shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
+        }
+        redraw(true);
+        
+    }
+    public void startZoomMousing(){
+        if(zoomAmount<1){
+            zoomMousing = true;
+            Alchemy.toolBar.setToolBarVisible(false);
+            setTempCursor(CURSOR_CIRCLE);
+
+        }else{
+            zoomCanvas();
+        }
+    }
+    public void stopZoomMousing(){
+        zoomMousing = false;
+        restoreCursor();
+    }
+    public boolean isCanvasZoomed(){
+        if (zoomAmount<1){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public Point getZoomLocation(){
+        Point p = new Point();
+        if(isCanvasZoomed()){
+            p.setLocation(lastZoomX,lastZoomY);
+        }else{
+            p.setLocation(0.0,0.0);
+        }
+        return p;
     }
 
     //////////////////////////////////////////////////////////////
@@ -1490,8 +1517,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 !Alchemy.preferences.simpleToolBar && event.getY() >= Alchemy.toolBar.getTotalHeight()) {
             Alchemy.toolBar.setToolBarVisible(false);
         }
+        
+        if(event.getButton()!=MouseEvent.BUTTON1&&zoomMousing){
+            stopZoomMousing();
+        }
 
-        if (events) {
+        if (events) {          
+            if(zoomMousing){             
+                zoomMousing = false;
+                zoomCanvas();
+                Alchemy.toolBar.setZoomButtonSelected();
+                restoreCursor();
+                
+            }else{
+            
             // Pass to the current create module
             if (createEvents) {
                 Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
@@ -1506,8 +1545,9 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     }
                 }
             }
-        /** update shapeGroups array with the first "shapes" index from this group */
-        shapeGroups.add(shapes.size());
+           /** update shapeGroups array with the first "shapes" index from this group */
+           shapeGroups.add(shapes.size());         
+           }          
         }
     }
 
