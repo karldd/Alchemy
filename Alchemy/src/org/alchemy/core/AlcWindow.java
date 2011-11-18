@@ -637,6 +637,9 @@ public class AlcWindow extends JFrame implements AlcConstants, WindowStateListen
     // KEY EVENTS
     //////////////////////////////////////////////////////////////
     public void keyPressed(KeyEvent event) {
+        
+        // This kills mouse zooming on any keypress
+        Alchemy.canvas.stopZoomMousing();
 
         int keyCode = event.getKeyCode();
 
