@@ -1171,14 +1171,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         restoreCursor();
     }
     public boolean isCanvasZoomed(){
-        if (zoomAmount<1){
+        if (zoomAmount>1){
             return true;
         }else{
             return false;
         }
     }
-    public Point getZoomLocation(){
-        Point p = new Point();
+    public Point2D.Double getZoomLocation(){
+        Point2D.Double p = new Point2D.Double();
         if(isCanvasZoomed()){
             p.setLocation(lastZoomX,lastZoomY);
         }else{
