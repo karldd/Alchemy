@@ -134,15 +134,17 @@ public class Mirror extends AlcModule implements AlcConstants {
 
     @Override
     protected void affect() {
+        
+        //If the canvas is zoomed, calculate the "zoomed" axis location
         if(canvas.isCanvasZoomed()){
-            Point2D.Double p = new Point2D.Double();
-            p = canvas.getZoomLocation();
-            horizontalAxis = (0 - (4*(int)p.getX()))+(baseHorizontalAxis*4);
-            verticalAxis = (0 - (4*(int)p.getY()))+(baseVerticalAxis*4);
+            horizontalAxis = (int)canvas.calculateZoomedX(baseHorizontalAxis);
+            verticalAxis = (int)canvas.calculateZoomedY(baseVerticalAxis);
+        //Canvas is not zoomed, use the base axis location
         }else{
             horizontalAxis = baseHorizontalAxis;
             verticalAxis = baseVerticalAxis;
         }
+        
         if (!selectAxis) {
 
             int numOfCreateShapes = canvas.createShapes.size();
@@ -381,25 +383,11 @@ public class Mirror extends AlcModule implements AlcConstants {
         return verticalReflection;
     }
 
-//    private void resetAxis() {
-//        Dimension size = canvas.getSize();
-//        horizontalAxis = size.width / 2;
-//        verticalAxis = size.height / 2;
-//    }
     private void resetAxis() {
         Dimension size = canvas.getSize();
         baseHorizontalAxis = size.width / 2;
         baseVerticalAxis = size.height / 2;
     }
-    
-//    public void zoomMirrorAxis(){
-//        horizontalAxis*=4;
-//        verticalAxis*=4;
-//    }
-//    public void unzoomMirrorAxis(){
-//        horizontalAxis*=0.25;
-//        verticalAxis*=0.25;
-//    }
 
     private void countShapes() {
         // Add one for every axis currently on
@@ -445,18 +433,6 @@ public class Mirror extends AlcModule implements AlcConstants {
     public void mousePressed(MouseEvent e) {
     }
 
-//    @Override
-//    public void mouseReleased(MouseEvent e) {
-//        if (selectAxis) {
-//            canvas.removeCurrentGuideShape();
-//            horizontalAxis = e.getX();
-//            verticalAxis = e.getY();
-//            selectAxis = false;
-//            canvas.setCreateEvents(true);
-//            canvas.redraw();
-//        }
-//
-//    }
     @Override
     public void mouseReleased(MouseEvent e) {
         if (selectAxis) {
