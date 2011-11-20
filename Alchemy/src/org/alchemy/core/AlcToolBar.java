@@ -115,7 +115,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
      * Creates a new instance of AlcToolBar
      */
     AlcToolBar() {
-
+        
         // General Toolbar settings
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         this.setOpaque(false);
@@ -916,14 +916,15 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
           
         AbstractAction zoomAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                if (!e.getSource().getClass().getName().endsWith("AlcToggleButton")) {
-                    // Only toogle the button manually if it is triggered by a key
-                    zoomButton.setSelected(!zoomButton.isSelected());
-                    Alchemy.canvas.zoomCanvas();
+                // quick-key used
+                if (!e.getSource().getClass().getName().endsWith("AlcToggleButton")) {               
+                    if(Alchemy.canvas.zoomCanvas(true)){
+                        zoomButton.setSelected(!zoomButton.isSelected());
+                    }
                 }else{
                     Alchemy.canvas.startZoomMousing();
                     if(zoomButton.isSelected()){
-                        // Dont set button selected, wait till zoom location is selected
+                        // Dont set button selected if zooming, wait till zoom location is selected
                         zoomButton.setSelected(false);
                     }
                 }           

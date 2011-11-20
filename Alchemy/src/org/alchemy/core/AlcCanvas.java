@@ -1126,36 +1126,48 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
     
     /** Zoom the Canvas 4x - keep location under mouse, under the mouse */
-    public void zoomCanvas(){
-        double x;
-        double y;
-        AffineTransform zoom = new AffineTransform();    
-        // Not Zoomed, lets set data for zooming/
-        if(zoomAmount==0.25){
-            zoomAmount = 4.0;
-            Point location = this.getMousePosition();
-            // set the zoom coordinate so that location under mouse remains under the mouse
-            lastZoomX = location.getX()-((this.getWidth()/4)*(location.getX()/this.getWidth()));
-            lastZoomY = location.getY()-((this.getHeight()/4)*(location.getY()/this.getHeight()));
-            x = 0 - ((4 * lastZoomX));
-            y = 0 - ((4 * lastZoomY)); 
-            //System.out.println(lastZoomX+" "+lastZoomY);
-        // Zoomed, lets set data for unzooming
-        }else{
-            zoomAmount = 0.25;
-            x = lastZoomX;
-            y = lastZoomY;         
-        }       
-        zoom = AffineTransform.getTranslateInstance ( x,y );
-        zoom.scale(zoomAmount,zoomAmount);
-        for(AlcShape shape : shapes){
-            GeneralPath zoomPath = (GeneralPath) shape.getPath().createTransformedShape(zoom);
-            shape.setPath(zoomPath);
-            shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
-        }
-        redraw(true);
+    public boolean zoomCanvas(boolean keyLaunch){
         
+        //things get wacky if you quick-key zoom while over the toolbar...       
+        if(this.getMousePosition()!=null||!keyLaunch){
+
+            double x;
+            double y;
+            AffineTransform zoom = new AffineTransform();
+            
+            // Not Zoomed, lets set data for zooming/
+            if(zoomAmount==0.25){
+                zoomAmount = 4.0;
+                Point location = this.getMousePosition();
+                // set the zoom coordinate so that location under mouse remains under the mouse
+                lastZoomX = location.getX()-((this.getWidth()/4)*(location.getX()/this.getWidth()));
+                lastZoomY = location.getY()-((this.getHeight()/4)*(location.getY()/this.getHeight()));
+                x = 0 - ((4 * lastZoomX));
+                y = 0 - ((4 * lastZoomY)); 
+            // Zoomed, lets set data for unzooming
+            }else{
+                zoomAmount = 0.25;
+                x = lastZoomX;
+                y = lastZoomY;         
+            }       
+            zoom = AffineTransform.getTranslateInstance ( x,y );
+            zoom.scale(zoomAmount,zoomAmount);
+            for(AlcShape shape : shapes){
+                GeneralPath zoomPath = (GeneralPath) shape.getPath().createTransformedShape(zoom);
+                shape.setPath(zoomPath);
+                shape.setGradientPaint(makeHorizontalReflectedGradientPaint(shape.getGradientPaint()));
+            }
+            redraw(true);
+            
+            // success
+            return(true);
+        
+        }else{
+            // fail
+            return(false);
+        }       
     }
+    
     public void startZoomMousing(){
         if(zoomAmount<1){
             zoomMousing = true;
@@ -1163,7 +1175,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             setTempCursor(CURSOR_CIRCLE);
 
         }else{
-            zoomCanvas();
+            zoomCanvas(false);
         }
     }
     public void stopZoomMousing(){
@@ -1185,6 +1197,22 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             p.setLocation(0.0,0.0);
         }
         return p;
+    }
+    public double calculateZoomedX(double c){
+        if(isCanvasZoomed()){
+           c = (0 - (4*(int)lastZoomX))+(c*4);
+           return c;
+        }else{
+           return c;
+        }
+    }
+    public double calculateZoomedY(double c){
+        if(isCanvasZoomed()){
+           c = (0 - (4*(int)lastZoomY))+(c*4);
+           return c;
+        }else{
+           return c;
+        }
     }
 
     //////////////////////////////////////////////////////////////
@@ -1525,7 +1553,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if (events) {          
             if(zoomMousing){             
                 zoomMousing = false;
-                zoomCanvas();
+                zoomCanvas(false);
                 Alchemy.toolBar.setZoomButtonSelected();
                 restoreCursor();
                 

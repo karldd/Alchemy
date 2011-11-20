@@ -92,6 +92,9 @@ public class Gradient extends AlcModule {
                 p2 = getRandomPoint(bounds);
             }
         }
+        
+//        p1.setLocation((float)canvas.calculateZoomedX(p1.getX()),(float)canvas.calculateZoomedY(p1.getY()));
+//        p2.setLocation((float)canvas.calculateZoomedX(p2.getX()),(float)canvas.calculateZoomedY(p2.getY()));
 
         if (p1 != null && p2 != null) {
             Color color = shape.getColor();
