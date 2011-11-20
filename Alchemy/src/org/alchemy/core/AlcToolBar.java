@@ -471,25 +471,25 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         // SWATCH NUMBERPAD SHORTCUTS
         ////////////////////////////////////////////////////////////// 
         
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_MULTIPLY, "transparency up", transparencyUpAction);
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_DIVIDE, "transparency down", transparencyDownAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_MULTIPLY, getS("transparencyUp"), transparencyUpAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_DIVIDE, getS("transparencyDown"), transparencyDownAction);
         final int VK_ADD = 0x6B;
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_ADD,  "next color", nextColorAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_ADD,  getS("nextColor"), nextColorAction);
         final int VK_SUBTRACT = 0x6D;
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_SUBTRACT, "prev color", prevColorAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_SUBTRACT, getS("previousColor"), prevColorAction);
         final int VK_DECIMAL = 0x6E;
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_DECIMAL, "repeat Mod", repeatModAction);
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_DECIMAL, getS("repeatModulation"), repeatModAction);
         
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD0, "num0", buildSwatchQuickKey(0));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD1, "num1", buildSwatchQuickKey(1));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD2, "num2", buildSwatchQuickKey(2));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD3, "num3", buildSwatchQuickKey(3));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD4, "num4", buildSwatchQuickKey(4));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD5, "num5", buildSwatchQuickKey(5));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD6, "num6", buildSwatchQuickKey(6));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD7, "num7", buildSwatchQuickKey(7));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD8, "num8", buildSwatchQuickKey(8));
-        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD9, "num9", buildSwatchQuickKey(9));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD0, getS("swatchQuickKey")+" 0", buildSwatchQuickKey(0));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD1, getS("swatchQuickKey")+" 1", buildSwatchQuickKey(1));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD2, getS("swatchQuickKey")+" 2", buildSwatchQuickKey(2));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD3, getS("swatchQuickKey")+" 3", buildSwatchQuickKey(3));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD4, getS("swatchQuickKey")+" 4", buildSwatchQuickKey(4));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD5, getS("swatchQuickKey")+" 5", buildSwatchQuickKey(5));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD6, getS("swatchQuickKey")+" 6", buildSwatchQuickKey(6));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD7, getS("swatchQuickKey")+" 7", buildSwatchQuickKey(7));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD8, getS("swatchQuickKey")+" 8", buildSwatchQuickKey(8));
+        Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_NUMPAD9, getS("swatchQuickKey")+" 9", buildSwatchQuickKey(9));
               
         //////////////////////////////////////////////////////////////
         // ADD COLOR TO SWATCH BUTTON
