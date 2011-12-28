@@ -169,11 +169,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     Cursor oldCursor;
     /** Automatic toggling of the toolbar */
     private boolean autoToggleToolBar;
-
+    
     /** Creates a new instance of AlcCanvas*/
     AlcCanvas() {
         currentColorSet = new ArrayList<Color>(2);
-        
         currentColorSet.add(Color.WHITE);
         currentColorSet.add(Color.WHITE);
         currentColorIndex = 0;
@@ -228,7 +227,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      */
     @Override
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         java.awt.Rectangle visibleRect = this.getVisibleRect();
@@ -320,7 +318,6 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     // Hints that don't seem to offer any extra performance on OSX
     //g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
     //g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
-
     }
 
     //////////////////////////////////////////////////////////////
@@ -762,7 +759,10 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     
     /** Adds the current color, to the swatch array, sets it active */
     public void addCurrentColorToSwatch(){
-        swatch.add(activeSwatchIndex+1, currentColorSet.get(currentColorIndex));
+        swatch.add(activeSwatchIndex+1, new Color(currentColorSet.get(currentColorIndex).getRed(),
+                                                  currentColorSet.get(currentColorIndex).getGreen(),
+                                                  currentColorSet.get(currentColorIndex).getBlue(),
+                                                  currentAlphaSet[currentColorIndex]));
         activeSwatchIndex+=1;
     }
 
