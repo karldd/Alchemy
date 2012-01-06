@@ -1172,7 +1172,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         if(zoomAmount<1){
             zoomMousing = true;
             Alchemy.toolBar.setToolBarVisible(false);
-            setTempCursor(CURSOR_CIRCLE);
+            setTempCursor(CURSOR_ZOOM);
 
         }else{
             zoomCanvas(false);

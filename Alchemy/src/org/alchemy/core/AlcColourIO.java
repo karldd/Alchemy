@@ -148,18 +148,20 @@ public class AlcColourIO implements AlcConstants{
     
     // controls import of gpl/ase swatch files.
     public void importFileSwatch(){
-       File file = AlcUtil.showFileChooser();
-       if(!file.canRead()){
+       File importFile = AlcUtil.showFileChooser();
+       if(importFile==null){
+           System.out.println("No File selected for export");
+       }else if(!importFile.canRead()){
            JOptionPane.showMessageDialog(null, getS("noReadError"), 
                                         getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
        }else{
            int type=-1;
            try{
-               type = getFileType(file);
+               type = getFileType(importFile);
                if (type==1){
-                   readGPL(file);
+                   readGPL(importFile);
                }else if(type==2){
-                   readASE(file);
+                   readASE(importFile);
                }else if(type==-1){
                    JOptionPane.showMessageDialog(null, getS("invalidImport"), 
                                         getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
@@ -206,8 +208,7 @@ public class AlcColourIO implements AlcConstants{
        if (Alchemy.canvas.swatch.isEmpty()){
            JOptionPane.showMessageDialog(null, getS("emptySwatch"), getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
        }else{
-           exportDialog eD = new exportDialog();
-           eD.setVisible(true);
+           exportDialog();
        }
     }
     
@@ -858,15 +859,10 @@ public class AlcColourIO implements AlcConstants{
            colorsBox.setPreferredSize(new Dimension(490,80));
            colorsBox.setMinimumSize(new Dimension(490,80));
 
-           //buttonsPanel.add(Box.createHorizontalStrut(20));
            buttonsPanel.add(addColors);
-           //buttonsPanel.add(Box.createHorizontalStrut(20));
            buttonsPanel.add(replaceColors);
-           //buttonsPanel.add(Box.createHorizontalStrut(20));
            buttonsPanel.add(refreshColors);
-           //buttonsPanel.add(Box.createHorizontalStrut(20));
            buttonsPanel.add(cancel);
-           //buttonsPanel.add(Box.createHorizontalStrut(20));
 
            this.add(Box.createVerticalStrut(15));
            this.add(headingBox);
@@ -923,148 +919,38 @@ public class AlcColourIO implements AlcConstants{
        
    }
    
-   private class exportDialog extends JDialog{
-        
-       File f;   
-       JTextField fileField = new JTextField(25);
-       JComboBox comboTypes;
-        
-       exportDialog(){
+   private void exportDialog() {
 
-           fileField.setText(getS("selectFileTitle"));
-           fileField.setHorizontalAlignment(JTextField.CENTER);
-           fileField.setEditable(false);
+        final AlcFileChooser fc = new AlcFileChooser(Alchemy.preferences.exportDirectory);
+        fc.setDialogTitle(Alchemy.bundle.getString("exportFileTitle"));
+        fc.setAcceptAllFileFilterUsed(false);
+        fc.setFileFilter(new ExportFileFilter("GPL"));
+        fc.addChoosableFileFilter(new ExportFileFilter("ASE"));
+        fc.setSelectedFile(new File(Alchemy.bundle.getString("defaultFileName")));
 
-           String[] fileTypes = {getS("gplDescription"),getS("aseDesctiption")};
-           comboTypes = new JComboBox(fileTypes);
-           comboTypes.setSelectedIndex(0);
+        // in response to a button click:
+        int returnVal = fc.showSaveDialog(Alchemy.toolBar);
+        if (returnVal == AlcFileChooser.APPROVE_OPTION) {
+            
+            File exportFile = fc.getSelectedFile();
 
-           this.setModalityType(ModalityType.APPLICATION_MODAL);
-           this.setDefaultCloseOperation(2);
-           this.setSize(400,200);
-           this.setTitle(getS("exportSwatchTitle"));
-           this.setLocationRelativeTo(null);
-
-           this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-           Box fileStuff = new Box(BoxLayout.X_AXIS);
-           Box fileTypeStuff = new Box(BoxLayout.X_AXIS);
-           Box Buttons = new Box(BoxLayout.X_AXIS);
-
-           JLabel chooseFile = new JLabel(getS("chooseFile")+" ");
-
-           AbstractAction launchFileChooser = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) {                
-                   setFile(AlcUtil.showFileChooser());
-                   if(f!=null){
-                       setCombo(f.getName());
-                       updateFileField(f.getName());
-                       fileField.setHorizontalAlignment(JTextField.LEFT);
-                   }
-               }
-           };
-           
-           AbstractAction okAction = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) {               
-                   if (f==null){
-                       JOptionPane.showMessageDialog(null, getS("noFileError"), 
+            String format = fc.getFileFilter().getDescription();
+            
+            if (exportFile==null){
+                JOptionPane.showMessageDialog(null, getS("noFileError"), 
                                                     getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
-                   }else if(!f.canWrite()){
-                       JOptionPane.showMessageDialog(null,getS("noWriteError"), 
-                                                    getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
-                   }else if(f.exists()){  
-                       if(JOptionPane.showConfirmDialog(null, getS("overwriteFile"), getS("fileExistsTitle"),0)==0){
-                           writeFile();
-                       }
-                   }else{
-                      writeFile();
-                   }
-               }
-           };
-           
-           AbstractAction cancelAction = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) { 
-                   closeDialog();
-               }
-           };
-           
-           JButton launchChooser = new JButton();
-           launchChooser.setAction(launchFileChooser);
-           launchChooser.setText(getS("fileButtonTitle"));
-
-           JLabel chooseType = new JLabel(getS("fileType")+" ");  
-           JButton ok = new JButton();
-           ok.setAction(okAction);
-           ok.setText(getS("ok"));
-           JButton cancel = new JButton();
-           cancel.setAction(cancelAction);
-           cancel.setText(getS("cancel"));
-
-           fileStuff.add(Box.createHorizontalStrut(20));
-           fileStuff.add(chooseFile);
-           fileStuff.add(Box.createHorizontalStrut(20));
-           fileStuff.add(fileField);
-           fileStuff.add(launchChooser);
-           fileStuff.add(Box.createHorizontalStrut(20));
-
-           fileTypeStuff.add(Box.createHorizontalStrut(20));
-           fileTypeStuff.add(chooseType);
-           fileTypeStuff.add(Box.createHorizontalStrut(20));
-           fileTypeStuff.add(comboTypes);
-           fileTypeStuff.add(Box.createHorizontalStrut(20));
-
-           Buttons.add(ok);
-           Buttons.add(Box.createHorizontalStrut(40));
-           Buttons.add(cancel);
-
-           this.add(Box.createVerticalStrut(20));
-           this.add(fileStuff);
-           this.add(Box.createVerticalStrut(20));
-           this.add(fileTypeStuff);
-           this.add(Box.createVerticalStrut(20));
-           this.add(Buttons);
-           this.add(Box.createVerticalStrut(20));
-       }
-      
-       private void setFile(File file){
-          f = file;
-       }
-       public File getFile(){
-           return f;
-       }
-       private void updateFileField(String s){
-          fileField.setText(s);
-       }
-       private void setCombo(String s){
-           String extensionReg = "[\\d\\D]+?(\\.\\w*)$";
-           Pattern extension = Pattern.compile(extensionReg);
-           Matcher m;
-           int type=0;
-
-           m = extension.matcher(f.getName());
-           if (m.matches()){
-              if (m.group(1).equals(".gpl")){
-                      comboTypes.setSelectedIndex(0);
-              }else if(m.group(1).equals(".ase")){
-                      comboTypes.setSelectedIndex(1);
-              }         
-           }           
+            }else if(!exportFile.getParentFile().canWrite()){
+                JOptionPane.showMessageDialog(null,getS("noWriteError"), 
+                                                   getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
+            }else{
+                if(format.equals("GPL")) {
+                       writeGPL(exportFile);
+                } else if(format.equals("ASE")) {
+                       writeASE(exportFile);
+                }
+            }  
         }
-       public int getExportType(){
-           return comboTypes.getSelectedIndex();
-       }
-       private void closeDialog(){
-           this.setVisible(false);
-           this.dispose();
-       } 
-       private void writeFile(){
-           if (comboTypes.getSelectedIndex()==0){
-               writeGPL(f);
-           }else if(comboTypes.getSelectedIndex()==1){
-               writeASE(f);
-           }
-           closeDialog();
-       }
-   }
+    }
    
    private class modulateDialog extends JDialog{
         
