@@ -118,6 +118,8 @@ public interface AlcConstants {
             "Blank");
     /** Cursor - Circle Cursor used with the color picker */
     static final Cursor CURSOR_CIRCLE = AlcUtil.getCursor("cursor-circle.png");
+    /** Cursor - Zoom Cursor */
+    static final Cursor CURSOR_ZOOM = AlcUtil.getCursor("cursor-zoom.png");
     /** Cursor - Eyedropper Cursor */
     static final Cursor CURSOR_EYEDROPPER = AlcUtil.getCursor("cursor-eyedropper.png");
     //////////////////////////////////////////////////////////////
