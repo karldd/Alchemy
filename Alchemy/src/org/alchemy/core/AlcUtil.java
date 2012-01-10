@@ -774,6 +774,28 @@ public class AlcUtil implements AlcConstants {
         }
         return result;
     }
+    
+     /** Show a notification dialog specific to the OS style
+     *  The title and message are taken from the localised Alchemy bundle
+     * 
+     * @param title     Title of the dialog
+     * @param message   Message of the dialog
+     * @type            JOptionPane Dialog Type (example JOptionPane.ERROR_MESSAGE)
+     * 
+     */
+    public static void showMessageDialog(String title, String message, int type) {
+
+        if (Alchemy.OS == OS_MAC) {
+            message =
+                    "<html>" + UIManager.get("OptionPane.css") +
+                    "<b>" + title + "</b>" +
+                    "<p>" + message;
+            title = "";
+        }
+        
+        JOptionPane.showMessageDialog(null, title, message, type);
+        
+    }
 
     /** Show a confirmation dialog specific to the OS style
      *  The title and message are taken from the localised Alchemy bundle
