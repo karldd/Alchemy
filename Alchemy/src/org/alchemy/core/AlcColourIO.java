@@ -74,23 +74,28 @@ public class AlcColourIO implements AlcConstants{
         //clDialog sets this >0 if rereading from colourlovers.com
         dialogReturn = 0;
         
-        //this doesn't seem to work....
-        Alchemy.toolBar.setVisible(false);
+        //show dialog with loading text
         
-        while (dialogReturn<1){  // looking for a new palette       
-            colours.clear();
-            getColourLoversData(i);  // i is a random number
-            i++;  // bump the random number in case we nead a different palette.
-            
-            if(errorType==0){  //no errors         
-               clDialog clD = new clDialog();
-               clD.setVisible(true);
-
-            }else{  //We got errors. crap.
-                dialogReturn = 3;
-                AlcUtil.showMessageDialog(errorText, getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
-            }
-        }
+        clDialog clD = new clDialog(i);
+        clD.setVisible(true);
+        
+        //branch thread
+        
+//        while (dialogReturn<1){  // looking for a new palette       
+//            colours.clear();
+//            getColourLoversData(i);  // i is a random number
+//            i++;  // bump the random number in case we nead a different palette.
+//            
+//            if(errorType==0){  //no errors         
+////               clDialog clD = new clDialog();
+////               clD.setVisible(true);
+//                clD.setCLContent();
+//
+//            }else{  //We got errors. crap.
+//                dialogReturn = 3;
+//                AlcUtil.showMessageDialog(errorText, getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
+//            }
+//        }
     }
     
     // Gets-Parses XML color data info from colourlovers.com.
@@ -754,10 +759,25 @@ public class AlcColourIO implements AlcConstants{
    // Custom Dialog Windows From Here On //
    //------------------------------------//
 
-   private class clDialog extends JDialog{
+   private class clDialog extends JDialog{      
        
-       clDialog(){
-
+       Box headingBox = new Box(BoxLayout.X_AXIS);
+       Box infoBox = new Box(BoxLayout.X_AXIS);
+       Box colorsBox = new Box(BoxLayout.X_AXIS); 
+       Box loadingBox = new Box(BoxLayout.X_AXIS);
+       
+       JPanel buttonsPanel = new JPanel();
+       JComponent colorPanel;
+       
+       JButton addColors = new JButton();
+       JButton replaceColors = new JButton();
+       JButton refreshColors = new JButton();
+       JButton cancel = new JButton();
+      
+           clDialog(int i){
+               
+           resetColorPanel();
+           
            this.setModalityType(ModalityType.APPLICATION_MODAL);
            this.setDefaultCloseOperation(2);
            this.setSize(500,250);
@@ -766,21 +786,7 @@ public class AlcColourIO implements AlcConstants{
 
            this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 
-           Box headingBox = new Box(BoxLayout.X_AXIS);
-           Box infoBox = new Box(BoxLayout.X_AXIS);
-           Box colorsBox = new Box(BoxLayout.X_AXIS);
-           JPanel buttonsPanel = new JPanel();// = new Box(BoxLayout.X_AXIS);
            buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
-
-           JComponent colorPanel;       
-           colorPanel = new JComponent() {
-              @Override
-              public void paintComponent(Graphics g) {
-                 g.drawImage(getColorPanelImage(), 0, 0, null);
-              }
-           };
-
-           //colorPanel.repaint();
 
            AbstractAction addColorsAction = new AbstractAction() {
                public void actionPerformed(ActionEvent e) {
@@ -823,32 +829,27 @@ public class AlcColourIO implements AlcConstants{
                    closeDialog();
                }
            };
-
+           
+           JLabel loadingText = new JLabel("Fetching Palette from Colourlovers.com...");
            JLabel colorHeading = new JLabel(getS("swatchRetrieved"));
            JLabel colorAuthor = new JLabel(getS("author")+" "+authorString);
            JLabel colorTitle = new JLabel("      "+getS("title")+" "+titleString );
 
-
-
+           loadingBox.add(loadingText);
            headingBox.add(colorHeading);
-
            infoBox.add(colorAuthor);
            infoBox.add(colorTitle);
-
-           JButton addColors = new JButton();
+          
            addColors.setAction(addColorsAction);
            addColors.setText(getS("add"));
            addColors.setMnemonic(KeyEvent.VK_ENTER);
-
-           JButton replaceColors = new JButton();
+         
            replaceColors.setAction(replaceColorsAction);
            replaceColors.setText(getS("replace"));
-
-           JButton refreshColors = new JButton();
+          
            refreshColors.setAction(refreshColorsAction);
            refreshColors.setText(getS("refresh"));
-
-           JButton cancel = new JButton();
+          
            cancel.setAction(cancelAction);
            cancel.setText(getS("cancel"));
            cancel.setMnemonic(KeyEvent.VK_ESCAPE);
@@ -873,7 +874,40 @@ public class AlcColourIO implements AlcConstants{
                buttonsPanel.add(cancel);
            
            }
+           
+           setLoadingContent();
+           
+           System.out.println("we made it here");
+           doCLWork(i);
+           
 
+       }
+           
+       private void doCLWork(int i){
+           
+           //colours.clear();
+           
+           //start worker thread,
+           
+           //get colorlovers data
+//            getColourLoversData(i);  // i is a random number
+//            i++;  // bump the random number in case we nead a different palette.
+           
+           //resetColorPanel();
+           
+           //setCLContent();
+           
+       }
+       
+       private void setLoadingContent(){
+           this.getContentPane().removeAll();
+           this.add(loadingBox); 
+           this.add(cancel);
+           this.getContentPane().repaint();
+       }
+       
+       private void setCLContent(){
+           this.getContentPane().removeAll();
            this.add(Box.createVerticalStrut(15));
            this.add(headingBox);
            this.add(Box.createVerticalStrut(10));
@@ -881,7 +915,7 @@ public class AlcColourIO implements AlcConstants{
            this.add(Box.createVerticalStrut(20));
            this.add(colorsBox);
            this.add(buttonsPanel);
-
+           this.getContentPane().repaint();
        }
 
        private Image getColorPanelImage() {
@@ -922,6 +956,25 @@ public class AlcColourIO implements AlcConstants{
            }          
            return image;
        }
+       
+       private JComponent getColorPanel() {
+           
+           JComponent cP;       
+           cP = new JComponent() {
+              @Override
+              public void paintComponent(Graphics g) {
+                 g.drawImage(getColorPanelImage(), 0, 0, null);
+              }
+           };
+
+           return cP;
+       }
+       
+       private void resetColorPanel(){
+           colorPanel = getColorPanel();
+           colorPanel.repaint();
+       }
+       
        void closeDialog(){
            this.setVisible(false);
            this.dispose();

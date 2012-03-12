@@ -920,6 +920,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             // Ignore the color out of range exception caused by out of bounds slider settings
         }
     }
+    
+    // relay method to allow modules access to the toolbar color button
+    public void refreshColorButtonRelay(){
+        Alchemy.toolBar.refreshColorButton();
+    }
 
     /** Get the background color
      * @return Color object of the background color
@@ -947,11 +952,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      * @param alpha 
      */
     public void setAlpha(int alpha) {
-        this.alpha = alpha;
-        setColor(this.getColor());
-        Alchemy.toolBar.refreshTransparencySlider();
+            this.alpha = alpha;
+            setColor(this.getColor());
+            Alchemy.toolBar.refreshTransparencySlider();
     }
-    
+
     /** Returns the state of alpha lock */
     public boolean isAlphaLocked(){
         return alphaLocked;
