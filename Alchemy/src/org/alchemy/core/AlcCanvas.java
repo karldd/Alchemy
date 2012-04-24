@@ -69,6 +69,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     
     // 0-Disabled, 1-Single, 2-Unlimited
     private int undoDepth;
+    // remember the size of the shapes array
+    private int lastShapesSize;
     
     // Swatch stored here
     public ArrayList<Color> swatch;
@@ -132,10 +134,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     public ArrayList<AlcShape> affectShapes;
     /** Array list containing shapes used as visual guides - not actual geometry */
     public ArrayList<AlcShape> guideShapes;
-    /** Full shape array of each array list */
-    public ArrayList<Integer> shapeGroups; 
     /** Keeps track of the shape number of the first shape in a group for undo
-        new numbers are entered on mouse presses. Correspondes to "shapes" array */        
+        new numbers are entered on mouse presses. Correspondes to "shapes" array */
+    public ArrayList<Integer> shapeGroups;
+    public ArrayList<Integer> shapeGroupsSize;
+    /** Full shape array of each array list */
     ArrayList[] fullShapeList = new ArrayList[3];
     /** Active shape list plus guides */
     ArrayList[] activeShapeList = new ArrayList[2];
@@ -208,6 +211,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         /** Keeps track of which shapes in "shapes" array were laid down
          *  in a single mouse/pen click                                   */
         shapeGroups = new ArrayList<Integer>();
+        shapeGroupsSize = new ArrayList<Integer>();
         
         activeShapeList[0] = createShapes;
         activeShapeList[1] = affectShapes;
@@ -742,17 +746,39 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             shapes.remove(shapes.size() - 1);
         }
     }
+    /** Removes a shape */
+    public void removeShape(int s) {
+        if (shapes.size() > 0 && s<shapes.size()) {
+            shapes.remove(s);
+        }
+    }
     
     /** Removes the most recently added group of shapes which were
      *  laid down in a single mouse/pen event                      */
-    public void removeShapeGroup(){
+    public boolean removeShapeGroup(){
         
         if (!shapes.isEmpty()){
-           while(shapes.size()>shapeGroups.get(shapeGroups.size()-1)){
-              removeCurrentShape();                
+           int i = 0;
+           while(i<shapeGroupsSize.get(shapeGroupsSize.size()-1)){
+              removeShape(shapeGroups.get(shapeGroups.size()-1)); 
+              i++;
+           }
+           i = 0;
+           while(i<shapeGroups.size()){
+               if(shapeGroups.get(i)>shapeGroups.get(shapeGroups.size()-1)){
+               shapeGroups.set(i, shapeGroups.get(i)-shapeGroupsSize.get(shapeGroupsSize.size()-1));
+               }
+               i++;
            }
            redraw(true);
+        
            shapeGroups.remove(shapeGroups.size()-1);
+           shapeGroupsSize.remove(shapeGroupsSize.size()-1);        
+        }
+        if(shapes.isEmpty()){
+            return(true);
+        }else{
+            return(false);
         }
             
     }
@@ -1564,24 +1590,50 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 
             }else{
             
-            // Pass to the current create module
-            if (createEvents) {
-                Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
-            }
-            // Pass to all active affect modules
-            if (affectEvents) {
-                if (Alchemy.plugins.hasCurrentAffects()) {
-                    for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
-                        if (Alchemy.plugins.currentAffects[i]) {
-                            Alchemy.plugins.affects[i].mousePressed(event);
+                // Pass to the current create module
+                if (createEvents) {
+                    Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
+                }
+                // Pass to all active affect modules
+                if (affectEvents) {
+                    if (Alchemy.plugins.hasCurrentAffects()) {
+                        for (int i = 0; i < Alchemy.plugins.currentAffects.length; i++) {
+                            if (Alchemy.plugins.currentAffects[i]) {
+                                Alchemy.plugins.affects[i].mousePressed(event);
+                            }
                         }
                     }
                 }
-            }
-           /** update shapeGroups array with the first "shapes" index from this group */
-           shapeGroups.add(shapes.size());         
-           }          
+                startUndoGroup();       
+            }      
         }
+    }
+    
+    public void startUndoGroup(){
+        lastShapesSize = shapes.size();
+        if(drawUnder){//drawUnder){
+            shapeGroups.add(0);
+        }else{
+            shapeGroups.add(shapes.size());         
+        } 
+    }
+    
+    public void finishUndoGroup(){
+        if(undoDepth>0){Alchemy.toolBar.enableUndo();}
+
+        int groupSize = shapes.size() - lastShapesSize;
+        shapeGroupsSize.add(groupSize);
+         
+        //drawunder was enabled - or it was the first shape and doesnt matter
+        if(shapeGroups.get(shapeGroups.size()-1)==0){
+            int i = shapeGroups.size()-2;
+            int test;
+            while(i>=0){
+                test = shapeGroups.get(i)+groupSize;
+                shapeGroups.set(i, shapeGroups.get(i)+groupSize);
+                i--;
+            }
+        }     
     }
 
     public void mouseClicked(MouseEvent event) {
@@ -1658,7 +1710,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                     }
                 }
             }
-        if(undoDepth>0){Alchemy.toolBar.enableUndo();}
+            finishUndoGroup();
         }
     }
 
