@@ -950,7 +950,9 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         AbstractAction undoAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) { 
                 //returns true if there are no more shape groups after trying to remove one
-                if(Alchemy.canvas.removeShapeGroup()){disableUndo();}
+                if(Alchemy.canvas.removeShapeGroup()){
+                    disableUndo();
+                }
                 //diables undo if depth is set to 1 in settings
                 if(Alchemy.canvas.getUndoDepth()==1){          
                     disableUndo();
