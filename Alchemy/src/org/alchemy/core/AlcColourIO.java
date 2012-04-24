@@ -22,7 +22,6 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.Dialog.ModalityType;
-import foxtrot.*;
 import java.awt.event.*;
 import java.util.regex.*;
 import java.util.ArrayList;
@@ -33,23 +32,11 @@ import java.util.Random;
 import java.awt.image.BufferedImage;
 
 public class AlcColourIO implements AlcConstants{ 
-    //pull strings from Colour Lovers XML files
-    private String titleReg = "\\s*?<title><!\\[CDATA\\[(.+?)\\]\\]><\\/title>\\s*?";
-    private String authorReg = "\\s*?<userName><!\\[CDATA\\[(.+?)\\]\\]><\\/userName>\\s*?";
-    private String hexReg = "\\s*?<hex>(\\S+?)<\\/hex>\\s*?";
-    private Pattern title = Pattern.compile(titleReg);
-    private Pattern author = Pattern.compile(authorReg);
-    private Pattern hex = Pattern.compile(hexReg);    
-    private String titleString;
-    private String authorString;
-    private String urlString;
     
     private ArrayList<Color> colours;
 
-    private int errorType;
-    private String errorText;
-    
-    private int dialogReturn;
+    private volatile int errorType;
+    private volatile String errorText;
     
     private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
     
@@ -59,97 +46,343 @@ public class AlcColourIO implements AlcConstants{
     private boolean[] modEnabled = {false,false,false,false};
     private boolean[] modVaried = {false,false,false,false};
     private int[] modDirection = {0,0,0,0};
+    
+    public ColourLovers clc = new ColourLovers();
 
     AlcColourIO(){
         colours = new ArrayList<Color>();      
         errorType = 0;
-        dialogReturn = 0;
-        errorText = null; 
-        
+        errorText = null;    
+        clc.setupDialog();
     }
     
-    public void setCLSwatch(int i){
-        //getColourLoversData sets this >0 if an error occurs
-        errorType=0;   
-        //clDialog sets this >0 if rereading from colourlovers.com
-        dialogReturn = 0;
+    public class ColourLovers{
         
-        //show dialog with loading text
+       JDialog cLDialog = new JDialog();
         
-        clDialog clD = new clDialog(i);
-        clD.setVisible(true);
-        
-        //branch thread
-        
-//        while (dialogReturn<1){  // looking for a new palette       
-//            colours.clear();
-//            getColourLoversData(i);  // i is a random number
-//            i++;  // bump the random number in case we nead a different palette.
-//            
-//            if(errorType==0){  //no errors         
-////               clDialog clD = new clDialog();
-////               clD.setVisible(true);
-//                clD.setCLContent();
-//
-//            }else{  //We got errors. crap.
-//                dialogReturn = 3;
-//                AlcUtil.showMessageDialog(errorText, getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
-//            }
-//        }
-    }
-    
-    // Gets-Parses XML color data info from colourlovers.com.
-    //     -int i = which (by rank) palette to fetch.
-    private void getColourLoversData(int i){
-       String nextLine;
-       errorType = 0;
-       errorText = null;
+       Box headingBox = new Box(BoxLayout.X_AXIS);
+       Box infoBox = new Box(BoxLayout.X_AXIS);
+       Box colorsBox = new Box(BoxLayout.X_AXIS); 
        
-       urlString="http://www.colourlovers.com/api/palettes/top?numResults=1&resultOffset="+
-                  Integer.toString(i);
-       URL url = null;
-       URLConnection urlConn = null;
-       InputStreamReader inStream = null;
-       BufferedReader buff = null;
-       Matcher m;
-       try{
-          url  = new URL(urlString);
-          urlConn = url.openConnection();
-          inStream = new InputStreamReader( 
-                           urlConn.getInputStream());
-          buff= new BufferedReader(inStream);
-
-          while (true){
-             nextLine =buff.readLine();  
-             if (nextLine !=null){
+       JPanel buttonsPanel = new JPanel();
+       JComponent colorPanel;
+       
+       JButton addColors = new JButton();
+       JButton replaceColors = new JButton();
+       JButton refreshColors = new JButton();
+       JButton cancel = new JButton();
+       JButton loadCancel = new JButton();
+       
+       int random;
+       
+        //pull strings from Colour Lovers XML files
+        private String titleReg = "\\s*?<title><!\\[CDATA\\[(.+?)\\]\\]><\\/title>\\s*?";
+        private String authorReg = "\\s*?<userName><!\\[CDATA\\[(.+?)\\]\\]><\\/userName>\\s*?";
+        private String hexReg = "\\s*?<hex>(\\S+?)<\\/hex>\\s*?";
+        private Pattern title = Pattern.compile(titleReg);
+        private Pattern author = Pattern.compile(authorReg);
+        private Pattern hex = Pattern.compile(hexReg);    
+        private String titleString;
+        private String authorString;
+        private String urlString;
+        
+        JLabel loadingText = new JLabel("Fetching Palette from Colourlovers.com...");
+        JLabel colorHeading = new JLabel(getS("swatchRetrieved"));
+        JLabel colorAuthor = new JLabel();
+        JLabel colorTitle = new JLabel();
+        
+        //-------------------------------------------|
+        // "Get random swatch" menu item points here |
+        //-------------------------------------------|
+        public void getCL(int r){
+          
+            random = r;
+                        
+            //prep and start network thread
+            fetchAndUpdate();
+            
+            //show dialog
+            cLDialog.setVisible(true);
+            
+        }
+        
+        public void fetchAndUpdate(){
+            //reset error status
+            errorType = 0;
+            errorText = null;
+            
+            //increment random number in case we didnt get a new one...
+            random +=1;     
+            
+            //show loading screen in dialog
+            setLoadingState();
+            
+            Thread fetchAndUpdateThread = new Thread(new FetchAndUpdateRunnable());
+            fetchAndUpdateThread.start();
+        }
+        
+        //Runnable, executed by fetchAndUpdateThread in fetchAndUpdate method
+        public class FetchAndUpdateRunnable implements Runnable{
+            public void run(){
                 
-                 m = title.matcher(nextLine);
-                 if (m.matches()) {
-                    titleString = m.group(1);
-                 }
-                 m = author.matcher(nextLine);
-                 if (m.matches()) {
-                    authorString = m.group(1);
-                 }
-                 m = hex.matcher(nextLine);
-                 if (m.matches()) {                
-                    colours.add(Color.decode("#"+m.group(1)));
-                 }  
-             }else{
-                 break;
-             } 
-          }
-       }catch(MalformedURLException e){
-          errorType=1;
-          errorText=getS("getNetDataError1")+urlString;
-       }catch(IOException  e1){
-          errorType=2;
-          errorText=getS("getNetDataError2");
+                colours.clear();
+                System.out.println("getting swatch from colourlovers.com");
+                getColourLoversData(random);
+                
+                //if the window was already closed/canceled - dont bother
+                if(cLDialog.isVisible()){                           
+                    //handle errors here! error type/text set in getColourLoversData
+                    if(errorType>0){
+                        closeDialog();
+                        AlcUtil.showMessageDialog(errorText, getS("errorTitle"), JOptionPane.ERROR_MESSAGE);
+                    //not canceled, no errors, lets show what we found
+                    }else{
+                        setCLState();  
+                    }
+                }            
+                
+                System.out.println("finished swatch retrieval thread");   
+            }
+        }
+        
+        //Preps the Colour Lovers dialog box cLDialog
+        public void setupDialog(){
+            
+           cLDialog.setModalityType(ModalityType.APPLICATION_MODAL);
+           cLDialog.setDefaultCloseOperation(2);
+           cLDialog.setSize(500,250);
+           cLDialog.setTitle(getS("colourLoversImportTitle"));
+           cLDialog.setLocationRelativeTo(null);
+
+           cLDialog.setLayout(new BoxLayout(cLDialog.getContentPane(), BoxLayout.Y_AXIS));
+
+           buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
+           
+           resetColorPanel();
+
+           AbstractAction addColorsAction = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) {
+                   Alchemy.canvas.activeSwatchIndex=Alchemy.canvas.swatch.size();
+                   int n = 0;
+                   while (n<colours.size()){
+                      Alchemy.canvas.swatch.add(colours.get(n));
+                      n++;
+                   }
+                   closeDialog();
+               }
+           };
+
+           AbstractAction replaceColorsAction = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) { 
+                   Alchemy.canvas.swatch.clear();
+                   int n = 0;
+                   while (n<colours.size()){
+                      Alchemy.canvas.swatch.add(colours.get(n));
+                      n++;
+                   }
+                   Alchemy.canvas.activeSwatchIndex=0;
+                   closeDialog();
+               }
+
+           };
+
+           AbstractAction refreshColorsAction = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) {               
+                   fetchAndUpdate();
+               }
+           };
+
+           AbstractAction cancelAction = new AbstractAction() {
+               public void actionPerformed(ActionEvent e) {
+                   closeDialog();
+               }
+           };
+      
+           addColors.setAction(addColorsAction);
+           addColors.setText(getS("add"));
+           addColors.setMnemonic(KeyEvent.VK_ENTER);
+         
+           replaceColors.setAction(replaceColorsAction);
+           replaceColors.setText(getS("replace"));
+          
+           refreshColors.setAction(refreshColorsAction);
+           refreshColors.setText(getS("refresh"));
+          
+           cancel.setAction(cancelAction);
+           cancel.setText(getS("cancel"));
+           cancel.setMnemonic(KeyEvent.VK_ESCAPE);
+           
+           loadCancel.setAction(cancelAction);
+           loadCancel.setText(getS("cancel"));
+           loadCancel.setMnemonic(KeyEvent.VK_ESCAPE);
+           loadCancel.setAlignmentX(Component.CENTER_ALIGNMENT);
+           
+           loadingText.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+           colorsBox.add(Box.createHorizontalStrut(10));
+           colorsBox.add(colorPanel);
+           colorsBox.setPreferredSize(new Dimension(490,80));
+           colorsBox.setMinimumSize(new Dimension(490,80));
+          
+           headingBox.add(colorHeading);
+           infoBox.add(colorAuthor);
+           infoBox.add(colorTitle);
+           
+           if (Alchemy.OS == OS_MAC) {               
+               buttonsPanel.add(cancel);            
+               buttonsPanel.add(refreshColors);
+               buttonsPanel.add(replaceColors);
+               buttonsPanel.add(addColors);          
+           } else {            
+               buttonsPanel.add(addColors);
+               buttonsPanel.add(replaceColors);
+               buttonsPanel.add(refreshColors);
+               buttonsPanel.add(cancel);           
+           }           
+        }
+        
+        //adjust cLDialog contents to show the loading state
+        private void setLoadingState(){
+           cLDialog.getContentPane().removeAll();
+           cLDialog.add(Box.createVerticalStrut(45));
+           cLDialog.add(loadingText);
+           cLDialog.add(Box.createVerticalStrut(45));
+           cLDialog.add(loadCancel); 
+           cLDialog.getContentPane().repaint();
        }
-       if(colours.isEmpty()&&errorType==0){
-          errorType=3;
-          errorText=getS("getNetDataError3")+urlString;
+       //adjust cLDialog contents to display the retrieved swatch
+       private void setCLState(){
+           resetColorPanel();
+           
+           colorAuthor.setText(getS("author")+" "+authorString);
+           colorTitle.setText("      "+getS("title")+" "+titleString );
+           
+           cLDialog.getContentPane().removeAll();
+           cLDialog.add(Box.createVerticalStrut(15));
+           cLDialog.add(headingBox);
+           cLDialog.add(Box.createVerticalStrut(10));
+           cLDialog.add(infoBox);
+           cLDialog.add(Box.createVerticalStrut(20));
+           cLDialog.add(colorsBox);
+           cLDialog.add(buttonsPanel);
+           cLDialog.getContentPane().revalidate();
+           cLDialog.getContentPane().repaint();
+       }      
+              
+       void closeDialog(){
+           cLDialog.setVisible(false);
+           cLDialog.dispose();
        }
+       
+       private void resetColorPanel(){
+           colorPanel = getColorPanel();
+           colorPanel.repaint();
+       }
+       
+       private JComponent getColorPanel() {
+           
+           JComponent cP;       
+           cP = new JComponent() {
+              @Override
+              public void paintComponent(Graphics g) {
+                 g.drawImage(getColorPanelImage(), 0, 0, null);
+              }
+           };
+
+           return cP;
+       }
+       
+       private Image getColorPanelImage() {
+           Dimension d = new Dimension(480,80);
+           BufferedImage image = new BufferedImage((int)d.getWidth(), (int)d.getHeight(), BufferedImage.TYPE_INT_ARGB);
+           Graphics2D g = image.createGraphics();
+           int baseWidth;
+           int m;
+           baseWidth = (int)d.getWidth()/colours.size();
+
+           //modulus to find how many extra width pixels
+           m = (int)d.getWidth()%colours.size();       
+           //keeps track of how many of the mudulus pixels we've filled
+           int mCounter = 0;
+           //the height we will pass to the paint method
+           int h = (int)d.getHeight();
+           //the width we will pass to the paint method
+           int w;
+
+           int lastEdge=0;
+
+           //loop that steps through building all swatch colors
+           for(int n=0; n<colours.size(); n++){
+
+              g.setColor(colours.get(n));
+
+              if(mCounter<m){
+                  w=baseWidth+1;
+                  m++;
+              }else{
+                  w=baseWidth;
+              }     
+
+              g.fillRect(lastEdge,0,w,h);
+
+              lastEdge+=w;
+
+           }          
+           return image;
+       }
+        
+        // Gets-Parses XML color data info from colourlovers.com.
+        //     -int i = which (by rank) palette to fetch.
+        private void getColourLoversData(int i){
+            String nextLine;
+
+            urlString="http://www.colourlovers.com/api/palettes/top?numResults=1&resultOffset="+
+                        Integer.toString(i);
+            URL url = null;
+            URLConnection urlConn = null;
+            InputStreamReader inStream = null;
+            BufferedReader buff = null;
+            Matcher m;
+            try{
+                url  = new URL(urlString);
+                urlConn = url.openConnection();
+                inStream = new InputStreamReader( 
+                                urlConn.getInputStream());
+                buff= new BufferedReader(inStream);
+
+                while (true){
+                    nextLine =buff.readLine();  
+                    if (nextLine !=null){
+
+                        m = title.matcher(nextLine);
+                        if (m.matches()) {
+                            titleString = m.group(1);
+                        }
+                        m = author.matcher(nextLine);
+                        if (m.matches()) {
+                            authorString = m.group(1);
+                        }
+                        m = hex.matcher(nextLine);
+                        if (m.matches()) {                
+                            colours.add(Color.decode("#"+m.group(1)));
+                        }  
+                    }else{
+                        break;
+                    } 
+                }
+            }catch(MalformedURLException e){
+                errorType=1;
+                errorText=getS("getNetDataError1")+urlString;
+            }catch(IOException  e1){
+                errorType=2;
+                errorText=getS("getNetDataError2");
+            }
+            if(colours.isEmpty()&&errorType==0){
+                errorType=3;
+                errorText=getS("getNetDataError3")+urlString;
+            }
+        }
+        
     }
     
     // controls import of gpl/ase swatch files.
@@ -755,232 +988,6 @@ public class AlcColourIO implements AlcConstants{
     String getS(String stringName) {
         return Alchemy.bundle.getString(stringName);
     }
-    
-   // Custom Dialog Windows From Here On //
-   //------------------------------------//
-
-   private class clDialog extends JDialog{      
-       
-       Box headingBox = new Box(BoxLayout.X_AXIS);
-       Box infoBox = new Box(BoxLayout.X_AXIS);
-       Box colorsBox = new Box(BoxLayout.X_AXIS); 
-       Box loadingBox = new Box(BoxLayout.X_AXIS);
-       
-       JPanel buttonsPanel = new JPanel();
-       JComponent colorPanel;
-       
-       JButton addColors = new JButton();
-       JButton replaceColors = new JButton();
-       JButton refreshColors = new JButton();
-       JButton cancel = new JButton();
-      
-           clDialog(int i){
-               
-           resetColorPanel();
-           
-           this.setModalityType(ModalityType.APPLICATION_MODAL);
-           this.setDefaultCloseOperation(2);
-           this.setSize(500,250);
-           this.setTitle(getS("colourLoversImportTitle"));
-           this.setLocationRelativeTo(null);
-
-           this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-
-           buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
-
-           AbstractAction addColorsAction = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) {
-                   Alchemy.canvas.activeSwatchIndex=Alchemy.canvas.swatch.size();
-                   int n = 0;
-                   while (n<colours.size()){
-                      Alchemy.canvas.swatch.add(colours.get(n));
-                      n++;
-                   }                 
-                   dialogReturn = 1;
-                   closeDialog();
-               }
-           };
-
-           AbstractAction replaceColorsAction = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) { 
-                   Alchemy.canvas.swatch.clear();
-                   int n = 0;
-                   while (n<colours.size()){
-                      Alchemy.canvas.swatch.add(colours.get(n));
-                      n++;
-                   }
-                   Alchemy.canvas.activeSwatchIndex=0;
-                   dialogReturn = 1;
-                   closeDialog();
-               }
-
-           };
-
-           AbstractAction refreshColorsAction = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) {               
-                   dialogReturn = 0;
-                   closeDialog();
-               }
-           };
-
-           AbstractAction cancelAction = new AbstractAction() {
-               public void actionPerformed(ActionEvent e) { 
-                   dialogReturn = 2;
-                   closeDialog();
-               }
-           };
-           
-           JLabel loadingText = new JLabel("Fetching Palette from Colourlovers.com...");
-           JLabel colorHeading = new JLabel(getS("swatchRetrieved"));
-           JLabel colorAuthor = new JLabel(getS("author")+" "+authorString);
-           JLabel colorTitle = new JLabel("      "+getS("title")+" "+titleString );
-
-           loadingBox.add(loadingText);
-           headingBox.add(colorHeading);
-           infoBox.add(colorAuthor);
-           infoBox.add(colorTitle);
-          
-           addColors.setAction(addColorsAction);
-           addColors.setText(getS("add"));
-           addColors.setMnemonic(KeyEvent.VK_ENTER);
-         
-           replaceColors.setAction(replaceColorsAction);
-           replaceColors.setText(getS("replace"));
-          
-           refreshColors.setAction(refreshColorsAction);
-           refreshColors.setText(getS("refresh"));
-          
-           cancel.setAction(cancelAction);
-           cancel.setText(getS("cancel"));
-           cancel.setMnemonic(KeyEvent.VK_ESCAPE);
-
-           colorsBox.add(Box.createHorizontalStrut(10));
-           colorsBox.add(colorPanel);
-           colorsBox.setPreferredSize(new Dimension(490,80));
-           colorsBox.setMinimumSize(new Dimension(490,80));
-        
-           if (Alchemy.OS == OS_MAC) {
-               
-               buttonsPanel.add(cancel);            
-               buttonsPanel.add(refreshColors);
-               buttonsPanel.add(replaceColors);
-               buttonsPanel.add(addColors);
-           
-           } else {
-            
-               buttonsPanel.add(addColors);
-               buttonsPanel.add(replaceColors);
-               buttonsPanel.add(refreshColors);
-               buttonsPanel.add(cancel);
-           
-           }
-           
-           setLoadingContent();
-           
-           System.out.println("we made it here");
-           doCLWork(i);
-           
-
-       }
-           
-       private void doCLWork(int i){
-           
-           //colours.clear();
-           
-           //start worker thread,
-           
-           //get colorlovers data
-//            getColourLoversData(i);  // i is a random number
-//            i++;  // bump the random number in case we nead a different palette.
-           
-           //resetColorPanel();
-           
-           //setCLContent();
-           
-       }
-       
-       private void setLoadingContent(){
-           this.getContentPane().removeAll();
-           this.add(loadingBox); 
-           this.add(cancel);
-           this.getContentPane().repaint();
-       }
-       
-       private void setCLContent(){
-           this.getContentPane().removeAll();
-           this.add(Box.createVerticalStrut(15));
-           this.add(headingBox);
-           this.add(Box.createVerticalStrut(10));
-           this.add(infoBox);
-           this.add(Box.createVerticalStrut(20));
-           this.add(colorsBox);
-           this.add(buttonsPanel);
-           this.getContentPane().repaint();
-       }
-
-       private Image getColorPanelImage() {
-           Dimension d = new Dimension(480,80);
-           BufferedImage image = new BufferedImage((int)d.getWidth(), (int)d.getHeight(), BufferedImage.TYPE_INT_ARGB);
-           Graphics2D g = image.createGraphics();
-           int baseWidth;
-           int m;
-           baseWidth = (int)d.getWidth()/colours.size();
-
-           //modulus to find how many extra width pixels
-           m = (int)d.getWidth()%colours.size();       
-           //keeps track of how many of the mudulus pixels we've filled
-           int mCounter = 0;
-           //the height we will pass to the paint method
-           int h = (int)d.getHeight();
-           //the width we will pass to the paint method
-           int w;
-
-           int lastEdge=0;
-
-           //loop that steps through building all swatch colors
-           for(int n=0; n<colours.size(); n++){
-
-              g.setColor(colours.get(n));
-
-              if(mCounter<m){
-                  w=baseWidth+1;
-                  m++;
-              }else{
-                  w=baseWidth;
-              }     
-
-              g.fillRect(lastEdge,0,w,h);
-
-              lastEdge+=w;
-
-           }          
-           return image;
-       }
-       
-       private JComponent getColorPanel() {
-           
-           JComponent cP;       
-           cP = new JComponent() {
-              @Override
-              public void paintComponent(Graphics g) {
-                 g.drawImage(getColorPanelImage(), 0, 0, null);
-              }
-           };
-
-           return cP;
-       }
-       
-       private void resetColorPanel(){
-           colorPanel = getColorPanel();
-           colorPanel.repaint();
-       }
-       
-       void closeDialog(){
-           this.setVisible(false);
-           this.dispose();
-       }
-       
-   }
    
    private void exportDialog() {
 

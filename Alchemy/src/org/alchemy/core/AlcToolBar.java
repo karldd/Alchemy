@@ -286,7 +286,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
          
         AbstractAction setColourLoversAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {                
-                Alchemy.colourIO.setCLSwatch(random.nextInt(3000)+1);
+ //               Alchemy.colourIO.setCLSwatch(random.nextInt(3000)+1);
+                Alchemy.colourIO.clc.getCL(random.nextInt(3000)+1);
                 swatchColorButton.refresh();
                 setSwatchLRButtons();
                 setRemoveColorButton();
@@ -947,8 +948,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         String undoTitle = getS("undoTitle");
           
         AbstractAction undoAction = new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {                
-                Alchemy.canvas.removeShapeGroup();
+            public void actionPerformed(ActionEvent e) { 
+                //returns true if there are no more shape groups after trying to remove one
+                if(Alchemy.canvas.removeShapeGroup()){disableUndo();}
+                //diables undo if depth is set to 1 in settings
                 if(Alchemy.canvas.getUndoDepth()==1){          
                     disableUndo();
                 }
