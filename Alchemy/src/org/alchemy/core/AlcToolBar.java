@@ -467,6 +467,21 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
             }
         };
         
+        // x key sets active color to background color - to "erase"
+        
+        AbstractAction setEraseColor = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                if(Alchemy.canvas.getColor().getRGB()==Alchemy.canvas.getBackgroundColor().getRGB()){
+                    Alchemy.canvas.setColor(Alchemy.canvas.previousColor);                 
+                }else{
+                    Alchemy.canvas.setColor(Alchemy.canvas.getBackgroundColor());
+                }
+                refreshColorButton();
+            }
+        };
+        
+        Alchemy.shortcuts.setShortcut(null,KeyEvent.VK_X, getS("eraseQuickKey"),setEraseColor);
+        
         
         //////////////////////////////////////////////////////////////
         // SWATCH NUMBERPAD SHORTCUTS
