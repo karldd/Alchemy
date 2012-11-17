@@ -22,6 +22,7 @@ package org.alchemy.core;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.prefs.*;
@@ -66,7 +67,7 @@ class AlcPreferences implements AlcConstants {
     /** Ok Button */
     private JButton okButton;
     /** Size of the preferences window */
-    private final Dimension prefsWindowSize = new Dimension(500, 465);
+    private final Dimension prefsWindowSize = new Dimension(500, 500);
     /** Height of the tab panel */
     private final int tabPanelHeight = 65;
     //////////////////////////////////////////////////////////////
@@ -75,6 +76,7 @@ class AlcPreferences implements AlcConstants {
     private AlcToggleButton generalTabButton;
     private JComboBox interfaceBox;
     private JComboBox undoDepthBox;
+    private JComboBox localeBox;
     private JCheckBox recordOnStartUp;
     private JTextField sessionDirectoryTextField;
     private JLabel sessionFileRenameOutput;
@@ -156,6 +158,7 @@ class AlcPreferences implements AlcConstants {
     /** Color */
     int color;
     int undoDepth;
+    String locale;
     //////////////////////////////////////////////////////////////
     // GENERAL
     //////////////////////////////////////////////////////////////
@@ -201,6 +204,7 @@ class AlcPreferences implements AlcConstants {
         
         exportDirectory = prefs.get("Export Directory", DIR_DESKTOP);
         undoDepth = prefs.getInt("Undo Depth", 0);
+        locale = prefs.get("Locale", "system");
 
     }
 
@@ -232,6 +236,7 @@ class AlcPreferences implements AlcConstants {
         prefs.put("Export Directory", exportDirectory);
         
         prefs.putInt("Undo Depth", undoDepth);
+        prefs.put("Locale", locale);
         
         if (switchVectorApp != null) {
             prefs.put("Switch Vector Application", switchVectorApp);
@@ -589,6 +594,27 @@ class AlcPreferences implements AlcConstants {
         //undoDepthSelector.add(restart);
         gp.add(undoDepthSelector);
         
+        
+        // Locale Selector
+        JPanel localeSelector = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
+        localeSelector.setOpaque(false);
+        localeSelector.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        localeSelector.add(new JLabel(Alchemy.bundle.getString("undodepth") + ": "));
+
+        //String[] localeString = {"System","de","en","es","fa","fi","fr","it","ja",};
+        //localeBox = new JComboBox(localeString);
+        localeBox = buildLocaleCombo();
+        //if (Alchemy.preferences.undoDepth==0) {
+        localeBox.setSelectedIndex(localeStringToInt(Alchemy.preferences.locale));
+        //}else if(Alchemy.preferences.undoDepth==1){
+        //    undoDepthBox.setSelectedIndex(1);
+        //}else{
+        //    undoDepthBox.setSelectedIndex(2);
+        //}
+        localeSelector.add(localeBox);
+        //undoDepthSelector.add(restart);
+        gp.add(localeSelector);
+        
 
         // MODULES LABEL
         JPanel modulesLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -808,6 +834,7 @@ class AlcPreferences implements AlcConstants {
                 recordOnStartUp.setSelected(sessionRecordingState);
                 interfaceBox.setSelectedIndex(0);
                 undoDepthBox.setSelectedIndex(0);
+                localeBox.setSelectedIndex(0);
             }
         });
 
@@ -837,6 +864,7 @@ class AlcPreferences implements AlcConstants {
                         // Set the interface to simple or not
                         Alchemy.preferences.simpleToolBar = (interfaceBox.getSelectedIndex() == 1) ? true : false;
                         Alchemy.preferences.undoDepth=(undoDepthBox.getSelectedIndex());
+                        Alchemy.preferences.locale=(localeIntToString(localeBox.getSelectedIndex()));
                         // If the session file name has changed
                         if (!sessionFileRenamePre.getText().equals(sessionFilePreName) || !sessionFileRenameDate.getText().equals(sessionFileDateFormat)) {
                             try {
@@ -905,6 +933,59 @@ class AlcPreferences implements AlcConstants {
         });
         timer.start();
         timer.setRepeats(false);
+    }
+    private JComboBox buildLocaleCombo(){
+        int lNum = 17;
+        String[] lString = new String[lNum];
+        int n = 0;
+        while(n<lNum){
+            Array.set(lString, n, localeIntToString(n));
+            n++;
+        }
+        JComboBox lBox = new JComboBox(lString);
+        return lBox;
+    }
+    private int localeStringToInt(String s){
+        int n = 0;
+        if(s.equals("system")){ n = 0; }
+        else if(s.equals("de")){ n = 1; }
+        else if(s.equals("en")){ n = 2; }
+        else if(s.equals("es")){ n = 3; }
+        else if(s.equals("fa")){ n = 4; }
+        else if(s.equals("fi")){ n = 5; }
+        else if(s.equals("fr")){ n = 6; }
+        else if(s.equals("it")){ n = 7; }
+        else if(s.equals("ja")){ n = 8; }
+        else if(s.equals("nl")){ n = 9; }
+        else if(s.equals("no")){ n = 10; }
+        else if(s.equals("pl")){ n = 11; }
+        else if(s.equals("pt")){ n = 12; }
+        else if(s.equals("ru")){ n = 13; }
+        else if(s.equals("tr")){ n = 14; }
+        else if(s.equals("uk")){ n = 15; }
+        else if(s.equals("zh")){ n = 16; }
+        return n;
+    }
+    private String localeIntToString(int n){
+        String s = "system";
+        if(n == 0){ s = "system"; }
+        else if(n == 1) { s = "de"; }
+        else if(n == 2) { s = "en"; }
+        else if(n == 3) { s = "es"; }
+        else if(n == 4) { s = "fa"; }
+        else if(n == 5) { s = "fi"; }
+        else if(n == 6) { s = "fr"; }
+        else if(n == 7) { s = "it"; }
+        else if(n == 8) { s = "ja"; }
+        else if(n == 9) { s = "nl"; }
+        else if(n == 10){ s = "no"; }
+        else if(n == 11){ s = "pl"; }
+        else if(n == 12){ s = "pt"; }
+        else if(n == 13){ s = "ru"; }
+        else if(n == 14){ s = "tr"; }
+        else if(n == 15){ s = "uk"; }
+        else if(n == 16){ s = "zh"; }
+        return s;
     }
 
     /** Returns a string with some examples of how to set the date format */
