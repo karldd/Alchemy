@@ -266,9 +266,9 @@ public class AlcColourIO implements AlcConstants{
            cLDialog.add(colorsBox);
            cLDialog.add(buttonsPanel);
            
-           // revalidate causes a build error on mac platform
+           // revalidate causes a build error on mac platform   
            //cLDialog.getContentPane().revalidate();
-           cLDialog.getContentPane().invalidate();
+           //cLDialog.getContentPane().invalidate();
            cLDialog.getContentPane().validate();
            
            

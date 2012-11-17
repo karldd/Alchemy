@@ -105,7 +105,11 @@ public class Alchemy implements AlcConstants {
             UIManager.put("OptionPane.questionIcon", appIcon);
             UIManager.put("OptionPane.warningIcon", appIcon);
         }
-
+        
+        // LOAD PREFERENCES
+        preferences = new AlcPreferences();
+        
+        
         // Load the Bundle
         try {
             bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("en"));
@@ -113,22 +117,36 @@ public class Alchemy implements AlcConstants {
             ex.printStackTrace();
             bundleEn = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle");
         }
-        try { // Try and get the default bundle
+        
+        
+        if (preferences.locale.equals("system")) {
             
-            // For Hong Kong lets keep it traditional and use the traditional chinese from the taiwan bundle
-            if (LOCALE.getLanguage().equals("zh") && LOCALE.getCountry().equals("HK")) {
-                bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("zh", "TW"));
-            } else {
-                bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
-            }
-        } catch (Exception ex) {
-            // If that fails lets practice our English!
-            ex.printStackTrace();
-            bundle = bundleEn;
+            try { // Try and get the default bundle
+
+                // For Hong Kong lets keep it traditional and use the traditional chinese from the taiwan bundle
+                if (LOCALE.getLanguage().equals("zh") && LOCALE.getCountry().equals("HK")) {
+                    bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale("zh", "TW"));
+                } else {
+                    bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", LOCALE);
+                }
+            } catch (Exception ex) {
+                // If that fails lets practice our English!
+                ex.printStackTrace();
+                bundle = bundleEn;
+            }        
+            
+        } else {
+           try { bundle = ResourceBundle.getBundle("org/alchemy/core/AlcResourceBundle", new Locale(preferences.locale));
+           } catch (Exception ex) {
+                // If that fails lets practice our English!
+                ex.printStackTrace();
+                bundle = bundleEn;
+           }
         }
 
-        // LOAD PREFERENCES
-        preferences = new AlcPreferences();
+
+
+
         
         // Initiate Colour IO Class
         colourIO = new AlcColourIO();
