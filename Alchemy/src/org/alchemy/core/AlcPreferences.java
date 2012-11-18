@@ -581,7 +581,9 @@ class AlcPreferences implements AlcConstants {
         undoDepthSelector.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         undoDepthSelector.add(new JLabel(Alchemy.bundle.getString("undodepth") + ": "));
 
-        String[] undoDepthString = {"Disabled","Single","Unlimited"};
+        String[] undoDepthString = {Alchemy.bundle.getString("disabled"),
+                                    Alchemy.bundle.getString("single"),
+                                    Alchemy.bundle.getString("unlimited")};
         undoDepthBox = new JComboBox(undoDepthString);
         if (Alchemy.preferences.undoDepth==0) {
             undoDepthBox.setSelectedIndex(0);
@@ -599,7 +601,7 @@ class AlcPreferences implements AlcConstants {
         JPanel localeSelector = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
         localeSelector.setOpaque(false);
         localeSelector.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
-        localeSelector.add(new JLabel(Alchemy.bundle.getString("undodepth") + ": "));
+        localeSelector.add(new JLabel(Alchemy.bundle.getString("locale") + ": "));
 
         //String[] localeString = {"System","de","en","es","fa","fi","fr","it","ja",};
         //localeBox = new JComboBox(localeString);
