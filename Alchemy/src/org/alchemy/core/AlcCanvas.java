@@ -51,7 +51,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     //////////////////////////////////////////////////////////////
     // GLOBAL SHAPE SETTINGS
     //////////////////////////////////////////////////////////////
-//    /** Global Shape Foreground color */
+//  /** Global Shape Foreground color */
 //    private Color color;
     /** Global Shape Foreground Alpha */
     private int alpha = 255;
@@ -96,7 +96,8 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** Boolean used to indicate if the user is picking a zoom location with the mouse */
     private boolean zoomMousing = false;
     /** Zoom data */
-    private double zoomAmount = 0.25;
+    private double zoomAmount = 4.0;
+    private double currentZoom = 1/zoomAmount;
     private double lastZoomX = 0.0;
     private double lastZoomY = 0.0;
     
@@ -148,11 +149,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     /** An image of the canvas drawn behind active shapes */
     private Image canvasImage;
     /** Image than can be drawn on the canvas */
-    private Image image;
+    private BufferedImage image;
+    private BufferedImage zoomedImage;
     /** Display the Image or not */
     private boolean imageDisplay = false;
     /** Position to display the image */
     private Point imageLocation = new Point(0, 0);
+     /** Position to display the zoomed image */
+    private Point zoomedImageLocation = new Point(0, 0);
     /** An image used to fake transparency in fullscreen mode */
     private Image transparentImage;
     //////////////////////////////////////////////////////////////
@@ -243,12 +247,14 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
             // Draw the image if present
             if (imageDisplay && image != null) {
-                g2.drawImage(image, imageLocation.x, imageLocation.y, null);
+                Point p = getImageLocation();
+               g2.drawImage(getImage(), (int)p.getX(), (int)p.getY(), null);
             }
         } else {
             // Draw the image if present
             if (imageDisplay && image != null) {
-                g2.drawImage(image, imageLocation.x, imageLocation.y, null);
+                Point p = getImageLocation();
+                g2.drawImage(getImage(), (int)p.getX(), (int)p.getY(), null);
             }
             // Paint background.
             g2.setColor(new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue()));
@@ -1164,25 +1170,35 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
 
             double x;
             double y;
+            double imageZoomX;
+            double imageZoomY;
             AffineTransform zoom = new AffineTransform();
             
             // Not Zoomed, lets set data for zooming/
-            if(zoomAmount==0.25){
-                zoomAmount = 4.0;
+            if(currentZoom==1/zoomAmount){
+                currentZoom = zoomAmount;
                 Point location = this.getMousePosition();
                 // set the zoom coordinate so that location under mouse remains under the mouse
-                lastZoomX = location.getX()-((this.getWidth()/4)*(location.getX()/this.getWidth()));
-                lastZoomY = location.getY()-((this.getHeight()/4)*(location.getY()/this.getHeight()));
-                x = 0 - ((4 * lastZoomX));
-                y = 0 - ((4 * lastZoomY)); 
+                lastZoomX = location.getX()-((this.getWidth()/zoomAmount)*(location.getX()/this.getWidth()));
+                lastZoomY = location.getY()-((this.getHeight()/zoomAmount)*(location.getY()/this.getHeight()));
+                imageZoomX = (location.getX()-imageLocation.getX())-
+                   ( (this.getWidth()/zoomAmount) * ( (location.getX()-imageLocation.getX()) / this.getWidth() ) );
+                imageZoomY = (location.getY()-imageLocation.getY())-
+                   ( (this.getWidth()/zoomAmount) * ( (location.getY()-imageLocation.getY()) / this.getWidth() ) );
+                x = 0 - ((zoomAmount * lastZoomX));
+                y = 0 - ((zoomAmount * lastZoomY));
+                
+                zoomedImageLocation.x = (int)(imageLocation.getX() - (zoomAmount*imageZoomX));
+                zoomedImageLocation.y = (int)(imageLocation.getY() - (zoomAmount*imageZoomY));
+                
             // Zoomed, lets set data for unzooming
             }else{
-                zoomAmount = 0.25;
+                currentZoom = 1/zoomAmount;
                 x = lastZoomX;
-                y = lastZoomY;         
+                y = lastZoomY;
             }       
             zoom = AffineTransform.getTranslateInstance ( x,y );
-            zoom.scale(zoomAmount,zoomAmount);
+            zoom.scale(currentZoom,currentZoom);
             for(AlcShape shape : shapes){
                 GeneralPath zoomPath = (GeneralPath) shape.getPath().createTransformedShape(zoom);
                 shape.setPath(zoomPath);
@@ -1200,7 +1216,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
     }
     
     public void startZoomMousing(){
-        if(zoomAmount<1){
+        if(currentZoom<1){
             zoomMousing = true;
             Alchemy.toolBar.setToolBarVisible(false);
             setTempCursor(CURSOR_ZOOM);
@@ -1214,7 +1230,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         restoreCursor();
     }
     public boolean isCanvasZoomed(){
-        if (zoomAmount>1){
+        if (currentZoom>1){
             return true;
         }else{
             return false;
@@ -1255,6 +1271,11 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
      */
     public void setImage(BufferedImage image) {
         this.image = image;
+        if(this.image!=null){
+           this.zoomedImage = getZoomedImage(this.image);
+        }else{
+            this.zoomedImage =null;
+        }
         canvasImage = renderCanvas(true);
         if (image != null) {
             Alchemy.menuBar.unloadBackgroundImageItem.setEnabled(true);
@@ -1262,13 +1283,36 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
             Alchemy.menuBar.unloadBackgroundImageItem.setEnabled(false);
         }
     }
+    
+    private BufferedImage getZoomedImage(BufferedImage image){
+        
+        // Create new (blank) image of required (scaled) size
+        BufferedImage scaledImage = new BufferedImage((int)(image.getWidth()*zoomAmount), 
+                                                      (int)(image.getHeight()*zoomAmount), 
+                                                      BufferedImage.TYPE_INT_ARGB);
+
+        // Paint scaled version of image to new image
+        Graphics2D graphics2D = scaledImage.createGraphics();
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.drawImage(image, 0, 0, (int)(image.getWidth()*zoomAmount), (int)(image.getHeight()*zoomAmount), null);
+
+        // clean up
+        graphics2D.dispose();
+        
+        return scaledImage;
+    }
 
     /** Get the current image
      * 
      * @return  The current image
      */
     public Image getImage() {
-        return this.image;
+        if(isCanvasZoomed()){
+            return this.zoomedImage;
+        }else{
+            return this.image;
+        }
     }
 
     /** Check if an Image is defined or not
@@ -1312,13 +1356,20 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
         this.imageLocation.x = x;
         this.imageLocation.y = y;
     }
-
+    
+    private void setZoomedImageLocation(){
+        
+    }
     /** Get the location where the image is displayed on the canvas
      * 
      * @return  Point - x & y location
      */
     public Point getImageLocation() {
+        if(isCanvasZoomed()){
+         return zoomedImageLocation;   
+        }else{
         return imageLocation;
+        }
     }
 
     /** Reset the image location back to zero */
