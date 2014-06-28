@@ -287,7 +287,7 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         AbstractAction setColourLoversAction = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {                
  //               Alchemy.colourIO.setCLSwatch(random.nextInt(3000)+1);
-                Alchemy.colourIO.clc.getCL(random.nextInt(3000)+1);
+                Alchemy.colourIO.clc.getCL(random.nextInt(999)+1);
                 swatchColorButton.refresh();
                 setSwatchLRButtons();
                 setRemoveColorButton();
