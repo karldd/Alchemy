@@ -48,7 +48,7 @@ public class AlcSlider extends JPanel implements AlcShortcutInterface, AlcConsta
             label = new JLabel(name);
             label.setFont(FONT_MEDIUM);
             label.setAlignmentX(Component.CENTER_ALIGNMENT);
-            label.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+            label.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
             this.add(label);
         }
 

@@ -190,20 +190,16 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         AbstractAction eyedropperAction = new AbstractAction() {
 
             public void actionPerformed(ActionEvent e) {
-
                         lClickPicker.startEyeDropper();
- 
             }
         };
 
         Alchemy.shortcuts.setShortcut(null, KeyEvent.VK_I, "startEyeDropper", eyedropperAction);
 
-
         this.windowSize = new Dimension(Alchemy.window.getWindowSize().width, mainToolBar.getHeight());
 
         // Turn off the visibility until the mouse enters the top of the screen
         setToolBarVisible(false);
-
     }
     
     private AlcToolBarMain loadSwatchBar(){
@@ -216,7 +212,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         
         swatchTools = new JPanel();
         swatchTools.setOpaque(false);
-        swatchTools.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        swatchTools.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 2));
+        
         addRemoveBox = new Box(BoxLayout.Y_AXIS);
         transparencyBox = new Box(BoxLayout.X_AXIS);         
         
@@ -232,7 +229,8 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
 
         AlcButton deswatchButton = new AlcButton(toolBarFlipAction);
         deswatchButton.setup("", getS("flipToolbarDescription"), AlcUtil.getUrlPath("switch-swatch.png"));
-        deswatchButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 6, 5));
+        //total top margin is 8 - 2 by Jpanel, 6 here
+        deswatchButton.setBorder(BorderFactory.createEmptyBorder(6, 5, 6, 5));
         swatchTools.add(deswatchButton);
  
         //////////////////////////////////////////////////////////////
@@ -343,9 +341,6 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         loadSwatch.setup(getS("importSwatchTitle"));
         swatchMenuButton.addItem(loadSwatch);
         
-        swatchTools.add(swatchMenuButton);
-        swatchTools.add(new AlcSeparator());
-        
         //------------------------------------------------------------
         // Swatch Menu -> Save Swatch
         AlcMenuItem saveSwatch; 
@@ -362,6 +357,11 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         // ---------------
         // END SWATCH MENU
         // ---------------
+        
+        //total top margin is 8 - 2 by Jpanel, 6 here
+        swatchMenuButton.setBorder(BorderFactory.createEmptyBorder(6, 5, 0, 5));
+        swatchTools.add(swatchMenuButton);
+        swatchTools.add(new AlcSeparator());
         
         //////////////////////////////////////////////////////////////
         // TRANSPARENCY LOCK
@@ -524,9 +524,10 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         };
         AlcButton addToSwatchButton = new AlcButton(addToSwatchAction);
         addToSwatchButton.setup("", getS("addToSwatchDescription"), AlcUtil.getUrlPath("add.png"));
-
+        addToSwatchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        //addRemoveBox.setBorder(BorderFactory.createLineBorder(Color.GREEN, 1));
         addRemoveBox.add(addToSwatchButton);
-        
+                      
         //////////////////////////////////////////////////////////////
         // REMOVE COLOR FROM SWATCH BUTTON
         //////////////////////////////////////////////////////////////
@@ -554,10 +555,13 @@ public class AlcToolBar extends AlcAbstractToolBar implements AlcConstants{
         removeFromSwatchButton = new AlcButton(removeFromSwatchAction);
         removeFromSwatchButton.setup("", getS("removeFromSwatchDescription"), AlcUtil.getUrlPath("remove.png"));
         
-        addRemoveBox.add(removeFromSwatchButton);
-        addRemoveBox.add(Box.createVerticalStrut(5));
-        swatchTools.add(addRemoveBox);
+        //add a little gap between buttons
+        removeFromSwatchButton.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         
+        addRemoveBox.add(removeFromSwatchButton);
+
+        swatchTools.add(addRemoveBox);
+             
         //////////////////////////////////////////////////////////////
         // SEPARATOR
         //////////////////////////////////////////////////////////////
