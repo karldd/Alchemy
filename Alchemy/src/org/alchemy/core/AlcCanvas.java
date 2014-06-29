@@ -1640,7 +1640,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                 restoreCursor();
                 
             }else{
-            
+                startUndoGroup();   
                 // Pass to the current create module
                 if (createEvents) {
                     Alchemy.plugins.creates[Alchemy.plugins.currentCreate].mousePressed(event);
@@ -1655,7 +1655,7 @@ public class AlcCanvas extends JPanel implements AlcConstants, MouseListener, Mo
                         }
                     }
                 }
-                startUndoGroup();       
+    
             }      
         }
     }

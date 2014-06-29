@@ -493,7 +493,7 @@ public class TypeShapes extends AlcModule implements AlcConstants {
     @Override
     public void mouseReleased(MouseEvent e) {
         oldP = null;
-    //canvas.commitShapes();
+        //canvas.commitShapes();
     }
 
     private void makePressShape(Point p, int fontSize) {
