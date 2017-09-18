@@ -6,9 +6,19 @@ This repository is for archival purposes.
 # Alchemy
 Alchemy is an open drawing project aimed at exploring how we can sketch, draw, and create on computers in new ways. Alchemy isn’t software for creating finished artwork, but rather a sketching environment that focuses on the absolute initial stage of the creation process. Experimental in nature, Alchemy lets you brainstorm visually to explore an expanded range of ideas and possibilities in a serendipitous way.
 
-## Downloads
+## Installation
+
+### Download
 Applications releases can be found in the [releases folder](releases).
 We support Windows, Mac OSX, and Linux. Alchemy requires the Java Runtime Environment version 1.5 or above.
+
+## Install
+Firstly delete your old version of Alchemy, by moving the Alchemy folder to the trash.
+Then simply copy the Alchemy folder to wherever you keep your applications.
+
+Windows users please make sure the path to Alchemy does not contain any non-standard characters such as the exclamation mark (!), this has been known to cause problems launching the application. If your user name has non-standard characters, try putting Alchemy directly into the root directory.
+
+The 'modules' (and the 'lib' folder on Windows) folder must remain together with the application. Individual modules can be removed if not required, however be sure to not mix older modules with newer versions or vice versa.
 
 ## About
 
