@@ -6,6 +6,8 @@ This repository is for archival purposes.
 # Alchemy
 Alchemy is an open drawing project aimed at exploring how we can sketch, draw, and create on computers in new ways. Alchemy isn’t software for creating finished artwork, but rather a sketching environment that focuses on the absolute initial stage of the creation process. Experimental in nature, Alchemy lets you brainstorm visually to explore an expanded range of ideas and possibilities in a serendipitous way.
 
+![Alchemy Interface](https://i.gyazo.com/6a582f15e12f58e49c684957323accc0.gif)
+
 ## Installation
 
 ### Download
