@@ -81,7 +81,7 @@ So if we add the random numbers to the point object with the `+=` operator, we w
 
 In the above code I have made sure to check that there _actually is a shape available_ by wrapping everything in an if statement that calls `canvas.hasCreateShapes()`. This was way if the user starts drawing a shape, then uses a shortcut key to delete everything, our code won’t return an error. Run the application again and you should be able to draw something like this:
 
-[![Create Random](http://al.chemy.org/images/tutorial-module/create-random-thumb.gif)](http://al.chemy.org/images/tutorial-module/create-random.gif)
+![Create Random](https://i.gyazo.com/8b93863e88d1302bc227ae11a8580b61.gif)
 
 If we make a slight change from using curved lines:
 
@@ -97,7 +97,7 @@ canvas.getCurrentCreateShape().lineTo(p);
 
 Then we get a very different look:
 
-[![Create Random](http://al.chemy.org/images/tutorial-module/create-random-line-thumb.gif)](http://al.chemy.org/images/tutorial-module/create-random-line.gif)
+![Create Random](https://i.gyazo.com/b6a485b5219e0adba6a55e1e8d9faed9.gif)
 
 So that is a very basic overview of how to get up and running with a Create Module. There are many possibilities you can explore, using random numbers is a simple and satisfying one to get started with. It is always good to check out real examples, so browsing over the existing [Alchemy module code](http://svn.al.chemy.org/listing.php?repname=Alchemy&path=%2FAlchemy%2Fsrc%2Forg%2Falchemy%2Fcreate%2F#_Alchemy_src_org_alchemy_create_) is a good way to see how more complex stuff is done. You might also like to check out some of the [Alchemy developer documentation](http://docs.al.chemy.org/), in particular the [AlcCanvas](http://docs.al.chemy.org/org/alchemy/core/AlcCanvas.html), [AlcModule](http://docs.al.chemy.org/org/alchemy/core/AlcModule.html), and [AlcShape](http://docs.al.chemy.org/org/alchemy/core/AlcShape.html) class documentation.
 
