@@ -23,7 +23,7 @@ Next step is to download the template code for this tutorial:
 
 Once you have installed the NetBeans IDE, use the **File > Open Project…** menu to navigate and open the Alchemy module template code. You just need to select the project folder, not a specific file. **The AlchemyModuleTemplate** project should now appear in the left hand ‘Projects’ side bar. You may need to close the Netbeans ‘Welcome Window’ to see the side bar. Click on the arrow beside ‘Source Packages’ to reveal the source code packages. Next we want to navigate to the ‘org.alchemy.create’ package and open the **CreateModule.java** file. Your screen should look something like this:
 
-[![Netbeans Interface](http://al.chemy.org/images/tutorial-module/netbeans-thumb.gif)](http://al.chemy.org/images/tutorial-module/netbeans.gif)
+![Netbeans Interface](https://i.gyazo.com/4275d32b22bd2ed1569c4ac8036724e6.gif)
 
 ### Create Module
 
