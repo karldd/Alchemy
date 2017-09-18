@@ -31,7 +31,7 @@ Take a moment to browse this file and read the comments. At the top there are th
 
 This is a rather boring example, but let’s run it to see what it does. Click on the **Run Project** button or choose **Run > Run Project** from the top menu. This will compile the CreateModule.java file into a module and start the Alchemy application.
 
-[![Create Module](http://al.chemy.org/images/tutorial-module/create-module-thumb.gif)](http://al.chemy.org/images/tutorial-module/create-module.gif)
+![Create Module](https://i.gyazo.com/43964e805bc04cbcdad354c8078a5b71.gif)
 
 You can see that this is the Alchemy we know and love, although with only two Create modules, the standard ‘Shapes’ module and the new ‘Create Module’. Right now the ‘Create Module’ only creates a plain line, but we can spice it up a little quite easily.
 
