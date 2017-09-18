@@ -17,7 +17,7 @@ We can download both the JDK and the IDE in one hit from this site here:
 Go down to the ‘Java SE Development Kit (JDK) Bundles’ section and download the **JDK with NetBeans**.
 
 Next step is to download the template code for this tutorial:  
-[**http://dev.al.chemy.org/files/AlchemyModuleTemplate-008.zip**](http://dev.al.chemy.org/files/AlchemyModuleTemplate-008.zip) (4.6 MB)  
+[**AlchemyModuleTemplate-008.zip**](../templates/AlchemyModuleTemplate-008.zip) (4.6 MB)  
 
 ### NetBeans
 
