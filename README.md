@@ -12,13 +12,20 @@ Alchemy is an open drawing project aimed at exploring how we can sketch, draw, a
 Applications releases can be found in the [releases folder](releases).
 We support Windows, Mac OSX, and Linux. Alchemy requires the Java Runtime Environment version 1.5 or above.
 
-## Install
+### Install
 Firstly delete your old version of Alchemy, by moving the Alchemy folder to the trash.
 Then simply copy the Alchemy folder to wherever you keep your applications.
 
 Windows users please make sure the path to Alchemy does not contain any non-standard characters such as the exclamation mark (!), this has been known to cause problems launching the application. If your user name has non-standard characters, try putting Alchemy directly into the root directory.
 
 The 'modules' (and the 'lib' folder on Windows) folder must remain together with the application. Individual modules can be removed if not required, however be sure to not mix older modules with newer versions or vice versa.
+
+### Documentation
+Alchemy is now documented exclusively using the [Floss Manuals](http://en.flossmanuals.net/Alchemy). For a detailed and visual look at how to use Alchemy, including screenshots, example drawings, and full installation instructions:
+
+#### [View the Alchemy Manual](http://en.flossmanuals.net/Alchemy/)
+
+We also have a [Farsi manual](http://fa.flossmanuals.net/alchemy) and a [Finnish Manual](http://fi.flossmanuals.net/Alchemy/Introduction)!
 
 ## About
 
