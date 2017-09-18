@@ -9,7 +9,7 @@ Alchemy is an open drawing project aimed at exploring how we can sketch, draw, a
 ## About
 
 ### Who, Where, Why
-Alchemy was intiated by Karl D.D. Willis and Jacob Hina as a way to explore and experiment with alternative ways of drawing. Karl has developed other experimental drawing systems such Light Tracer and TwelvePixels, while Jacob created the original ‘Symmskribbl’ mirror drawing application and is constantly making marks on paper. Alchemy is currently being developed in Tokyo, Japan, with the generous support of the Exploratory Software Project.
+Alchemy was intiated by [Karl D.D. Willis](http://www.darcy.co.nz/) and Jacob Hina as a way to explore and experiment with alternative ways of drawing. Karl has developed other experimental drawing systems such Light Tracer and TwelvePixels, while Jacob created the original ‘Symmskribbl’ mirror drawing application and is constantly making marks on paper. Alchemy is currently being developed in Tokyo, Japan, with the generous support of the [Exploratory Software Project](https://www.ipa.go.jp/english/humandev/third.html).
 
 ### Technical
 Alchemy is written in Java, so can run on most platforms. 
@@ -27,4 +27,4 @@ Alchemy is built in Java and primarily uses the Java 2D API. It also uses a numb
 We use the NetBeans IDE and include the Netbeans project files in the repository. Using the build.xml file supplied and NetBeans, everything should compile straight away on all platforms. The only dependency is Lauch4j to create .exe files for distribution on Windows.
 
 ### Javadocs
-The Alchemy API documentation can be found here: 
+The Alchemy API documentation can be found [here](javadocs)
