@@ -99,7 +99,7 @@ Then we get a very different look:
 
 ![Create Random](https://i.gyazo.com/b6a485b5219e0adba6a55e1e8d9faed9.gif)
 
-So that is a very basic overview of how to get up and running with a Create Module. There are many possibilities you can explore, using random numbers is a simple and satisfying one to get started with. It is always good to check out real examples, so browsing over the existing [Alchemy module code](http://svn.al.chemy.org/listing.php?repname=Alchemy&path=%2FAlchemy%2Fsrc%2Forg%2Falchemy%2Fcreate%2F#_Alchemy_src_org_alchemy_create_) is a good way to see how more complex stuff is done. You might also like to check out some of the [Alchemy developer documentation](http://docs.al.chemy.org/), in particular the [AlcCanvas](http://docs.al.chemy.org/org/alchemy/core/AlcCanvas.html), [AlcModule](http://docs.al.chemy.org/org/alchemy/core/AlcModule.html), and [AlcShape](http://docs.al.chemy.org/org/alchemy/core/AlcShape.html) class documentation.
+So that is a very basic overview of how to get up and running with a Create Module. There are many possibilities you can explore, using random numbers is a simple and satisfying one to get started with. It is always good to check out real examples, so browsing over the existing Alchemy module code is a good way to see how more complex stuff is done. You might also like to check out some of the [Alchemy developer documentation](http://docs.al.chemy.org/), in particular the [AlcCanvas](http://docs.al.chemy.org/org/alchemy/core/AlcCanvas.html), [AlcModule](http://docs.al.chemy.org/org/alchemy/core/AlcModule.html), and [AlcShape](http://docs.al.chemy.org/org/alchemy/core/AlcShape.html) class documentation.
 
 ### Affect Module
 
